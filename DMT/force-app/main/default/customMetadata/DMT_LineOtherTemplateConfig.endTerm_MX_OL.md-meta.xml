@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>endTerm_MX_OL</label>
+    <protected>false</protected>
+    <values>
+        <field>DataType__c</field>
+        <value xsi:type="xsd:string">PICKLIST</value>
+    </values>
+    <values>
+        <field>DependsOnField__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>DisplayLabel__c</field>
+        <value xsi:type="xsd:string">Product End Term</value>
+    </values>
+    <values>
+        <field>Entific__c</field>
+        <value xsi:type="xsd:string">MX</value>
+    </values>
+    <values>
+        <field>FieldOrder__c</field>
+        <value xsi:type="xsd:double">10.0</value>
+    </values>
+    <values>
+        <field>Field_Edit_Is_Disabled__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Field_View_Is_Disabled__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>FilterText__c</field>
+        <value xsi:type="xsd:string">DMT_End_Term__c</value>
+    </values>
+    <values>
+        <field>HelpText__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>IsRequired__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>LineType__c</field>
+        <value xsi:type="xsd:string">OL</value>
+    </values>
+    <values>
+        <field>OptionsJson__c</field>
+        <value xsi:type="xsd:string">{ &quot;options&quot;: [{&quot;label&quot;:&quot; &quot;,&quot;value&quot;:&quot;&quot;},{&quot;label&quot;:&quot;0D&quot;,&quot;value&quot;:&quot;0&quot;},{&quot;label&quot;:&quot;2D&quot;,&quot;value&quot;:&quot;2&quot;},{&quot;label&quot;:&quot;3D&quot;,&quot;value&quot;:&quot;3&quot;},{&quot;label&quot;:&quot;4D&quot;,&quot;value&quot;:&quot;4&quot;},{&quot;label&quot;:&quot;7D&quot;,&quot;value&quot;:&quot;7&quot;},{&quot;label&quot;:&quot;10D&quot;,&quot;value&quot;:&quot;10&quot;},{&quot;label&quot;:&quot;15D&quot;,&quot;value&quot;:&quot;15&quot;},{&quot;label&quot;:&quot;20D&quot;,&quot;value&quot;:&quot;20&quot;},{&quot;label&quot;:&quot;1M&quot;,&quot;value&quot;:&quot;30&quot;},{&quot;label&quot;:&quot;45D&quot;,&quot;value&quot;:&quot;45&quot;},{&quot;label&quot;:&quot;2M&quot;,&quot;value&quot;:&quot;60&quot;},{&quot;label&quot;:&quot;3M&quot;,&quot;value&quot;:&quot;90&quot;},{&quot;label&quot;:&quot;4M&quot;,&quot;value&quot;:&quot;120&quot;},{&quot;label&quot;:&quot;5M&quot;,&quot;value&quot;:&quot;150&quot;},{&quot;label&quot;:&quot;6M&quot;,&quot;value&quot;:&quot;180&quot;},{&quot;label&quot;:&quot;9M&quot;,&quot;value&quot;:&quot;270&quot;},{&quot;label&quot;:&quot;1Y&quot;,&quot;value&quot;:&quot;365&quot;},{&quot;label&quot;:&quot;18M&quot;,&quot;value&quot;:&quot;548&quot;},{&quot;label&quot;:&quot;2Y&quot;,&quot;value&quot;:&quot;730&quot;},{&quot;label&quot;:&quot;3Y&quot;,&quot;value&quot;:&quot;1095&quot;},{&quot;label&quot;:&quot;4Y&quot;,&quot;value&quot;:&quot;1460&quot;},{&quot;label&quot;:&quot;5Y&quot;,&quot;value&quot;:&quot;1825&quot;},{&quot;label&quot;:&quot;6Y&quot;,&quot;value&quot;:&quot;2190&quot;},{&quot;label&quot;:&quot;7Y&quot;,&quot;value&quot;:&quot;2555&quot;},{&quot;label&quot;:&quot;8Y&quot;,&quot;value&quot;:&quot;2920&quot;},{&quot;label&quot;:&quot;9Y&quot;,&quot;value&quot;:&quot;3285&quot;},{&quot;label&quot;:&quot;10Y&quot;,&quot;value&quot;:&quot;3650&quot;},{&quot;label&quot;:&quot;11Y&quot;,&quot;value&quot;:&quot;4015&quot;},{&quot;label&quot;:&quot;12Y&quot;,&quot;value&quot;:&quot;4380&quot;},{&quot;label&quot;:&quot;13Y&quot;,&quot;value&quot;:&quot;4745&quot;},{&quot;label&quot;:&quot;14Y&quot;,&quot;value&quot;:&quot;5110&quot;},{&quot;label&quot;:&quot;15Y&quot;,&quot;value&quot;:&quot;5475&quot;},{&quot;label&quot;:&quot;16Y&quot;,&quot;value&quot;:&quot;5840&quot;},{&quot;label&quot;:&quot;17Y&quot;,&quot;value&quot;:&quot;6205&quot;},{&quot;label&quot;:&quot;18Y&quot;,&quot;value&quot;:&quot;6570&quot;},{&quot;label&quot;:&quot;19Y&quot;,&quot;value&quot;:&quot;6935&quot;},{&quot;label&quot;:&quot;20Y&quot;,&quot;value&quot;:&quot;7300&quot;},{&quot;label&quot;:&quot;21Y&quot;,&quot;value&quot;:&quot;7665&quot;},{&quot;label&quot;:&quot;22Y&quot;,&quot;value&quot;:&quot;8030&quot;},{&quot;label&quot;:&quot;25Y&quot;,&quot;value&quot;:&quot;9125&quot;},{&quot;label&quot;:&quot;27Y&quot;,&quot;value&quot;:&quot;9855&quot;},{&quot;label&quot;:&quot;30Y&quot;,&quot;value&quot;:&quot;10950&quot;},{&quot;label&quot;:&quot;32Y&quot;,&quot;value&quot;:&quot;11680&quot;},{&quot;label&quot;:&quot;35Y&quot;,&quot;value&quot;:&quot;12775&quot;},{&quot;label&quot;:&quot;37Y&quot;,&quot;value&quot;:&quot;13505&quot;},{&quot;label&quot;:&quot;40Y&quot;,&quot;value&quot;:&quot;14600&quot;},{&quot;label&quot;:&quot;42Y&quot;,&quot;value&quot;:&quot;15330&quot;},{&quot;label&quot;:&quot;45Y&quot;,&quot;value&quot;:&quot;16425&quot;}], &quot;inputAttributes&quot;: { &quot;placeholder&quot;: &quot;Select term&quot;, &quot;searchable&quot;: true } }</value>
+    </values>
+    <values>
+        <field>SectionOrder__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>Section__c</field>
+        <value xsi:type="xsd:string">Details</value>
+    </values>
+    <values>
+        <field>TaxonomyCatalog__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>TaxonomyFilterRule__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>TemplateSubtype__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>VisibilityRule__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>isActive__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

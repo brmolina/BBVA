@@ -1,0 +1,40 @@
+<template>
+    <div class="slds-card slds-var-p-around_small" style="height:100%; display:flex; flex-direction:column;">
+        
+        <div class="slds-grid slds-grid_align-spread slds-var-m-bottom_x-small">
+            <div class="slds-flex-row">
+                <lightning-input 
+                    type="toggle" 
+                    label="Streaming" 
+                    checked={isRecording}
+                    message-toggle-active="On" 
+                    message-toggle-inactive="Off"
+                    onchange={handleToggleSwitch}>
+                </lightning-input>
+            </div>
+        </div>
+
+        <div style="flex:1; overflow:auto;">
+            <lightning-datatable
+                key-field="Id"
+                data={logs}
+                columns={columns}
+                hide-checkbox-column
+                onrowaction={handleRowAction}>
+            </lightning-datatable>
+        </div>
+
+        <div slot="footer" style="display: flex; align-items: center; justify-content: center; gap: 1rem; padding-top: 10px;">
+            <lightning-button
+                label="Clear"
+                icon-name="utility:delete"
+                onclick={handleClearLogs}
+                variant="destructive-text">
+            </lightning-button>
+
+            <div style="font-size: 0.75rem;">
+                {statusMessage}
+            </div>
+        </div>
+    </div>
+</template>

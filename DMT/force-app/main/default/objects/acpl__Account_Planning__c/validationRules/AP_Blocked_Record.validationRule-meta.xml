@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AP_Blocked_Record</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+				AND( 
+    $Profile.Name &lt;&gt; &quot;System Administrator&quot;, 
+    $Profile.Name &lt;&gt; &quot;Desktop Integration&quot;,
+				$Profile.Name &lt;&gt; &quot;BBVA Desktop Account Planning Administrator&quot; 
+    ), 
+    acpl__gf_ap_indvi_lock_edit_ind_type__c = FALSE,
+    NOT(ISCHANGED(acpl__gf_ap_indvi_lock_edit_ind_type__c)),
+    NOT(ISCHANGED(acpl__gf_ap_status_type_name__c)), 
+    NOT(ISCHANGED(acpl__gf_ap_substatus_type_name__c)), 
+				NOT(ISCHANGED(acpl__gf_acct_plan_edit_event_date__c)), 
+				ISPICKVAL(acpl__gf_ap_status_type_name__c,&apos;Pending Validation&apos;),  
+				ISPICKVAL(acpl__gf_ap_substatus_type_name__c,&apos;Pending Validation&apos;),
+    acpl__gf_ap_validator_user_id__c &lt;&gt; $User.ID_User__c
+)</errorConditionFormula>
+    <errorMessage>Sorry, this Account Plan is under review and cannot be modified.</errorMessage>
+</ValidationRule>

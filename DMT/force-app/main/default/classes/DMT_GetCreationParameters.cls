@@ -114,6 +114,7 @@ global with sharing class DMT_GetCreationParameters implements Callable{
                     }
                 }
             }
+            System.debug('log::roles : ' + roles + ' RecordTypeName : ' + RecordTypeName + ' clientType : ' + clientType);
             final List<DMT_Creation_Line_Parameters__mdt> allcreationParameters = [SELECT Id, DeveloperName, MasterLabel, Language, NamespacePrefix, Label, QualifiedApiName, SystemModstamp, DMT_Role__c, DMT_Value__c, DMT_Operation_Type__c FROM DMT_Creation_Line_Parameters__mdt WHERE DMT_Role__c IN: roles AND DMT_Operation_Type__c=: RecordTypeName AND DMT_Client_Type__c=: clientType];
             if(!allcreationParameters.isEmpty() && allcreationParameters != null) {
                 for(DMT_Creation_Line_Parameters__mdt aux : allcreationParameters) {
@@ -124,6 +125,7 @@ global with sharing class DMT_GetCreationParameters implements Callable{
                 }
             }
         }
+        System.debug('log::creationParametersReturn : ' + JSON.serialize(creationParametersReturn));
         return JSON.serialize(creationParametersReturn);
     }
 }

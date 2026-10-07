@@ -46,6 +46,7 @@ trigger DES_OpportunityLineItemTrigger on OpportunityLineItem (before insert, be
             //DES_OpportunityLineItemTriggerHandler.setFamilyProduct(trigger.new);
             if(Trigger.isInsert){
                 DMT_OpportunityLineItemHandler.syncNewMoneyAndFinalTakeWithBbvaCommitment(Trigger.new);
+                DMT_OpportunityLineItemHandler.calculateDealAmountEur(Trigger.new);
                 pricingHandler.checkPricingLogicForAddNewOLI(Trigger.new);
                 DES_relatedProductsTriggerHandler.insertWithDraftStage(Trigger.new);
                 DES_relatedProductsTriggerHandler.fillBbvaParticipationPer(Trigger.new);
@@ -54,9 +55,11 @@ trigger DES_OpportunityLineItemTrigger on OpportunityLineItem (before insert, be
                 DMT_OpportunityLineItemHandler.calculateTenorYears(Trigger.new);
                 DMT_OpportunityLineItemHandler.calculateGreenSocialBonds(Trigger.new, null);
                 DMT_OpportunityLineItemHandler.calculateRiskType(Trigger.new, null);
+                DMT_OpportunityLineItemHandler.syncTextToDecimalFields(Trigger.new, null);
             }
             if(Trigger.isUpdate) {
                 DMT_OpportunityLineItemHandler.syncNewMoneyAndFinalTakeWithBbvaCommitment(Trigger.new);
+                DMT_OpportunityLineItemHandler.calculateDealAmountEur(Trigger.new);
                 DES_handleMultitrancheToogling.checkMultitranche(Trigger.newMap,Trigger.oldMap);
                 DES_relatedProductsTriggerHandler.checkAutoFillFields(Trigger.newMap,Trigger.oldMap);
                 DES_relatedProductsTriggerHandler.fillFinalAllocation(Trigger.newMap,Trigger.oldMap);
@@ -64,7 +67,8 @@ trigger DES_OpportunityLineItemTrigger on OpportunityLineItem (before insert, be
                 DES_relatedProductsTriggerHandler.fillAmountToBeSold(Trigger.newMap,Trigger.oldMap);
                 DMT_OpportunityLineItemHandler.calculateTenorYears(Trigger.new);
                 DMT_OpportunityLineItemHandler.calculateGreenSocialBonds(Trigger.new, Trigger.oldMap); 
-                DMT_OpportunityLineItemHandler.calculateRiskType(Trigger.new, Trigger.oldMap);   
+                DMT_OpportunityLineItemHandler.calculateRiskType(Trigger.new, Trigger.oldMap);
+                DMT_OpportunityLineItemHandler.syncTextToDecimalFields(Trigger.new, Trigger.oldMap);
                 //DMT_OpportunityLineItemHandler.syncDealAmountWithBbvaCommitment(oliList);      
             }
         } else if (Trigger.isDelete) {
@@ -79,6 +83,7 @@ trigger DES_OpportunityLineItemTrigger on OpportunityLineItem (before insert, be
             handler.UpdateTrachaReopenOpportunity(trigger.new, trigger.old);
             DMT_OpportunityLineItemHandler.calculateDmtOpportunityDealAmount(Trigger.newMap,Trigger.oldMap);
             DMT_OpportunityLineItemHandler.calculateOpportunityDatesFromLineItems(Trigger.new, Trigger.oldMap);
+            DMT_OpportunityLineItemHandler.checkOpportunityLineItemChanges(Trigger.new, Trigger.oldMap);
         }
         if(Trigger.isInsert) {
             DES_relatedProductsTriggerHandler.fillOppPrducts(Trigger.new);

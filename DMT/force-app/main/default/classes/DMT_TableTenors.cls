@@ -97,6 +97,21 @@ public with sharing class DMT_TableTenors {
             result.tenors = existingTenors;
         }
 
+        // Apply convertToDisplay to show amounts without storage factor
+        String tenorCurrency = String.isNotBlank(parentProduct.g_currency_id__c)
+            ? parentProduct.g_currency_id__c
+            : (parentProduct.Id != null ? parentProduct.Opportunity.DMT_CurrencyText__c : null);
+        if (String.isNotBlank(tenorCurrency)) {
+            for (DMT_Opportunity_Tenor__c t : result.tenors) {
+                if (t.gj_nominal_amount_db__c != null) {
+                    t.gj_nominal_amount_db__c = DMT_Currency_Conversion_Utils.convertToDisplay(tenorCurrency, t.gj_nominal_amount_db__c);
+                }
+                if (t.gf_nominal_amount_fb__c != null) {
+                    t.gf_nominal_amount_fb__c = DMT_Currency_Conversion_Utils.convertToDisplay(tenorCurrency, t.gf_nominal_amount_fb__c);
+                }
+            }
+        }
+
         return result;
     }
 
@@ -241,6 +256,16 @@ public with sharing class DMT_TableTenors {
                 record.gf_accrual_fees_bp__c     = parseDecimal(row.get('gf_accrual_fees_bp__c'));
                 record.gf_non_accrual_fees_bp__c = parseDecimal(row.get('gf_non_accrual_fees_bp__c'));
 
+                // Apply conversion factor for storage (nominal fields only)
+                if (String.isNotBlank(parentCurrency)) {
+                    if (record.gj_nominal_amount_db__c != null && record.gj_nominal_amount_db__c != 0) {
+                        record.gj_nominal_amount_db__c = DMT_Currency_Conversion_Utils.convertToStorage(parentCurrency, record.gj_nominal_amount_db__c);
+                    }
+                    if (record.gf_nominal_amount_fb__c != null && record.gf_nominal_amount_fb__c != 0) {
+                        record.gf_nominal_amount_fb__c = DMT_Currency_Conversion_Utils.convertToStorage(parentCurrency, record.gf_nominal_amount_fb__c);
+                    }
+                }
+
                 upsertList.add(record);
             }
         }
@@ -262,6 +287,19 @@ public with sharing class DMT_TableTenors {
 
         String finalQuery = 'SELECT Id, gf_tenor_date__c, gj_nominal_amount_db__c, gf_nominal_amount_fb__c, gf_spread_db__c, gf_spread_fb__c, gf_accrual_fees_bp__c, gf_non_accrual_fees_bp__c FROM DMT_Opportunity_Tenor__c WHERE DMT_Opportunity_Product__c = :oppLineItemId ORDER BY gf_tenor_date__c ASC';
         List<DMT_Opportunity_Tenor__c> finalTenors = Database.query(finalQuery, dbMode);
+
+        // Apply convertToDisplay to nominal amounts before returning to UI
+        if (String.isNotBlank(parentCurrency)) {
+            for (DMT_Opportunity_Tenor__c t : finalTenors) {
+                if (t.gj_nominal_amount_db__c != null) {
+                    t.gj_nominal_amount_db__c = DMT_Currency_Conversion_Utils.convertToDisplay(parentCurrency, t.gj_nominal_amount_db__c);
+                }
+                if (t.gf_nominal_amount_fb__c != null) {
+                    t.gf_nominal_amount_fb__c = DMT_Currency_Conversion_Utils.convertToDisplay(parentCurrency, t.gf_nominal_amount_fb__c);
+                }
+            }
+        }
+
         return JSON.serialize(finalTenors);
     }
 

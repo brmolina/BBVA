@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FieldSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Arc_IFIS_AGE_QualitativePersistence</fullName>
+    <description>This field set is used to list the qualitative qualities of this object required for the calculation of the rating and that will be used for verification</description>
+    <displayedFields>
+        <field>arce__IFIS_AgencyRating__c</field>
+        <isFieldManaged>false</isFieldManaged>
+        <isRequired>false</isRequired>
+    </displayedFields>
+    <displayedFields>
+        <field>arce__IFIS_AgencyRatingAsymmetries__c</field>
+        <isFieldManaged>false</isFieldManaged>
+        <isRequired>false</isRequired>
+    </displayedFields>
+    <displayedFields>
+        <field>arce__IFIS_CountryCeilingActivated__c</field>
+        <isFieldManaged>false</isFieldManaged>
+        <isRequired>false</isRequired>
+    </displayedFields>
+    <displayedFields>
+        <field>arce__IFIS_HeadActivated__c</field>
+        <isFieldManaged>false</isFieldManaged>
+        <isRequired>false</isRequired>
+    </displayedFields>
+    <displayedFields>
+        <field>arce__Arc_Gen_Local_Id__c</field>
+        <isFieldManaged>false</isFieldManaged>
+        <isRequired>false</isRequired>
+    </displayedFields>
+    <displayedFields>
+        <field>arce__Arc_Gen_GlobalId__c</field>
+        <isFieldManaged>false</isFieldManaged>
+        <isRequired>false</isRequired>
+    </displayedFields>
+    <label>Arc_IFIS_AGE_QualitativePersistence</label>
+</FieldSet>

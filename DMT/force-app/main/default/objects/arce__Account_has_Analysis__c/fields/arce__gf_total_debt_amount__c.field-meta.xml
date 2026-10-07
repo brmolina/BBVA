@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_total_debt_amount__c</fullName>
+    <deprecated>false</deprecated>
+    <description>This field is the sum of the Gross debt +  the committed and not disbursed amount</description>
+    <formula>arce__gross_financial_debt_amount__c + arce__debt_comt_not_disb_amount__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Total debt amount</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

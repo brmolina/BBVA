@@ -58,28 +58,28 @@ public with sharing class DMT_BlobBuilderForPDF {
         };
 
         if (modernCss) {
-            parts.add('@page { size: A4 portrait; margin-top: 1.2cm; margin-bottom: 2.5cm; margin-left: 1cm; margin-right: 1cm; @bottom-right { content: "Page " counter(page) " of " counter(pages); font-size: 11px; color: #2b2a2a; padding-top: 10px; } }\n');
+            parts.add('@page { size: A4 portrait; margin-top: 0.50cm; margin-bottom: 1cm; margin-left: 1cm; margin-right: 1cm; @bottom-right { content: "Page " counter(page) " of " counter(pages); font-size: 11px; color: #2b2a2a; padding-top: 10px; } }\n');
             parts.add('.page-break { display: block; page-break-before: always; break-before: page; }\n');
             parts.add('.page-break-after { display: block; page-break-after: always; break-after: page; }\n');
             parts.add('.avoid-break { page-break-inside: avoid; break-inside: avoid; }\n');
             parts.add('.style-table td { padding: 3px; overflow-wrap: anywhere; word-break: break-word; }\n');
         } else {
-            parts.add('@page { size: A4 portrait; margin-top: 1.2cm; margin-bottom: 2.0cm; margin-left: 1cm; margin-right: 1cm; }\n');
+            parts.add('@page { size: A4 portrait; margin-top: 0.50cm; margin-bottom: 1cm; margin-left: 1cm; margin-right: 1cm; }\n');
             parts.add('.page-break { display: block; page-break-before: always; }\n');
             parts.add('.page-break-after { display: block; page-break-after: always; }\n');
             parts.add('.avoid-break { page-break-inside: avoid; }\n');
             parts.add('.style-table td { padding: 3px; word-wrap: break-word; word-break: break-word; }\n');
-        }
+       }
 
         parts.addAll(new List<String>{
-            '#header-container { width: 100%; margin-bottom: 20px; padding: 10px 0;}\n',
+            '#header-container { width: 100%; margin-bottom: 5px; padding: 2px 0;}\n',
             '.layout-table { width: 100%; border-collapse: collapse; border: none; }\n',
-            '.layout-table td { vertical-align: middle; border: none; padding: 8px; }\n',
+            '.layout-table td { vertical-align: middle; border: none; padding: 3px 6px; }\n',
             '.data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }\n',
             '.data-table th, .data-table td { text-align: left; padding: 4px; border-bottom: 1px solid #ddd; }\n',
             '.data-table th { background-color: rgb(214, 214, 214); color: #004085; font-weight: bold; }\n',
-            '.logo-img { width: 120px; height: auto; }\n',
-            '.header-date { text-align: right; color: #666; font-style: italic; font-size: 11px; padding-bottom: 0; white-space: nowrap; }\n',
+            '.logo-img { width: 95px; height: auto;}\n',
+            '.header-date { text-align: right; color: #666; font-style: italic; font-size: 10px; padding-bottom: 0; white-space: nowrap; }\n',
             '.style-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10px; }\n',
             '</style>\n',
             '</head>\n',
@@ -90,7 +90,7 @@ public with sharing class DMT_BlobBuilderForPDF {
             '      <td style="width: 40%;">\n',
             '        <img src="', LOGO_SRC, '" alt="BBVA Logo" class="logo-img" />\n',
             '      </td>\n',
-            '      <td style="width: 70%;" class="header-date">\n', invoiceDateStr, '\n',
+            '      <td style="width: 60%;" class="header-date">\n', invoiceDateStr, '\n',
             '      </td>\n',
             '    </tr>\n',
             '  </table>\n',

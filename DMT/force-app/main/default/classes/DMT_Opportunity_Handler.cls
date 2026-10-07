@@ -22,7 +22,7 @@ global with sharing class DMT_Opportunity_Handler implements Callable {
             Map<String, Object> result;
             
             if(methodName == 'getCustomerHPGS') {
-                result = DMT_HPG_Utils.getCustomerHPGS(inputMap,outMap,options);
+                result = DMT_HPG_Utils.getClientDataHPGS(inputMap,outMap,options);
             } else if (methodname == 'getMinAndMaxDates') {
                 result = DMT_Opportunity_Utils.getOpportunityProductsMinAndMaxDates(inputMap,outMap,options);
             } else if (methodname == 'tenorsValidation') {
@@ -63,6 +63,7 @@ global with sharing class DMT_Opportunity_Handler implements Callable {
                 result = DMT_Opportunity_Utils.createProductsOpportunity(products,rawValueOppId);
 
             } else if (methodName == 'getComparisonAccount') {
+                System.debug('inputMap --> ' + json.serialize(inputMap));
                 result = DMT_Opportunity_Utils.getComparisonAccount(inputMap, outMap, options);
 
             }  

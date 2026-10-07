@@ -170,6 +170,34 @@ private without sharing class DMT_PicklistUtilsTest {
         System.assert(optionsList.isEmpty(), 'La lista de opciones debe estar vacía para un campo no picklist');
     }
 
+    @isTest
+    static void testGetPicklistValues_EmptyOptionForDmtLineBreakclauseFields() {
+        DMT_PicklistUtils picklistUtils = new DMT_PicklistUtils();
+        Map<String, Object> inputMap = new Map<String, Object>{
+            'objectApiName' => 'DMT_Line__c',
+            'fieldApiName' => 'First_Breakclause__c'
+        };
+        Map<String, Object> outputMap = new Map<String, Object>();
+
+        Map<String, Object> args = new Map<String, Object>{
+            'input' => inputMap,
+            'output' => outputMap,
+            'options' => new Map<String, Object>()
+        };
+
+        Test.startTest();
+        Map<String, Object> result = (Map<String, Object>) picklistUtils.call('getPicklistValues', args);
+        Test.stopTest();
+
+        System.assertEquals(null, result.get('error'));
+        List<Object> optionsList = (List<Object>) result.get('options');
+        System.assert(!optionsList.isEmpty(), 'La lista de opciones no debe estar vacía');
+
+        Map<String, Object> firstOption = (Map<String, Object>) optionsList[0];
+        System.assertEquals(' ', firstOption.get('value'), 'El valor de la primera opción debe ser un espacio');
+        System.assertEquals(' ', firstOption.get('label'), 'La etiqueta de la primera opción debe ser una cadena vacía');
+        System.assertEquals(false, firstOption.get('defaultValue'));
+    }
 
     @isTest
     static void testInvalidAction() {

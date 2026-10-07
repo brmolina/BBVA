@@ -3,7 +3,7 @@ private without sharing class DMT_HighlightPanelControllerTest {
 
     @TestSetup
     static void setupTestData() {
-        // Crear Account con diferentes valores para probar condiciones
+        // Create Accounts with different values to test conditions
         Account testAccount1 = new Account(
             Name = 'Test Account 1',
             Industry = 'Technology',
@@ -26,7 +26,7 @@ private without sharing class DMT_HighlightPanelControllerTest {
         );
         insert testAccount2;
         
-        // Crear Contact relacionado para pruebas de campos de relación
+        // Create a related Contact for relationship field tests
         Contact testContact = new Contact(
             FirstName = 'Test',
             LastName = 'Contact',
@@ -40,10 +40,10 @@ private without sharing class DMT_HighlightPanelControllerTest {
     
     @isTest
     static void testGetHighlightConfig_WithCompleteMetadataConfig() {
-        // Crear metadata con configuración completa
+        // Create metadata with a complete configuration
         DMT_HighlightPanel_Config__mdt testConfig = createCompleteMetadataConfig();
-        
-        // Insertar metadata en memoria para pruebas
+
+        // Insert metadata in memory for testing
         insertTestMetadata(testConfig);
         
         Account testAccount = [SELECT Id, Name, Industry, AnnualRevenue, Type, Rating, NumberOfEmployees 
@@ -54,51 +54,51 @@ private without sharing class DMT_HighlightPanelControllerTest {
             DMT_HighlightPanelController.getHighlightConfig('Account', testAccount.Id);
         Test.stopTest();
         
-        // Verificaciones básicas
-        System.assertNotEquals(null, result, 'El resultado no debería ser null');
-        
-        // Verificar iconConfig con todas las opciones
-        System.assertNotEquals(null, result.iconConfig, 'El iconConfig no debería ser null');
-        System.assertEquals('standard', result.iconConfig.type);
-        System.assertEquals('account', result.iconConfig.name);
-        System.assertEquals('medium', result.iconConfig.size);
-        System.assertEquals(null, result.iconConfig.alternativeText);
+        // Basic checks
+        Assert.areNotEqual(null, result, 'The result should not be null');
 
-        
-        // Verificar record info
-        System.assertNotEquals(null, result.recordInfo);
-        System.assertEquals(testAccount.Id, result.recordInfo.recordId);
-        System.assertEquals('Account', result.recordInfo.objectApiName);
-        System.assertEquals(testAccount.Name, result.recordInfo.name);
+        // Check iconConfig with all options
+        Assert.areNotEqual(null, result.iconConfig, 'The iconConfig should not be null');
+        Assert.areEqual('standard', result.iconConfig.type);
+        Assert.areEqual('account', result.iconConfig.name);
+        Assert.areEqual('medium', result.iconConfig.size);
+        Assert.areEqual(null, result.iconConfig.alternativeText);
+
+
+        // Check record info
+        Assert.areNotEqual(null, result.recordInfo);
+        Assert.areEqual(testAccount.Id, result.recordInfo.recordId);
+        Assert.areEqual('Account', result.recordInfo.objectApiName);
+        Assert.areEqual(testAccount.Name, result.recordInfo.name);
             }
     
     @isTest
     static void testGetHighlightConfig_WithRecordTypeSpecificConfig() {
-        // Obtener Record Type si existe
+        // Get Record Type if it exists
         RecordType rt = [SELECT Id, DeveloperName FROM RecordType WHERE SObjectType = 'Account' LIMIT 1];
-        
+
         if (rt != null) {
 
             Account testAccount = [SELECT Id,RecordTypeId,RecordType.DeveloperName FROM Account WHERE RecordTypeId != null LIMIT 1];
-            // Crear metadata específica para Record Type
+            // Create Record-Type-specific metadata
             DMT_HighlightPanel_Config__mdt testConfig = createRecordTypeMetadataConfig(testAccount.RecordType.DeveloperName);
             insertTestMetadata(testConfig);
-            
+
             Test.startTest();
-            DMT_HighlightPanelController.HighlightPanelConfig result = 
+            DMT_HighlightPanelController.HighlightPanelConfig result =
                 DMT_HighlightPanelController.getHighlightConfig('Account', testAccount.Id);
             Test.stopTest();
-            
-            // Verificar que se usó la configuración específica del Record Type
-            System.assertEquals(false, result.recordTypeSpecific, 'Debería ser específico de Record Type');
-            //System.assertNotEquals(null, result.recordTypeApiName);
-            System.assertEquals(null, result.recordTypeId);
+
+            // Check that the Record-Type-specific configuration was used
+            Assert.areEqual(false, result.recordTypeSpecific, 'Should be Record-Type specific');
+            //Assert.areNotEqual(null, result.recordTypeApiName);
+            Assert.areEqual(null, result.recordTypeId);
         }
     }
     
     @isTest
     static void testGetHighlightConfig_parseMetadata() {
-         // Probar diferentes tipos de icono
+         // Test different icon types
 
         DMT_HighlightPanel_Config__mdt testConfig = createCompleteMetadataConfig();
         insertTestMetadata(testConfig);
@@ -108,36 +108,36 @@ private without sharing class DMT_HighlightPanelControllerTest {
             DMT_HighlightPanelController.parseMetadataConfig(testConfig);
         Test.stopTest();
         
-        System.assertNotEquals(null, result);
+        Assert.areNotEqual(null, result);
     }
     
     @isTest
     static void testApplyVisibilityConditions() {
-        // Crear metadata con condiciones de visibilidad complejas
+        // Create metadata with complex visibility conditions
         DMT_HighlightPanel_Config__mdt testConfig = createMetadataWithVisibilityConditions();
         insertTestMetadata(testConfig);
-        
-        // Probar con diferentes registros
+
+        // Test with different records
         Account hotAccount = [SELECT Id FROM Account WHERE Rating = 'Hot' LIMIT 1];
         Account warmAccount = [SELECT Id FROM Account WHERE Rating = 'Warm' LIMIT 1];
-        
+
         Test.startTest();
-        
-        // Probar con Account Hot (debería ver campos condicionales)
-        DMT_HighlightPanelController.HighlightPanelConfig resultHot = 
+
+        // Test with a Hot Account (should see conditional fields)
+        DMT_HighlightPanelController.HighlightPanelConfig resultHot =
             DMT_HighlightPanelController.getHighlightConfig('Account', hotAccount.Id);
-        
-        // Probar con Account Warm (no debería ver algunos campos)
-        DMT_HighlightPanelController.HighlightPanelConfig resultWarm = 
+
+        // Test with a Warm Account (should not see some fields)
+        DMT_HighlightPanelController.HighlightPanelConfig resultWarm =
             DMT_HighlightPanelController.getHighlightConfig('Account', warmAccount.Id);
-        
+
         Test.stopTest();
-        
-        // Verificar que las condiciones se aplicaron correctamente
-        System.assertNotEquals(null, resultHot.visibleFields);
-        System.assertNotEquals(null, resultWarm.visibleFields);
-        
-        // Buscar campo condicional
+
+        // Check that the conditions were applied correctly
+        Assert.areNotEqual(null, resultHot.visibleFields);
+        Assert.areNotEqual(null, resultWarm.visibleFields);
+
+        // Look for the conditional field
         Boolean foundConditionalFieldHot = false;
         Boolean foundConditionalFieldWarm = false;
         
@@ -153,10 +153,10 @@ private without sharing class DMT_HighlightPanelControllerTest {
             }
         }
         
-        System.assertEquals(false, foundConditionalFieldHot, 
-            'El campo condicional debería ser visible para Hot');
-        System.assertEquals(false, foundConditionalFieldWarm, 
-            'El campo condicional NO debería ser visible para Warm');
+        Assert.areEqual(false, foundConditionalFieldHot,
+            'The conditional field should be visible for Hot');
+        Assert.areEqual(false, foundConditionalFieldWarm,
+            'The conditional field should NOT be visible for Warm');
     }
 
   
@@ -164,8 +164,17 @@ private without sharing class DMT_HighlightPanelControllerTest {
     @isTest
     static void testGetRecordTypeInfo_NonExistingObject() {
         Map<String, Object> info = DMT_HighlightPanelController.getRecordTypeInfo('NonExist__c', '001000000000000AAA');
-        System.assertEquals(null, info.get('recordTypeApiName'));
-        System.assertEquals(null, info.get('recordTypeId'));
+        Assert.areEqual(null, info.get('recordTypeApiName'));
+        Assert.areEqual(null, info.get('recordTypeId'));
+    }
+
+    @isTest
+    static void testGetRecordTypeInfo_InjectionShapedObjectName() {
+        Map<String, Object> info = DMT_HighlightPanelController.getRecordTypeInfo(
+            'Account\' OR \'1\'=\'1', '001000000000000AAA'
+        );
+        Assert.areEqual(null, info.get('recordTypeApiName'));
+        Assert.areEqual(null, info.get('recordTypeId'));
     }
 
     @isTest
@@ -179,15 +188,15 @@ private without sharing class DMT_HighlightPanelControllerTest {
         DMT_HighlightPanelController.HighlightPanelConfig cfg = DMT_HighlightPanelController.parseMetadataConfig(badMeta);
         Test.stopTest();
 
-        System.assertNotEquals(null, cfg.metadata);
-        System.assertEquals(true, cfg.metadata.showIcon);
+        Assert.areNotEqual(null, cfg.metadata);
+        Assert.areEqual(true, cfg.metadata.showIcon);
     }
 
     @isTest
     static void testParseIconConfig_NullAndFull() {
         // Null input
         DMT_HighlightPanelController.IconConfig icNull = DMT_HighlightPanelController.parseIconConfig(null);
-        System.assertEquals(null, icNull);
+        Assert.areEqual(null, icNull);
 
         // Full map with staticResource and customIcon
         Map<String, Object> sr = new Map<String, Object>{'resourceName' => 'TestResource', 'iconPath' => '/icons/test.svg'};
@@ -198,20 +207,20 @@ private without sharing class DMT_HighlightPanelControllerTest {
         };
 
         DMT_HighlightPanelController.IconConfig ic = DMT_HighlightPanelController.parseIconConfig(iconMap);
-        System.assertNotEquals(null, ic);
-        System.assertEquals('utility', ic.type);
-        System.assertEquals('edit', ic.name);
-        System.assertNotEquals(null, ic.staticResource);
-        System.assertNotEquals(null, ic.customIcon);
+        Assert.areNotEqual(null, ic);
+        Assert.areEqual('utility', ic.type);
+        Assert.areEqual('edit', ic.name);
+        Assert.areNotEqual(null, ic.staticResource);
+        Assert.areNotEqual(null, ic.customIcon);
     }
 
     @isTest
     static void testParseFieldAndActionConfigs_EmptyStrings() {
         List<DMT_HighlightPanelController.FieldConfig> emptyFields = DMT_HighlightPanelController.parseFieldConfigs('');
-        System.assertEquals(0, emptyFields.size());
+        Assert.areEqual(0, emptyFields.size());
 
         List<DMT_HighlightPanelController.ActionConfig> emptyActions = DMT_HighlightPanelController.parseActionConfigs('');
-        System.assertEquals(0, emptyActions.size());
+        Assert.areEqual(0, emptyActions.size());
     }
 
     @isTest
@@ -227,14 +236,33 @@ private without sharing class DMT_HighlightPanelControllerTest {
         Map<String, Object> values = DMT_HighlightPanelController.getRecordFieldValues(cfg, 'Contact', testContact.Id);
         Test.stopTest();
 
-        System.assertNotEquals(null, values);
-        System.assertNotEquals(null, values.get('Account.Name'));
-        System.assertNotEquals(null, cfg.fieldsConfig[0].value);
+        Assert.areNotEqual(null, values);
+        Assert.areNotEqual(null, values.get('Account.Name'));
+        Assert.areNotEqual(null, cfg.fieldsConfig[0].value);
     }
-    
+
+    @isTest
+    static void testGetRecordFieldValues_InjectionShapedObjectName() {
+        Contact testContact = [SELECT Id FROM Contact WHERE LastName = 'Contact' LIMIT 1];
+
+        DMT_HighlightPanelController.HighlightPanelConfig cfg = new DMT_HighlightPanelController.HighlightPanelConfig();
+        DMT_HighlightPanelController.FieldConfig f = new DMT_HighlightPanelController.FieldConfig();
+        f.fieldApiName = 'Name';
+        cfg.fieldsConfig = new List<DMT_HighlightPanelController.FieldConfig>{ f };
+
+        Test.startTest();
+        Map<String, Object> values = DMT_HighlightPanelController.getRecordFieldValues(
+            cfg, 'Contact\'; DROP TABLE Account; --', testContact.Id
+        );
+        Test.stopTest();
+
+        Assert.areNotEqual(null, values);
+        Assert.areEqual(true, values.isEmpty());
+    }
+
     @isTest
     static void testApplyEnablementConditions() {
-        // Crear metadata con condiciones de habilitación
+        // Create metadata with enablement conditions
         DMT_HighlightPanel_Config__mdt testConfig = createMetadataWithEnablementConditions();
         insertTestMetadata(testConfig);
         
@@ -251,21 +279,21 @@ private without sharing class DMT_HighlightPanelControllerTest {
         
         Test.stopTest();
         
-        // Verificar condiciones de acciones
+        // Check action conditions
         if (resultHigh.visiblePrimaryActions != null) {
             for (DMT_HighlightPanelController.ActionConfig action : resultHigh.visiblePrimaryActions) {
                 if (action.name == 'edit.large.account') {
-                    System.assertEquals(false, action.disabled, 
-                        'Acción debería estar habilitada para ingresos altos');
+                    Assert.areEqual(false, action.disabled,
+                        'Action should be enabled for high revenue');
                 }
             }
         }
-        
+
         if (resultLow.visiblePrimaryActions != null) {
             for (DMT_HighlightPanelController.ActionConfig action : resultLow.visiblePrimaryActions) {
                 if (action.name == 'edit.large.account') {
-                    System.assertEquals(true, action.disabled, 
-                        'Acción debería estar deshabilitada para ingresos bajos');
+                    Assert.areEqual(true, action.disabled,
+                        'Action should be disabled for low revenue');
                 }
             }
         }
@@ -273,7 +301,7 @@ private without sharing class DMT_HighlightPanelControllerTest {
     
     @isTest
     static void testReplaceActionPlaceholders() {
-        // Crear metadata con placeholders en acciones
+        // Create metadata with placeholders in actions
         DMT_HighlightPanel_Config__mdt testConfig = createMetadataWithPlaceholders();
         insertTestMetadata(testConfig);
         
@@ -284,54 +312,54 @@ private without sharing class DMT_HighlightPanelControllerTest {
             DMT_HighlightPanelController.getHighlightConfig('Account', testAccount.Id);
         Test.stopTest();
         
-        // Verificar que los placeholders fueron reemplazados
+        // Check that the placeholders were replaced
         if (result.fieldsConfig != null) {
             for (DMT_HighlightPanelController.FieldConfig field : result.fieldsConfig) {
                 if (field.action != null && field.action.params != null) {
                     Map<String, Object> params = field.action.params;
-                    
-                    // Verificar que los placeholders fueron reemplazados por valores reales
+
+                    // Check that the placeholders were replaced with actual values
                     if (params.containsKey('recordName')) {
-                        System.assertEquals(testAccount.Name, params.get('recordName'),
-                            'El placeholder {Name} debería ser reemplazado');
+                        Assert.areEqual(testAccount.Name, params.get('recordName'),
+                            'The {Name} placeholder should be replaced');
                     }
-                    
+
                     if (params.containsKey('industry')) {
-                        System.assertEquals(testAccount.Industry, params.get('industry'),
-                            'El placeholder {Industry} debería ser reemplazado');
+                        Assert.areEqual(testAccount.Industry, params.get('industry'),
+                            'The {Industry} placeholder should be replaced');
                     }
-                    
+
                     if (params.containsKey('revenue')) {
-                        System.assertEquals(String.valueOf(testAccount.AnnualRevenue), params.get('revenue'),
-                            'El placeholder {AnnualRevenue} debería ser reemplazado');
+                        Assert.areEqual(String.valueOf(testAccount.AnnualRevenue), params.get('revenue'),
+                            'The {AnnualRevenue} placeholder should be replaced');
                     }
                 }
             }
         }
     }
-    
+
     @isTest
     static void testGetRecordFieldValues_WithRelationshipFields() {
-        // Probar campos de relación (ej: Account.Contact.Email__r.Name)
+        // Test relationship fields (e.g. Account.Contact.Email__r.Name)
         DMT_HighlightPanel_Config__mdt testConfig = createMetadataWithRelationshipFields();
         insertTestMetadata(testConfig);
-        
+
         Contact testContact = [SELECT Id, AccountId FROM Contact WHERE LastName = 'Contact' LIMIT 1];
-        
+
         Test.startTest();
-        DMT_HighlightPanelController.HighlightPanelConfig result = 
+        DMT_HighlightPanelController.HighlightPanelConfig result =
             DMT_HighlightPanelController.getHighlightConfig('Contact', testContact.Id);
         Test.stopTest();
-        
-        // Verificar que los campos de relación se obtuvieron correctamente
-        System.assertNotEquals(null, result);
-        System.assertNotEquals(null, result.fieldsConfig);
+
+        // Check that the relationship fields were retrieved correctly
+        Assert.areNotEqual(null, result);
+        Assert.areNotEqual(null, result.fieldsConfig);
     }
     
     @isTest
     static void testParseFieldConfigs_WithAllFeatures() {
         String jsonConfig = '[' +
-            // Campo con icono
+            // Field with icon
             '{' +
                 '"type": "text",' +
                 '"label": "Field With Icon",' +
@@ -345,7 +373,7 @@ private without sharing class DMT_HighlightPanelControllerTest {
                     '"position": "left"' +
                 '}' +
             '},' +
-            // Campo con acción
+            // Field with action
             '{' +
                 '"type": "url",' +
                 '"label": "Field With Action",' +
@@ -359,7 +387,7 @@ private without sharing class DMT_HighlightPanelControllerTest {
                     '}' +
                 '}' +
             '},' +
-            // Campo con condiciones
+            // Field with conditions
             '{' +
                 '"type": "currency",' +
                 '"label": "Conditional Field",' +
@@ -382,36 +410,36 @@ private without sharing class DMT_HighlightPanelControllerTest {
             DMT_HighlightPanelController.parseFieldConfigs(jsonConfig);
         Test.stopTest();
         
-        System.assertEquals(3, fields.size());
+        Assert.areEqual(3, fields.size());
         
-        // Verificar campo con icono
+        // Check field with icon
         DMT_HighlightPanelController.FieldConfig fieldWithIcon = fields[0];
-        System.assertNotEquals(null, fieldWithIcon.icon);
-        System.assertEquals('utility', fieldWithIcon.icon.type);
-        System.assertEquals('user', fieldWithIcon.icon.name);
-        System.assertEquals('left', fieldWithIcon.icon.position);
+        Assert.areNotEqual(null, fieldWithIcon.icon);
+        Assert.areEqual('utility', fieldWithIcon.icon.type);
+        Assert.areEqual('user', fieldWithIcon.icon.name);
+        Assert.areEqual('left', fieldWithIcon.icon.position);
         
-        // Verificar campo con acción
+        // Check field with action
         DMT_HighlightPanelController.FieldConfig fieldWithAction = fields[1];
-        System.assertNotEquals(null, fieldWithAction.action);
-        System.assertEquals('standard__namedUrl', fieldWithAction.action.type);
-        System.assertEquals('open.url', fieldWithAction.action.name);
-        System.assertEquals('utility:link', fieldWithAction.action.iconName);
-        System.assertNotEquals(null, fieldWithAction.action.params);
+        Assert.areNotEqual(null, fieldWithAction.action);
+        Assert.areEqual('standard__namedUrl', fieldWithAction.action.type);
+        Assert.areEqual('open.url', fieldWithAction.action.name);
+        Assert.areEqual('utility:link', fieldWithAction.action.iconName);
+        Assert.areNotEqual(null, fieldWithAction.action.params);
         
-        // Verificar campo con condiciones
+        // Check field with conditions
         DMT_HighlightPanelController.FieldConfig fieldWithConditions = fields[2];
-        System.assertNotEquals(null, fieldWithConditions.visibilityCondition);
-        System.assertEquals('Type', fieldWithConditions.visibilityCondition.fieldName);
-        System.assertEquals('Customer', fieldWithConditions.visibilityCondition.value);
-        System.assertNotEquals(null, fieldWithConditions.editabilityCondition);
-        System.assertEquals('Rating', fieldWithConditions.editabilityCondition.fieldName);
+        Assert.areNotEqual(null, fieldWithConditions.visibilityCondition);
+        Assert.areEqual('Type', fieldWithConditions.visibilityCondition.fieldName);
+        Assert.areEqual('Customer', fieldWithConditions.visibilityCondition.value);
+        Assert.areNotEqual(null, fieldWithConditions.editabilityCondition);
+        Assert.areEqual('Rating', fieldWithConditions.editabilityCondition.fieldName);
     }
     
     @isTest
     static void testParseActionConfigs_WithAllFeatures() {
         String jsonConfig = '[' +
-            // Acción con icono completo
+            // Action with a complete icon
             '{' +
                 '"label": "Complete Action",' +
                 '"name": "complete.action",' +
@@ -456,41 +484,41 @@ private without sharing class DMT_HighlightPanelControllerTest {
             DMT_HighlightPanelController.parseActionConfigs(jsonConfig);
         Test.stopTest();
         
-        System.assertEquals(1, actions.size());
+        Assert.areEqual(1, actions.size());
         
         DMT_HighlightPanelController.ActionConfig action = actions[0];
-        System.assertEquals('Complete Action', action.label);
-        System.assertEquals('complete.action', action.name);
-        System.assertEquals('brand', action.variant);
+        Assert.areEqual('Complete Action', action.label);
+        Assert.areEqual('complete.action', action.name);
+        Assert.areEqual('brand', action.variant);
         
-        // Verificar iconConfig completo
-        System.assertNotEquals(null, action.iconConfig);
-        System.assertEquals('utility', action.iconConfig.type);
-        System.assertEquals('edit', action.iconConfig.name);
-        System.assertEquals('small', action.iconConfig.size);
-        System.assertEquals('Edit Icon', action.iconConfig.alternativeText);
-        System.assertEquals('#000000', action.iconConfig.color);
-        System.assertEquals('brand', action.iconConfig.variant);
+        // Check the complete iconConfig
+        Assert.areNotEqual(null, action.iconConfig);
+        Assert.areEqual('utility', action.iconConfig.type);
+        Assert.areEqual('edit', action.iconConfig.name);
+        Assert.areEqual('small', action.iconConfig.size);
+        Assert.areEqual('Edit Icon', action.iconConfig.alternativeText);
+        Assert.areEqual('#000000', action.iconConfig.color);
+        Assert.areEqual('brand', action.iconConfig.variant);
         
-        // Verificar static resource en icono
-        System.assertNotEquals(null, action.iconConfig.staticResource);
-        System.assertEquals('TestResource', action.iconConfig.staticResource.resourceName);
-        System.assertEquals('/icons/test.svg', action.iconConfig.staticResource.iconPath);
+        // Check static resource in icon
+        Assert.areNotEqual(null, action.iconConfig.staticResource);
+        Assert.areEqual('TestResource', action.iconConfig.staticResource.resourceName);
+        Assert.areEqual('/icons/test.svg', action.iconConfig.staticResource.iconPath);
         
-        // Verificar custom icon
-        System.assertNotEquals(null, action.iconConfig.customIcon);
-        System.assertEquals('/custom/icon.png', action.iconConfig.customIcon.src);
-        System.assertEquals('Custom', action.iconConfig.customIcon.alt);
+        // Check custom icon
+        Assert.areNotEqual(null, action.iconConfig.customIcon);
+        Assert.areEqual('/custom/icon.png', action.iconConfig.customIcon.src);
+        Assert.areEqual('Custom', action.iconConfig.customIcon.alt);
         
-        // Verificar actionConfig
-        System.assertNotEquals(null, action.actionConfig);
-        System.assertEquals('Account', action.actionConfig.get('objectApiName'));
-        
-        // Verificar condiciones
-        System.assertNotEquals(null, action.visibilityCondition);
-        System.assertEquals('Type', action.visibilityCondition.fieldName);
-        System.assertNotEquals(null, action.enablementCondition);
-        System.assertEquals('Rating', action.enablementCondition.fieldName);
+        // Check actionConfig
+        Assert.areNotEqual(null, action.actionConfig);
+        Assert.areEqual('Account', action.actionConfig.get('objectApiName'));
+
+        // Check conditions
+        Assert.areNotEqual(null, action.visibilityCondition);
+        Assert.areEqual('Type', action.visibilityCondition.fieldName);
+        Assert.areNotEqual(null, action.enablementCondition);
+        Assert.areEqual('Rating', action.enablementCondition.fieldName);
     }
     
     @isTest
@@ -507,58 +535,58 @@ private without sharing class DMT_HighlightPanelControllerTest {
         Test.startTest();
         
         // Test equals
-        System.assertEquals(true, evaluateCondition('Text__c', 'equals', 'Hello World', fieldValues));
-        System.assertEquals(false, evaluateCondition('Text__c', 'equals', 'Goodbye', fieldValues));
+        Assert.areEqual(true, evaluateCondition('Text__c', 'equals', 'Hello World', fieldValues));
+        Assert.areEqual(false, evaluateCondition('Text__c', 'equals', 'Goodbye', fieldValues));
         
         // Test not equals
-        System.assertEquals(true, evaluateCondition('Text__c', 'not equals', 'Goodbye', fieldValues));
-        System.assertEquals(false, evaluateCondition('Text__c', 'not equals', 'Hello World', fieldValues));
+        Assert.areEqual(true, evaluateCondition('Text__c', 'not equals', 'Goodbye', fieldValues));
+        Assert.areEqual(false, evaluateCondition('Text__c', 'not equals', 'Hello World', fieldValues));
         
         // Test contains
-        System.assertEquals(true, evaluateCondition('Text__c', 'contains', 'World', fieldValues));
-        System.assertEquals(false, evaluateCondition('Text__c', 'contains', 'Planet', fieldValues));
+        Assert.areEqual(true, evaluateCondition('Text__c', 'contains', 'World', fieldValues));
+        Assert.areEqual(false, evaluateCondition('Text__c', 'contains', 'Planet', fieldValues));
         
         // Test not contains
-        System.assertEquals(true, evaluateCondition('Text__c', 'not contains', 'Planet', fieldValues));
-        System.assertEquals(false, evaluateCondition('Text__c', 'not contains', 'World', fieldValues));
+        Assert.areEqual(true, evaluateCondition('Text__c', 'not contains', 'Planet', fieldValues));
+        Assert.areEqual(false, evaluateCondition('Text__c', 'not contains', 'World', fieldValues));
         
         // Test starts with
-        System.assertEquals(true, evaluateCondition('Text__c', 'starts with', 'Hello', fieldValues));
-        System.assertEquals(false, evaluateCondition('Text__c', 'starts with', 'World', fieldValues));
+        Assert.areEqual(true, evaluateCondition('Text__c', 'starts with', 'Hello', fieldValues));
+        Assert.areEqual(false, evaluateCondition('Text__c', 'starts with', 'World', fieldValues));
         
         // Test ends with
-        System.assertEquals(true, evaluateCondition('Text__c', 'ends with', 'World', fieldValues));
-        System.assertEquals(false, evaluateCondition('Text__c', 'ends with', 'Hello', fieldValues));
+        Assert.areEqual(true, evaluateCondition('Text__c', 'ends with', 'World', fieldValues));
+        Assert.areEqual(false, evaluateCondition('Text__c', 'ends with', 'Hello', fieldValues));
         
         // Test greater than
-        System.assertEquals(true, evaluateCondition('Number__c', 'greater than', '40', fieldValues));
-        System.assertEquals(false, evaluateCondition('Number__c', 'greater than', '50', fieldValues));
+        Assert.areEqual(true, evaluateCondition('Number__c', 'greater than', '40', fieldValues));
+        Assert.areEqual(false, evaluateCondition('Number__c', 'greater than', '50', fieldValues));
         
         // Test less than
-        System.assertEquals(true, evaluateCondition('Number__c', 'less than', '50', fieldValues));
-        System.assertEquals(false, evaluateCondition('Number__c', 'less than', '40', fieldValues));
+        Assert.areEqual(true, evaluateCondition('Number__c', 'less than', '50', fieldValues));
+        Assert.areEqual(false, evaluateCondition('Number__c', 'less than', '40', fieldValues));
         
         // Test in
-        System.assertEquals(true, evaluateCondition('Text__c', 'in', 'Hello World,Goodbye', fieldValues));
-        System.assertEquals(false, evaluateCondition('Text__c', 'in', 'Hi,Bye', fieldValues));
+        Assert.areEqual(true, evaluateCondition('Text__c', 'in', 'Hello World,Goodbye', fieldValues));
+        Assert.areEqual(false, evaluateCondition('Text__c', 'in', 'Hi,Bye', fieldValues));
         
         // Test not in
-        System.assertEquals(true, evaluateCondition('Text__c', 'not in', 'Hi,Bye', fieldValues));
-        System.assertEquals(false, evaluateCondition('Text__c', 'not in', 'Hello World,Goodbye', fieldValues));
+        Assert.areEqual(true, evaluateCondition('Text__c', 'not in', 'Hi,Bye', fieldValues));
+        Assert.areEqual(false, evaluateCondition('Text__c', 'not in', 'Hello World,Goodbye', fieldValues));
         
         // Test true
-        System.assertEquals(true, evaluateCondition('Boolean__c', 'true', null, fieldValues));
+        Assert.areEqual(true, evaluateCondition('Boolean__c', 'true', null, fieldValues));
         
         // Test false
-        System.assertEquals(false, evaluateCondition('Boolean__c', 'false', null, fieldValues));
+        Assert.areEqual(false, evaluateCondition('Boolean__c', 'false', null, fieldValues));
         
         // Test null
-        //System.assertEquals(true, evaluateCondition('Empty__c', 'null', null, fieldValues));
-        System.assertEquals(false, evaluateCondition('Text__c', 'null', null, fieldValues));
+        //Assert.areEqual(true, evaluateCondition('Empty__c', 'null', null, fieldValues));
+        Assert.areEqual(false, evaluateCondition('Text__c', 'null', null, fieldValues));
         
         // Test not null
-        System.assertEquals(true, evaluateCondition('Text__c', 'not null', null, fieldValues));
-        System.assertEquals(false, evaluateCondition('Empty__c', 'not null', null, fieldValues));
+        Assert.areEqual(true, evaluateCondition('Text__c', 'not null', null, fieldValues));
+        Assert.areEqual(false, evaluateCondition('Empty__c', 'not null', null, fieldValues));
         
         Test.stopTest();
     }
@@ -574,47 +602,265 @@ private without sharing class DMT_HighlightPanelControllerTest {
         
         // Test date
         String dateResult = DMT_HighlightPanelController.formatFieldValue('date', testDate);
-        System.assertNotEquals(null, dateResult);
+        Assert.areNotEqual(null, dateResult);
         
         // Test datetime
         String dateTimeResult = DMT_HighlightPanelController.formatFieldValue('datetime', testDateTime);
-        System.assertNotEquals(null, dateTimeResult);
+        Assert.areNotEqual(null, dateTimeResult);
         
         // Test currency
         String currencyResult = DMT_HighlightPanelController.formatFieldValue('currency', testDecimal);
-        System.assert(currencyResult.startsWith('$'));
-        System.assertNotEquals(currencyResult.contains('1,234.56'), null);
+        Assert.isTrue(currencyResult.startsWith('$'));
+        Assert.areNotEqual(currencyResult.contains('1,234.56'), null);
         
         // Test percent
         String percentResult = DMT_HighlightPanelController.formatFieldValue('percent', testDecimal);
-        System.assert(percentResult.contains('%'));
-        //System.assert(percentResult.contains('1,234.56'));
+        Assert.isTrue(percentResult.contains('%'));
+        //Assert.isTrue(percentResult.contains('1,234.56'));
         
         // Test boolean true
         String boolTrueResult = DMT_HighlightPanelController.formatFieldValue('boolean', true);
-        System.assertEquals('Sí', boolTrueResult);
+        Assert.areEqual('Sí', boolTrueResult);
         
         // Test boolean false
         String boolFalseResult = DMT_HighlightPanelController.formatFieldValue('boolean', false);
-        System.assertEquals('No', boolFalseResult);
+        Assert.areEqual('No', boolFalseResult);
         
         // Test email
         String emailResult = DMT_HighlightPanelController.formatFieldValue('email', 'test@example.com');
-        System.assertEquals('test@example.com', emailResult);
+        Assert.areEqual('test@example.com', emailResult);
         
         // Test phone
         String phoneResult = DMT_HighlightPanelController.formatFieldValue('phone', '123-456-7890');
-        System.assertEquals('123-456-7890', phoneResult);
+        Assert.areEqual('123-456-7890', phoneResult);
         
         // Test null
         String nullResult = DMT_HighlightPanelController.formatFieldValue('text', null);
-        System.assertEquals('', nullResult);
+        Assert.areEqual('', nullResult);
         
         Test.stopTest();
     }
-    
-    
-    // ===== MÉTODOS AUXILIARES PARA CREAR METADATA =====
+
+    @isTest
+    static void testHasSystemPermission_WithAndWithoutPermission() {
+        Profile p = [SELECT Id FROM Profile WHERE Name = 'Minimum Access - Salesforce' LIMIT 1];
+        User testUser = new User(
+            FirstName = 'Chatter',
+            LastName = 'PermTest',
+            Email = 'chatter.permtest@example.com.dmt',
+            Username = 'chatter.permtest.' + System.currentTimeMillis() + '@example.com.dmt',
+            Alias = 'chpt',
+            TimeZoneSidKey = 'Europe/Madrid',
+            LocaleSidKey = 'es_ES',
+            EmailEncodingKey = 'UTF-8',
+            LanguageLocaleKey = 'en_US',
+            ProfileId = p.Id
+        );
+
+        PermissionSet ps = new PermissionSet(
+            Name = 'DMT_Chatter_Test_PS',
+            Label = 'DMT Chatter Test PS',
+            PermissionsChatterEnabledForUser = true
+        );
+
+        Boolean withoutPermission;
+        Boolean withPermission;
+
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            insert testUser;
+            insert ps;
+        }
+
+        Test.startTest();
+
+        System.runAs(testUser) {
+            withoutPermission = DMT_HighlightPanelController.hasSystemPermission('PermissionsChatterEnabledForUser');
+        }
+
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            insert new PermissionSetAssignment(
+                AssigneeId = testUser.Id,
+                PermissionSetId = ps.Id
+            );
+        }
+
+        System.runAs(testUser) {
+            withPermission = DMT_HighlightPanelController.hasSystemPermission('PermissionsChatterEnabledForUser');
+        }
+
+        Test.stopTest();
+
+        Assert.areEqual(true, withPermission, 'With the permission set assigned, it should return true');
+        Assert.areEqual(false, withoutPermission, 'Without the permission assigned, it should return false');
+    }
+
+    @isTest
+    static void testEvaluateCondition_systemPermission() {
+        DMT_HighlightPanelController.ConditionConfig cond =
+            new DMT_HighlightPanelController.ConditionConfig();
+        cond.systemPermission = 'PermissionsChatterEnabledForUser';
+
+        Test.startTest();
+        Boolean result = DMT_HighlightPanelController.evaluateCondition(cond, new Map<String, Object>());
+        Test.stopTest();
+
+        Assert.areEqual(true, result, 'The test user has Chatter, the condition should be true');
+    }
+
+    @isTest
+    static void testHasSystemPermission_InjectionShapedPermissionApiName() {
+        Test.startTest();
+        Boolean resultQuote = DMT_HighlightPanelController.hasSystemPermission('PermissionsChatterEnabledForUser\' OR \'1\'=\'1');
+        Boolean resultUnknownField = DMT_HighlightPanelController.hasSystemPermission('NotARealPermissionField');
+        Test.stopTest();
+
+        Assert.areEqual(false, resultQuote, 'Malformed (non-alphanumeric) permission name must be rejected');
+        Assert.areEqual(false, resultUnknownField, 'Alphanumeric but non-existent PermissionSet field must be rejected');
+    }
+
+    @isTest
+    static void testGetHighlightConfig_BlankParams() {
+        Boolean exceptionThrown = false;
+
+        Test.startTest();
+        try {
+            DMT_HighlightPanelController.getHighlightConfig(null, null);
+        } catch (AuraHandledException e) {
+            exceptionThrown = true;
+        }
+        Test.stopTest();
+
+        Assert.areEqual(true, exceptionThrown, 'Should throw AuraHandledException when objectApiName/recordId are blank');
+    }
+
+    @isTest
+    static void testGetDefaultConfig() {
+        Test.startTest();
+        DMT_HighlightPanelController.HighlightPanelConfig config = DMT_HighlightPanelController.getDefaultConfig('Account');
+        Test.stopTest();
+
+        Assert.areNotEqual(null, config);
+        Assert.areNotEqual(null, config.iconConfig);
+        Assert.areEqual('standard', config.iconConfig.type);
+        Assert.areEqual('account', config.iconConfig.name);
+        Assert.areEqual('medium', config.iconConfig.size);
+        Assert.areNotEqual(null, config.metadata);
+        Assert.areEqual(0, config.fieldsConfig.size());
+        Assert.areEqual(0, config.primaryActions.size());
+        Assert.areEqual(0, config.menuActions.size());
+    }
+
+    @isTest
+    static void testParseConditionConfig_NestedConditions() {
+        Map<String, Object> subCond1 = new Map<String, Object>{
+            'fieldName' => 'Type', 'operator' => 'equals', 'value' => 'Customer'
+        };
+        Map<String, Object> subCond2 = new Map<String, Object>{
+            'fieldName' => 'Rating', 'operator' => 'equals', 'value' => 'Hot'
+        };
+        Map<String, Object> parentCond = new Map<String, Object>{
+            'combineConditions' => '1 AND 2',
+            'conditions' => new List<Object>{ subCond1, subCond2 }
+        };
+
+        Test.startTest();
+        DMT_HighlightPanelController.ConditionConfig result = DMT_HighlightPanelController.parseConditionConfig(parentCond);
+        Test.stopTest();
+
+        Assert.areNotEqual(null, result);
+        Assert.areEqual('1 AND 2', result.combineConditions);
+        Assert.areEqual(2, result.conditions.size());
+        Assert.areEqual('Type', result.conditions[0].fieldName);
+        Assert.areEqual('Rating', result.conditions[1].fieldName);
+    }
+
+    @isTest
+    static void testAddConditionField_NestedConditions() {
+        DMT_HighlightPanelController.ConditionConfig sub1 = new DMT_HighlightPanelController.ConditionConfig();
+        sub1.fieldName = 'Type';
+        DMT_HighlightPanelController.ConditionConfig sub2 = new DMT_HighlightPanelController.ConditionConfig();
+        sub2.fieldName = 'Rating';
+        DMT_HighlightPanelController.ConditionConfig parent = new DMT_HighlightPanelController.ConditionConfig();
+        parent.conditions = new List<DMT_HighlightPanelController.ConditionConfig>{ sub1, sub2 };
+
+        Set<String> fields = new Set<String>();
+
+        Test.startTest();
+        DMT_HighlightPanelController.addConditionField(parent, fields);
+        Test.stopTest();
+
+        Assert.isTrue(fields.contains('Type'), 'Should collect field name from nested sub-condition');
+        Assert.isTrue(fields.contains('Rating'), 'Should collect field name from nested sub-condition');
+    }
+
+    @isTest
+    static void testEvaluateCondition_NestedConditionsWithLogic() {
+        DMT_HighlightPanelController.ConditionConfig cond1 = new DMT_HighlightPanelController.ConditionConfig();
+        cond1.fieldName = 'Type';
+        cond1.operator = 'equals';
+        cond1.value = 'Customer';
+
+        DMT_HighlightPanelController.ConditionConfig cond2 = new DMT_HighlightPanelController.ConditionConfig();
+        cond2.fieldName = 'Rating';
+        cond2.operator = 'equals';
+        cond2.value = 'Hot';
+
+        DMT_HighlightPanelController.ConditionConfig cond3 = new DMT_HighlightPanelController.ConditionConfig();
+        cond3.fieldName = 'Industry';
+        cond3.operator = 'equals';
+        cond3.value = 'Banking';
+
+        Map<String, Object> fieldValues = new Map<String, Object>{
+            'Type' => 'Customer',
+            'Rating' => 'Warm',
+            'Industry' => 'Banking'
+        };
+
+        Test.startTest();
+
+        // Default logic (no combineConditions) should AND all sub-conditions
+        DMT_HighlightPanelController.ConditionConfig defaultAnd = new DMT_HighlightPanelController.ConditionConfig();
+        defaultAnd.conditions = new List<DMT_HighlightPanelController.ConditionConfig>{ cond1, cond2 };
+        Boolean defaultAndResult = DMT_HighlightPanelController.evaluateCondition(defaultAnd, fieldValues);
+
+        // Explicit OR logic
+        DMT_HighlightPanelController.ConditionConfig orLogic = new DMT_HighlightPanelController.ConditionConfig();
+        orLogic.conditions = new List<DMT_HighlightPanelController.ConditionConfig>{ cond1, cond2, cond3 };
+        orLogic.combineConditions = '1 OR 2';
+        Boolean orResult = DMT_HighlightPanelController.evaluateCondition(orLogic, fieldValues);
+
+        // Explicit AND logic
+        DMT_HighlightPanelController.ConditionConfig andLogic = new DMT_HighlightPanelController.ConditionConfig();
+        andLogic.conditions = new List<DMT_HighlightPanelController.ConditionConfig>{ cond1, cond2 };
+        andLogic.combineConditions = '1 AND 2';
+        Boolean andResult = DMT_HighlightPanelController.evaluateCondition(andLogic, fieldValues);
+
+        // Parenthesized combined logic: (1 AND 2) OR 3 => (T AND F) OR T = T
+        DMT_HighlightPanelController.ConditionConfig complexLogic = new DMT_HighlightPanelController.ConditionConfig();
+        complexLogic.conditions = new List<DMT_HighlightPanelController.ConditionConfig>{ cond1, cond2, cond3 };
+        complexLogic.combineConditions = '(1 AND 2) OR 3';
+        Boolean complexResult = DMT_HighlightPanelController.evaluateCondition(complexLogic, fieldValues);
+
+        Test.stopTest();
+
+        Assert.areEqual(false, defaultAndResult, 'Default logic should AND all conditions');
+        Assert.areEqual(true, orResult, 'OR logic should return true when any condition matches');
+        Assert.areEqual(false, andResult, 'AND logic should return false when any condition fails');
+        Assert.areEqual(true, complexResult, 'Parenthesized logic should be evaluated correctly');
+    }
+
+    @isTest
+    static void testEvaluateCondition_NullFieldValue() {
+        Map<String, Object> fieldValues = new Map<String, Object>{ 'Empty__c' => null };
+
+        Test.startTest();
+        Boolean result = evaluateCondition('Empty__c', 'equals', 'anything', fieldValues);
+        Test.stopTest();
+
+        Assert.areEqual(false, result, 'A null field value should return false for the equals operator');
+    }
+
+    // ===== AUXILIARY METHODS TO CREATE METADATA =====
     
     private static DMT_HighlightPanel_Config__mdt createCompleteMetadataConfig() {
         DMT_HighlightPanel_Config__mdt config = new DMT_HighlightPanel_Config__mdt(
@@ -623,7 +869,7 @@ private without sharing class DMT_HighlightPanelControllerTest {
             Object_API_Name__c = 'Account',
             Record_Type_API_Name__c = null,
             
-            // Configuración completa de icono
+            // Complete icon configuration
             Icon_Type__c = 'staticresource',
             Icon_Name__c = 'custom_icon',
             Icon_Size__c = 'large',
@@ -631,7 +877,7 @@ private without sharing class DMT_HighlightPanelControllerTest {
             Static_Resource_Path__c = '/icons/account.svg',
             Custom_Icon_URL__c = '/resource/custom/icon.png',
             
-            // Configuración de campos con todas las opciones
+            // Field configuration with all options
             Fields_Configuration__c = '[' +
                 '{"type":"text","label":"Name","fieldApiName":"Name","isEditable":true,"isVisible":true},' +
                 '{"type":"text","label":"Industry","fieldApiName":"Industry","badgeVariant":"success"},' +
@@ -642,22 +888,22 @@ private without sharing class DMT_HighlightPanelControllerTest {
                 '{"type":"textarea","label":"Description","fieldApiName":"Description"}' +
             ']',
             
-            // Acciones principales variadas
+            // Varied primary actions
             Primary_Actions_JSON__c = '[' +
                 '{"label":"Edit","name":"edit","variant":"brand","actionType":"standard__recordPage"},' +
                 '{"label":"Delete","name":"delete","variant":"destructive","actionType":"standard__delete"},' +
                 '{"label":"Clone","name":"clone","variant":"neutral","actionType":"standard__clone"},' +
                 '{"label":"Print","name":"print","variant":"neutral","actionType":"standard__print"}' +
             ']',
-            
-            // Acciones de menú
+
+            // Menu actions
             Menu_Actions_JSON__c = '[' +
                 '{"label":"Share","name":"share","actionType":"standard__share"},' +
                 '{"label":"Export","name":"export","actionType":"standard__export"},' +
                 '{"label":"Email","name":"email","actionType":"standard__email"}' +
             ']',
-            
-            // Metadata adicional completa
+
+            // Complete additional metadata
             Metadata_Config__c = '{"showIcon":true,"iconPosition":"right","compactMode":true,"maxFieldColumns":4,"customSettings":{"setting1":"value1","setting2":123}}'
         );
         
@@ -724,14 +970,14 @@ private without sharing class DMT_HighlightPanelControllerTest {
             Icon_Type__c = 'standard',
             Icon_Name__c = 'account',
             
-            // Campos con condiciones de visibilidad
+            // Fields with visibility conditions
             Fields_Configuration__c = '[' +
                 '{"type":"text","label":"Public Field","fieldApiName":"Name"},' +
                 '{"type":"text","label":"Confidential Field","fieldApiName":"Description",' +
                     '"visibilityCondition":{"fieldName":"Rating","operator":"equals","value":"Hot"}}' +
             ']',
-            
-            // Acciones con condiciones de visibilidad
+
+            // Actions with visibility conditions
             Primary_Actions_JSON__c = '[' +
                 '{"label":"Normal Action","name":"normal.action"},' +
                 '{"label":"Confidential Action","name":"confidential.action",' +
@@ -750,13 +996,13 @@ private without sharing class DMT_HighlightPanelControllerTest {
             Icon_Type__c = 'standard',
             Icon_Name__c = 'account',
             
-            // Campos con condiciones de editabilidad
+            // Fields with editability conditions
             Fields_Configuration__c = '[' +
                 '{"type":"text","label":"Editable Field","fieldApiName":"Name","isEditable":true,' +
                     '"editabilityCondition":{"fieldName":"Rating","operator":"equals","value":"Hot"}}' +
             ']',
-            
-            // Acciones con condiciones de habilitación
+
+            // Actions with enablement conditions
             Primary_Actions_JSON__c = '[' +
                 '{"label":"Edit Large Account","name":"edit.large.account","actionType":"standard__recordPage",' +
                     '"enablementCondition":{"fieldName":"AnnualRevenue","operator":"greater than","value":"2000000"}}' +
@@ -774,15 +1020,15 @@ private without sharing class DMT_HighlightPanelControllerTest {
             Icon_Type__c = 'standard',
             Icon_Name__c = 'account',
             
-            // Campos con acciones que tienen placeholders
+            // Fields with actions that have placeholders
             Fields_Configuration__c = '[' +
                 '{"type":"url","label":"Website","fieldApiName":"Website",' +
                     '"action":{"type":"standard__namedUrl","name":"open.url","params":{"url":"{Website}"}}},' +
                 '{"type":"email","label":"Email","fieldApiName":"Email__c",' +
                     '"action":{"type":"standard__email","name":"send.email","params":{"to":"{Email__c}","subject":"Hello {Name}"}}}' +
             ']',
-            
-            // Acciones con placeholders
+
+            // Actions with placeholders
             Primary_Actions_JSON__c = '[' +
                 '{"label":"Send to {Name}","name":"custom.action","actionType":"custom__flow",' +
                     '"actionConfig":{"recordId":"{Id}","recordName":"{Name}","industry":"{Industry}","revenue":"{AnnualRevenue}"}}' +
@@ -800,7 +1046,7 @@ private without sharing class DMT_HighlightPanelControllerTest {
             Icon_Type__c = 'standard',
             Icon_Name__c = 'contact',
             
-            // Campos que incluyen relaciones
+            // Fields that include relationships
             Fields_Configuration__c = '[' +
                 '{"type":"text","label":"Account Name","fieldApiName":"Account.Name"},' +
                 '{"type":"text","label":"Account Industry","fieldApiName":"Account.Industry"},' +
@@ -812,18 +1058,18 @@ private without sharing class DMT_HighlightPanelControllerTest {
         return config;
     }
     
-    // Método auxiliar para insertar metadata en pruebas
+    // Helper method to insert metadata in tests
     private static void insertTestMetadata(DMT_HighlightPanel_Config__mdt config) {
-        // Nota: En pruebas, no podemos insertar realmente Custom Metadata
-        // Este método está aquí para simular la existencia de metadata
-        // En su lugar, deberías usar DML en objetos de prueba o mocks
-        
-        // Como no podemos insertar metadata real en tests, 
-        // usaremos este método para que el código compile
-        System.debug('Simulando inserción de metadata: ' + config.DeveloperName);
+        // Note: in tests, we cannot actually insert Custom Metadata
+        // This method exists to simulate the existence of metadata
+        // Instead, you should use DML on test objects or mocks
+
+        // Since we cannot insert real metadata in tests,
+        // we use this method so that the code compiles
+        System.debug('Simulating metadata insertion: ' + config.DeveloperName);
     }
-    
-    // Método auxiliar para evaluar condiciones
+
+    // Helper method to evaluate conditions
     private static Boolean evaluateCondition(String fieldName, String operator, String value, Map<String, Object> fieldValues) {
         DMT_HighlightPanelController.ConditionConfig condition = new DMT_HighlightPanelController.ConditionConfig();
         condition.fieldName = fieldName;
@@ -833,21 +1079,21 @@ private without sharing class DMT_HighlightPanelControllerTest {
         return DMT_HighlightPanelController.evaluateCondition(condition, fieldValues);
     }
     
-    // Método auxiliar para verificar campos
+    // Helper method to check fields
     private static void verifyFieldConfigs(List<DMT_HighlightPanelController.FieldConfig> fields) {
         for (DMT_HighlightPanelController.FieldConfig field : fields) {
-            System.assertNotEquals(null, field.type);
-            System.assertNotEquals(null, field.label);
-            System.assertNotEquals(null, field.fieldApiName);
-            
-            // Verificar que los valores se asignaron correctamente
+            Assert.areNotEqual(null, field.type);
+            Assert.areNotEqual(null, field.label);
+            Assert.areNotEqual(null, field.fieldApiName);
+
+            // Check that the values were assigned correctly
             if (field.fieldApiName == 'Name') {
-                System.assertNotEquals(null, field.value);
+                Assert.areNotEqual(null, field.value);
             }
-            
-            // Verificar badges
+
+            // Check badges
             if (field.fieldApiName == 'Type' || field.fieldApiName == 'Rating' || field.fieldApiName == 'Industry') {
-                System.assertNotEquals(null, field.badgeVariant);
+                Assert.areNotEqual(null, field.badgeVariant);
             }
         }
     }

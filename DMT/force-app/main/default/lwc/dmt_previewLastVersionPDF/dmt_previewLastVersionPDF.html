@@ -1,21 +1,16 @@
 <template>
       <template lwc:if={displayModal}>
-            <section role="dialog" tabindex="-1"  class="slds-modal slds-fade-in-open">
-                <div class="slds-modal__container viewStyle" >
-                    <div class="slds-modal__content  full-height-content">
-                        <template lwc:if={loadingPDF}>
+            <div class="full-height-content slds-modal__content ">
+                  <template lwc:if={loadingPDF}>
+                        
                               <div class="spinner-container">
                                     <lightning-spinner alternative-text="Generating PDF..." size="medium"></lightning-spinner>
-                                    <p class="spinner-message">Please wait while we generate your PDF...</p>
                               </div>
-                        </template>
-                    </div>
-                </div>
-            </section>
+                              <p class="spinner-message">Please wait while we generate your PDF...</p>
+                        
+                  </template>
+                  <c-preview-pdf pdf-data={pdfData}></c-preview-pdf>
+            </div>
       </template>
-   
-      <div class={styleName}>
-            <c-preview-pdf pdf-data={pdfData}></c-preview-pdf>
-            <c-pdf-generator></c-pdf-generator>
-      </div>      
+      <c-pdf-generator></c-pdf-generator>
 </template>

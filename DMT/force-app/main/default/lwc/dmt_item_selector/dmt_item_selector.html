@@ -32,13 +32,14 @@
             </lightning-combobox>
 
             <!-- Campo Component Item dependiente -->
-            <lightning-combobox
+            <c-combobox
                 label={selectComponentItemLabel}
                 options={filteredComponentOptions}
                 value={selectedComponentItem}
+                autocomplete="true"
                 onchange={handleComponentChange}
                 disabled={isAddComponentDisabled}>
-            </lightning-combobox>
+            </c-combobox>
 
             <!-- Cuadro de texto para el componente Text -->
             <template if:true={isTextComponent}>

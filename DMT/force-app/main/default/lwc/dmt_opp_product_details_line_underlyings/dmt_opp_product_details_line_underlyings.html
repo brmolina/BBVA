@@ -1,0 +1,512 @@
+<template>
+    <div class="slds-is-relative">
+        <c-dmt_-table-header-section
+            titletable="Underlying Restriction"
+            showcopypaste="false"
+            rowscopypaste={displayRestrictionRows}
+            tablecolumnscopypaste={restrictionColumns}
+            context="derivatives"
+            isreadonlyuser={isReadOnly}>
+        </c-dmt_-table-header-section>
+
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading..." size="medium" variant="brand"></lightning-spinner>
+        </template>
+
+        <template lwc:if={hasRestrictionRows}>
+            <div class="underlyings-scroll slds-m-top_x-small">
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_fixed-layout underlyings-table">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col"><div class="slds-truncate" title="Underlying">Underlying</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Max Amount">Max Amount</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Max Term"><span class="required-indicator">*</span>Max Term</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Other restrictions">Other restrictions</div></th>
+                            <th scope="col" class="action-col"><div class="slds-truncate" title="Delete">Delete</div></th>
+                            <th scope="col" class="action-col"><div class="slds-truncate" title="Edit">Edit</div></th>
+                            <th scope="col" class="action-col"><div class="slds-truncate" title="Add">Add</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={displayRestrictionRows} for:item="row">
+                            <tr key={row.Id} class="slds-hint-parent">
+                                <td>
+                                    <template if:true={restrictionReadOnly}>
+                                        <div class="cell-text" title={row.Name}>{row.Name}</div>
+                                    </template>
+                                    <template if:false={restrictionReadOnly}>
+                                        <div class="underlying-picklist">
+                                            <input type="text"
+                                                  class="underlying-picklist-input searchable-input"
+                                                   value={row.Name}
+                                                   title={row.Name}
+                                                   data-id={row.Id}
+                                                   data-field="Name"
+                                                   placeholder="Search Underlying"
+                                                   onclick={handleUnderlyingClick}
+                                                   onfocus={handleUnderlyingFocus}
+                                                   oninput={handleUnderlyingInput}/>
+                                            <span class="underlying-picklist-arrow"
+                                                  onclick={handleUnderlyingArrowClick}>&#9660;</span>
+                                        </div>
+                                    </template>
+                                </td>
+                                <td>
+                                    <template if:true={restrictionReadOnly}>
+                                        <div class="cell-text amount-with-currency">
+                                            <span class="amount-value">{row.DMT_Max_Amount__c}</span>
+                                            <template if:true={opportunityCurrency}>
+                                                <span class="currency-suffix">{opportunityCurrencyLabel}</span>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template if:false={restrictionReadOnly}>
+                                        <div class="amount-with-currency">
+                                            <lightning-input
+                                                type="number"
+                                                min="0"
+                                                variant="label-hidden"
+                                                value={row.DMT_Max_Amount__c}
+                                                data-id={row.Id}
+                                                data-field="DMT_Max_Amount__c"
+                                                onchange={handleCellNumber}>
+                                            </lightning-input>
+                                            <template if:true={opportunityCurrency}>
+                                                <span class="currency-suffix">{opportunityCurrencyLabel}</span>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </td>
+                                <td>
+                                    <template if:true={restrictionReadOnly}>
+                                        <div class="cell-text">{row.DMT_Max_Term__c_label}</div>
+                                    </template>
+                                    <template if:false={restrictionReadOnly}>
+                                        <div class="underlying-picklist"
+                                             data-id={row.Id}
+                                             data-field="DMT_Max_Term__c"
+                                             onclick={handlePicklistOpen}>
+                                            <input type="text" readonly
+                                                   class="underlying-picklist-input"
+                                                   value={row.DMT_Max_Term__c_label}
+                                                   required
+                                                   placeholder="Select.."/>
+                                            <span class="underlying-picklist-arrow">&#9660;</span>
+                                        </div>
+                                    </template>
+                                </td>
+                                <td>
+                                    <template if:true={restrictionReadOnly}>
+                                        <div class="cell-text">{row.DMT_Other_restrictions__c}</div>
+                                    </template>
+                                    <template if:false={restrictionReadOnly}>
+                                        <lightning-input
+                                            variant="label-hidden"
+                                            value={row.DMT_Other_restrictions__c}
+                                            data-id={row.Id}
+                                            data-field="DMT_Other_restrictions__c"
+                                            onchange={handleCellInput}>
+                                        </lightning-input>
+                                    </template>
+                                </td>
+                                <td class="action-col">
+                                    <lightning-button-icon
+                                        icon-name="utility:delete"
+                                        variant="bare"
+                                        alternative-text="Delete"
+                                        title="Delete"
+                                        disabled={rowActionsDisabled}
+                                        data-action="delete"
+                                        data-id={row.Id}
+                                        onclick={handleInlineAction}>
+                                    </lightning-button-icon>
+                                </td>
+                                <td class="action-col">
+                                    <lightning-button-icon
+                                        icon-name="utility:edit"
+                                        variant="bare"
+                                        alternative-text="Edit"
+                                        title="Edit"
+                                        disabled={rowEditActionDisabled}
+                                        data-action="edit"
+                                        data-id={row.Id}
+                                        onclick={handleInlineAction}>
+                                    </lightning-button-icon>
+                                </td>
+                                <td class="action-col">
+                                    <lightning-button-icon
+                                        icon-name="utility:add"
+                                        variant="bare"
+                                        alternative-text="Add"
+                                        title="Add"
+                                        disabled={rowActionsDisabled}
+                                        data-action="add"
+                                        data-id={row.Id}
+                                        data-rowtype={row.DMT_Underlying_Type__c}
+                                        onclick={handleInlineAction}>
+                                    </lightning-button-icon>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+
+        <template lwc:else>
+            <div class="slds-text-align_center slds-p-around_x-large slds-box slds-theme_shade slds-m-top_xx-small">
+                <h3 class="slds-text-heading_small slds-m-bottom_xxx-small">No Underlyings Configured</h3>
+                <div style="zoom: 90%;" class="slds-p-top_x-small slds-p-bottom_xx-small">
+                    <lightning-button
+                        label="Add Underlying"
+                        icon-name="utility:add"
+                        variant="brand"
+                        disabled={globalAddDisabled}
+                        onclick={handleAddRestrictionGlobal}>
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+
+        <div class="slds-m-vertical_large slds-border_bottom"></div>
+
+        <c-dmt_-table-header-section
+            titletable="Underlying Profitability"
+            showcopypaste="false"
+            rowscopypaste={displayProfitabilityRows}
+            tablecolumnscopypaste={profitabilityColumns}
+            context="derivatives"
+            isreadonlyuser={isReadOnly}>
+        </c-dmt_-table-header-section>
+
+        <template lwc:if={hasProfitabilityRows}>
+            <div class="underlyings-scroll slds-m-top_x-small">
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_fixed-layout underlyings-table profitability-table">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col"><div class="slds-truncate" title="Underlying">Underlying</div></th>
+                            <th scope="col" class="col-amount-currency"><div class="slds-truncate" title="Drawn Reference Amount">Drawn Reference Amount</div></th>
+                            <th scope="col" class="col-amount-currency"><div class="slds-truncate" title="Undrawn Reference Amount">Undrawn Reference Amount</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Term">Term</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Drawn Spread (BPS)">Drawn Spread (BPS)</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Undrawn Spread (BPS)">Undrawn Spread (BPS)</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Upfront Fees">Upfront Fees</div></th>
+                            <th scope="col" class="col-upfront-unit"><div class="slds-truncate" title="Amount / BPS">Amount / BPS</div></th>
+                            <th scope="col"><div class="slds-truncate" title="Amortization Type">Amortization Type</div></th>
+                            <template if:true={showInterestPaymentFrequency}><th scope="col"><div class="slds-truncate" title="Interest Payment Frequency">Interest Payment Frequency</div></th></template>
+                            <th scope="col"><div class="slds-truncate" title="Currency">Currency</div></th>
+                            <th scope="col" class="action-col"><div class="slds-truncate" title="Delete">Delete</div></th>
+                            <th scope="col" class="action-col"><div class="slds-truncate" title="Edit">Edit</div></th>
+                            <th scope="col" class="action-col"><div class="slds-truncate" title="Add">Add</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={displayProfitabilityRows} for:item="row">
+                            <tr key={row.Id} class="slds-hint-parent">
+                                <td class="col-amount-currency">
+                                    <template if:true={profitabilityReadOnly}>
+                                        <div class="cell-text" title={row.Name}>{row.Name}</div>
+                                    </template>
+                                    <template if:false={profitabilityReadOnly}>
+                                        <div class="underlying-picklist">
+                                            <input type="text"
+                                                  class="underlying-picklist-input searchable-input"
+                                                   value={row.Name}
+                                                   title={row.Name}
+                                                   data-id={row.Id}
+                                                   data-field="Name"
+                                                   placeholder="Search Underlying"
+                                                   onclick={handleUnderlyingClick}
+                                                   onfocus={handleUnderlyingFocus}
+                                                   oninput={handleUnderlyingInput}/>
+                                            <span class="underlying-picklist-arrow"
+                                                  onclick={handleUnderlyingArrowClick}>&#9660;</span>
+                                        </div>
+                                    </template>
+                                </td>
+                                <td class="col-amount-currency">
+                                    <template if:true={profitabilityReadOnly}>
+                                        <div class="cell-text amount-with-currency">
+                                            <span class="amount-value">{row.DMT_Drawn_Reference_Amount__c}</span>
+                                            <template if:true={row.DMT_Currency__c}>
+                                                <span class="currency-suffix">{row.DMT_Currency__c_label}</span>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template if:false={profitabilityReadOnly}>
+                                        <div class="amount-with-currency">
+                                            <lightning-input
+                                                type="number"
+                                                min="0"
+                                                variant="label-hidden"
+                                                value={row.DMT_Drawn_Reference_Amount__c}
+                                                data-id={row.Id}
+                                                data-field="DMT_Drawn_Reference_Amount__c"
+                                                disabled={row._drawnDisabled}
+                                                onchange={handleCellNumber}>
+                                            </lightning-input>
+                                            <template if:true={row.DMT_Currency__c}>
+                                                <span class="currency-suffix">{row.DMT_Currency__c_label}</span>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </td>
+                                <td class="col-amount-currency">
+                                    <template if:true={profitabilityReadOnly}>
+                                        <div class="cell-text amount-with-currency">
+                                            <span class="amount-value">{row.DMT_Undrawn_Reference_Amount__c}</span>
+                                            <template if:true={row.DMT_Currency__c}>
+                                                <span class="currency-suffix">{row.DMT_Currency__c_label}</span>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template if:false={profitabilityReadOnly}>
+                                        <div class="amount-with-currency">
+                                            <lightning-input
+                                                type="number"
+                                                min="0"
+                                                variant="label-hidden"
+                                                value={row.DMT_Undrawn_Reference_Amount__c}
+                                                data-id={row.Id}
+                                                data-field="DMT_Undrawn_Reference_Amount__c"
+                                                onchange={handleCellNumber}>
+                                            </lightning-input>
+                                            <template if:true={row.DMT_Currency__c}>
+                                                <span class="currency-suffix">{row.DMT_Currency__c_label}</span>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </td>
+                                <td class="col-upfront-unit">
+                                    <template if:true={profitabilityReadOnly}>
+                                        <div class="cell-text">{row.DMT_Term__c_label}</div>
+                                    </template>
+                                    <template if:false={profitabilityReadOnly}>
+                                        <div class="underlying-picklist"
+                                             data-id={row.Id}
+                                             data-field="DMT_Term__c"
+                                             onclick={handlePicklistOpen}>
+                                            <input type="text" readonly
+                                                   class="underlying-picklist-input"
+                                                   value={row.DMT_Term__c_label}
+                                                   placeholder="Select.."/>
+                                            <span class="underlying-picklist-arrow">&#9660;</span>
+                                        </div>
+                                    </template>
+                                </td>
+                                <td>
+                                    <template if:true={profitabilityReadOnly}>
+                                        <div class="cell-text">{row.DMT_Drawn_Speed__c}</div>
+                                    </template>
+                                    <template if:false={profitabilityReadOnly}>
+                                        <lightning-input
+                                            type="number"
+                                            min="0"
+                                            variant="label-hidden"
+                                            value={row.DMT_Drawn_Speed__c}
+                                            data-id={row.Id}
+                                            data-field="DMT_Drawn_Speed__c"
+                                            disabled={row._drawnDisabled}
+                                            onchange={handleCellNumber}>
+                                        </lightning-input>
+                                    </template>
+                                </td>
+                                <td>
+                                    <template if:true={profitabilityReadOnly}>
+                                        <div class="cell-text">{row.DMT_Undrawn_Spread__c}</div>
+                                    </template>
+                                    <template if:false={profitabilityReadOnly}>
+                                        <lightning-input
+                                            type="number"
+                                            min="0"
+                                            variant="label-hidden"
+                                            value={row.DMT_Undrawn_Spread__c}
+                                            data-id={row.Id}
+                                            data-field="DMT_Undrawn_Spread__c"
+                                            onchange={handleCellNumber}>
+                                        </lightning-input>
+                                    </template>
+                                </td>
+                                <td class={row._upfrontFeesCellClass}>
+                                    <template if:true={profitabilityReadOnly}>
+                                        <div class={row._upfrontFeesReadOnlyClass}>
+                                            <span class="amount-value">{row._upfrontFeesValue}</span>
+                                            <template if:true={row.DMT_Currency__c}>
+                                                <template if:true={row._showUpfrontCurrency}>
+                                                    <span class="currency-suffix">{row.DMT_Currency__c_label}</span>
+                                                </template>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template if:false={profitabilityReadOnly}>
+                                        <div class={row._upfrontFeesEditClass}>
+                                            <lightning-input
+                                                type="number"
+                                                min="0"
+                                                variant="label-hidden"
+                                                value={row._upfrontFeesValue}
+                                                data-id={row.Id}
+                                                data-field="_upfrontFeesValue"
+                                                onchange={handleCellNumber}>
+                                            </lightning-input>
+                                            <template if:true={row.DMT_Currency__c}>
+                                                <template if:true={row._showUpfrontCurrency}>
+                                                    <span class="currency-suffix">{row.DMT_Currency__c_label}</span>
+                                                </template>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </td>
+                                <td>
+                                    <template if:true={profitabilityReadOnly}>
+                                        <div class="cell-text">{row._upfrontFeesUnitDisplay}</div>
+                                    </template>
+                                    <template if:false={profitabilityReadOnly}>
+                                        <div class="underlying-picklist"
+                                             data-id={row.Id}
+                                             data-field="_upfrontFeesUnitDisplay"
+                                             onclick={handlePicklistOpen}>
+                                            <input type="text" readonly
+                                                   class="underlying-picklist-input"
+                                                   value={row._upfrontFeesUnitDisplay}
+                                                   placeholder="Select.."/>
+                                            <span class="underlying-picklist-arrow">&#9660;</span>
+                                        </div>
+                                    </template>
+                                </td>
+                                <td>
+                                    <template if:true={profitabilityFieldsReadOnly}>
+                                        <div class="cell-text">{row.DMT_Amortization_Type__c}</div>
+                                    </template>
+                                    <template if:false={profitabilityFieldsReadOnly}>
+                                        <div class="underlying-picklist"
+                                             data-id={row.Id}
+                                             data-field="DMT_Amortization_Type__c"
+                                             onclick={handlePicklistOpen}>
+                                            <input type="text" readonly
+                                                   class="underlying-picklist-input"
+                                                   value={row.DMT_Amortization_Type__c}
+                                                   placeholder="Select.."/>
+                                            <span class="underlying-picklist-arrow">&#9660;</span>
+                                        </div>
+                                    </template>
+                                </td>
+                                <template if:true={showInterestPaymentFrequency}>
+                                <td>
+                                    <template if:true={profitabilityFieldsReadOnly}>
+                                        <div class="cell-text">{row.DMT_Interest_Payment_Frequency__c}</div>
+                                    </template>
+                                    <template if:false={profitabilityFieldsReadOnly}>
+                                        <div class="underlying-picklist"
+                                             data-id={row.Id}
+                                             data-field="DMT_Interest_Payment_Frequency__c"
+                                             onclick={handlePicklistOpen}>
+                                            <input type="text" readonly
+                                                   class="underlying-picklist-input"
+                                                   value={row.DMT_Interest_Payment_Frequency__c}
+                                                   placeholder="Select.."/>
+                                            <span class="underlying-picklist-arrow">&#9660;</span>
+                                        </div>
+                                    </template>
+                                </td>
+                                </template>
+                                <td>
+                                    <template if:true={profitabilityReadOnly}>
+                                        <div class="cell-text">{row.DMT_Currency__c}</div>
+                                    </template>
+                                    <template if:false={profitabilityReadOnly}>
+                                        <div class="underlying-picklist"
+                                             data-id={row.Id}
+                                             data-field="DMT_Currency__c">
+                                            <input type="text"
+                                                  class="underlying-picklist-input currency-search-input"
+                                                   value={row.DMT_Currency__c}
+                                                   data-id={row.Id}
+                                                   data-field="DMT_Currency__c"
+                                                   placeholder="Search Currency"
+                                                   onclick={handleCurrencyClick}
+                                                   onfocus={handleCurrencyFocus}
+                                                   oninput={handleCurrencyInput}/>
+                                            <span class="underlying-picklist-arrow"
+                                                  onclick={handleCurrencyArrowClick}>&#9660;</span>
+                                        </div>
+                                    </template>
+                                </td>
+                                <td class="action-col">
+                                    <lightning-button-icon
+                                        icon-name="utility:delete"
+                                        variant="bare"
+                                        alternative-text="Delete"
+                                        title="Delete"
+                                        disabled={rowActionsDisabled}
+                                        data-action="delete"
+                                        data-id={row.Id}
+                                        onclick={handleInlineAction}>
+                                    </lightning-button-icon>
+                                </td>
+                                <td class="action-col">
+                                    <lightning-button-icon
+                                        icon-name="utility:edit"
+                                        variant="bare"
+                                        alternative-text="Edit"
+                                        title="Edit"
+                                        disabled={rowEditActionDisabled}
+                                        data-action="edit"
+                                        data-id={row.Id}
+                                        onclick={handleInlineAction}>
+                                    </lightning-button-icon>
+                                </td>
+                                <td class="action-col">
+                                    <lightning-button-icon
+                                        icon-name="utility:add"
+                                        variant="bare"
+                                        alternative-text="Add"
+                                        title="Add"
+                                        disabled={rowActionsDisabled}
+                                        data-action="add"
+                                        data-id={row.Id}
+                                        data-rowtype={row.DMT_Underlying_Type__c}
+                                        onclick={handleInlineAction}>
+                                    </lightning-button-icon>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+
+        <template lwc:else>
+            <div class="slds-text-align_center slds-p-around_x-large slds-box slds-theme_shade slds-m-top_xx-small">
+                <h3 class="slds-text-heading_small slds-m-bottom_xxx-small">No Underlying Profitability Configured</h3>
+                <div style="zoom: 90%;" class="slds-p-top_x-small slds-p-bottom_xx-small">
+                    <lightning-button
+                        label="Add Underlying"
+                        icon-name="utility:add"
+                        variant="brand"
+                        disabled={globalAddDisabled}
+                        onclick={handleAddProfitabilityGlobal}>
+                    </lightning-button>
+                </div>
+            </div>
+        </template>
+        <template if:true={_dropdownOpen}>
+            <ul role="listbox"
+                class="underlying-dropdown-list"
+                onscroll={handleDropdownScroll}
+                onmousedown={handleDropdownMousedown}
+                onclick={handleDropdownMousedown}>
+                <template for:each={_dropdownOptions} for:item="opt">
+                    <li key={opt.value}
+                        role="option"
+                        class="underlying-dropdown-item"
+                        data-value={opt.value}
+                        data-label={opt.label}
+                        onclick={handleDropdownSelect}>
+                        {opt.label}
+                    </li>
+                </template>
+            </ul>
+        </template>
+    </div>
+</template>

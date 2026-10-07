@@ -35,7 +35,8 @@ export default class DmtOppProductDetailsGeneralInformation extends LightningEle
     @api get fieldOptions() { return this._options; }
     set fieldOptions(value) {
         this._options = {
-            DMT_Risk_Type__c               : value.riskTypeOptions        || []
+            DMT_Risk_Type__c               : value.riskTypeOptions        || [],
+            DMT_Line_Oneoffdeal__c         : value.oneoffDealOptions      || []
         };
         this._recompute();
     }
@@ -97,13 +98,13 @@ export default class DmtOppProductDetailsGeneralInformation extends LightningEle
         const f = this.fields.find(x => x.apiName === apiName);
         return f ? f.label : null;
     }
-
+/* 
     @api collectInvalidFields() {
         const invalidFields = this.fields
             .filter(f => f.isFieldValid === false)
             .map(f => f.label || f.apiName);
         return { isValid: invalidFields.length === 0, invalidFields };
-    }
+    } */
 
     // ─── Event handlers ───────────────────────────────────────────────────────
 
@@ -130,10 +131,11 @@ export default class DmtOppProductDetailsGeneralInformation extends LightningEle
     // ─── Recompute ────────────────────────────────────────────────────────────
 
     _recompute() {
-        let next = this._applyOptions(this._fieldsOriginal);
+        let next = this._fieldsOriginal.map(f => ({ ...f }));
         if (this._data) {
             next = next.map(f => ({ ...f, value: this._data[f.apiName] }));
         }
+        next        = this._applyOptions(next);
         next        = this._applyCurrency(next);
         this.fields = next;
         // Re-apply forced read-only if the mode was active before recompute
@@ -150,9 +152,18 @@ export default class DmtOppProductDetailsGeneralInformation extends LightningEle
         return baseArr.map(f => {
             const options = this._options[f.apiName];
             if (!options) return f;
-            const merged     = { ...f, options };
+            let mergedOptions = options;
+            if (f.type === 'picklist' && f.value !== null && f.value !== undefined && f.value !== '') {
+                const valueAsString = String(f.value);
+                const hasCurrentValue = options.some(opt => String(opt.value) === valueAsString);
+                if (!hasCurrentValue) {
+                    // Keep showing persisted value even if it is not present in active picklist options.
+                    mergedOptions = [{ label: valueAsString, value: valueAsString }, ...options];
+                }
+            }
+            const merged     = { ...f, options: mergedOptions };
             const originalRO = this._isOriginallyReadOnly(f.apiName);
-            if (f.type === 'picklist' && !originalRO) merged.isReadOnly = options.length === 0;
+            if (f.type === 'picklist' && !originalRO) merged.isReadOnly = mergedOptions.length === 0;
             return merged;
         });
     }

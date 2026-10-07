@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RFP_Not_Owner</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND($User.Id &lt;&gt; OwnerId,
+        OR(ISCHANGED(gf_rfp_participant_date__c) ,
+        ISCHANGED(gf_docn_req_deadline_date__c),
+        ISCHANGED(gf_proposal_requested_ind_type__c),
+        ISCHANGED(gf_rfp_prtcp_deadline_date__c),
+        ISCHANGED(gf_dedln_dlvr_cust_ansqsn_date__c),
+        ISCHANGED(gf_rfp_received_date__c),
+        ISCHANGED(gf_bbva_non_prtcp_rfp_desc__c),
+        ISCHANGED(gf_file_attached_ind_type__c),
+        ISCHANGED(gf_rfp_comment_desc__c),
+        ISCHANGED(gf_rfp_status_name__c),
+        ISCHANGED(gf_bbva_prtcp_rfp_ind_type__c)
+        ))</errorConditionFormula>
+    <errorMessage>Please, notice this Commercial Offer is not your Own, therefore you might not edit these fields. Thanks</errorMessage>
+</ValidationRule>

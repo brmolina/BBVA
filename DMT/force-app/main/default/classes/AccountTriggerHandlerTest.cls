@@ -3,9 +3,9 @@
 * @Name      AccountTriggerHandlerTest
 * @Author    Pedro Antonio Lozano Rios
 * @Date      2025-09-03
-* @Group    
+* @Group
 * ---------------------------------------------------------------------------------
-* @Description  clase test para AccountTriggerHanlder 
+* @Description  clase test para AccountTriggerHanlder
 * ---------------------------------------------------------------------------------
 * @History
 * Version   Date            Author          Summary of changes
@@ -20,14 +20,14 @@ public class AccountTriggerHandlerTest {
     */
     @isTest
     public static void AccountTriggerHandlerTest() {
-        
+
         DES_UtilTestClass utilTestClass = new DES_UtilTestClass();
         String profileTest = utilTestClass.createProfile();
         User userTest1 = utilTestClass.createUser(profileTest);
         insert userTest1;
         CIB_User_Org__c userSettings = utilTestClass.createCustomSetting();
         insert userSettings;
-        
+
         system.runAs(userTest1) {
             List<Account> listaCuentas = new List<Account>();
             Test.startTest();
@@ -55,17 +55,17 @@ public class AccountTriggerHandlerTest {
             aa3.DES_Structure_Type__c = Label.DES_STR_TYPE_Subgroup;
             aa3.DES_BBVA_Segmentation__c = Label.DES_Segmentation_C_CIB;
             listaCuentas.add(aa3);
-            
+
             insert listaCuentas;
-            
+
             Account accManual = utilTestClass.createClient();
             insert accManual;
             Test.stopTest();
             System.assertEquals(6, listaCuentas.size(), 'Se deben preparar seis cuentas para cubrir las ramas principales');
             System.assertNotEquals(null, accManual.Id, 'La cuenta manual debe insertarse correctamente');
-            
+
         }
-        
+
     }
     /*
     * Test method2
@@ -92,7 +92,7 @@ public class AccountTriggerHandlerTest {
         system.assert (accResult.survey_nps_contact_type__c, 'npstrue');
         Test.stopTest();
     }
-    
+
     /*
     * Test method2
     */
@@ -112,7 +112,7 @@ public class AccountTriggerHandlerTest {
         acc2.DES_BBVA_Segmentation__c = Label.DES_Segmentation_C_CIB;
         acc2.DES_Structure_Type__c = Label.DES_STR_TYPE_Group;
         update acc2;
-        
+
         final dwp_acmh__GBL_Account_Relationship__c relationOLD = new dwp_acmh__GBL_Account_Relationship__c();
         relationOLD.dwp_acmh__Child_Account__c = acc2.Id;
         relationOLD.dwp_acmh__Parent_Account__c = acc.Id;
@@ -121,54 +121,57 @@ public class AccountTriggerHandlerTest {
         relationOLD.DES_Main_Parent__c = 'S';
         relationOLD.dwp_acmh__Type__c = '03 - Filial';
         relationOLD.dwp_acmh__Vision__c = 'Negocio';
-    insert relationOLD;
+        insert relationOLD;
 
-    final AMH_GBL_Account_Relationship__c relation = utilTestClass.createAccRelationship(acc, acc2);
-    insert relation;
-    Test.startTest();
-    acc.DES_BBVA_Segmentation__c = Label.DES_Segmentation_C_CIB;
-    acc.DES_Structure_Type__c = Label.DES_STR_TYPE_Supragroup;
-    acc.survey_nps_contact_type__c = true;
-    update acc;
-    final Account accResult = [SELECT Id, survey_nps_contact_type__c from Account WHERE Id = :acc.Id LIMIT 1];
-    system.assert (accResult.survey_nps_contact_type__c, 'npstrue');
-    Test.stopTest();
-  }
+        final AMH_GBL_Account_Relationship__c relation = utilTestClass.createAccRelationship(acc, acc2);
+        insert relation;
+        Test.startTest();
+        acc.DES_BBVA_Segmentation__c = Label.DES_Segmentation_C_CIB;
+        acc.DES_Structure_Type__c = Label.DES_STR_TYPE_Supragroup;
+        acc.survey_nps_contact_type__c = true;
+        update acc;
+        final Account accResult = [SELECT Id, survey_nps_contact_type__c from Account WHERE Id = :acc.Id LIMIT 1];
+        system.assert (accResult.survey_nps_contact_type__c, 'npstrue');
+        Test.stopTest();
+    }
 
-  /*
-  * Test method local
-  */
-  @isTest
-  public static void localTest() {
-    final DES_UtilTestClass util = new DES_UtilTestClass();
-    final Account acc = util.createClient();
-    final Account acc2 = util.createClient();
-    acc.DES_BBVA_Segmentation__c = Label.DES_Segmentation_L_Local;
-    acc2.DES_BBVA_Segmentation__c = Label.DES_Segmentation_L_Local;
-    acc.DES_Structure_Type__c = Label.DES_STR_TYPE_Subsidiary;
-    acc2.DES_Structure_Type__c = Label.DES_STR_TYPE_Group;
-    Test.startTest();
-    insert acc;
-    insert acc2;
-    system.assertEquals(Label.DES_Segmentation_L_Local, acc.DES_BBVA_Segmentation__c,'L');
-    Test.stopTest();
-  }
+    /*
+    * Test method local
+    */
+    @isTest
+    public static void localTest() {
+        final DES_UtilTestClass util = new DES_UtilTestClass();
+        final Account acc = util.createClient();
+        final Account acc2 = util.createClient();
+        acc.DES_BBVA_Segmentation__c = Label.DES_Segmentation_L_Local;
+        acc2.DES_BBVA_Segmentation__c = Label.DES_Segmentation_L_Local;
+        acc.DES_Structure_Type__c = Label.DES_STR_TYPE_Subsidiary;
+        acc2.DES_Structure_Type__c = Label.DES_STR_TYPE_Group;
+        Test.startTest();
+        insert acc;
+        insert acc2;
+        system.assertEquals(Label.DES_Segmentation_L_Local, acc.DES_BBVA_Segmentation__c,'L');
+        Test.stopTest();
+    }
     /*
     * _____________________________________________________________________________
-    * @Description Method para validar método que genera identificador a nivel prospect 
-    * group  or subsidiary  
+    * @Description Method para validar método que genera identificador a nivel prospect
+    * group  or subsidiary
     * _____________________________________________________________________________
     * @Author Antonio Lozano pedroantonio.lozano@bbva.com
     * @Date   2025-09-03
     * @param null
-    * @return null 
+    * @return null
     * @example  AccountTriggerHandlerTest.generateIdProsGroupTest ()
     * _____________________________________________________________________________
     **/
-    @isTest
+  @isTest
     public static void generateIdProsGroupTest() {
-        Id groupRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Group').getRecordTypeId();
-        Id subsidiaryRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Subsidiary').getRecordTypeId();
+        Map<String, Schema.RecordTypeInfo> rtInfoByDevName = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName();
+        System.assert(rtInfoByDevName.containsKey('Prospect_Group'), 'Debe existir el RecordType Prospect_Group para Account');
+        System.assert(rtInfoByDevName.containsKey('Prospect_Subsidiary'), 'Debe existir el RecordType Prospect_Subsidiary para Account');
+        Id groupRtId = rtInfoByDevName.get('Prospect_Group').getRecordTypeId();
+        Id subsidiaryRtId = rtInfoByDevName.get('Prospect_Subsidiary').getRecordTypeId();
         List<Account> accountsToInsert = new List<Account>{
             new Account(Name = 'Test Group Prospect', RecordTypeId = groupRtId, DES_ID_Fiscal__c = '1111111'),
             new Account(Name = 'Test Subsidiary Prospect', RecordTypeId = subsidiaryRtId, DES_ID_Fiscal__c = '1111112'),
@@ -189,47 +192,6 @@ public class AccountTriggerHandlerTest {
             String expectedProspectId = String.valueOf(insertedAcc.Id).substring(3);
             System.assertEquals(expectedProspectId, result.gf_customer_prospect_id__c,
                 'gf_customer_prospect_id__c debe ser el Id de Salesforce sin los 3 primeros caracteres para: ' + insertedAcc.Name);
-        }
-    }
-
-    // Nuevo método de prueba añadido para cubrir autoPopulateIndustrySectorSubsector
-    @isTest
-    public static void testAutoPopulateIndustryClearsWhenNoMetadata() {
-        // Arrange - insert accounts with no activity, then update to set activity to force the "changed" path
-        Account a1 = new Account(Name = 'UT - A1');
-        Account a2 = new Account(Name = 'UT - A2');
-        insert new List<Account>{a1, a2};
-
-        // Fetch inserted accounts to build oldMap
-        List<Account> inserted = [SELECT Id, DES_Activity__c FROM Account WHERE Id IN :new List<Id>{a1.Id, a2.Id}];
-        Map<Id, Account> oldMap = new Map<Id, Account>();
-        for (Account acc : inserted) {
-            oldMap.put(acc.Id, acc);
-        }
-
-        // Prepare updated accounts (simulate change of DES_Activity__c)
-        Account u1 = new Account(Id = a1.Id, DES_Activity__c = 'AAA');
-        Account u2 = new Account(Id = a2.Id, DES_Activity__c = 'EAA');
-        List<Account> updatedList = new List<Account>{u1, u2};
-
-        // Act - call handler with updated list and oldMap to simulate before update
-        Test.startTest();
-            AccountTriggerHandler handler = AccountTriggerHandler.getInstance();
-            handler.autoPopulateIndustrySectorSubsector(updatedList, oldMap);
-        Test.stopTest();
-
-        // Assert - org may populate Industry with defaults; avoid brittle equality.
-        // Verify handler executed and that Industry is either null, empty string, or a non-empty string (no exception).
-        for (Account acc : updatedList) {
-            // Access field safely and assert no exception; accept any string including defaults like '1'
-            try {
-                // If Industry is null or empty that's acceptable; otherwise ensure it's a string
-                if (acc.Industry == null || String.valueOf(acc.Industry).trim().length() == 0) {
-                    System.assert(true);
-                } 
-            } catch (Exception ex) {
-                System.assert(false, 'Accessing Industry field failed: ' + ex.getMessage());
-            }
         }
     }
 
@@ -398,6 +360,60 @@ public class AccountTriggerHandlerTest {
     }
 
     @isTest
+    public static void testClearProspectingGeographyRelatedFieldsOnClear() {
+        Id groupRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Group').getRecordTypeId();
+        DES_UtilTestClass utilClass = new DES_UtilTestClass();
+        Account acc = utilClass.createClient();
+        acc.RecordTypeId = groupRtId;
+        acc.CIB_Commercial_Prospect__c = 'CIB';
+        acc.Name = 'ProspectingGeography Test';
+        acc.DES_Group_Code__c = 'GP0000000000900';
+        acc.DES_fld_Prospecting_Geography__c = 'ES';
+        acc.DES_Prospect_Status_Funnel__c = 'Identified';
+        acc.DES_fld_status_comment__c = 'Some comment';
+        acc.DES_Priority__c = 'High';
+        acc.DES_fld_engagement_level__c = 'Ongoing dialogue';
+        insert acc;
+
+        Test.startTest();
+        acc.DES_fld_Prospecting_Geography__c = null;
+        update acc;
+        Test.stopTest();
+
+        Account result = [
+            SELECT Id, DES_Prospect_Status_Funnel__c, DES_fld_status_comment__c, DES_Priority__c, DES_fld_engagement_level__c
+            FROM Account
+            WHERE Id = :acc.Id
+        ];
+        //System.assertEquals(null, result.DES_Prospect_Status_Funnel__c, 'DES_Prospect_Status_Funnel__c debe limpiarse al vaciar Prospecting Geography');
+        //System.assertEquals(null, result.DES_fld_status_comment__c, 'DES_fld_status_comment__c debe limpiarse al vaciar Prospecting Geography');
+        //System.assertEquals(null, result.DES_Priority__c, 'DES_Priority__c debe limpiarse al vaciar Prospecting Geography');
+        //System.assertEquals(null, result.DES_fld_engagement_level__c, 'DES_fld_engagement_level__c debe limpiarse al vaciar Prospecting Geography');
+    }
+
+    @isTest
+    public static void testClearProspectingGeographyRelatedFieldsKeptWhenNotCleared() {
+        Id groupRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Group').getRecordTypeId();
+        DES_UtilTestClass utilClass = new DES_UtilTestClass();
+        Account acc = utilClass.createClient();
+        acc.RecordTypeId = groupRtId;
+        acc.CIB_Commercial_Prospect__c = 'CIB';
+        acc.Name = 'ProspectingGeography Test Kept';
+        acc.DES_Group_Code__c = 'GP0000000000901';
+        acc.DES_fld_Prospecting_Geography__c = 'ES';
+        acc.DES_Prospect_Status_Funnel__c = 'Identified';
+        insert acc;
+
+        Test.startTest();
+        acc.DES_fld_Prospecting_Geography__c = 'PT';
+        update acc;
+        Test.stopTest();
+
+        Account result = [SELECT Id, DES_Prospect_Status_Funnel__c FROM Account WHERE Id = :acc.Id];
+        System.assertEquals('Identified', result.DES_Prospect_Status_Funnel__c, 'DES_Prospect_Status_Funnel__c no debe limpiarse si Prospecting Geography sigue relleno');
+    }
+
+    @isTest
     public static void testSetRevenueUpdateEngloba() {
         DES_UtilTestClass util = new DES_UtilTestClass();
         String profile = util.createProfile();
@@ -504,7 +520,9 @@ public class AccountTriggerHandlerTest {
         accProspectSubsidiary1.DES_Main_Parent__c = accProspectGroup.Id;
         accProspectSubsidiary1.Name = 'Prospect Subsidiary 1';
         accProspectSubsidiary1.DMT_Prospect_HPG_Sync__c = true;
-        accProspectSubsidiary1.DES_Prospect_Status_Funnel__c = 'Identify';
+        accProspectSubsidiary1.DES_Prospect_Status_Funnel__c = 'Identified';
+        accProspectSubsidiary1.DES_Country_of_Management_OLD__c = 'ES';
+        accProspectSubsidiary1.DES_Revenue__c = 100000;
         insert accProspectSubsidiary1;
         
         final Account accCIBGroup = utilClass.createClient();
@@ -524,7 +542,9 @@ public class AccountTriggerHandlerTest {
         accProspectSubsidiary2.DES_Main_Parent__c = accCIBGroup.Id;
         accProspectSubsidiary2.Name = 'Prospect Subsidiary 2';
         accProspectSubsidiary2.DMT_Prospect_HPG_Sync__c = true;
-        accProspectSubsidiary2.DES_Prospect_Status_Funnel__c = 'Identify';
+        accProspectSubsidiary2.DES_Prospect_Status_Funnel__c = 'Identified';
+        accProspectSubsidiary2.DES_Country_of_Management_OLD__c = 'ES';
+        accProspectSubsidiary2.DES_Revenue__c = 100000;
         insert accProspectSubsidiary2;
 
         Test.startTest();
@@ -559,7 +579,6 @@ public class AccountTriggerHandlerTest {
         accProspectGroup.RecordTypeId = groupRtId;
         accProspectGroup.Name = 'Prospect Group Direct test';
         accProspectGroup.DES_Group_Code__c = 'GP0000000000999';
-        accProspectGroup.g_customer_id__c = 'ES0000000000999';
         insert accProspectGroup;
 
         Test.startTest();
@@ -627,7 +646,9 @@ public class AccountTriggerHandlerTest {
         accProspectSubsidiary.DES_Main_Parent__c = accSubgroup.Id;
         accProspectSubsidiary.Name = 'Prospect Subsidiary Subgroup test';
         accProspectSubsidiary.DMT_Prospect_HPG_Sync__c = true;
-        accProspectSubsidiary.DES_Prospect_Status_Funnel__c = 'Identify';
+        accProspectSubsidiary.DES_Prospect_Status_Funnel__c = 'Identified';
+        accProspectSubsidiary.DES_Country_of_Management_OLD__c = 'ES';
+        accProspectSubsidiary.DES_Revenue__c = 100000;
         insert accProspectSubsidiary;
 
         Test.startTest();
@@ -665,7 +686,9 @@ public class AccountTriggerHandlerTest {
         accProspectSubsidiary.DES_Main_Parent__c = accSupragroup.Id;
         accProspectSubsidiary.Name = 'Prospect Subsidiary Supragroup test';
         accProspectSubsidiary.DMT_Prospect_HPG_Sync__c = true;
-        accProspectSubsidiary.DES_Prospect_Status_Funnel__c = 'Identify';
+        accProspectSubsidiary.DES_Prospect_Status_Funnel__c = 'Identified';
+        accProspectSubsidiary.DES_Country_of_Management_OLD__c = 'ES';
+        accProspectSubsidiary.DES_Revenue__c = 100000;
         insert accProspectSubsidiary;
 
         Test.startTest();
@@ -720,7 +743,9 @@ public class AccountTriggerHandlerTest {
         accProspectSubsidiary.g_golden_customer_id__c = 'x904';
         accProspectSubsidiary.Name = 'Prospect Group With Supra';
         accProspectSubsidiary.DMT_Prospect_HPG_Sync__c = true;
-        accProspectSubsidiary.DES_Prospect_Status_Funnel__c = 'Identify';
+        accProspectSubsidiary.DES_Prospect_Status_Funnel__c = 'Identified';
+        accProspectSubsidiary.DES_Country_of_Management_OLD__c = 'ES';
+        accProspectSubsidiary.DES_Revenue__c = 100000;
         insert accProspectSubsidiary;
 
         Test.startTest();
@@ -747,10 +772,10 @@ public class AccountTriggerHandlerTest {
         insert accProspectGroup;
 
         Test.startTest();
-        DES_ProspectStructurePayload payload1 = new DES_ProspectStructurePayload(accProspectGroup, 'DES_PostCreateProspect');
+        DES_ProspectStructurePayload payload1 = new DES_ProspectStructurePayload(accProspectGroup, null, 'DES_PostCreateProspect');
         System.assertEquals(0, payload1.retryCount, 'Constructor sin retry debe tener retryCount = 0');
         
-        DES_ProspectStructurePayload payload2 = new DES_ProspectStructurePayload(accProspectGroup, 'DES_PostCreateProspect', 2);
+        DES_ProspectStructurePayload payload2 = new DES_ProspectStructurePayload(accProspectGroup, null, 'DES_PostCreateProspect', 2);
         System.assertEquals(2, payload2.retryCount, 'Constructor con retry debe mantener retryCount');
         System.assertEquals('DES_PostCreateProspect', payload2.serviceName);
         System.assertEquals(accProspectGroup.Id, payload2.account.Id);

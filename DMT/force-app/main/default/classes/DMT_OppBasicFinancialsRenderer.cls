@@ -1,4 +1,4 @@
-public with sharing class DMT_OppBasicFinancialsRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_OppBasicFinancialsRenderer implements DMT_ViewRenderer {
 
     // ====================================================================================================
     // HTML RENDERING
@@ -10,8 +10,11 @@ public with sharing class DMT_OppBasicFinancialsRenderer implements DMT_ViewRend
         }
         
         try {
-            Integer CURRENT_YEAR = Date.today().year();
+            Integer quarter = (Date.today().month() - 1) / 3 + 1;
+            Integer yearOffset = (quarter == 4) ? 1 : 0;
+            Integer CURRENT_YEAR = Date.today().year() + yearOffset;
             String comparisonAccountName = data.oppAccountParentName;
+            Map<Integer, DMT_Opportunity_Business_Plan__c> globalBpByYear = mapGlobalBusinessPlanByYear(data.businessPlanRecords);
 
             // Main wrapper and promoted Title style (matching original Approval Process Data header)
             String html = '<div>'
@@ -31,19 +34,19 @@ public with sharing class DMT_OppBasicFinancialsRenderer implements DMT_ViewRend
                   + '</tr>';
 
             List<String> label = new List<String>{'Revenues','EBITDA','EBIT', 'Net Income','Free Cash Flow', 'Debt / EBITDA', 'Net Debt / EBITDA'};
-            List<String> values = new List<String>{'Revenues_', 'EBITDA_', 'EBIT_', 'Net_Income_', 'Free_Cash_Flow_', 'Debt_EBITDA_', 'Net_Debt_EBITDA_'};
-            
+            List<String> apiFields = new List<String>{'DMT_Revenues_number__c', 'DMT_EBITDA_number__c', 'DMT_EBIT_number__c', 'DMT_Net_Income_number__c', 'DMT_Free_Cash_Flow_number__c', 'DMT_Debt_EBITDA_number__c', 'DMT_Net_Debt_EBITDA_number__c'};
+
             for(Integer i = 0; i < label.size(); i++){
                 html += '<tr>'
                       + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">'+label[i]+'</td>'
-                      + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">'+DMT_FormattingUtils.checkNull(data.oppClient.get(values[i] + 'Last_Year_number__c'))+'</td>'
-                      + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">'+DMT_FormattingUtils.checkNull(data.oppClient.get(values[i] + 'Current_Year_number__c'))+'</td>'
-                      + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">'+DMT_FormattingUtils.checkNull(data.oppClient.get(values[i] + 'Next_Year_number__c'))+'</td>'
-                      + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">'+DMT_FormattingUtils.checkNull(data.oppClient.get(values[i] + 'Next_Year_1_number__c'))+'</td>'
-                      + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">'+DMT_FormattingUtils.checkNull(data.oppClient.get(values[i] + 'Next_Year_2_number__c'))+'</td>'
+                      + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">'+DMT_FormattingUtils.checkNull(getBusinessPlanValue(globalBpByYear, CURRENT_YEAR - 1, apiFields[i]))+'</td>'
+                      + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">'+DMT_FormattingUtils.checkNull(getBusinessPlanValue(globalBpByYear, CURRENT_YEAR, apiFields[i]))+'</td>'
+                      + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">'+DMT_FormattingUtils.checkNull(getBusinessPlanValue(globalBpByYear, CURRENT_YEAR + 1, apiFields[i]))+'</td>'
+                      + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">'+DMT_FormattingUtils.checkNull(getBusinessPlanValue(globalBpByYear, CURRENT_YEAR + 2, apiFields[i]))+'</td>'
+                      + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">'+DMT_FormattingUtils.checkNull(getBusinessPlanValue(globalBpByYear, CURRENT_YEAR + 3, apiFields[i]))+'</td>'
                       + '</tr>';
             }
-            
+
             html += '</table>'
                   + '<div>'
                   + '<div class="slds-scope">'
@@ -61,61 +64,22 @@ public with sharing class DMT_OppBasicFinancialsRenderer implements DMT_ViewRend
         }
     }
 
-    // ====================================================================================================
-    // PDF RENDERING
-    // ====================================================================================================
-
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null || (data.opportunity.getPopulatedFieldsAsMap().isEmpty() && data.oppClient.getPopulatedFieldsAsMap().isEmpty())) {
-            return new Map<String, Object>();
+    private Map<Integer, DMT_Opportunity_Business_Plan__c> mapGlobalBusinessPlanByYear(List<DMT_Opportunity_Business_Plan__c> businessPlanRecords) {
+        Map<Integer, DMT_Opportunity_Business_Plan__c> result = new Map<Integer, DMT_Opportunity_Business_Plan__c>();
+        if (businessPlanRecords == null) {
+            return result;
         }
-        
-        try {
-            Integer CURRENT_YEAR = Date.today().year();
-            List<Object> contentList = new List<Object>();
-            Map<String, Object> component = new Map<String, Object>();
-            String comparisonAccountName = data.oppAccountParentName;
-            
-            // Promoted Main Title
-            contentList.add(DMT_Create_Pdf_Controller.createTitle('BASIC FINANCIALS' + (String.isNotBlank(comparisonAccountName) ? ' - ' + comparisonAccountName : '')));
-
-            // Table Header Title Section
-            List<Object> titleSectionBF = DMT_Create_Pdf_Controller.createTitleSection('BASIC FINANCIALS');
-            contentList.add(titleSectionBF[0]);
-            contentList.add(titleSectionBF[1]);
-
-            List<List<String>> basicHead = new List<List<String>>{new List<String>{'', String.valueOf(CURRENT_YEAR - 1), String.valueOf(CURRENT_YEAR - 0), String.valueOf(CURRENT_YEAR + 1), String.valueOf(CURRENT_YEAR + 2), String.valueOf(CURRENT_YEAR + 3)}};
-            List<List<String>> basicRows = new List<List<String>>();
-            List<String> labels = new List<String>{'Revenues','EBITDA','EBIT', 'Net Income','Free Cash Flow', 'Debt / EBITDA', 'Net Debt / EBITDA'};
-            List<String> values = new List<String>{'Revenues_', 'EBITDA_', 'EBIT_', 'Net_Income_', 'Free_Cash_Flow_', 'Debt_EBITDA_', 'Net_Debt_EBITDA_'};
-
-            for (Integer i = 0; i < labels.size(); i++) {
-                basicRows.add(new List<String>{
-                    labels[i],
-                    DMT_FormattingUtils.checkNull(data.oppClient.get(values[i] + 'Last_Year_number__c')),
-                    DMT_FormattingUtils.checkNull(data.oppClient.get(values[i] + 'Current_Year_number__c')),
-                    DMT_FormattingUtils.checkNull(data.oppClient.get(values[i] + 'Next_Year_number__c')),
-                    DMT_FormattingUtils.checkNull(data.oppClient.get(values[i] + 'Next_Year_1_number__c')),
-                    DMT_FormattingUtils.checkNull(data.oppClient.get(values[i] + 'Next_Year_2_number__c'))
-                });
+        for (DMT_Opportunity_Business_Plan__c bp : businessPlanRecords) {
+            String geo = bp.DMT_Booking_Geography__c;
+            if ((String.isBlank(geo) || geo == 'GLOBAL') && bp.DMT_Year__c != null) {
+                result.put(Integer.valueOf(bp.DMT_Year__c), bp);
             }
-            
-            contentList.add(DMT_Create_Pdf_Controller.createTable(basicHead, basicRows));
-            contentList.add(DMT_Create_Pdf_Controller.createListText(
-                new List<String>{'Other Relevant Ratios','Basic Financials Comments'},
-                new List<String>{DMT_FormattingUtils.checkNull(data.oppClient.Other_Relevant_Ratios_desc__c), DMT_FormattingUtils.checkNull(data.oppClient.cstk_sust_indicators_comments__c)},
-                'ONE'));
-
-            component.put('content', contentList);
-            component.put('name', 'Basic Financials');
-
-            System.debug('returning component: ' + JSON.serialize(component));
-            return component;
-
-        } catch (Exception e) {
-            System.debug('Error in DMT_OppBasicFinancialsRenderer renderPdfJson, ' + e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),'DMT_OppBasicFinancialsRenderer','renderPdfJson','DMT',''));
-            return new Map<String, Object>();
         }
+        return result;
+    }
+
+    private Object getBusinessPlanValue(Map<Integer, DMT_Opportunity_Business_Plan__c> bpByYear, Integer year, String apiField) {
+        DMT_Opportunity_Business_Plan__c bp = bpByYear.get(year);
+        return bp != null ? bp.get(apiField) : null;
     }
 }

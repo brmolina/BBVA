@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Banker_PS_not_empty</fullName>
+    <active>true</active>
+    <description>Si se edita el Banker/PS y este estaba relleno, no se puede dejar vacío.</description>
+    <errorConditionFormula>AND(
+				AND(
+								NOT($Profile.Name = &quot;Desktop Integration&quot;),
+								NOT($Profile.Name = &quot;System Dataloader&quot;)
+				),
+				AND(
+								NOT(ISBLANK(PRIORVALUE(almd__User_id__c))),
+								ISBLANK(almd__User_id__c)
+				)
+)</errorConditionFormula>
+    <errorDisplayField>almd__User_id__c</errorDisplayField>
+    <errorMessage>You can not leave the Banker/PS empty.</errorMessage>
+</ValidationRule>

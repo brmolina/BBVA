@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Create_Taxonomy_Objects</name>
+        <label>Create Taxonomy Objects</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <actionName>DMT_CreateObjetcsTaxonomyflow</actionName>
+        <actionType>apex</actionType>
+        <faultConnector>
+            <targetReference>Custom_error_create_Taxonomy_Objects</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>taxonomy</name>
+            <value>
+                <elementReference>$Record</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>DMT_CreateObjetcsTaxonomyflow</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>58.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <customErrors>
+        <name>Custom_error_create_Taxonomy_Objects</name>
+        <label>Custom error create Taxonomy Objects</label>
+        <locationX>440</locationX>
+        <locationY>431</locationY>
+        <customErrorMessages>
+            <errorMessage>Failure to create Taxonomy objects</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <description>Customized errors are added to the flow</description>
+    <environments>Default</environments>
+    <interviewLabel>After Trigger Flow Taxonomy {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>After Trigger Flow Taxonomy</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Create_Taxonomy_Objects</targetReference>
+        </connector>
+        <object>DMT_Taxonomy_Values__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

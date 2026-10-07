@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>cuco__gf_psc_family_id__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Relation with the PS Catalog Family</description>
+    <label>Family</label>
+    <referenceTo>cuco__ps_catalog_family__c</referenceTo>
+    <relationshipLabel>PS Catalog Conditions</relationshipLabel>
+    <relationshipName>PS_Catalog_Conditions</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

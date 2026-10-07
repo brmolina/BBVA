@@ -8,7 +8,7 @@ export const clientFields = [
         type: 'picklist',
         isReadOnly: false,
         isHidden: false,
-        isRequired: false,
+        isRequired: true,
         options: []
     },
     {
@@ -32,7 +32,7 @@ export const clientFields = [
         type: 'number',
         isReadOnly: false,
         isHidden: false,
-        isRequired: false,
+        isRequired: true,
         step: 0.01,
         min: 0
     },
@@ -95,7 +95,7 @@ export const clientFields = [
         type: 'picklist',
         isReadOnly: false,
         isHidden: false,
-        isRequired: false,
+        isRequired: true,
         helpText: "Here we will indicate whether the client is local or global in order to determine which Thresholds apply for assessing the profitability of the transaction. It will be 'Global' if the client's income comes from more than one geography.",
         options: [
             { label: 'Global', value: 'Global' },
@@ -143,11 +143,11 @@ export const clientFields = [
         apiName: 'DMT_CAMN__c',
         value: '',
         size: '1-of-2',
-        type: 'text',
+        type: 'picklist',
         isReadOnly: false,
         isHidden: false,
         isRequired: false,
-        maxLength: 255
+        options: []
     },
     {
         id: 'Counterpart__c',
@@ -158,7 +158,7 @@ export const clientFields = [
         type: 'picklist',
         isReadOnly: false,
         isHidden: false,
-        isRequired: false,
+        isRequired: true,
         options: []
     },
     {
@@ -209,7 +209,7 @@ export const clientFields = [
         type: 'picklist',
         isReadOnly: false,
         isHidden: false,
-        isRequired: false,
+        isRequired: true,
         options: []
     },
     {
@@ -249,5 +249,18 @@ export const clientFields = [
         isHidden: false,
         isRequired: false,
         options: []
+    },
+    {
+        id: 'DMT_Guarantor_Name_Fiscal_ID__c',
+        label: 'Guarantor(s) name & Fiscal ID',
+        apiName: 'DMT_Guarantor_Name_Fiscal_ID__c',
+        value: '',
+        size: '1-of-1',
+        type: 'textarea',
+        isReadOnly: false,
+        isHidden: false,
+        isRequired: false,
+        maxLength: '500',
+        showCharacterCounter: true
     }
 ];

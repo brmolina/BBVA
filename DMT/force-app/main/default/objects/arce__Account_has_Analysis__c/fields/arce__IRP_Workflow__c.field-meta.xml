@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__IRP_Workflow__c</fullName>
+    <deprecated>false</deprecated>
+    <label>IRP Workflow</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>IRP</fullName>
+                <default>false</default>
+                <label>Rating</label>
+            </value>
+            <value>
+                <fullName>ARP</fullName>
+                <default>false</default>
+                <label>Adjustment</label>
+            </value>
+            <value>
+                <fullName>CRP</fullName>
+                <default>false</default>
+                <label>Override</label>
+            </value>
+            <value>
+                <fullName>EXPG</fullName>
+                <default>false</default>
+                <label>Explicit Guarantee</label>
+            </value>
+            <value>
+                <fullName>012</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>012</label>
+            </value>
+            <value>
+                <fullName>ajustes0012</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>ajustes0012</label>
+            </value>
+            <value>
+                <fullName>forzaje0012</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>forzaje0012</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

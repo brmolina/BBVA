@@ -1,5 +1,6 @@
 .spinner-container {
     text-align: center;
+    z-index: 20;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -7,27 +8,15 @@
 }
 
 .spinner-message {
-    margin-top: 6.5rem; 
+    margin-top: 6.5rem; /* Increase spacing from spinner */
     font-size: 1rem;
-    color: #000000;
+    color: #333;
     max-width: 90%;
 }
-    
+
 .full-height-content {
-    height: 100%;
+    height: 90rem;
     overflow-y: auto;
     position: relative;
-    width: 80rem;
-    min-width: 80rem ;
-    margin-left: -27rem;
-}
-
-.pdfStyle{
-    height: 80rem;
-    align-items: center;
-    justify-content: center;
-  
-}
-.nonChargedpdfStyle{
-    display: none;
+    min-height: 90rem;
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>dwp_kitv__Send_minutes__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Field to know if the minutes were sent and how</description>
+    <inlineHelpText>Select if the minutes will be sent and how</inlineHelpText>
+    <label>Send minutes</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Do not send</fullName>
+                <default>false</default>
+                <label>Do not send</label>
+            </value>
+            <value>
+                <fullName>To</fullName>
+                <default>true</default>
+                <label>To</label>
+            </value>
+            <value>
+                <fullName>CC</fullName>
+                <default>false</default>
+                <label>CC</label>
+            </value>
+            <value>
+                <fullName>CCO</fullName>
+                <default>false</default>
+                <label>CCO</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

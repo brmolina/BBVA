@@ -1,4 +1,4 @@
-public with sharing class DMT_SanctionProductsRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_SanctionProductsRenderer implements DMT_ViewRenderer {
     private static Map<Id, DMT_ViewRenderer> recordTypeRenderers = new Map<Id, DMT_ViewRenderer>();
 
     static {
@@ -11,9 +11,7 @@ public with sharing class DMT_SanctionProductsRenderer implements DMT_ViewRender
         Id dmtOpportunityId = rtInfos_Opportunity.get('DMT_Opportunity').getRecordTypeId();
         
         recordTypeRenderers.put(dmtOpportunityId, new DMT_LineSanctionProductsRenderer());
-        // recordTypeRenderers.put(treasuryId, new DMT_DefaultSanctionProductsRenderer());
-        // recordTypeRenderers.put(otherId, new DMT_DefaultSanctionProductsRenderer());
-        // recordTypeRenderers.put(sanctionId, new DMT_DefaultSanctionProductsRenderer());
+        recordTypeRenderers.put(sanctionId, new DMT_LineSanctionProductsRenderer());
     }
 
     public String renderHtml(DMT_ViewController.LineDataWrapper data) {
@@ -29,22 +27,6 @@ public with sharing class DMT_SanctionProductsRenderer implements DMT_ViewRender
         } catch (Exception e){
             System.debug(e.getMessage());
             return '<div>Error: ' + e.getMessage() + '</div>';
-        }
-    }
-
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null) {
-            return new Map<String, Object>();
-        }
-        try {
-            DMT_ViewRenderer renderer = recordTypeRenderers.get(data.recordTypeId);
-            if (renderer == null) {
-                throw new IllegalArgumentException('No Sanction Products renderer for record type Id: ' + data.recordTypeId);
-            }
-            return renderer.renderPdfJson(data);
-        } catch (Exception e){
-            System.debug(e.getMessage());
-            return new Map<String, Object>();
         }
     }
 }

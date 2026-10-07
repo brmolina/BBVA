@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__dvrsfn_product_service_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Numbers of products/services</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Numbers of products/services</label>
+    <length>500</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>2</visibleLines>
+</CustomField>

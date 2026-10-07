@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__call_limit_service__c</fullName>
+    <defaultValue>false</defaultValue>
+    <deprecated>false</deprecated>
+    <description>Manage the call to the limit service</description>
+    <label>Call Limit Service</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

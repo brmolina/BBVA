@@ -1,0 +1,49 @@
+<template>
+    <lightning-modal-header label="Retrieve another Group&apos;s table"></lightning-modal-header>
+
+    <lightning-modal-body>
+        <div class="slds-p-around_medium">
+            <p class="slds-m-bottom_small">
+                Select the Group whose Business Plan should be used to infer this table&apos;s values.
+            </p>
+            <c-dmt_generic_record_picker
+                value={selectedGroupId}
+                label={selectedGroupName}
+                options={groupOptions}
+                placeholder="Search Group..."
+                onrecordpickerchange={handleChange}
+                onrecordpickersearch={handleSearch}>
+            </c-dmt_generic_record_picker>
+            <template lwc:if={selectedGroupName}>
+                <p class="slds-m-top_small slds-text-color_weak">
+                    Selected Group: {selectedGroupName}
+                </p>
+            </template>
+        </div>
+    </lightning-modal-body>
+
+    <lightning-modal-footer>
+        <div class="slds-align_absolute-center">
+            <lightning-button
+                variant="neutral"
+                label="Cancel"
+                onclick={handleCancel}>
+            </lightning-button>
+            <template lwc:if={hasCurrentOverride}>
+                <lightning-button
+                    variant="neutral"
+                    label="Reset to Opportunity&apos;s Group"
+                    class="slds-m-left_x-small"
+                    onclick={handleReset}>
+                </lightning-button>
+            </template>
+            <lightning-button
+                variant="brand"
+                label="Redo all table"
+                class="slds-m-left_x-small"
+                disabled={isConfirmDisabled}
+                onclick={handleConfirm}>
+            </lightning-button>
+        </div>
+    </lightning-modal-footer>
+</template>

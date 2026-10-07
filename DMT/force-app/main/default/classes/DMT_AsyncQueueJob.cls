@@ -44,10 +44,27 @@ public class DMT_AsyncQueueJob implements Queueable, Database.AllowsCallouts {
             return;
         }
 
+        // CIBGLOBALD-4117 - at most one DMT_CalloutTrackableCheckPayload dispatched inline per
+        // execute() call - two of these landing in the same transaction can throw "You have
+        // uncommitted work pending" (a managed package's post-callout DML). Extras are re-buffered
+        // for the trailing flush() below instead, so each gets its own fresh transaction.
+        List<DMT_AsyncPayload> toDispatchNow = new List<DMT_AsyncPayload>();
+        Boolean calloutTrackableCheckAlreadyClaimed = false;
+        for (DMT_AsyncPayload p : payloads) {
+            if (p instanceof DMT_CalloutTrackableCheckPayload) {
+                if (calloutTrackableCheckAlreadyClaimed) {
+                    DMT_AsyncOrchestrator.enqueue(p);
+                    continue;
+                }
+                calloutTrackableCheckAlreadyClaimed = true;
+            }
+            toDispatchNow.add(p);
+        }
+
         List<DMT_LogExceptionPayload> logsFoundInList = new List<DMT_LogExceptionPayload>();
         List<DMT_LogExceptionPayload> newlyCaughtErrors = new List<DMT_LogExceptionPayload>();
 
-        for (DMT_AsyncPayload p : payloads) {
+        for (DMT_AsyncPayload p : toDispatchNow) {
             if (p instanceof DMT_LogExceptionPayload) {
                 logsFoundInList.add((DMT_LogExceptionPayload)p);
             } else {

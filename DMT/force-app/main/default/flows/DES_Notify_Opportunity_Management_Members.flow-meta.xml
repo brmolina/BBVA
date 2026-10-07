@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Se añade comprobación de que el usuario este activo. 
+Este flujo notifica a todos los usuarios que tengan un registro en DES_Opportunity_Management_Member vía Email.
+Este flujo se disparará cuando se cambie el estado de una oportunidad a CLOSED WON</description>
+    <formulas>
+        <description>Mensaje que se pondrá en el Chatter</description>
+        <name>var_mensajeChatter</name>
+        <dataType>String</dataType>
+        <expression>&quot;There is a new opportunity &quot; &amp;  {!var_OppName} &amp; &quot; for &quot; &amp; {!var_OppClientName} &amp; &quot; in which your assistance is required to win it!! Click here to access to it. @[&quot; &amp; {!var_OppManagMember.DES_User__c} &amp; &quot;]&quot;</expression>
+    </formulas>
+    <interviewLabel>DES_ {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>DES Notify Opportunity Management Members</label>
+    <loops>
+        <name>Go_through_Opp_Team_Members</name>
+        <label>Go through Opp Team Members</label>
+        <locationX>377</locationX>
+        <locationY>213</locationY>
+        <assignNextValueToReference>var_OppManagMember</assignNextValueToReference>
+        <collectionReference>var_listOppManagMembers</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Launch_Opp_Won_Alert</targetReference>
+        </nextValueConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_all_Opportunity_member</name>
+        <label>Get all Opportunity member</label>
+        <locationX>90</locationX>
+        <locationY>216</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Opportunity</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DES_Opportunity__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_idOpp</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>isActive__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>DES_Opportunity_Management_member__c</object>
+        <outputReference>var_listOppManagMembers</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>DES_Opportunity__c</queriedFields>
+        <queriedFields>DES_User__c</queriedFields>
+        <queriedFields>Name</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Opportunity</name>
+        <label>Get Opportunity</label>
+        <locationX>235</locationX>
+        <locationY>215</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Go_through_Opp_Team_Members</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_idOpp</elementReference>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <outputAssignments>
+            <assignToReference>obj_Opportunity.DES_Client_Text__c</assignToReference>
+            <field>DES_Client_Text__c</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>obj_Opportunity.Id</assignToReference>
+            <field>Id</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>obj_Opportunity.Name</assignToReference>
+            <field>Name</field>
+        </outputAssignments>
+    </recordLookups>
+    <startElementReference>Get_all_Opportunity_member</startElementReference>
+    <status>Active</status>
+    <subflows>
+        <name>Launch_Opp_Won_Alert</name>
+        <label>Launch Opp Won Alert</label>
+        <locationX>644</locationX>
+        <locationY>42</locationY>
+        <connector>
+            <targetReference>Go_through_Opp_Team_Members</targetReference>
+        </connector>
+        <flowName>DES_OppTeamMember_Closed_Won_Notification</flowName>
+        <inputAssignments>
+            <name>obj_OppManagMember</name>
+            <value>
+                <elementReference>var_OppManagMember</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>obj_Opportunity</name>
+            <value>
+                <elementReference>obj_Opportunity</elementReference>
+            </value>
+        </inputAssignments>
+        <outputAssignments>
+            <assignToReference>obj_Opportunity.Confidential_Information__c</assignToReference>
+            <name>var_Output</name>
+        </outputAssignments>
+    </subflows>
+    <variables>
+        <description>Oportunidad sobre la cuál se está trabajando</description>
+        <name>obj_Opportunity</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+        <objectType>Opportunity</objectType>
+    </variables>
+    <variables>
+        <description>Id del item que se ha creado en el feed del chatter</description>
+        <name>var_feedItemId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>id de la oportunidad que se está modificando</description>
+        <name>var_idOpp</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Lista devuelta de la query lanzada contra el objeto  DES_Opportunity_Management_Member__c vinculados a la Opportunidad &apos;var_idOpp&apos;</description>
+        <name>var_listOppManagMembers</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>DES_Opportunity_Management_member__c</objectType>
+    </variables>
+    <variables>
+        <description>Cliente de la Oportunidad</description>
+        <name>var_OppClientName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Opportunity Management Member correspondiente al loop</description>
+        <name>var_OppManagMember</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>DES_Opportunity_Management_member__c</objectType>
+    </variables>
+    <variables>
+        <description>Nombre de la Opportunidad sobre la que se está trabajando.</description>
+        <name>var_OppName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Id del Owner de la Oportunidad</description>
+        <name>var_OppOwnerId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_oputputFlow</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

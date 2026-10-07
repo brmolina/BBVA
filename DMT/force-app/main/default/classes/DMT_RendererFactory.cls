@@ -10,7 +10,7 @@
  *    (ConsultationIT, DMT_Access, DMT_Approver_Configuration, DMT_Approver_Task,
  *    DMT_CommercialActivity, DMT_Integration_Analytics, DMT_Limit_Test, DMT_ReadOnly).
  */
-public with sharing class DMT_RendererFactory {
+public without sharing class DMT_RendererFactory {
     /*
      * ─────────────────────────────────────────────────────────────────────────
      * HTML DESIGN CONTRACT — read this before implementing a new renderer
@@ -146,7 +146,6 @@ public with sharing class DMT_RendererFactory {
         'Limit' => DMT_LimitRenderer.class,
         'Limit Visual' => DMT_LimitVisualRenderer.class,
         'Profitability' => DMT_ProfitabilityRenderer.class,
-        'Transaction Overview' => DMT_TransactionOverviewRenderer.class,
         'Economics' => DMT_EconomicsRenderer.class,
         'Approval Process' => DMT_ApprovalProcessFlowRenderer.class,
         'Validation Process' => DMT_PassportProcessFlowRenderer.class,
@@ -171,7 +170,6 @@ public with sharing class DMT_RendererFactory {
         'Sanction Limit' => DMT_SanctionLimitRenderer.class,
         'Sanction Limit Visual' => DMT_SanctionLimitVisualRenderer.class,
         'Product Simple' => DMT_ProductSimpleRenderer.class,
-        'Opportunity Info NBC' => DMT_InfoNBCRenderer.class,
         'Client NBC' => DMT_ClientNBCRenderer.class,
         'Profitability Summaries' => DMT_ProfitabilitySummariesRenderer.class,
         'Profitability Visual' => DMT_ProfitabilityVisualRenderer.class,
@@ -217,51 +215,92 @@ public with sharing class DMT_RendererFactory {
         return rendererMap.containsKey(componentType);
     }
 
-    public static List<String> getTrackedFields(String componentType, Id recordTypeId) {
+    // CIBGLOBALD-4117: Takes the full Line/Opportunity record (not just its RecordTypeId) so a
+    // renderer can branch on any of its own fields if it needs to - see DMT_FieldTrackableRenderer.
+    public static List<String> getTrackedFields(String componentType, SObject record) {
         Type rendererType = rendererMap.get(componentType);
         if (rendererType == null) {
             return new List<String>();
         }
         DMT_ViewRenderer renderer = (DMT_ViewRenderer) rendererType.newInstance();
         if (renderer instanceof DMT_FieldTrackableRenderer) {
-            return ((DMT_FieldTrackableRenderer) renderer).getTrackedFields(recordTypeId);
+            return ((DMT_FieldTrackableRenderer) renderer).getTrackedFields(record);
         }
         return new List<String>();
     }
 
-    public static List<String> getTrackedFields(List<String> componentTypes, Id recordTypeId) {
+    public static List<String> getTrackedFields(List<String> componentTypes, SObject record) {
         Set<String> fields = new Set<String>();
         for (String componentType : componentTypes) {
-            fields.addAll(getTrackedFields(componentType, recordTypeId));
+            fields.addAll(getTrackedFields(componentType, record));
         }
         return new List<String>(fields);
     }
 
-    // Tracked fields grouped by SObject, for a renderer whose fields span more than one object.
+    // CIBGLOBALD-4117: Tracked fields grouped by SObject, for a renderer whose fields span more than one object.
     // Empty for a single-object renderer - use getTrackedFields() for those.
-    public static Map<String, List<String>> getTrackedFieldsByObject(String componentType, Id recordTypeId) {
+    public static Map<String, List<String>> getTrackedFieldsByObject(String componentType, SObject record) {
         Type rendererType = rendererMap.get(componentType);
         if (rendererType == null) {
             return new Map<String, List<String>>();
         }
         DMT_ViewRenderer renderer = (DMT_ViewRenderer) rendererType.newInstance();
         if (renderer instanceof DMT_MultiObjectFieldTrackableRenderer) {
-            return ((DMT_MultiObjectFieldTrackableRenderer) renderer).getTrackedFieldsByObject(recordTypeId);
+            return ((DMT_MultiObjectFieldTrackableRenderer) renderer).getTrackedFieldsByObject(record);
         }
         return new Map<String, List<String>>();
     }
 
-    // Child-record sections this component reads for the given record type, as declared by the
-    // renderer. Empty when it reads none, or when that record type's renderer isn't tracked.
-    public static List<DMT_ApprovalChangeStep_Helper.ChildSection> getChildSections(String componentType, Id recordTypeId) {
+    // CIBGLOBALD-4117: Child-record sections this component reads for the given record, as declared by the
+    // renderer. Empty when it reads none, or when that record's renderer isn't tracked.
+    public static List<DMT_ApprovalChangeStep_Helper.ChildSection> getChildSections(String componentType, SObject record) {
         Type rendererType = rendererMap.get(componentType);
         if (rendererType == null) {
             return new List<DMT_ApprovalChangeStep_Helper.ChildSection>();
         }
         DMT_ViewRenderer renderer = (DMT_ViewRenderer) rendererType.newInstance();
         if (renderer instanceof DMT_MultiObjectFieldTrackableRenderer) {
-            return ((DMT_MultiObjectFieldTrackableRenderer) renderer).getChildSections(recordTypeId);
+            return ((DMT_MultiObjectFieldTrackableRenderer) renderer).getChildSections(record);
         }
         return new List<DMT_ApprovalChangeStep_Helper.ChildSection>();
+    }
+
+    @TestVisible
+    private static List<String> trackedComponentNamesCache;
+
+    // CIBGLOBALD-4117 - component names whose delegator both knows how to report tracked data
+    // (DMT_FieldTrackableRenderer/DMT_MultiObjectFieldTrackableRenderer) and has tracking switched
+    // on (DMT_TrackedComponent.isComponentTracked()).
+    public static List<String> getTrackedComponentNames() {
+        if (trackedComponentNamesCache == null) {
+            List<String> names = new List<String>();
+            for (String componentName : rendererMap.keySet()) {
+                DMT_ViewRenderer renderer = (DMT_ViewRenderer) rendererMap.get(componentName).newInstance();
+                Boolean knowsHowToTrack = renderer instanceof DMT_FieldTrackableRenderer
+                    || renderer instanceof DMT_MultiObjectFieldTrackableRenderer
+                    || renderer instanceof DMT_CalloutTrackableRenderer;
+                Boolean isSwitchedOn = renderer instanceof DMT_TrackedComponent && ((DMT_TrackedComponent) renderer).isComponentTracked();
+                if (knowsHowToTrack && isSwitchedOn) {
+                    names.add(componentName);
+                }
+            }
+            trackedComponentNamesCache = names;
+        }
+        return trackedComponentNamesCache;
+    }
+
+    // CIBGLOBALD-4117 - the component's DMT_CalloutTrackableRenderer, or null when it has no
+    // callout-tracked data
+    public static DMT_CalloutTrackableRenderer getCalloutTrackableRenderer(String componentType) {
+        Type rendererType = rendererMap.get(componentType);
+        if (rendererType == null) {
+            return null;
+        }
+        DMT_ViewRenderer renderer = (DMT_ViewRenderer) rendererType.newInstance();
+        return (renderer instanceof DMT_CalloutTrackableRenderer) ? (DMT_CalloutTrackableRenderer) renderer : null;
+    }
+
+    public static Boolean isCalloutTrackable(String componentType) {
+        return getCalloutTrackableRenderer(componentType) != null;
     }
 }

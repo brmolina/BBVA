@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>bupl__gf_bus_pl_sales_goal_name__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Need</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>bupl__gf_bus_pl_cust_lock_name__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Increase credit lines</fullName>
+                <default>false</default>
+                <label>Increase credit lines</label>
+            </value>
+            <value>
+                <fullName>Increase guarantees lines</fullName>
+                <default>false</default>
+                <label>Increase guarantees lines</label>
+            </value>
+            <value>
+                <fullName>Increase industry asset allocation</fullName>
+                <default>false</default>
+                <label>Increase industry asset allocation</label>
+            </value>
+            <value>
+                <fullName>Increase country risk limits</fullName>
+                <default>false</default>
+                <label>Increase country risk limits</label>
+            </value>
+            <value>
+                <fullName>Build new product capabilities</fullName>
+                <default>false</default>
+                <label>Build new product capabilities</label>
+            </value>
+            <value>
+                <fullName>More aggresive pricing strategy</fullName>
+                <default>false</default>
+                <label>More aggresive pricing strategy</label>
+            </value>
+            <value>
+                <fullName>Increase execution speed</fullName>
+                <default>false</default>
+                <label>Increase execution speed</label>
+            </value>
+            <value>
+                <fullName>Improve internal coordination</fullName>
+                <default>false</default>
+                <label>Improve internal coordination</label>
+            </value>
+            <value>
+                <fullName>BBVA Senior Management support</fullName>
+                <default>false</default>
+                <label>BBVA Senior Management support</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <label>Others</label>
+            </value>
+            <value>
+                <fullName>Increase tenors</fullName>
+                <default>false</default>
+                <label>Increase tenors</label>
+            </value>
+            <value>
+                <fullName>Risk appetite alignment with growth opportunities</fullName>
+                <default>false</default>
+                <label>Risk appetite alignment with growth opportunities</label>
+            </value>
+            <value>
+                <fullName>Build new transactional product capabilities</fullName>
+                <default>false</default>
+                <label>Build new transactional product capabilities</label>
+            </value>
+            <value>
+                <fullName>Build new lending capabilities</fullName>
+                <default>false</default>
+                <label>Build new lending capabilities</label>
+            </value>
+            <value>
+                <fullName>Build new advisory capabilities</fullName>
+                <default>false</default>
+                <label>Build new advisory capabilities</label>
+            </value>
+            <value>
+                <fullName>Build new global markets capabilities</fullName>
+                <default>false</default>
+                <label>Build new global markets capabilities</label>
+            </value>
+            <value>
+                <fullName>Upgrade quant / modelling capabilities</fullName>
+                <default>false</default>
+                <label>Upgrade quant / modelling capabilities</label>
+            </value>
+            <value>
+                <fullName>Upgrade onboarding capabilities</fullName>
+                <default>false</default>
+                <label>Upgrade onboarding capabilities</label>
+            </value>
+            <value>
+                <fullName>Look for agreements to complete footprint offering</fullName>
+                <default>false</default>
+                <label>Look for agreements to complete footprint offering</label>
+            </value>
+            <value>
+                <fullName>Higher client appetite</fullName>
+                <default>false</default>
+                <label>Higher client appetite</label>
+            </value>
+            <value>
+                <fullName>Improve funding costs</fullName>
+                <default>false</default>
+                <label>Improve funding costs</label>
+            </value>
+            <value>
+                <fullName>Increase client penetration (financing solutions)</fullName>
+                <default>false</default>
+                <label>Increase client penetration (financing solutions)</label>
+            </value>
+            <value>
+                <fullName>Align terms and conditions with market standards</fullName>
+                <default>false</default>
+                <label>Align terms and conditions with market standards</label>
+            </value>
+            <value>
+                <fullName>Sign out ISDA contract</fullName>
+                <default>false</default>
+                <label>Sign out ISDA contract</label>
+            </value>
+            <value>
+                <fullName>Sign out Master Agreement</fullName>
+                <default>false</default>
+                <label>Sign out Master Agreement</label>
+            </value>
+            <value>
+                <fullName>Boost Cross Border activity</fullName>
+                <default>false</default>
+                <label>Boost Cross Border activity</label>
+            </value>
+            <value>
+                <fullName>Foster Commercial activity</fullName>
+                <default>false</default>
+                <label>Foster Commercial activity</label>
+            </value>
+            <value>
+                <fullName>Review pricing strategy with the Client</fullName>
+                <default>false</default>
+                <label>Review pricing strategy with the Client</label>
+            </value>
+            <value>
+                <fullName>Increase market share in non Lending business</fullName>
+                <default>false</default>
+                <label>Increase market share in non Lending business</label>
+            </value>
+            <value>
+                <fullName>Wait and see</fullName>
+                <default>false</default>
+                <label>Wait and see</label>
+            </value>
+            <value>
+                <fullName>Exit strategy</fullName>
+                <default>false</default>
+                <label>Exit strategy</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Client relationship</controllingFieldValue>
+            <valueName>BBVA Senior Management support</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Client relationship</controllingFieldValue>
+            <controllingFieldValue>Profitability decline</controllingFieldValue>
+            <controllingFieldValue>Lack of product capabilities</controllingFieldValue>
+            <controllingFieldValue>Unfavorable macroeconomic and industry outlook</controllingFieldValue>
+            <controllingFieldValue>Unfavorable Client outlook (downgrade, corporate events, etc)</controllingFieldValue>
+            <controllingFieldValue>Our timing is out of the market</controllingFieldValue>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <controllingFieldValue>Risk limitations</controllingFieldValue>
+            <controllingFieldValue>High competition</controllingFieldValue>
+            <controllingFieldValue>Legal issues</controllingFieldValue>
+            <valueName>Others</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Client relationship</controllingFieldValue>
+            <valueName>Boost Cross Border activity</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Client relationship</controllingFieldValue>
+            <valueName>Foster Commercial activity</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Profitability decline</controllingFieldValue>
+            <valueName>Review pricing strategy with the Client</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Profitability decline</controllingFieldValue>
+            <valueName>Increase market share in non Lending business</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lack of product capabilities</controllingFieldValue>
+            <valueName>Build new transactional product capabilities</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lack of product capabilities</controllingFieldValue>
+            <valueName>Build new lending capabilities</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lack of product capabilities</controllingFieldValue>
+            <valueName>Build new advisory capabilities</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lack of product capabilities</controllingFieldValue>
+            <valueName>Build new global markets capabilities</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lack of product capabilities</controllingFieldValue>
+            <valueName>Upgrade quant / modelling capabilities</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lack of product capabilities</controllingFieldValue>
+            <valueName>Upgrade onboarding capabilities</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lack of product capabilities</controllingFieldValue>
+            <valueName>Look for agreements to complete footprint offering</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Unfavorable macroeconomic and industry outlook</controllingFieldValue>
+            <controllingFieldValue>Unfavorable Client outlook (downgrade, corporate events, etc)</controllingFieldValue>
+            <valueName>Wait and see</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Unfavorable macroeconomic and industry outlook</controllingFieldValue>
+            <controllingFieldValue>Unfavorable Client outlook (downgrade, corporate events, etc)</controllingFieldValue>
+            <valueName>Exit strategy</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Our timing is out of the market</controllingFieldValue>
+            <valueName>Increase execution speed</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Our timing is out of the market</controllingFieldValue>
+            <valueName>Improve internal coordination</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Risk limitations</controllingFieldValue>
+            <valueName>Increase credit lines</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Risk limitations</controllingFieldValue>
+            <valueName>Increase guarantees lines</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Risk limitations</controllingFieldValue>
+            <valueName>Increase industry asset allocation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Risk limitations</controllingFieldValue>
+            <valueName>Increase country risk limits</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Risk limitations</controllingFieldValue>
+            <valueName>Increase tenors</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Risk limitations</controllingFieldValue>
+            <valueName>Risk appetite alignment with growth opportunities</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>High competition</controllingFieldValue>
+            <valueName>More aggresive pricing strategy</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>High competition</controllingFieldValue>
+            <valueName>Higher client appetite</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>High competition</controllingFieldValue>
+            <valueName>Improve funding costs</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>High competition</controllingFieldValue>
+            <valueName>Increase client penetration (financing solutions)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>High competition</controllingFieldValue>
+            <valueName>Align terms and conditions with market standards</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Legal issues</controllingFieldValue>
+            <valueName>Sign out ISDA contract</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Legal issues</controllingFieldValue>
+            <valueName>Sign out Master Agreement</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

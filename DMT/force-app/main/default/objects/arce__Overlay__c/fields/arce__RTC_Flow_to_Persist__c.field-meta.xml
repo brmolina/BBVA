@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__RTC_Flow_to_Persist__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Assign numeric value based on ARCE&apos;s RAR Rating tool.</description>
+    <externalId>false</externalId>
+    <formula>CASE(arce__Account_has_AnalysisId__r.arce__RAR_rating_tool_id__c,
+    &apos;2021RTC_GEN&apos;, IF(ISPICKVAL(arce__Account_has_AnalysisId__r.arce__IRP_Workflow__c, &apos;EXPG&apos;), &apos;140&apos;, &apos;100&apos;),
+    &apos;2021RTC_FS&apos;, &apos;130&apos;,
+    &apos;2021RTC_NFI&apos;, &apos;120&apos;,
+    &apos;2021RTC_EXPG&apos;, &apos;141&apos;,
+    &apos;2021RTC_NBF&apos;, &apos;150&apos;,
+    &apos;2021RTC_GEN_NBF&apos;, &apos;150&apos;,
+    &apos;&apos;)</formula>
+    <label>RTC Flow to Persist</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

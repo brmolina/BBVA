@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__sector_avg_prblty_dflt_date__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Date corresponding to the PD BBVA</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Date of the PD data</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Date</type>
+</CustomField>

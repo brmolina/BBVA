@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>cstk__Toolkit_highlights</fullName>
+    <fields>Name</fields>
+    <fields>cstk__account_id__c</fields>
+    <fields>cstk__year__c</fields>
+    <fields>sector__c</fields>
+    <fields>cstk__updated__c</fields>
+    <label>Toolkit highlights</label>
+</CompactLayout>

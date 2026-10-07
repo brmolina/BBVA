@@ -14,6 +14,7 @@
             <property name="clientId" label="Account Choosen" type="String" role="outputOnly"/>
             <property name="accountName" label="Account Name Choosen" type="String" role="outputOnly"/> 
             <property name="localClientId" label="Local Cliente Choosen" type="String" role="outputOnly" />
+            <property name="isSubsidiary" label="Is Subsidiary" type="Boolean" role="outputOnly" />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

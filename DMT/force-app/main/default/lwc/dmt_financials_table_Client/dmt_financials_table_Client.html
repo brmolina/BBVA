@@ -1,19 +1,24 @@
 <template>
     <lightning-card>
         <div class="slds-m-around_medium">          
-            <div class="slds-p-around_xx-small" lwc:if={isOppView}>
+            <div class="slds-grid slds-grid_align-end slds-p-around_xx-small" lwc:if={isOppView}>
                 <lightning-button 
                     icon-name="utility:redo"
-                    icon-position="right"
                     label={label.DMT_modify_financials_table}
-                    variant="base" 
-                    onclick={handleRedoAllTable}>
+                    variant="neutral" 
+                    onclick={handleRedoAllTable}
+                    disabled={isReadOnlyUser}>
                 </lightning-button>
             </div>         
             <c-dmt_-table-header-section
                 titletable="Basic Financials"
-                showcopypaste="false"
-                context="derivatives"
+                unit-label="(Figures in Mn)"
+                showcopypaste="true"
+                rowscopypaste={copyPasteRows}
+                tablecolumnscopypaste={copyPasteColumns}
+                isreadonlyuser={isCopyPasteDisabled}
+                onsendrowsevent={handlePasteData}
+                context="BasicFinancials"
             ></c-dmt_-table-header-section>
             <template lwc:if={isDataProcessed}>
                 <div class="slds-table_edit_container">
@@ -52,7 +57,7 @@
                                                             <div class="slds-p-around_none slds-col slds-size_1-of-3">
                                                                 <template lwc:if={row.isEditable}>
                                                                     <div class="button-group">
-                                                                        <template lwc:if={isOpportunity}>
+                                                                        <template lwc:if={showUndo}>
                                                                             <lightning-button-icon icon-name="utility:redo" class="redo-icon no-border" alternative-text="redo" data-id={row.Id} data-field={cell.field} onclick={handleRedo} variant='bare' style={cell.styleRedo}></lightning-button-icon>
                                                                         </template>
                                                                         <template lwc:if={isEditPencilEnabled}>

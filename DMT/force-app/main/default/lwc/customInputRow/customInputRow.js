@@ -5,6 +5,7 @@ export default class CustomInputRow extends LightningElement {
     @api aviableItem;
     @api inputValue;
     @api fieldname;
+    @api fieldlabel;
     @api context;
     @api maxDecimals;
     @api suffix;
@@ -69,14 +70,16 @@ export default class CustomInputRow extends LightningElement {
     }
 
     commitValue(newValue) {
-        if (this.validateNegative) {
-            const input = this.template.querySelector('lightning-input');
-            if (input) {
-                const isNegative = newValue !== '' && newValue !== null && Number(newValue) < 0;
-                input.setCustomValidity(isNegative ? this.label.ERR_NEGATIVE_VALUE : '');
-                input.reportValidity();
-            }
+        const input = this.template.querySelector('lightning-input');
+
+        if (this.validateNegative && input) {
+            const isNegative = newValue !== '' && newValue !== null && Number(newValue) < 0;
+            input.setCustomValidity(isNegative ? this.label.ERR_NEGATIVE_VALUE : '');
+            input.reportValidity();
         }
+
+        const isFieldValid = input ? input.checkValidity() : true;
+
         // Check if the new value is different from the initial value
         if (newValue !== this._initialValue) {
             this.inputValue = newValue; // Update the inputValue property
@@ -87,7 +90,13 @@ export default class CustomInputRow extends LightningElement {
                 bubbles: true,
                 cancelable: true,
                 detail: {
-                    data: { context: this.context, value: this.inputValue, fieldname: this.fieldname }
+                    data: {
+                        context: this.context,
+                        value: this.inputValue,
+                        fieldname: this.fieldname,
+                        fieldlabel: this.fieldlabel,
+                        isFieldValid
+                    }
                 }
             }));
         }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ValidateVisit_Client_or_Prospect</fullName>
+    <active>false</active>
+    <description>Validate that  a Visits can not be related to both a Client and Prospect at the same time.</description>
+    <errorConditionFormula>AND( NOT(ISBLANK(dwp_kitv__account_id__c)), NOT(ISBLANK( dwp_kitv__lead_id__c)) )</errorConditionFormula>
+    <errorMessage>A Visit can not be related to a Client and a Prospect</errorMessage>
+</ValidationRule>

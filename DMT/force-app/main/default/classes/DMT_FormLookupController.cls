@@ -69,10 +69,68 @@ public without sharing class DMT_FormLookupController {
             }
         }
 
+        Boolean hasSearch = String.isNotBlank(searchTerm);
+
+        // ── Account: use SOSL — encrypted fields cannot use SOQL LIKE ────
+        if (objectApiName == 'Account') {
+            String accountFilterClause = '';
+            if (!String.isBlank(filtersJson)) {
+                Object parsed = JSON.deserializeUntyped(filtersJson);
+                accountFilterClause = buildNode(parsed);
+            }
+
+            Set<Id> accountIds = new Set<Id>();
+            try {
+                if (hasSearch) {
+                    String soslTerm = String.escapeSingleQuotes(searchTerm.trim()) + '*';
+                    String soslQuery = 'FIND :soslTerm IN ALL FIELDS RETURNING Account(Id LIMIT ' + lim + ')';
+                    List<List<SObject>> sr = Search.query(soslQuery);
+                    for (SObject accountResult : sr[0]) {
+                        accountIds.add(accountResult.Id);
+                    }
+                    if (accountIds.isEmpty()) {
+                        return new List<Map<String, Object>>();
+                    }
+                }
+
+                List<String> accountWhereParts = new List<String>();
+                if (hasSearch) {
+                    accountWhereParts.add('Id IN :accountIds');
+                }
+                if (!String.isBlank(accountFilterClause)) {
+                    accountWhereParts.add(accountFilterClause);
+                }
+
+                String accountSoql = 'SELECT ' + String.join(selectFields, ', ')
+                    + ' FROM Account'
+                    + (accountWhereParts.isEmpty()
+                        ? ''
+                        : ' WHERE ' + String.join(accountWhereParts, ' AND '))
+                    + ' LIMIT ' + lim;
+                List<SObject> accts = Database.query(accountSoql);
+
+                List<Map<String, Object>> acctResult = new List<Map<String, Object>>();
+                for (SObject rec : accts) {
+                    Map<String, Object> row = new Map<String, Object>();
+                    row.put('id', String.valueOf(rec.Id));
+                    for (String fieldPath : selectFields) {
+                        if (fieldPath == 'Id') continue;
+                        if (crossObjectParts.containsKey(fieldPath)) {
+                            row.put(fieldPath, getCrossObjectValue(rec, crossObjectParts.get(fieldPath)));
+                        } else {
+                            row.put(fieldPath, rec.get(fieldPath));
+                        }
+                    }
+                    acctResult.add(row);
+                }
+                return acctResult;
+            } catch (Exception e) {
+                throw new AuraHandledException('Search error: ' + e.getMessage());
+            }
+        }
+
         // ── Build WHERE ───────────────────────────────────────────────────
         List<String> whereParts = new List<String>();
-
-        Boolean hasSearch = String.isNotBlank(searchTerm);
         if (hasSearch) {
             String escaped = String.escapeSingleQuotes(searchTerm.trim());
             List<String> orParts = new List<String>();

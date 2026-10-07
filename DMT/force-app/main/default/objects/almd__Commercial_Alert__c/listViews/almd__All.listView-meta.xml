@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>almd__All</fullName>
+    <columns>NAME</columns>
+    <columns>almd__User_id__c</columns>
+    <columns>almd__participant_id__c</columns>
+    <columns>almd__client_process_accepted_type__c</columns>
+    <columns>OWNER.FIRST_NAME</columns>
+    <columns>OWNER.LAST_NAME</columns>
+    <columns>almd__alert_stage_type__c</columns>
+    <columns>almd__alert_sub_stage_type__c</columns>
+    <columns>RECORDTYPE</columns>
+    <columns>LAST_UPDATE</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <label>All</label>
+</ListView>

@@ -1346,7 +1346,7 @@ public with sharing class OpportunityTriggerHandler {
 
         }
 
-    }
+    }     
 
     /**
      * @description Compares the StageName of DMT Opportunities and logs snapshot version.

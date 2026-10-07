@@ -15,6 +15,7 @@ export default class Dmt_textField extends LightningElement {
     @api variant = 'label-stacked';
     @api objectApiName;
     @track value; // label-stacked, label-inline, label-hidden
+    @track textareaCharCount = 0;
     _action;
     _isUserEditing = false;
     _fieldApiNames;
@@ -110,6 +111,7 @@ export default class Dmt_textField extends LightningElement {
                 }
                 const rawValue = data.fields[this.fieldName]?.value;
                 this.value = this.normalizeValue(rawValue);
+                this.updateTextareaState(this.value);
                 this.error = undefined;
             } catch (e) {
                 this.error = `Error retrieving field: ${this.fieldName}`;
@@ -156,9 +158,15 @@ export default class Dmt_textField extends LightningElement {
         }
 
         newValue = this.normalizeValue(newValue);
+
+        if (this.isTextarea) {
+            this.textareaCharCount = newValue ? newValue.length : 0;
+        }
+
         // Actualizar el valor interno
         this._isUserEditing = true;
         this.value = newValue;
+        this.updateTextareaState(this.value);
         console.log(' this.value: ',  this.value);
         const valueChangeEvent = new CustomEvent('textfieldchange', {
             detail: {
@@ -187,5 +195,22 @@ export default class Dmt_textField extends LightningElement {
 
     get computedMaxLength() {
         return this.maxLength ? parseInt(this.maxLength, 10) : undefined;
+    }
+
+    get computedTextareaMaxLength() {
+        const parsed = parseInt(this.maxLength, 10);
+        return Number.isFinite(parsed) && parsed > 0 ? parsed : 500;
+    }
+
+    get textareaCounterClass() {
+        return 'textarea-counter slds-text-body_small';
+    }
+
+    updateTextareaState(value) {
+        if (!this.isTextarea) {
+            return;
+        }
+
+        this.textareaCharCount = value ? value.length : 0;
     }
 }

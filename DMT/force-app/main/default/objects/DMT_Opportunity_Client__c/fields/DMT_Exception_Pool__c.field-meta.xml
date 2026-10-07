@@ -13,17 +13,17 @@
             <value>
                 <fullName>Yes</fullName>
                 <default>false</default>
-                <label>Yes</label>
+                <label>Expected to enter</label>
             </value>
             <value>
                 <fullName>No</fullName>
                 <default>false</default>
-                <label>No</label>
+                <label>Not expected to enter</label>
             </value>
             <value>
                 <fullName>At the limit</fullName>
                 <default>false</default>
-                <label>At the limit</label>
+                <label>To be confirmed</label>
             </value>
         </valueSetDefinition>
     </valueSet>

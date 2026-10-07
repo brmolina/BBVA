@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Arc_Gen_Status_Classification__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Status Classification</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Without changes</fullName>
+                <default>false</default>
+                <label>Without changes</label>
+            </value>
+            <value>
+                <fullName>Downgrade -1</fullName>
+                <default>false</default>
+                <label>Downgrade -1</label>
+            </value>
+            <value>
+                <fullName>Downgrade -2</fullName>
+                <default>false</default>
+                <label>Downgrade -2</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

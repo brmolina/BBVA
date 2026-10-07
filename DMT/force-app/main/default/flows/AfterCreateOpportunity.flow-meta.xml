@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Assign_Participants_By_UO</name>
+        <label>Assign_Participants_By_UO</label>
+        <locationX>50</locationX>
+        <locationY>2519</locationY>
+        <actionName>DMT_AssignParticipantsByUO</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>recordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <nameSegment>DMT_AssignParticipantsByUO</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
     <apiVersion>63.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
@@ -614,7 +632,9 @@
     </decisions>
     <description>add logic in proposal to approval
 
-Removed the Draft-exit, Proposal→Approval, and Ready-to-close task-comparison/restart logic (Compare_Task_From_Case_For_Opportunity, _approval, and _In_Ready_to_Close, plus their supporting decisions and the Passport Sanction Ready to Close filter). This logic is fully superseded by DMT_OpportunityTriggerHandler.restartApprovalTasksOnOpportunityResubmission, which reads its tracked-field list from DMT_RendererFactory instead of a hardcoded field list here, so it never needs a flow update again when tracked fields change. Save Date Proposal still runs unconditionally on every Draft→Proposal transition, unchanged.</description>
+CIBGLOBALD-4117 - Removed the Draft-exit, Proposal→Approval, and Ready-to-close task-comparison/restart logic (Compare_Task_From_Case_For_Opportunity, _approval, and _In_Ready_to_Close, plus their supporting decisions and the Passport Sanction Ready to Close filter). This logic is fully superseded by DMT_OpportunityTriggerHandler.restartApprovalTasksOnOpportunityResubmission, which reads its tracked-field list from DMT_RendererFactory instead of a hardcoded field list here, so it never needs a flow update again when tracked fields change. Save Date Proposal still runs unconditionally on every Draft→Proposal transition, unchanged. 
+
+JA 15.09.26 (Add Assign Participants Read/Write by UO)</description>
     <environments>Default</environments>
     <formulas>
         <name>iSNew</name>
@@ -733,6 +753,9 @@ Removed the Draft-exit, Proposal→Approval, and Ready-to-close task-comparison/
         <label>Create_Opp_TeamManage</label>
         <locationX>50</locationX>
         <locationY>2411</locationY>
+        <connector>
+            <targetReference>Assign_Participants_By_UO</targetReference>
+        </connector>
         <inputReference>Create_OppTeamManage</inputReference>
     </recordCreates>
     <recordCreates>

@@ -2,15 +2,6 @@
  * DMT_PdfService — Orchestrates server-side PDF generation in TWO separate
  * @AuraEnabled transactions so that inline base64 images are resolvable
  * by the Blob.toPdf() rendering engine.
- *
- * FLOW (called from LWC):
- *   Transaction 1 → preparePdfAssets():  Extracts data:image URIs from the HTML,
- *                   persists them as public Document records, and replaces the
- *                   data URIs with servlet.ImageServer URLs.
- *   --- LWC awaits, Salesforce commits Transaction 1 ---
- *   Transaction 2 → generateFinalPdf():  Calls DMT_BlobBuilderForPDF.buildPdfBlob()
- *                   with the prepared HTML (images are now committed & accessible),
- *                   cleans up temporary Documents, and returns the PDF as base64.
  */
 public with sharing class DMT_PdfService {
 
@@ -28,20 +19,10 @@ public with sharing class DMT_PdfService {
     // ── Constants ────────────────────────────────────────────────────────────
 
     private static final String DATA_IMAGE_MARKER = 'src="data:image/';
+    private static final String PAGE_BREAK_BORDER_STYLE = 'border-top: 2px dashed #004481;';
 
     // ── Transaction 1: Create temporary Document images ─────────────────────
 
-    /**
-     * Extracts every inline base64 image from the supplied HTML, persists each
-     * one as a temporary Document in a public folder, and replaces the data
-     * URIs with servlet.ImageServer URLs.
-     *
-     * The caller (LWC) MUST await this call before invoking generateFinalPdf()
-     * so that the Documents are committed and visible to the PDF engine.
-     *
-     * @param  originalHtml  Raw HTML that may contain data:image/…;base64,… src attributes.
-     * @return PreparationResult with the rewritten HTML and temporary Document Ids.
-     */
     @AuraEnabled
     public static PreparationResult preparePdfAssets(String originalHtml) {
         PreparationResult result = new PreparationResult();
@@ -92,21 +73,60 @@ public with sharing class DMT_PdfService {
 
     // ── Transaction 2: Generate PDF and clean up ────────────────────────────
 
-    /**
-     * Generates the final PDF from the prepared HTML (images already committed)
-     * and cleans up the temporary Document records.
-     *
-     * @param  finalHtml  HTML with servlet.ImageServer URLs (output of preparePdfAssets).
-     * @param  docIds     Temporary Document Ids to delete after PDF generation.
-     * @return The PDF encoded as a base64 string.
-     */
     @AuraEnabled
-    public static String generateFinalPdf(String finalHtml, List<String> docIds) {
+    public static String generateFinalPdf(String finalHtml, List<String> docIds, Boolean isMobile) {
         try {
-            Blob pdfBlob = DMT_BlobBuilderForPDF.buildPdfBlob(finalHtml);
+            String cleanPageBreakHtml = cleanPageBreakBorders(finalHtml);
+            Blob pdfBlob = DMT_BlobBuilderForPDF.buildPdfBlob(cleanPageBreakHtml);
+
+            if (isMobile != null && isMobile) {
+                // 1. Limpiar PDFs temporales antiguos (>30 min) para no acumular basura
+                purgeOldTempDocuments();
+
+                // 2. Crear ContentVersion efímero
+                ContentVersion cv = new ContentVersion();
+                cv.Title = 'Temp_DMT_PDF_' + System.currentTimeMillis();
+                cv.PathOnClient = 'DMT_ViewPDF.pdf';
+                cv.VersionData = pdfBlob;
+                cv.IsMajorVersion = true;
+                
+                Database.insert(cv, AccessLevel.SYSTEM_MODE);
+
+                cv = [
+                    SELECT Id, ContentDocumentId 
+                    FROM ContentVersion 
+                    WHERE Id = :cv.Id 
+                    WITH SYSTEM_MODE 
+                    LIMIT 1
+                ];
+
+                // Devuelve el ContentDocumentId para la visualización/descarga móvil
+                return cv.ContentDocumentId;
+            }
+
             return EncodingUtil.base64Encode(pdfBlob);
         } finally {
             cleanupDocuments(docIds);
+        }
+    }
+
+    // Limpia archivos temporales creados hace más de 30 minutos
+    private static void purgeOldTempDocuments() {
+        try {
+            Datetime threshold = Datetime.now().addMinutes(-30);
+            List<ContentDocument> oldTempDocs = [
+                SELECT Id 
+                FROM ContentDocument 
+                WHERE Title LIKE 'Temp_DMT_PDF_%' 
+                AND CreatedDate < :threshold 
+                WITH SYSTEM_MODE 
+                LIMIT 50
+            ];
+            if (!oldTempDocs.isEmpty()) {
+                Database.delete(oldTempDocs, false, AccessLevel.SYSTEM_MODE);
+            }
+        } catch (Exception e) {
+            System.debug('Error purging old temp docs: ' + e.getMessage());
         }
     }
 
@@ -119,7 +139,7 @@ public with sharing class DMT_PdfService {
 
         while (remaining.contains(DATA_IMAGE_MARKER)) {
             Integer srcIdx = remaining.indexOf(DATA_IMAGE_MARKER);
-            Integer uriStart = srcIdx + 5; // right after src="
+            Integer uriStart = srcIdx + 5;
             Integer uriEnd = remaining.indexOf('"', uriStart);
             if (uriEnd == -1) {
                 break;
@@ -203,6 +223,17 @@ public with sharing class DMT_PdfService {
     }
 
     // ── Cleanup ─────────────────────────────────────────────────────────────
+
+    @TestVisible
+    private static String cleanPageBreakBorders(String htmlContent) {
+        if (String.isBlank(htmlContent)) {
+            return htmlContent;
+        }
+        return htmlContent.replace(
+            '<div data-dmt="page-break" style="' + PAGE_BREAK_BORDER_STYLE,
+            '<div data-dmt="page-break" style="'
+        );
+    }
 
     @TestVisible
     private static void cleanupDocuments(List<String> docIdStrings) {

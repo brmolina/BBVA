@@ -3,6 +3,7 @@
  *              Clones the original Opportunity and all its related child records:
  *              OppClients, OpportunityLineItems, Tenors, Mitigants, XSells and Participants.
  *              Tenor dates are recalculated proportionally based on the original duration.
+ *              XSell values are shifted forward by 1 year (PY←CY, CY←NY, NY←NY1, NY1←null).
  *              Designed to be invoked from LWC components via @AuraEnabled methods.
  *
  * @author      Jimmy Tonato
@@ -222,6 +223,34 @@ public without sharing class DMT_OpportunityRenewUtil {
         return result;
     }
 
+    /**
+     * @description Returns the New Money records (DMT_Is_Old_Money__c = false) for a set of OLI Ids.
+     *              Used during renewal to carry New Money values forward as Old Money on the child.
+     */
+    private static List<DMT_Opportunity_Money__c> getNewMoneyRecords(Set<Id> oliIds) {
+        return [
+            SELECT Id, DMT_Opportunity_Product__c,
+                   DMT_Up_Front_Fee_Accrual__c,
+                   DMT_Up_Front_Fee_Non_Accrual__c,
+                   DMT_Funding_Cost__c,
+                   DMT_Liquidity_Fee__c,
+                   DMT_Interest_Rate_Period__c,
+                   DMT_Applicable_Margin__c,
+                   DMT_Pricing_Grid_or_Step_ups__c,
+                   DMT_Commitment_Fee__c,
+                   DMT_Utilisation_Fee__c,
+                   DMT_Extension_Duration_Fee__c,
+                   DMT_Other_Fees_Accrual__c,
+                   DMT_Other_Fees_Non_Accrual__c,
+                   DMT_Expected_Drawn__c,
+                   DMT_All_in_Drawn__c,
+                   DMT_All_in_Undrawn__c
+            FROM DMT_Opportunity_Money__c
+            WHERE DMT_Opportunity_Product__c IN :oliIds
+            AND   DMT_Is_Old_Money__c = false
+        ];
+    }
+
     // ─── Main Methods ─────────────────────────────────────────────────────────────
 
     @AuraEnabled
@@ -289,7 +318,8 @@ public without sharing class DMT_OpportunityRenewUtil {
             renewedOpp.StageName                 = System.Label.Draft_Status;
             renewedOpp.OwnerId                   = UserInfo.getUserId();
             renewedOpp.DMT_Sanction__c           = null;
-            renewedOpp.DMT_Opp_User_Lock__c      = null; 
+            renewedOpp.DMT_Opp_User_Lock__c      = null;
+            renewedOpp.CoreDocsTaxonomyValues__c = '';
           //  renewedOpp.DMT_Ready_to_close__c     = false;
             renewedOpp.DMT_Parent_Opportunity__c = originalOpp.Id;
             renewedOpp.DMT_Parent_Code__c        = originalOpp.DMT_Opp_Id__c;
@@ -354,8 +384,11 @@ public without sharing class DMT_OpportunityRenewUtil {
                 Map<Id, OpportunityLineItem> renewedOlisByOriginalId = new Map<Id, OpportunityLineItem>();
                 for (OpportunityLineItem oli : olis) {
                     OpportunityLineItem renewedOli = oli.clone(false, false, false, false);
-                    renewedOli.DMT_OldMoney_BBVA__c= oli.DMT_Deal_Amount_Tenors__c;
-                    renewedOli.Id                  = null;
+                    // One-off deal uses tenor amount; Add Line uses the line commitment amount
+                    renewedOli.DMT_OldMoney_BBVA__c = oli.DMT_Line_Oneoffdeal__c == 'One-off deal'
+                        ? oli.DMT_Deal_Amount_Tenors__c
+                        : oli.DMT_Deal_amount__c;
+                    renewedOli.Id                   = null;
                     renewedOli.OpportunityId       = renewedOpp.Id;
                     renewedOli.opportunity_stage_type__c = System.Label.Draft_Status;
                     renewedOli.gf_initial_date__c  = Date.today();
@@ -371,18 +404,22 @@ public without sharing class DMT_OpportunityRenewUtil {
                 oppIdToRenewedOlisMap.put(oppId, renewedOlisByOriginalId);
             }
 
-            // XSells — year offset preserved relative to today's base year
+            // XSells — shift values forward by 1 year on renewal:
+            //   new PY  ← old CY  (what was current year is now previous year)
+            //   new CY  ← old NY
+            //   new NY  ← old NY1
+            //   new NY1 ← null    (unknown future year)
             List<DMT_X_Sell__c> xSells = xSellsMap.get(oppId);
             if (xSells != null && !xSells.isEmpty()) {
-                Integer originalBaseYear = Integer.valueOf(xSells[0].Year__c);
-                Integer newBaseYear      = Date.today().year();
-                for (Integer i = 0; i < xSells.size(); i++) {
-                    DMT_X_Sell__c renewedXSell  = xSells[i].clone(false, false, false, false);
-                    renewedXSell.Id             = null;
-                    renewedXSell.OwnerId        = UserInfo.getUserId();
-                    renewedXSell.Opportunity__c = renewedOpp.Id;
-                    Integer diffYears    = Integer.valueOf(xSells[i].Year__c) - originalBaseYear;
-                    renewedXSell.Year__c = String.valueOf(newBaseYear + diffYears);
+                for (DMT_X_Sell__c xs : xSells) {
+                    DMT_X_Sell__c renewedXSell      = xs.clone(false, false, false, false);
+                    renewedXSell.Id                 = null;
+                    renewedXSell.OwnerId            = UserInfo.getUserId();
+                    renewedXSell.Opportunity__c     = renewedOpp.Id;
+                    renewedXSell.XSELL_Value_PY__c  = xs.XSELL_Value_CY__c;
+                    renewedXSell.XSELL_Value_CY__c  = xs.XSELL_Value_NY__c;
+                    renewedXSell.XSELL_Value_NY__c  = xs.XSELL_Value_NY1__c;
+                    renewedXSell.XSELL_Value_NY1__c = null;
                     renewedXSells.add(renewedXSell);
                 }
             }
@@ -449,6 +486,21 @@ public without sharing class DMT_OpportunityRenewUtil {
 
         if (!renewedTenorList.isEmpty())    insert renewedTenorList;
         if (!renewedMitigantList.isEmpty()) insert renewedMitigantList;
+
+        // ── Clone Money Records (parent New Money → child Old Money) ─────────────
+        List<DMT_Opportunity_Money__c> parentNewMoneyList = getNewMoneyRecords(oldOLItoNewOLI.keySet());
+        List<DMT_Opportunity_Money__c> childOldMoneyList  = new List<DMT_Opportunity_Money__c>();
+        for (DMT_Opportunity_Money__c parentRec : parentNewMoneyList) {
+            Id childOliId = oldOLItoNewOLI.get(parentRec.DMT_Opportunity_Product__c);
+            if (childOliId == null) { continue; }
+            DMT_Opportunity_Money__c childRec = parentRec.clone(false, true, false, false);
+            childRec.Id                         = null;
+            childRec.DMT_Opportunity_Product__c = childOliId;
+            childRec.DMT_Is_Old_Money__c        = true;
+            childRec.Name                       = 'OM-OLD-' + childOliId;
+            childOldMoneyList.add(childRec);
+        }
+        if (!childOldMoneyList.isEmpty()) insert childOldMoneyList;
 
         // ── Clone Participants ────────────────────────────────────────────────────
         List<DMT_TeamMember__c> renewedParticipants = new List<DMT_TeamMember__c>();

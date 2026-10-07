@@ -463,6 +463,55 @@ static void testInvokeMethodRecalculatePriority() {
             'syndicated_loan_drawn_amount__c should be synchronized with bbva_prtcp_tranche_amount__c when null');
     }
 
+    @isTest
+    static void testCalculateDealAmountEur_ConvertsFromOriginalCurrency() {
+        OpportunityLineItem oli = new OpportunityLineItem(
+            DMT_Deal_amount__c = 1200,
+            g_currency_id__c = 'USD'
+        );
+
+        DMT_OpportunityLineItemHandler.calculateDealAmountEur(new List<OpportunityLineItem>{ oli });
+
+        System.assertEquals(1000, oli.DMT_Deal_Amount_EUR__c.setScale(2, System.RoundingMode.HALF_UP),
+            'DMT_Deal_Amount_EUR__c should hold the EUR counter-valuation of DMT_Deal_amount__c based on g_currency_id__c');
+    }
+
+    @isTest
+    static void testCalculateDealAmountEur_OriginalCurrencyAlreadyEur() {
+        OpportunityLineItem oli = new OpportunityLineItem(
+            DMT_Deal_amount__c = 500,
+            g_currency_id__c = 'EUR'
+        );
+
+        DMT_OpportunityLineItemHandler.calculateDealAmountEur(new List<OpportunityLineItem>{ oli });
+
+        System.assertEquals(500, oli.DMT_Deal_Amount_EUR__c,
+            'DMT_Deal_Amount_EUR__c should equal DMT_Deal_amount__c when the original currency is already EUR');
+    }
+
+    @isTest
+    static void testCalculateDealAmountEur_NullAmountOrCurrencyClearsField() {
+        OpportunityLineItem oliNoAmount = new OpportunityLineItem(
+            DMT_Deal_amount__c = null,
+            g_currency_id__c = 'USD',
+            DMT_Deal_Amount_EUR__c = 999
+        );
+        OpportunityLineItem oliNoCurrency = new OpportunityLineItem(
+            DMT_Deal_amount__c = 100,
+            g_currency_id__c = null,
+            DMT_Deal_Amount_EUR__c = 999
+        );
+
+        DMT_OpportunityLineItemHandler.calculateDealAmountEur(
+            new List<OpportunityLineItem>{ oliNoAmount, oliNoCurrency }
+        );
+
+        System.assertEquals(null, oliNoAmount.DMT_Deal_Amount_EUR__c,
+            'DMT_Deal_Amount_EUR__c should be cleared when DMT_Deal_amount__c is null');
+        System.assertEquals(null, oliNoCurrency.DMT_Deal_Amount_EUR__c,
+            'DMT_Deal_Amount_EUR__c should be cleared when g_currency_id__c is null');
+    }
+
    @isTest
     static void testCalculateDmtOpportunityDealAmount_DMT_Notional_Amount_Changed_Flag() {
         // Test that even when DMT_Notional_Amount_Changed__c = true:

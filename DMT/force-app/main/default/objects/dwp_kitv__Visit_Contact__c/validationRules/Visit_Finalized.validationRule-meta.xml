@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Visit_Finalized</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+ dwp_kitv__visit_id__r.RecordType.DeveloperName =  $Label.DES_RT_Inside_Visit,
+ TEXT(dwp_kitv__visit_id__r.dwp_kitv__visit_status_type__c) = &apos;06&apos; 
+)</errorConditionFormula>
+    <errorMessage>Sorry, you can&apos;t insert a new client participant when the visit is finalized.</errorMessage>
+</ValidationRule>

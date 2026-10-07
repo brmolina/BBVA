@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_veh_brnd_dlrsp_clsfn_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Sorting type geared towards existing dealer brands.</description>
+    <label>Dealer classification type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>1</fullName>
+                <default>false</default>
+                <label>Official Dealer</label>
+            </value>
+            <value>
+                <fullName>2</fullName>
+                <default>false</default>
+                <label>Official dealer and multi-brand dealerships</label>
+            </value>
+            <value>
+                <fullName>3</fullName>
+                <default>false</default>
+                <label>Multi-brand dealerships</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -83,6 +83,42 @@
                 <identifier>RecordClient_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldItem>Record.Golden_Code__c</fieldItem>
+                <identifier>RecordGolden_Code__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldItem>Record.DMT_Destination_Id__c</fieldItem>
+                <identifier>RecordDMT_Destination_Id__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldItem>Record.DMT_Destination_Status__c</fieldItem>
+                <identifier>RecordDMT_Destination_Status__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldItem>Record.DMT_Destination_Light__c</fieldItem>
+                <identifier>RecordDMT_Destination_Light_c__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldItem>Record.DMT_Destination_Error__c</fieldItem>
+                <identifier>RecordDMT_Destination_Error_c__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldItem>Record.DMT_Destination_Date__c</fieldItem>
+                <identifier>RecordDMT_Destination_Date_c__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>Facet-d7d3b4f6-8e89-449d-beb0-5dacd0a45b6e</name>
         <type>Facet</type>
     </flexiPageRegions>

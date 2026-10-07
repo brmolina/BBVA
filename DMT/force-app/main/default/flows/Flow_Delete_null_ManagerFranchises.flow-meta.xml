@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Delete Managers Franchises</description>
+    <interviewLabel>Flow_Delete_null_ManagerFranchises {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Flow_Delete_null_ManagerFranchises</label>
+    <processType>AutoLaunchedFlow</processType>
+    <recordDeletes>
+        <name>Delete_Manager_Null_Franchise</name>
+        <label>Delete Manager Null Franchise</label>
+        <locationX>224</locationX>
+        <locationY>96</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>PB_ManagerFranchisesID</elementReference>
+            </value>
+        </filters>
+        <object>Manager_Franchise__c</object>
+    </recordDeletes>
+    <startElementReference>Delete_Manager_Null_Franchise</startElementReference>
+    <status>Obsolete</status>
+    <variables>
+        <description>Manager Franchises ID</description>
+        <name>PB_ManagerFranchisesID</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

@@ -1,16 +1,16 @@
-public with sharing class DMT_OpportunityInfoRenderer implements DMT_ViewRenderer, DMT_FieldTrackableRenderer {
+public without sharing class DMT_OpportunityInfoRenderer implements DMT_ViewRenderer, DMT_FieldTrackableRenderer {
 
-    // Derived from buildRenderFields(), plus the two conditional fields added below.
-    public List<String> getTrackedFields(Id recordTypeId) {
+    // CIBGLOBALD-4117 - getTrackedFields() = buildRenderFields()'s own field names (what gets
+    // rendered), plus, immediately below the loop, any fields that might not be rendered. If this
+    // renderer doesn't use buildRenderFields(), just list the field API names directly instead.
+    public List<String> getTrackedFields(SObject record) {
         Set<String> fields = new Set<String>();
         for (DMT_FormattingUtils.DisplayField df : buildRenderFields(new DMT_ViewController.LineDataWrapper())) {
             if (df.fieldApiNames != null) {
                 fields.addAll(df.fieldApiNames);
             }
         }
-        // Only one of these is built, depending on Product Area, so neither surfaces from the loop
-        // above (an empty wrapper has no Product Area). Watched regardless of branch, since Product
-        // Area itself can change.
+        // These two might not render depending on Product Area, so both are tracked.
         fields.add('DMT_ContingentCommitments__c');
         fields.add('DMT_Structured_GTB__c');
         return new List<String>(fields);

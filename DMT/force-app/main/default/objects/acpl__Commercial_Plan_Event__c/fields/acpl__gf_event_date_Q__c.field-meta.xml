@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>acpl__gf_event_date_Q__c</fullName>
+    <deprecated>false</deprecated>
+    <externalId>false</externalId>
+    <formula>IF(
+                    MONTH(acpl__gf_event_date__c) &lt; 4, &apos;1Q&apos; &amp; TEXT(YEAR(acpl__gf_event_date__c)),
+                    IF(
+                                MONTH(acpl__gf_event_date__c) &lt; 7, &apos;2Q&apos; &amp; TEXT(YEAR(acpl__gf_event_date__c)),
+                                IF(
+                                                MONTH(acpl__gf_event_date__c) &lt; 10, &apos;3Q&apos; &amp; TEXT(YEAR(acpl__gf_event_date__c)),
+                                                &apos;4Q&apos; &amp; TEXT(YEAR(acpl__gf_event_date__c))
+                                )
+                )
+)</formula>
+    <label>Expected Completion Date Q</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

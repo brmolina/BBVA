@@ -23,13 +23,17 @@
  * saying why - see DMT_TreasuryLineInfoRenderer.
  *
  * A renderer implementing neither tracking interface is simply not watched. That is intentional;
- * there is no list anywhere of which record types are migrated.
+ * there is no list anywhere of which record types are tracked.
  *
  * (The Client renderers do the same job a second way, via a column constant - see
  * DMT_ClientRenderer.)
  */
-public with sharing class DMT_InfoRenderer implements DMT_ViewRenderer, DMT_FieldTrackableRenderer {
+public without sharing class DMT_InfoRenderer implements DMT_ViewRenderer, DMT_FieldTrackableRenderer, DMT_TrackedComponent {
     private static Map<Id, DMT_ViewRenderer> recordTypeRenderers = new Map<Id, DMT_ViewRenderer>();
+
+    public Boolean isComponentTracked() {
+        return true;
+    }
 
     static {
         Map<String, Schema.RecordTypeInfo> rtInfos_Line = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName();
@@ -60,14 +64,15 @@ public with sharing class DMT_InfoRenderer implements DMT_ViewRenderer, DMT_Fiel
         }
     }
 
-    public List<String> getTrackedFields(Id recordTypeId) {
+    public List<String> getTrackedFields(SObject record) {
+        Id recordTypeId = (Id) record.get('RecordTypeId');
         DMT_ViewRenderer renderer = recordTypeRenderers.get(recordTypeId);
         if (renderer == null) {
             System.debug(LoggingLevel.WARN, '[DMT_InfoRenderer.getTrackedFields] No Info renderer registered for record type Id: ' + recordTypeId);
             return new List<String>();
         }
         if (renderer instanceof DMT_FieldTrackableRenderer) {
-            return ((DMT_FieldTrackableRenderer) renderer).getTrackedFields(recordTypeId);
+            return ((DMT_FieldTrackableRenderer) renderer).getTrackedFields(record);
         }
         return new List<String>();
     }

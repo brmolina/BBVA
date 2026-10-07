@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>dwp_kitv__User_owner</fullName>
+    <active>true</active>
+    <description>The user cannot be the same that visit owner.</description>
+    <errorConditionFormula>AND(
+$Setup.dwp_kitv__Visit_validations_acc_cs__c.dwp_kitv__User_Team_Member__c == false, dwp_kitv__user_id__c  =  dwp_kitv__visit_id__r.OwnerId)</errorConditionFormula>
+    <errorDisplayField>dwp_kitv__user_id__c</errorDisplayField>
+    <errorMessage>You cannot insert the Owner of the visit.</errorMessage>
+</ValidationRule>

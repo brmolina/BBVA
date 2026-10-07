@@ -1,0 +1,145 @@
+.slds-hint-parent td {
+    position: relative;
+    padding-right: 2rem;
+    white-space: nowrap;
+    vertical-align: top;
+    min-width: 100%;
+    width: 100%;
+    max-width: 100%;
+}
+
+.slds-table_edit_container {
+    position: relative;
+    table-layout: fixed;
+}
+
+.slds-table th {
+    background: #f3f2f2;
+    line-height: 2rem;
+    font-weight: bold;
+    font-size: 8;
+}
+
+.cell-content {
+    flex: 1;
+    justify-content: space-between;
+    min-width: 100%;
+    width: 100%;
+    max-width: 100%;
+    text-overflow: ellipsis;
+}
+
+.input-container {
+    overflow: visible;
+    margin-left: auto;
+    max-width: 100%;
+    min-width: 100%;
+    width: 100%;
+}
+
+.cell-value {
+    align-items: top;
+    overflow: hidden;
+    max-width: 100%;
+    min-width: 100%;
+    width: 100%;
+}
+
+.button-group {
+    /*display: flex;
+    flex-direction: column;*/
+    align-items: center !important;
+    justify-content: center;
+    top: 50%;
+    vertical-align: center;
+    visibility: hidden;
+}
+
+.slds-has-button {
+    position: relative;
+}
+
+.slds-has-button:hover .button-group {
+    visibility: visible;
+}
+
+
+.edit-icon, .redo-icon {
+    margin-left: 10%;
+    
+    
+    right: 0.5rem;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s;
+    padding: 0;
+    height: 1rem;
+    width: 1rem;
+    background: none;
+    border: none;
+}
+
+.no-border .slds-button__icon {
+    border: none !important;
+    box-shadow: none;
+    background: none;
+    padding: 0;
+}
+
+.slds-hint-parent:hover .edit-icon {
+    opacity: 1;
+}
+
+.slds-hint-parent .edit-icon .slds-button_icon {
+    height: 1rem;
+    width: 1rem;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.slds-hint-parent:hover .redo-icon {
+    opacity: 1;
+}
+
+.slds-hint-parent .redo-icon .slds-button_icon {
+    height: 1rem;
+    width: 1rem;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.slds-theme_alert-texture {
+    background-color: #fff7e6;
+}
+
+.slds-text-align_center {
+    text-align: center;
+}
+
+.slds-hint-parent lightning-input {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    font-size: inherit;
+    display: inline-block;
+}
+
+/*.slds-resizable__divider {
+    border-right: 1px solid #d8dde6;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    z-index: 1;
+}*/
+
+/*.c-dmt_warning_hover {
+    display: flex;
+    align-items: center;
+    margin-left: 0;
+    top:50%;
+    vertical-align: middle;
+}*/

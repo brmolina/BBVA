@@ -1,0 +1,129 @@
+<template>
+    <lightning-modal-header label={modalTitle}></lightning-modal-header>
+
+    <lightning-modal-body>
+        <div class="slds-p-around_medium modal-body-container slds-is-relative">
+    
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Saving Sold Order..." size="medium">
+                </lightning-spinner>
+            </template>
+
+            <!-- Loan Counterparty -->
+            <div class="slds-form-element slds-m-bottom_small">
+                <label class="slds-form-element__label">
+                    <abbr class="slds-required" title="required">*</abbr>Loan Counterparty
+                </label>
+                <div class="slds-form-element__control">
+                    <c-dmt_generic_record_picker
+                        value={formData.gf_loan_br_ctpty_id__c}
+                        label={formData.counterpartyName}
+                        options={counterpartyOptions}
+                        placeholder="Search counterparty..."
+                        fieldname="gf_loan_br_ctpty_id__c"
+                        show-sub-label
+                        disabled={isLoading}
+                        onrecordpickerchange={handleCounterpartyChange}
+                        onrecordpickersearch={handleCounterpartySearch}>
+                    </c-dmt_generic_record_picker>
+                </div>
+            </div>
+
+            <!-- Sold Order + Settled Amount -->
+            <div class="slds-grid slds-gutters slds-m-bottom_small">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="number"
+                        label="Sold Order (amount in units)"
+                        required
+                        value={formData.gf_ctpty_sold_order_amount__c}
+                        data-field="gf_ctpty_sold_order_amount__c"
+                        onchange={handleInputChange}
+                        disabled={isLoading}>
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="number"
+                        label="Settled Amount (amount in units)"
+                        required
+                        value={formData.gf_sold_ord_ctpty_setl_amount__c}
+                        data-field="gf_sold_ord_ctpty_setl_amount__c"
+                        onchange={handleInputChange}
+                        disabled={isLoading}>
+                    </lightning-input>
+                </div>
+            </div>
+
+            <!-- Settled Order + Currency -->
+            <div class="slds-grid slds-gutters slds-m-bottom_small">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox
+                        label="Settled Order"
+                        value={formData.gf_sold_order_settled_ind_type__c}
+                        options={soldOrderSettledOptions}
+                        placeholder="Select..."
+                        data-field="gf_sold_order_settled_ind_type__c"
+                        onchange={handleComboboxChange}
+                        disabled={isLoading}>
+                    </lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox
+                        label="Currency"
+                        value={formData.Currency__c}
+                        options={currencyOptions}
+                        placeholder="Select..."
+                        data-field="Currency__c"
+                        onchange={handleComboboxChange}
+                        disabled={isLoading}>
+                    </lightning-combobox>
+                </div>
+            </div>
+
+            <!-- Fees Paid + %Underwriting -->
+            <div class="slds-grid slds-gutters slds-m-bottom_small">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="number"
+                        label="Fees Paid to the Market (BPS)"
+                        value={formData.gf_sold_orders_fees_bps_amount__c}
+                        data-field="gf_sold_orders_fees_bps_amount__c"
+                        onchange={handleInputChange}
+                        disabled={isLoading}>
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-input
+                        type="number"
+                        label="%Underwriting"
+                        value={formData.gf_bbva_assur_prtcp_per__c}
+                        step="0.001"
+                        data-field="gf_bbva_assur_prtcp_per__c"
+                        onchange={handleInputChange}
+                        disabled={isLoading}>
+                    </lightning-input>
+                </div>
+            </div>
+
+            <template if:true={errorMessage}>
+                <p class="slds-text-color_error slds-m-top_x-small">{errorMessage}</p>
+            </template>
+
+        </div>
+    </lightning-modal-body>
+
+    <lightning-modal-footer>
+        <div class="slds-align_absolute-center">
+            <lightning-button
+                variant="neutral"
+                label="Cancel"
+                onclick={handleCancel}
+                disabled={isLoading}>
+            </lightning-button>
+        <lightning-button variant="brand" label={saveButtonLabel} class="slds-m-left_x-small" onclick={handleSave}
+            disabled={isLoading}>
+        </lightning-button>
+        </div>
+    </lightning-modal-footer>
+</template>

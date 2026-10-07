@@ -5,6 +5,7 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
     private static final String MSG_FIELD_RATING_ERROR = 'Max rating must be higher \n than min selected.';
     private static final String MSG_INVALID_DATE_FORMAT = 'Invalid date format for overridefield: ';
     private static final String MSG_INVALID_DECIMAL_FORMAT = 'Invalid decimal format for overridefield: ';
+    private static final String MSG_INVALID_OVERRIDE_FIELDS = 'Invalid overrideFields format.';
     private static final String MSG_ERROR_PATTERN = 'Error validating input pattern for field ';
     private static final String AXIS_EXTERNAL_ID_FEES_UPFRONT = '3';
     private static final String AXIS_EXTERNAL_ID_SPREAD_DRAWN = '4';
@@ -116,18 +117,18 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
     }
 
     /**
-    * @description check inputs are valid
+    * @description Checks that the profitability request inputs are valid.
     * @author BBVA DMT | 18-03-2025 
-    * @param omniMap 
+    * @param inputMap request data received from the LWC or a legacy caller
     * @return String 
     **/
-    public static void validateInputsRequest(Map<String, Object> omniMap) {
+    public static void validateInputsRequest(Map<String, Object> inputMap) {
 
-        String xMIN = cleanNullString(omniMap.get('minX'));
-        String xMAX = cleanNullString(omniMap.get('maxX'));
-        String yMIN = cleanNullString(omniMap.get('minY'));
-        String yMAX = cleanNullString(omniMap.get('maxY'));
-        String ratingCatalog =JSON.serialize(omniMap.get('catalogRating'));
+        String xMIN = cleanNullString(inputMap.get('minX'));
+        String xMAX = cleanNullString(inputMap.get('maxX'));
+        String yMIN = cleanNullString(inputMap.get('minY'));
+        String yMAX = cleanNullString(inputMap.get('maxY'));
+        String ratingCatalog =JSON.serialize(inputMap.get('catalogRating'));
         // check if one of min/max is provided without the other
         Boolean checkXInputCompleted = ( !String.isBlank(xMIN) && String.isBlank(xMAX)) || ( String.isBlank(xMIN) && !String.isBlank(xMAX));
         Boolean checkYInputCompleted = ( !String.isBlank(yMIN) && String.isBlank(yMAX)) || ( String.isBlank(yMIN) && !String.isBlank(yMAX));
@@ -181,20 +182,20 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
 
     
     /**
-    * @description create request to profitability test with data from Omnistudio map
+    * @description Creates the Profitability Matrix service request from the LWC request map.
     * @author BBVA DMT | 18-03-2025 
-    * @param omniMap 
+    * @param inputMap request data from dmt_profitabilityTestMain
     * @return String 
     **/
-    public static String createRequest(Map<String, Object> omniMap) {
+    public static String createRequest(Map<String, Object> inputMap) {
 
-    String xMIN = cleanNullString(omniMap.get('minX'));
-    String xMAX = cleanNullString(omniMap.get('maxX'));
-    String yMIN = cleanNullString(omniMap.get('minY'));
-    String yMAX = cleanNullString(omniMap.get('maxY'));
+    String xMIN = cleanNullString(inputMap.get('minX'));
+    String xMAX = cleanNullString(inputMap.get('maxX'));
+    String yMIN = cleanNullString(inputMap.get('minY'));
+    String yMAX = cleanNullString(inputMap.get('maxY'));
 
     // validate unified inputs (they can be decimal or rating strings)
-    validateInputsRequest(omniMap);
+    validateInputsRequest(inputMap);
 
         final User userLogin = DMT_User_Selector.getLoginUser();
         final String federationId = userLogin.federationIdentifier;
@@ -202,17 +203,17 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
         AssumptionRequest request = new AssumptionRequest();
         request.assumptionIn = new AssumptionIn();
         request.assumptionIn.audit = new Audit();
-        request.assumptionIn.audit.opportunityId = (String) omniMap.get('oppId');
-        request.assumptionIn.audit.opportunityVersion = (String) omniMap.get('version');
-        request.assumptionIn.audit.productId = (String) omniMap.get('prodId');
+        request.assumptionIn.audit.opportunityId = (String) inputMap.get('oppId');
+        request.assumptionIn.audit.opportunityVersion = (String) inputMap.get('version');
+        request.assumptionIn.audit.productId = (String) inputMap.get('prodId');
         request.assumptionIn.audit.origin = 'Salesforce';
         request.assumptionIn.audit.auditUser=federationId;
         
 
         request.assumptionIn.assumption = new Assumption();
-        request.assumptionIn.assumption.axisX = (String) omniMap.get('axisX');
-        request.assumptionIn.assumption.axisY = (String) omniMap.get('axisY');
-        request.assumptionIn.assumption.axisCentral = (String) omniMap.get('axisCentral');
+        request.assumptionIn.assumption.axisX = (String) inputMap.get('axisX');
+        request.assumptionIn.assumption.axisY = (String) inputMap.get('axisY');
+        request.assumptionIn.assumption.axisCentral = (String) inputMap.get('axisCentral');
 
         
         // Handle X: either decimals or rating strings
@@ -221,7 +222,7 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
                 Decimal minXDec = Decimal.valueOf(xMIN);
                 Decimal maxXDec = ((Decimal.valueOf(xMIN) + (Decimal.valueOf(xMAX))*9));
                 request.assumptionIn.assumption.minX = minXDec.toPlainString();
-                validateRangeMax(cleanNullString(omniMap.get('axisX_Id')), maxXDec);
+                validateRangeMax(cleanNullString(inputMap.get('axisX_Id')), maxXDec);
                 request.assumptionIn.assumption.maxX = maxXDec.toPlainString();
             } else {
                 // treat as rating strings
@@ -236,7 +237,7 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
                 Decimal minYDec = Decimal.valueOf(yMIN);
                 Decimal maxYDec = ((Decimal.valueOf(yMIN) + (Decimal.valueOf(yMAX))*9));
                 request.assumptionIn.assumption.minY = minYDec.toPlainString();
-                validateRangeMax(cleanNullString(omniMap.get('axisY_Id')), maxYDec);
+                validateRangeMax(cleanNullString(inputMap.get('axisY_Id')), maxYDec);
                 request.assumptionIn.assumption.maxY = maxYDec.toPlainString();
             } else {
                 // treat as rating strings
@@ -245,72 +246,99 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
             }
         }
 
-        if (omniMap.containsKey('overrideFields') && 
-            omniMap.get('overrideFields') != null && 
-            !String.isBlank(String.valueOf(omniMap.get('overrideFields'))) && 
-            omniMap.get('overrideFields') instanceof Map<String, Object>) {
-    
-                System.debug('DEBUG OFields ' + String.valueOf(omniMap.get('overrideFields')));
-                request = addOverrideFields(request, omniMap);
-        } 
+        // The FlexCard/Omni flow supplied a native Apex map, while an object sent by an LWC can
+        // reach Apex with a different runtime map representation. Always normalize the value and
+        // build the service's required override structure, even when there are no override values.
+        request = addOverrideFields(request, inputMap);
         
 
         return JSON.serialize(request,true);
     }
 
     /**
-    * @description create request to profitability test with data from Omnistudio map with fields override
+        * @description Adds the normalized LWC/legacy override values to the service request.
     * @author BBVA DMT | 18-03-2025 
-    * @param omniMap 
+        * @param inputMap request map containing overrideFields
     * @return String 
     **/
-    public static AssumptionRequest addOverrideFields(AssumptionRequest request,Map<String, Object> omniMap) {
-   
-            Map<String,Object> ofFromOmni = (Map<String,Object>) omniMap.get('overrideFields');
+        public static AssumptionRequest addOverrideFields(AssumptionRequest request,Map<String, Object> inputMap) {
+            Map<String,Object> overrideFields = normalizeOverrideFields(inputMap.get('overrideFields'));
 
             request.assumptionIn.overrideField = new OverrideField();
             request.assumptionIn.overrideField.profitabilityIn = new ProfitabilityIn();
-            request.assumptionIn.overrideField.profitabilityIn.opportunity = createOpportunityOverride(ofFromOmni);
-            request.assumptionIn.overrideField.profitabilityIn.product = createProductOverrides(ofFromOmni);
+            request.assumptionIn.overrideField.profitabilityIn.opportunity = createOpportunityOverride(overrideFields);
+            request.assumptionIn.overrideField.profitabilityIn.product = createProductOverrides(overrideFields);
 
         return request;
+    }
+
+    /**
+    * @description Normalizes overrideFields received from either the legacy Omni map or an LWC.
+    * Native Apex maps use the fast path; only non-native LWC representations require JSON
+    * normalization. Null or blank values become an empty map so the service structure is retained.
+    * @param rawOverrideFields raw overrideFields value from the request
+    * @return Map<String, Object> normalized override values
+    **/
+    private static Map<String, Object> normalizeOverrideFields(Object rawOverrideFields) {
+        if (rawOverrideFields == null || String.isBlank(String.valueOf(rawOverrideFields))) {
+            return new Map<String, Object>();
+        }
+        if (rawOverrideFields instanceof Map<String, Object>) {
+            return (Map<String, Object>) rawOverrideFields;
+        }
+
+        Object normalized;
+        try {
+            if (rawOverrideFields instanceof String) {
+                normalized = JSON.deserializeUntyped((String) rawOverrideFields);
+            } else {
+                normalized = JSON.deserializeUntyped(JSON.serialize(rawOverrideFields));
+            }
+        } catch (JSONException e) {
+            throw new CustomException(MSG_INVALID_OVERRIDE_FIELDS, e);
+        }
+
+        if (!(normalized instanceof Map<String, Object>)) {
+            throw new CustomException(MSG_INVALID_OVERRIDE_FIELDS);
+        }
+        return (Map<String, Object>) normalized;
     }
 
 
     /**
     * @description add opp fields override to request
     * @author BBVA DMT | 21-05-2025 
-    * @param ofFromOmni 
+    * @param overrideFields normalized override values
     * @return OpportunityOverride 
     **/
-    private static OpportunityOverride createOpportunityOverride(Map<String, Object> ofFromOmni) {
+    private static OpportunityOverride createOpportunityOverride(Map<String, Object> overrideFields) {
         OpportunityOverride opportunity = new OpportunityOverride();
-        opportunity.entific = cleanNullString(String.valueOf(ofFromOmni.get('entificNew')));
-        opportunity.booking = cleanNullString(String.valueOf(ofFromOmni.get('bookingNew')));
-        opportunity.counterpart = cleanNullString(String.valueOf(ofFromOmni.get('clientTypeNew')));
-        opportunity.clientRating = cleanNullString(String.valueOf(ofFromOmni.get('intClientRatingNew')));
-        opportunity.externalClientRating = cleanNullString(String.valueOf(ofFromOmni.get('extClientRatingNew')));
-        opportunity.scoring = cleanNullString(String.valueOf(ofFromOmni.get('ScoringNew')));
+        opportunity.entific = cleanNullString(overrideFields.get('entificNew'));
+        opportunity.booking = cleanNullString(overrideFields.get('bookingNew'));
+        opportunity.counterpart = cleanNullString(overrideFields.get('clientTypeNew'));
+        opportunity.clientRating = cleanNullString(overrideFields.get('intClientRatingNew'));
+        opportunity.externalClientRating = cleanNullString(overrideFields.get('extClientRatingNew'));
+        opportunity.scoring = cleanNullString(overrideFields.get('ScoringNew'));
         return opportunity;
     }
     
     /**
     * @description add product fields override to request
     * @author BBVA DMT | 21-05-2025 
-    * @param ofFromOmni 
+    * @param overrideFields normalized override values
     * @return List<ProductOverride> 
     **/
-    private static List<ProductOverride> createProductOverrides(Map<String, Object> ofFromOmni) {
+    private static List<ProductOverride> createProductOverrides(Map<String, Object> overrideFields) {
         List<ProductOverride> productOverrides = new List<ProductOverride>();
         ProductOverride product = new ProductOverride();
     
-        product.initDate = parseDate(ofFromOmni,'startDateNew');
-        product.endDate = parseDate(ofFromOmni,'endDateNew');
-        product.countryRisk = cleanNullString(String.valueOf(ofFromOmni.get('countryRiskNew')));
-        product.countryRating = cleanNullString(String.valueOf(ofFromOmni.get('countryRatingNew')));
-        product.currencyId = cleanNullString(String.valueOf(ofFromOmni.get('currencyNew')));
+        product.initDate = parseDate(overrideFields,'startDateNew');
+        product.endDate = parseDate(overrideFields,'endDateNew');
+        product.countryRisk = cleanNullString(overrideFields.get('countryRiskNew'));
+        product.countryRating = cleanNullString(overrideFields.get('countryRatingNew'));
+        product.currencyId = cleanNullString(overrideFields.get('currencyNew'));
     
-        product.amortization = createAmortization(ofFromOmni);
+        product.amortization = createAmortization(overrideFields);
         productOverrides.add(product);
     
         return productOverrides;
@@ -319,72 +347,69 @@ public with sharing class DMT_ProfitabilityMatrix_Wrapper {
     /**
     * @description add amortization fields override to request
     * @author BBVA DMT | 21-05-2025 
-    * @param ofFromOmni 
+    * @param overrideFields normalized override values
     * @return Amortization 
     **/
-    private static Amortization createAmortization(Map<String, Object> ofFromOmni) {
+    private static Amortization createAmortization(Map<String, Object> overrideFields) {
         Amortization amortization = new Amortization();
-        amortization.amortizationType = cleanNullString(String.valueOf(ofFromOmni.get('amortizationTypeNew')));
-        amortization.paymentFrequency = cleanNullString(String.valueOf(ofFromOmni.get('paymentFrequencyNew')));
-        amortization.payments = createPayments(ofFromOmni);
+        amortization.amortizationType = cleanNullString(overrideFields.get('amortizationTypeNew'));
+        amortization.paymentFrequency = cleanNullString(overrideFields.get('paymentFrequencyNew'));
+        amortization.payments = createPayments(overrideFields);
         return amortization;
     }
     
     /**
     * @description add payments fields override to request
     * @author BBVA DMT | 21-05-2025 
-    * @param ofFromOmni 
+    * @param overrideFields normalized override values
     * @return List<Payment> 
     **/
-    private static List<Payment> createPayments(Map<String, Object> ofFromOmni) {
+    private static List<Payment> createPayments(Map<String, Object> overrideFields) {
         List<Payment> payments = new List<Payment>();
         Payment payment = new Payment();
-        payment.paymentDate = parseDate(ofFromOmni, 'paymentDateNew');
-        payment.nominalAmount = parseDecimal(ofFromOmni, 'nominalAmountNew');
-        payment.nominalFb = parseDecimal(ofFromOmni, 'nominalFbNew');
-        payment.spreadAmount = parseDecimal(ofFromOmni, 'spreadAmountNew');
-        payment.spreadFbAmount = parseDecimal(ofFromOmni, 'spreadFbNew');
-        payment.feesUpfront = parseDecimal(ofFromOmni, 'nonaccrualfeeNew');
-        payment.feesPeriodic = parseDecimal(ofFromOmni, 'accrualfeeNew');
+        payment.paymentDate = parseDate(overrideFields, 'paymentDateNew');
+        payment.nominalAmount = parseDecimal(overrideFields, 'nominalAmountNew');
+        payment.nominalFb = parseDecimal(overrideFields, 'nominalFbNew');
+        payment.spreadAmount = parseDecimal(overrideFields, 'spreadAmountNew');
+        payment.spreadFbAmount = parseDecimal(overrideFields, 'spreadFbNew');
+        payment.feesUpfront = parseDecimal(overrideFields, 'nonaccrualfeeNew');
+        payment.feesPeriodic = parseDecimal(overrideFields, 'accrualfeeNew');
 
         payments.add(payment);
         return payments;
     }
 
     private static Date parseDate(Map<String, Object> mapOverride, String overridefield) {
-        // Check if the map contains the key and if the value is not null
-      
-    if (mapOverride.containsKey(overridefield) && !String.isBlank(cleanNullString(mapOverride.get(overridefield)))) {
-        Object dateValueObj = mapOverride.get(overridefield);
-        if (dateValueObj != null && dateValueObj instanceof String) {
-            String dateValue = (String) dateValueObj;
-            if (!String.isBlank(dateValue)) {
-                try {
-                    return Date.valueOf(dateValue);
-                } catch (Exception e) {
-                    throw new CustomException(MSG_INVALID_DATE_FORMAT + overridefield + '. Value: ' + dateValue ,e);
-                }
-            }
+        Object rawValue = mapOverride.get(overridefield);
+        String dateValue = cleanNullString(rawValue);
+        if (String.isBlank(dateValue)) {
+            return null;
         }
-    }
-    // Returns null if the field does not exist, is null, or is empty
-    return null;
+        if (rawValue instanceof Date) {
+            return (Date) rawValue;
+        }
+        try {
+            return Date.valueOf(dateValue);
+        } catch (TypeException e) {
+            throw new CustomException(MSG_INVALID_DATE_FORMAT + overridefield + '. Value: ' + dateValue, e);
+        }
     }
 
-    // Helper method to convert values to Decimal
+    // LWC numbers can arrive with different Apex runtime types; parse their string value safely.
     private static Decimal parseDecimal(Map<String, Object> mapoverride, String overridefield) {
-        if (mapoverride.containsKey(overridefield) && !String.isBlank(cleanNullString(mapoverride.get(overridefield))) && mapoverride.get(overridefield)!= null) {
-            try {
-                return (Decimal) mapoverride.get(overridefield);
-            } catch (Exception e) {
-                throw new CustomException(MSG_INVALID_DECIMAL_FORMAT + overridefield ,e);
-            }
+        String decimalValue = cleanNullString(mapoverride.get(overridefield));
+        if (String.isBlank(decimalValue)) {
+            return null;
         }
-        return null;
+        try {
+            return Decimal.valueOf(decimalValue);
+        } catch (TypeException e) {
+            throw new CustomException(MSG_INVALID_DECIMAL_FORMAT + overridefield, e);
+        }
     }
 
     /**
-    * @description clean map from omnistudio, return null if value is null, 'null' or empty string
+    * @description Cleans an input value, returning null when it is null, 'null', or blank.
     * @author BBVA DMT | 17-09-2025 
     * @param value 
     * @return String 

@@ -116,7 +116,7 @@ export default class Dmt_feature_with_workflow extends NavigationMixin(Lightning
             // 4. Open the modal with the correct record
             if (taskToPass) {
                 this.childProps = { closecallback: this.handleTaskModalClose.bind(this), record: taskToPass };
-                const modalModule = this.feature?.motorDesc === 'PAWIF'
+                const modalModule = this.feature?.name === 'Portfolio Alignment Simulation' || this.feature?.pawif
                     ? await import('c/dmt_case_history_modal_pawif')
                     : await import('c/dmt_case_history_modal');
                 this.componentConstructor = modalModule.default;
@@ -295,7 +295,7 @@ export default class Dmt_feature_with_workflow extends NavigationMixin(Lightning
                 errorModal: false,
                 profitability: null,
                 showProfitabilityChart: false,
-                showConditionDesc: this.feature?.passportSanction === 'readytoclose',
+                showConditionDesc: conditions.some(c => c && c.trim().length > 0),
                 associatedLineUrl,
                 associatedLineLabel
             });
@@ -333,7 +333,7 @@ export default class Dmt_feature_with_workflow extends NavigationMixin(Lightning
                 this._showSpinner = false;
                 return;
             }
-            if (this.feature.name == 'PAWIF SALESFORCE') {
+            if (this.feature.name == 'Portfolio Alignment Simulation') {
                 const caseTaskId = response.TASK;
                 sendRequest({
                     developerName: 'DMT_Create_PAWIF',

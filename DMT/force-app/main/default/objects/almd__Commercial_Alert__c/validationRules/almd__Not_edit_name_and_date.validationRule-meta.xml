@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>almd__Not_edit_name_and_date</fullName>
+    <active>true</active>
+    <description>No se pueden modificar los campos Alert Name, Alert ID, Start Date o End Date</description>
+    <errorConditionFormula>AND(
+OR(
+NOT($Profile.Name = &quot;System Administrator&quot;)
+),
+OR(
+$RecordType.DeveloperName = &apos;Commercial_Task&apos;,
+$RecordType.DeveloperName = &apos;Commercial_Task_No_Auth&apos;
+),
+OR(
+ISCHANGED(Name),
+ISCHANGED(almd__commercial_alert_id__c),
+ISCHANGED(almd__commercial_alert_start_date__c),
+ISCHANGED(almd__commercial_alert_end_date__c)
+)
+)</errorConditionFormula>
+    <errorMessage>Insufficient privileges to edit Alert Name, Alert ID, Start Date and End Date.</errorMessage>
+</ValidationRule>

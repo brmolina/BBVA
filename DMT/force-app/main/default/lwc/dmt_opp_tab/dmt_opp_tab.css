@@ -48,6 +48,10 @@
     text-transform: uppercase;
 }
 
+.approval-details-wrapper {
+    margin-top: 12px;
+}
+
 /* Prevent the overflow button from showing an underline on hover */
 .slds-tabs_default__overflow-button:hover:after {
     background-color: transparent !important;

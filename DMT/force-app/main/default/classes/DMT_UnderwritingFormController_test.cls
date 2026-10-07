@@ -23,14 +23,12 @@ public with sharing class DMT_UnderwritingFormController_test {
         }
         update opp;
 
-        Account acc = new Account(Name = 'Test Counterparty', DES_Structure_Type__c = 'Subsidiary');
-        insert acc;
-
-        Local_Client__c lc = new Local_Client__c(
-            Name = 'SearchTest Client',
-            Cib_Client__c = acc.Id
+          Account acc = new Account(
+            Name = 'Test Counterparty',
+            DES_Structure_Type__c = 'Subsidiary',
+            g_customer_id__c = 'ES0182000000999'
         );
-        insert lc;
+        insert acc;
     }
 
     @IsTest
@@ -116,8 +114,11 @@ public with sharing class DMT_UnderwritingFormController_test {
 
     @IsTest
     static void searchClientsFromLocalTest() {
+        Account account = [SELECT Id FROM Account WHERE Name = 'Test Counterparty' LIMIT 1];
+        Test.setFixedSearchResults(new List<Id>{ account.Id });
+
         Test.startTest();
-        List<DMT_UnderwritingFormController.LookupOption> results = DMT_UnderwritingFormController.searchClientsFromLocal('Search');
+        List<DMT_UnderwritingFormController.LookupOption> results = DMT_UnderwritingFormController.searchClientsFromLocal('Counterparty');
         Test.stopTest();
         Assert.isFalse(results.isEmpty(), 'Results should not be empty');
     }
@@ -175,5 +176,165 @@ public with sharing class DMT_UnderwritingFormController_test {
         List<Sold_Order__c> results = [SELECT Id FROM Sold_Order__c WHERE opportunity_id__c = :opp.Id AND gf_ctpty_sold_order_amount__c = 500];
         Assert.isFalse(results.isEmpty(), 'Record should be inserted even with malformed ID input');
         Assert.isNotNull(results[0].Id, 'A valid Salesforce ID should have been generated');
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // searchCounterparties
+    // ──────────────────────────────────────────────────────────────
+
+    @IsTest
+    static void searchCounterparties_BlankTermTest() {
+        Test.startTest();
+        List<Map<String, Object>> r1 = DMT_UnderwritingFormController.searchCounterparties('');
+        List<Map<String, Object>> r2 = DMT_UnderwritingFormController.searchCounterparties(null);
+        Test.stopTest();
+        Assert.isTrue(r1.isEmpty(), 'Empty term should return empty list');
+        Assert.isTrue(r2.isEmpty(), 'Null term should return empty list');
+    }
+
+    @IsTest
+    static void searchCounterparties_ShortTermTest() {
+        Test.startTest();
+        List<Map<String, Object>> results = DMT_UnderwritingFormController.searchCounterparties('A');
+        Test.stopTest();
+        Assert.isTrue(results.isEmpty(), 'Term shorter than 2 chars should return empty list');
+    }
+
+    @IsTest
+    static void searchCounterparties_OnlySpecialCharsTest() {
+        // After sanitising '$%' all chars are stripped → blank → early return
+        Test.startTest();
+        List<Map<String, Object>> results = DMT_UnderwritingFormController.searchCounterparties('$%');
+        Test.stopTest();
+        Assert.isTrue(results.isEmpty(), 'Term with only special chars should return empty list');
+    }
+
+    @IsTest
+    static void searchCounterparties_ValidTermTest() {
+        Account acc = [SELECT Id FROM Account WHERE DES_Structure_Type__c = 'Subsidiary' LIMIT 1];
+        // Mock SOSL so it returns the test account
+        Test.setFixedSearchResults(new List<Id>{ acc.Id });
+
+        Test.startTest();
+        List<Map<String, Object>> results = DMT_UnderwritingFormController.searchCounterparties('Test');
+        Test.stopTest();
+
+        Assert.isFalse(results.isEmpty(), 'Valid term should return mapped results');
+        Assert.areEqual(String.valueOf(acc.Id), results[0].get('value'), 'Value should be the account Id');
+        Assert.isNotNull(results[0].get('label'),      'label key must be present');
+        Assert.isNotNull(results[0].get('subLabel'),   'subLabel key must be present');
+        Assert.isNotNull(results[0].get('searchText'), 'searchText key must be present');
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // saveSoldOrderRow
+    // ──────────────────────────────────────────────────────────────
+
+    @IsTest
+    static void saveSoldOrderRow_InsertTest() {
+        Opportunity opp = getTestOpp();
+        Account acc = [SELECT Id FROM Account LIMIT 1];
+        String settledValue = firstPicklistValue('Sold_Order__c', 'gf_sold_order_settled_ind_type__c');
+
+        Sold_Order__c so = new Sold_Order__c(
+            gf_loan_br_ctpty_id__c               = acc.Id,
+            gf_ctpty_sold_order_amount__c         = 2000,
+            gf_sold_ord_ctpty_setl_amount__c      = 2000,
+            Currency__c                           = 'USD',
+            gf_sold_order_settled_ind_type__c     = settledValue
+        );
+
+        Test.startTest();
+        List<Sold_Order__c> results = DMT_UnderwritingFormController.saveSoldOrderRow(so, opp.Id);
+        Test.stopTest();
+
+        Assert.isFalse(results.isEmpty(), 'Should return list with the newly inserted sold order');
+    }
+
+    @IsTest
+    static void saveSoldOrderRow_UpdateTest() {
+        Opportunity opp = getTestOpp();
+        Account acc = [SELECT Id FROM Account LIMIT 1];
+        String settledValue = firstPicklistValue('Sold_Order__c', 'gf_sold_order_settled_ind_type__c');
+
+        Sold_Order__c so = new Sold_Order__c(
+            gf_loan_br_ctpty_id__c               = acc.Id,
+            gf_ctpty_sold_order_amount__c         = 1500,
+            gf_sold_ord_ctpty_setl_amount__c      = 1500,
+            Currency__c                           = 'USD',
+            gf_sold_order_settled_ind_type__c     = settledValue,
+            opportunity_id__c                    = opp.Id
+        );
+        insert so;
+
+        so.gf_ctpty_sold_order_amount__c = 3000;
+
+        Test.startTest();
+        List<Sold_Order__c> results = DMT_UnderwritingFormController.saveSoldOrderRow(so, opp.Id);
+        Test.stopTest();
+
+        Sold_Order__c updated = [SELECT gf_ctpty_sold_order_amount__c FROM Sold_Order__c WHERE Id = :so.Id];
+        Assert.areEqual(3000, updated.gf_ctpty_sold_order_amount__c, 'Amount should be updated to 3000');
+    }
+
+    @IsTest
+    static void saveSoldOrderRow_NullSoldOrderTest() {
+        Opportunity opp = getTestOpp();
+
+        Test.startTest();
+        try {
+            DMT_UnderwritingFormController.saveSoldOrderRow(null, opp.Id);
+            Assert.fail('Expected AuraHandledException was not thrown');
+        } catch (Exception e) {
+            Assert.isTrue(String.isNotBlank(e.getMessage()), 'Should have an error message');
+        }
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void saveSoldOrderRow_NullOpportunityIdTest() {
+        Account acc = [SELECT Id FROM Account LIMIT 1];
+        String settledValue = firstPicklistValue('Sold_Order__c', 'gf_sold_order_settled_ind_type__c');
+
+        Sold_Order__c so = new Sold_Order__c(
+            gf_loan_br_ctpty_id__c               = acc.Id,
+            gf_ctpty_sold_order_amount__c         = 1000,
+            gf_sold_ord_ctpty_setl_amount__c      = 1000,
+            Currency__c                           = 'USD',
+            gf_sold_order_settled_ind_type__c     = settledValue
+        );
+
+        Test.startTest();
+        try {
+            DMT_UnderwritingFormController.saveSoldOrderRow(so, null);
+            Assert.fail('Expected AuraHandledException was not thrown');
+        } catch (Exception e) {
+            Assert.isTrue(String.isNotBlank(e.getMessage()), 'Should have an error message');
+        }
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void saveSoldOrderRow_MalformedIdTest() {
+        Opportunity opp = getTestOpp();
+        Account acc = [SELECT Id FROM Account LIMIT 1];
+        String settledValue = firstPicklistValue('Sold_Order__c', 'gf_sold_order_settled_ind_type__c');
+
+        String jsonSO = '{' +
+            '"attributes":{"type":"Sold_Order__c"},' +
+            '"Id":"INVALID_ID",' +
+            '"gf_ctpty_sold_order_amount__c":750,' +
+            '"gf_sold_ord_ctpty_setl_amount__c":750,' +
+            '"Currency__c":"USD",' +
+            '"gf_loan_br_ctpty_id__c":"' + acc.Id + '",' +
+            '"gf_sold_order_settled_ind_type__c":"' + settledValue + '"' +
+        '}';
+        Sold_Order__c malformedSO = (Sold_Order__c) JSON.deserialize(jsonSO, Sold_Order__c.class);
+
+        Test.startTest();
+        List<Sold_Order__c> results = DMT_UnderwritingFormController.saveSoldOrderRow(malformedSO, opp.Id);
+        Test.stopTest();
+
+        Assert.isFalse(results.isEmpty(), 'Should insert and return records even with a malformed Id');
     }
 }

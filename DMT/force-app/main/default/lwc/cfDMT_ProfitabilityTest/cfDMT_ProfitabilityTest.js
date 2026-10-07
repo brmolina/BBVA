@@ -6,6 +6,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
           import pubsub from "omnistudio/pubsub";
           import { getRecord } from "lightning/uiRecordApi";
           
+          
           import data from "./definition";
           
           import styleDef from "./styleDefinition";
@@ -22,6 +23,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
+              
               @track Label={DMT_ImageDescriptionText:"Image description",
         dmt_cl_Scenarios_Text:"SCENARIOS",
         dmt_cl_ButtonCurrentOpp_Text:"Current opportunities",
@@ -36,6 +38,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               customEvent = [];
               
               connectedCallback() {
+                
                 super.connectedCallback();
                 this.setThemeClass(data);
                 this.setStyleDefinition(styleDef);
@@ -48,9 +51,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKE000000L94GYAS"
+                  " card-0koKE000000L9usYAC"
                 );
-                this.loadCustomStylesheetAttachement("00PKE000001vmkp2AA");
+                this.loadCustomStylesheetAttachement("00PKE000002N0LL2A0");
                 
                 
               }

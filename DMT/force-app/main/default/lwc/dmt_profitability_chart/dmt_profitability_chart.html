@@ -35,7 +35,7 @@
                     </div>
                 </template>
             </div>
-
+ 
             <div class="slds-grid slds-wrap slds-m-top_small">
                 <div class="slds-col slds-size_1-of-2">
                     <strong>RORC Prospective CDD:</strong> {summaryData.rorcProspected}
@@ -48,9 +48,11 @@
         <div class="slds-grid slds-grid_vertical">
             <div class="slds-col">
                 <div class="slds-m-top_medium">
-                    <h2 class="slds-text-heading_small slds-m-bottom_x-small" style="color: #004481;">
-                        Summary
-                    </h2>
+                    <div class="summary-header slds-m-bottom_x-small">
+                        <h2 class="slds-text-heading_small" style="color: #004481;">
+                            Summary
+                        </h2>
+                    </div>
 
                     <!-- WRAPPER CON SCROLL -->
                     <div class="slds-scrollable_x" style="max-width: 100%; overflow-x: auto;">
@@ -77,15 +79,15 @@
                                     <th>Expected Loss</th>
                                     <th>Tax Rate</th>
                                     <th>FD</th>
-                                    <th>Net Income</th>
+                                    <th>Incomes 12 months</th>
                                 </tr>
 
                             </thead>
                             <tbody>
                                 <template for:each={table1Data} for:item="row" for:index="index">
-                                    <tr key={row.id} class={row.rowClass}>
+                                    <tr key={row.key} class={row.rowClass}>
                                         <td class="slds-cell-wrap">
-                                            <div class="slds-truncate" style="width: 160px;">{row.id}</div>
+                                            <div class={row.idClass} style="width: 160px;">{row.id}</div>
                                         </td>
                                         <td>{row.initialDate}</td>
                                         <td>{row.maturityDate}</td>
@@ -104,8 +106,8 @@
                                         <td>{row.pe}</td>
                                         <td>{row.taxRate}</td>
                                         <td>{row.franchiseDeal}</td>
-                                        <td>{row.bdi}</td>
-                                    </tr>
+                                        <td>{row.incomes12Months}</td>
+                                    </tr> 
                                 </template>
                             </tbody>
                         </table>
@@ -114,9 +116,17 @@
             </div>
             <div class="slds-col">
                 <div class="slds-m-top_medium">
-                    <h2 class="slds-text-heading_small slds-m-bottom_x-small" style="color: #004481;">
-                        Regulatory Capital
-                    </h2>
+                    <div class="summary-header slds-m-bottom_x-small">
+                        <h2 class="slds-text-heading_small" style="color: #004481;">
+                            Regulatory Capital
+                        </h2>
+                        <lightning-button
+                            label="External RWA calculate"
+                            variant="brand"
+                            onclick={handleExternalRwaClick}
+                            disabled={externalRwaDisabled}
+                        ></lightning-button>
+                    </div>
                     <!-- WRAPPER CON SCROLL -->
                     <div class="slds-scrollable_x" style="max-width: 100%; overflow-x: auto;">
                         <table
@@ -130,7 +140,11 @@
                                     <th>EAD reg</th>
                                     <th>CCF reg</th>
                                     <th>LGD reg</th>
+                                    <th>NetIncome Reg</th>
                                     <th>RWA reg</th>
+                                    <template if:true={showAprsCellsColumn}>
+                                        <th>External RWA 1Y</th>
+                                    </template>
                                     <th>Regulatory Capital</th>
                                     <th>RORC CDD</th>
                                     <th>RORC</th>
@@ -138,23 +152,27 @@
                             </thead>
                             <tbody>
                                 <template for:each={table3Data} for:item="row">
-                                    <tr key={row.id} class={row.rowClass}>
+                                    <tr key={row.key} class={row.rowClass}>
                                         <td class="slds-cell-wrap">
-                                            <div class="slds-truncate" style="width: 160px;">{row.id}</div>
+                                            <div class={row.idClass} style="width: 160px;">{row.id}</div>
                                         </td>
                                         <td>{row.nominalDb}</td>
                                         <td>{row.nominalFb}</td>
                                         <td>{row.eadReg}</td>
                                         <td>{row.ccfReg}</td>
                                         <td>{row.lgdReg}</td>
-                                        <td>
-                                            <template lwc:if={row.rwaRegIsLink}>
-                                                <a href={row.rwaRegUrl} target="_blank">{row.rwaReg}</a>
-                                            </template>
-                                            <template lwc:else>
-                                                {row.rwaReg}
-                                            </template>
-                                        </td>
+                                        <td>{row.netIncomeReg}</td>
+                                        <td>{row.rwaReg}</td>
+                                        <template if:true={showAprsCellsColumn}>
+                                            <td>
+                                                <template lwc:if={row.aprsCellsIsLink}>
+                                                    <a href={row.aprsCellsUrl} target="_blank" rel="noopener noreferrer">{row.aprsCells}</a>
+                                                </template>
+                                                <template lwc:else>
+                                                    {row.aprsCells}
+                                                </template>
+                                            </td>
+                                        </template>
                                         <td>{row.cr}</td>
                                         <td>{row.rorcCdd}</td>
                                         <td>{row.rorc}</td>
@@ -183,26 +201,26 @@
                                     <th>EAD eco</th>
                                     <th>CCF eco</th>
                                     <th>LGD eco</th>
+                                    <th>NetIncome Eco</th>
                                     <th>RWA eco</th>
                                     <th>Economic Capital</th>
-                                    <th>RAROEC CDD</th>
                                     <th>RAROEC</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <template for:each={table2Data} for:item="row">
-                                    <tr key={row.id} class={row.rowClass}>
+                                    <tr key={row.key} class={row.rowClass}>
                                         <td class="slds-cell-wrap">
-                                            <div class="slds-truncate" style="width: 160pxpx;">{row.id}</div>
+                                            <div class={row.idClass} style="width: 160px;">{row.id}</div>
                                         </td>
                                         <td>{row.nominalDb}</td>
                                         <td>{row.nominalFb}</td>
                                         <td>{row.eadEco}</td>
                                         <td>{row.ccfEco}</td>
                                         <td>{row.lgdEco}</td>
+                                        <td>{row.netIncomeEco}</td>
                                         <td>{row.rwaEco}</td>
                                         <td>{row.ce}</td>
-                                        <td>{row.raroecCdd}</td>
                                         <td>{row.raroec}</td>
                                     </tr>
                                 </template>

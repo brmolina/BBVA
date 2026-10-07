@@ -975,6 +975,36 @@ public class DMT_ViewController_Test {
         Test.stopTest();
         Assert.isTrue(result.contains('Error'), 'response should contain Error.');
     }
+
+    // CIBGLOBALD-4117 - proves calloutRendererFor() re-queries RecordTypeId for a bare-Id shell.
+    @isTest
+    static void testClientRendererCalloutTrackingRoutesShellRecordToTreasuryRenderer() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        DMT_ClientRenderer renderer = new DMT_ClientRenderer();
+
+        // Bare shell carrying only Id, as an async job would build it - no RecordTypeId set.
+        SObject shell = line.Id.getSObjectType().newSObject(line.Id);
+
+        String cacheKey = renderer.getCalloutCacheKey(shell);
+        Map<String, Object> values = renderer.fetchLiveTrackedValues(shell);
+
+        Assert.isNull(cacheKey, 'No g_customer_id__c on the test fixture Account - cache key must be null, not throw, proving the RecordTypeId re-query + routing succeeded rather than erroring.');
+        Assert.isTrue(values.isEmpty(), 'Must return an empty map, not throw - same reasoning as the cache key.');
+    }
+
+    // CIBGLOBALD-4117 - covers the branch where RecordTypeId is already set (skips the re-query).
+    @isTest
+    static void testClientRendererCalloutTrackingUsesRecordTypeIdWhenAlreadySet() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        DMT_Line__c queried = [SELECT Id, RecordTypeId FROM DMT_Line__c WHERE Id = :line.Id];
+        DMT_ClientRenderer renderer = new DMT_ClientRenderer();
+
+        String cacheKey = renderer.getCalloutCacheKey(queried);
+        Map<String, Object> values = renderer.fetchLiveTrackedValues(queried);
+
+        Assert.isNull(cacheKey, 'No g_customer_id__c on the test fixture Account - cache key must be null, not throw.');
+        Assert.isTrue(values.isEmpty(), 'Must return an empty map, not throw.');
+    }
     //Activity related component test
     @isTest
     static void testDMTActiveRelatedLinesRendererDelegatorGuards(){
@@ -1349,17 +1379,32 @@ public class DMT_ViewController_Test {
 
     @isTest
     static void testFilterActiveComponentsKeepsActiveCatalogEntryEvenWithoutARenderer() {
-        // 'Deal' has an active DMT_Configurator_View_Items__mdt entry for 'Opportunity' but no
-        // matching DMT_RendererFactory key (verified via DMT_TCM_DEV org data as of this fix) —
-        // exactly the mid-development case: the catalog says it's active, the factory hasn't
-        // caught up yet. It must still reach rendering so the resulting "Default content"
-        // placeholder tells the developer their component isn't wired up yet — a different
-        // signal from "this was retired", and only the catalog lets filterActiveComponents
-        // tell the two apart.
-        Assert.isFalse(DMT_RendererFactory.hasRenderer('Deal'), 'Precondition: Deal must have no DMT_RendererFactory entry for this test to be meaningful.');
+        // An active-but-unwired catalog entry (active in the config, but DMT_RendererFactory has no
+        // matching class yet - the mid-development case) must still reach rendering, so the
+        // resulting "Default content" placeholder tells the developer their component isn't wired
+        // up yet - a different signal from "this was retired", and only the catalog lets
+        // filterActiveComponents tell the two apart.
+        //
+        // Found dynamically rather than hardcoding a component name ('Deal' was the original
+        // example, but which catalog entries are active is live org configuration that drifts
+        // independently of this test - hardcoding one made the test fail whenever an admin toggled
+        // it, not when the code broke).
+        String unwiredComponent;
+        for (DMT_Configurator_View_Items__mdt mapping : [
+            SELECT DMT_Component_Item__c FROM DMT_Configurator_View_Items__mdt
+            WHERE DMT_Type__c = 'Opportunity' AND Active__c = true
+        ]) {
+            if (!DMT_RendererFactory.hasRenderer(mapping.DMT_Component_Item__c)) {
+                unwiredComponent = mapping.DMT_Component_Item__c;
+                break;
+            }
+        }
+        if (unwiredComponent == null) {
+            return; // No active-but-unwired component exists in the org right now - nothing to prove today.
+        }
 
         List<DMT_ViewController.ItemWrapper> items = new List<DMT_ViewController.ItemWrapper>{
-            new DMT_ViewController.ItemWrapper('Component', 'Deal', 1, '')
+            new DMT_ViewController.ItemWrapper('Component', unwiredComponent, 1, '')
         };
 
         List<DMT_ViewController.ItemWrapper> result = DMT_ViewController.filterActiveComponents(items, 'Opportunity');
@@ -1651,7 +1696,7 @@ public class DMT_ViewController_Test {
             'Sanction Products',
             'Sanction Approval Process Data', 'Sanction Passport', 'Sanction Limit', 'Sanction Limit Visual',
             // --- NEW NBC AND PROFITABILITY COMPONENTS ---
-            'Opportunity Info NBC', 'Client NBC', 'Profitability', 'Profitability Summaries', 'Profitability Visual',
+            'Client NBC', 'Profitability', 'Profitability Summaries', 'Profitability Visual',
             // --- STATUS COMPONENT ---
             'Status'
         };
@@ -1694,7 +1739,7 @@ public class DMT_ViewController_Test {
             'Sanction Approval Info', 'Sanction Client', 'Sanction Products', 
             'Sanction Approval Process Data', 'Sanction Passport', 'Sanction Limit', 'Sanction Limit Visual',
             // --- NEW NBC AND PROFITABILITY COMPONENTS ---
-            'Opportunity Info NBC', 'Client NBC', 'Profitability', 'Profitability Summaries', 'Profitability Visual',
+            'Client NBC', 'Profitability', 'Profitability Summaries', 'Profitability Visual',
             // --- STATUS COMPONENT ---
             'Status'
         };
@@ -1726,7 +1771,7 @@ public class DMT_ViewController_Test {
             'Sanction Approval Info', 'Sanction Client', 'Sanction Products', 
             'Sanction Approval Process Data', 'Sanction Passport', 'Sanction Limit', 'Sanction Limit Visual',
             // --- NEW NBC AND PROFITABILITY COMPONENTS ---
-            'Opportunity Info NBC', 'Client NBC', 'Profitability', 'Profitability Summaries', 'Profitability Visual',
+            'Client NBC', 'Profitability', 'Profitability Summaries', 'Profitability Visual',
             // --- STATUS COMPONENT ---
             'Status'
         };
@@ -1855,9 +1900,9 @@ public class DMT_ViewController_Test {
         List<DMT_Line__c> result = DMT_View_Selector.getRelatedTRSRLinesByLineId(sourceLine.Id);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'El resultado no debe ser null');
-        System.assertEquals(1, result.size(), 'Debe devolver una única línea relacionada');
-        System.assertEquals(relatedLine.Id, result[0].Id, 'Debe devolver la línea relacionada');
+        Assert.areNotEqual(null, result, 'El resultado no debe ser null');
+        Assert.areEqual(1, result.size(), 'Debe devolver una única línea relacionada');
+        Assert.areEqual(relatedLine.Id, result[0].Id, 'Debe devolver la línea relacionada');
     }
 
     @IsTest
@@ -1877,7 +1922,7 @@ public class DMT_ViewController_Test {
         List<DMT_Line__c> result = DMT_View_Selector.getRelatedTRSRLinesByLineId(sourceLine.Id);
         Test.stopTest();
 
-        System.assertEquals(0, result.size(), 'No debe devolver líneas');
+        Assert.areEqual(0, result.size(), 'No debe devolver líneas');
     }
 
     @isTest
@@ -1914,6 +1959,69 @@ public class DMT_ViewController_Test {
         Test.stopTest();
 
         Assert.isTrue(result.contains('Error:'), 'Debe entrar en el catch y devolver Error');
+    }
+
+    // CIBGLOBALD-4117 - built minimally rather than via DMT_Test_DataFactory.generateOpportunity(),
+    // whose hardcoded Account fixture trips a Duplicate Rule against other tests in this file.
+    @isTest
+    static void testOpportunityClientRendererCalloutTracking() {
+        Account acc = new Account(Name = 'CIBGLOBALD-4117 Callout Tracking Test Account ' + DateTime.now().getTime());
+        insert acc;
+        Opportunity opp = new Opportunity(
+            Name = 'CIBGLOBALD-4117 Callout Tracking Test Opp',
+            StageName = 'Draft Opp',
+            CloseDate = Date.today(),
+            AccountId = acc.Id,
+            DMT_Opp_Id__c = 'CIBGLOBALD4117-' + DateTime.now().getTime(),
+            RecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId()
+        );
+        insert opp;
+        DMT_OpportunityClientRenderer renderer = new DMT_OpportunityClientRenderer();
+
+        String cacheKey = renderer.getCalloutCacheKey(new Opportunity(Id = opp.Id));
+        Assert.isNull(cacheKey, 'No g_customer_id__c on the test fixture Account - cache key must be null, not throw.');
+
+        Map<String, Object> values = renderer.fetchLiveTrackedValues(new Opportunity(Id = opp.Id));
+        // currentRatingToolDate is skipped (no g_customer_id__c to call MonoHolder with), but
+        // clientGroupName comes from a separate HPG call keyed only on AccountId, which the test
+        // fixture does have - DMT_HPG_Utils.callService returns its configured test-mdt body rather
+        // than throwing, so this must not error and must still populate that key.
+        Assert.isFalse(values.containsKey('currentRatingToolDate'), 'No g_customer_id__c - currentRatingToolDate must be skipped, not populated as null.');
+        Assert.isTrue(values.containsKey('clientGroupName'), 'clientGroupName only needs AccountId, which the fixture has - must still be fetched.');
+    }
+
+    // CIBGLOBALD-4117 - the only other existing test for this class covers just the exception branch.
+    @isTest
+    static void testOpportunityClientRendererRenderHtmlHappyPathAllBranches() {
+        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
+        // getClientGroupString() requires Opportunity.AccountId to be set - fabricated Id, nothing inserted.
+        data.opportunity = (Opportunity) JSON.deserialize(
+            '{"DMT_Threshold_Type__c":"Global","AccountId":"001000000000001AAA",'
+            + '"Account":{"DES_ID_Fiscal__c":"FISCAL123","DES_Group_Code__c":"GRP1"}}',
+            Opportunity.class
+        );
+        // DES_Client_Type__c is a formula field, not settable here - the Subsidiary/Current Rating
+        // Tool Date branch is covered separately by the callout-tracking tests above instead.
+        data.clientGroupName = 'Test Group - Test Account';
+        data.oppClient = new DMT_Opportunity_Client__c(
+            g_upd_lmscl_internal_ratg_type__c = 'A',
+            DMT_Scoring__c = 5,
+            External_Rating__c = 'BBB',
+            Counterpart__c = 'Fin Inst',
+            SCRA__c = 'Yes',
+            AVC_Check__c = true,
+            European_Bank_Check__c = true,
+            DMT_Guarantor_Name_Fiscal_ID__c = 'Guarantor Co - FISCAL999'
+        );
+
+        Test.startTest();
+        String html = new DMT_OpportunityClientRenderer().renderHtml(data);
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error: ' + html);
+        Assert.isTrue(html.contains('Client'), 'Must render the Client heading.');
+        Assert.isTrue(html.contains('SCRA'), 'Fin Inst Counterpart must render the SCRA row.');
+        Assert.isTrue(html.contains('Test Group - Test Account'), 'clientGroupName must be rendered.');
     }
 
     @isTest
@@ -2563,6 +2671,48 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
+    static void testOppProductsRenderer_renderHtml_underlyingProfitability_upfrontFeeUnitToggle() {
+        // CIBGLOBALD-4329 - covers a BPS-only, non-Bullet row.
+        DMT_ViewController.OpportunityProduct p = makeLineOppProduct();
+
+        DMT_Underlying__c bpsOnlyNonBullet = makeProfitabilityUnd();
+        bpsOnlyNonBullet.DMT_Upfront_Fees__c        = 40;
+        bpsOnlyNonBullet.DMT_Upfront_Fees_amount__c = 0;
+        bpsOnlyNonBullet.DMT_Amortization_Type__c   = 'Linear';
+        p.oppUnderlyingsProfitability.add(bpsOnlyNonBullet);
+
+        Test.startTest();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error: ' + html);
+        Assert.isTrue(html.contains('Amount / BPS'), 'Must show the Amount / BPS unit-toggle column.');
+        // 'Upfront Fees (amount)' is distinctive enough not to collide with the unrelated
+        // 'Reference Upfront Fees (BPS)' field this same Line layout also renders - unlike
+        // 'Upfront Fees (BPS)', which is a substring of that other field's label and would false-fail.
+        Assert.isFalse(html.contains('Upfront Fees (amount)'), 'The old two-column header must be gone.');
+        Assert.isTrue(html.contains('Interest Payment Frequency'), 'Non-Bullet row must show the Interest Payment Frequency column.');
+    }
+
+    @isTest
+    static void testOppProductsRenderer_renderHtml_underlyingProfitability_hidesInterestPaymentFrequencyWhenAllBullet() {
+        // CIBGLOBALD-4329 - column hidden table-wide when every row is Bullet.
+        DMT_ViewController.OpportunityProduct p = makeLineOppProduct();
+        p.oppUnderlyingsProfitability.add(makeProfitabilityUnd()); // Bullet, per its own fixture default
+
+        Test.startTest();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error: ' + html);
+        Assert.isFalse(html.contains('Interest Payment Frequency'), 'All-Bullet rows must hide the Interest Payment Frequency column entirely.');
+    }
+
+    @isTest
     static void testOppProductsRenderer_renderHtml_line_nullTenor_otherGreen() {
         DMT_ViewController.OpportunityProduct p = makeLineOppProduct();
         p.lineTenor = null;
@@ -2594,6 +2744,65 @@ public class DMT_ViewController_Test {
         Assert.isFalse(html.startsWith('<div>Error'), 'Should not error');
         Assert.isTrue(html.contains('99999'),       'Unknown tenor should fall back to raw value');
         Assert.isTrue(html.contains('customValue'), 'Default green branch should output raw value');
+    }
+
+    @isTest
+    static void testOppProductsRenderer_renderHtml_line_feeFieldsNoLongerDisplayed() {
+        // CIBGLOBALD-4329 - these fee fields are no longer editable in dmt_opp_product_details_line_description.
+        DMT_ViewController.OpportunityProduct p = makeLineOppProduct();
+
+        Test.startTest();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error: ' + html);
+        Assert.isFalse(html.contains('Commitment Fees'), 'Line layout must no longer show Commitment Fees.');
+        Assert.isFalse(html.contains('Extension / Duration Fees'), 'Line layout must no longer show Extension/Duration Fees.');
+        Assert.isFalse(html.contains('Other Fees Accrual'), 'Line layout must no longer show Other Fees Accrual.');
+        Assert.isFalse(html.contains('Other Fees Non-Accrual'), 'Line layout must no longer show Other Fees Non-Accrual.');
+        Assert.isFalse(html.contains('Utilisation Fee'), 'Line layout must no longer show Utilisation Fee.');
+        Assert.isFalse(html.contains('Liquidity Fee'), 'Line layout must not show Liquidity Fee either.');
+    }
+
+    @isTest
+    static void testOppProductsRenderer_renderHtml_oneOff_feeFieldsNoLongerDisplayed() {
+        // CIBGLOBALD-4329 - these fee fields are no longer in dmt_opp_product_details_deal_description_fields.js.
+        // makeOneOffOppProduct() still sets them as noise, to prove they're no longer read.
+        DMT_ViewController.OpportunityProduct p = makeOneOffOppProduct();
+
+        Test.startTest();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error: ' + html);
+        Assert.isFalse(html.contains('Liquidity Fee'), 'One-Off Deal layout must no longer show Liquidity Fee.');
+        Assert.isFalse(html.contains('Commitment Fee'), 'One-Off Deal layout must no longer show Commitment Fee.');
+        Assert.isFalse(html.contains('Extension/Duration Fee'), 'One-Off Deal layout must no longer show Extension/Duration Fee.');
+        Assert.isFalse(html.contains('Other Fees'), 'One-Off Deal layout must no longer show Other Fees.');
+    }
+
+    @isTest
+    static void testOppProductsRenderer_renderHtml_oneOff_dealDescriptionFieldOrder() {
+        // CIBGLOBALD-4329 - Role of BBVA / Sub-limit render last, matching dmt_opp_product_details_deal_description_fields.js.
+        DMT_ViewController.OpportunityProduct p = makeOneOffOppProduct();
+
+        Test.startTest();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error: ' + html);
+        Integer expectedDrawnIdx = html.indexOf('Expected Drawn');
+        Integer roleOfBbvaIdx    = html.indexOf('Role of BBVA');
+        Integer subLimitIdx      = html.indexOf('Sub-limit');
+        Assert.isTrue(expectedDrawnIdx > 0 && roleOfBbvaIdx > expectedDrawnIdx,
+            'Role of BBVA must render after Expected Drawn (%), matching the LWC order.');
+        Assert.isTrue(subLimitIdx > roleOfBbvaIdx, 'Sub-limit must render after Role of BBVA, matching the LWC order.');
     }
 
     @isTest
@@ -2707,6 +2916,36 @@ public class DMT_ViewController_Test {
     }
 
     @isTest
+    static void testOppProductsRenderer_renderHtml_tenorsTable_nonAccrualUnitToggle() {
+        // CIBGLOBALD-4329 - covers a BPS-only row and a both-fields-populated row (defaults to Amount).
+        DMT_ViewController.OpportunityProduct p = makeOneOffOppProduct();
+
+        DMT_Opportunity_Tenor__c bpsOnlyTenor = makeSampleTenor();
+        bpsOnlyTenor.gf_accrual_fees_bp__c     = 0;
+        bpsOnlyTenor.gf_non_accrual_fees_bp__c = 7;
+        p.oppTenors.add(bpsOnlyTenor);
+
+        DMT_Opportunity_Tenor__c bothPopulatedTenor = makeSampleTenor();
+        bothPopulatedTenor.gf_accrual_fees_bp__c     = 12;
+        bothPopulatedTenor.gf_non_accrual_fees_bp__c = 8;
+        p.oppTenors.add(bothPopulatedTenor);
+
+        Test.startTest();
+        String html = new DMT_OpportunityProductsRenderer().renderHtml(
+            oppProductWrapOf(new List<DMT_ViewController.OpportunityProduct>{ p })
+        );
+        Test.stopTest();
+
+        Assert.isFalse(html.startsWith('<div>Error'), 'Should not error: ' + html);
+        Assert.isTrue(html.contains('Non Accrual Fees'), 'Repayment Schedule must show the single Non Accrual Fees column.');
+        Assert.isTrue(html.contains('BPS/Amount'), 'Repayment Schedule must show the BPS/Amount unit-toggle column.');
+        Assert.isFalse(html.contains('Non Accrual Fees (amount)'), 'The old two-column header must be gone.');
+        Assert.isFalse(html.contains('Non Accrual Fees (BPS)'), 'The old two-column header must be gone.');
+        Assert.isTrue(html.contains('>7<') || html.contains('>7.0<'), 'BPS-only row must show its gf_non_accrual_fees_bp__c value.');
+        Assert.isTrue(html.contains('>12<') || html.contains('>12.0<'), 'Both-populated row must default to its gf_accrual_fees_bp__c (Amount) value.');
+    }
+
+    @isTest
     static void testLoadToolkitDataFromNBC() {
         TriggerBypass.setBypass();
         Opportunity testOpp = [SELECT Id FROM Opportunity LIMIT 1];
@@ -2815,7 +3054,7 @@ public class DMT_ViewController_Test {
     }
 
     // ==========================================================================
-    // Field tracking for the approval-restart watch mechanism
+    // CIBGLOBALD-4117 - field tracking for the approval-restart watch mechanism
     // ==========================================================================
 
     @isTest
@@ -2823,7 +3062,7 @@ public class DMT_ViewController_Test {
         Id treasuryRtId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('TreasurySettlement').getRecordTypeId();
 
         Test.startTest();
-        List<String> trackedFields = DMT_RendererFactory.getTrackedFields('Line Info', treasuryRtId);
+        List<String> trackedFields = DMT_RendererFactory.getTrackedFields('Line Info', new DMT_Line__c(RecordTypeId = treasuryRtId));
         Test.stopTest();
 
         Set<String> trackedFieldsSet = new Set<String>(trackedFields);
@@ -2831,6 +3070,13 @@ public class DMT_ViewController_Test {
         Assert.isTrue(trackedFieldsSet.contains('Name'), 'Name should be tracked for Treasury Line Info');
         Assert.isTrue(trackedFieldsSet.contains('Booking_Geography__c'), 'Booking_Geography__c should be tracked for Treasury Line Info');
         Assert.isTrue(trackedFieldsSet.contains('DMT_Oficina__c'), 'DMT_Oficina__c should be tracked for Treasury Line Info');
+        // CIBGLOBALD-4117 - editable in the LINE INFO tab's cfSummaryTreasury_Flexcard; found
+        // untracked via a field-drift audit against the live edit-side FlexCard.
+        Assert.isTrue(trackedFieldsSet.contains('DMT_Business_Approval_Term__c'), 'DMT_Business_Approval_Term__c should be tracked for Treasury Line Info');
+        Assert.isTrue(trackedFieldsSet.contains('DMT_Bussiness_Approved_Date__c'), 'DMT_Bussiness_Approved_Date__c should be tracked for Treasury Line Info');
+        Assert.isTrue(trackedFieldsSet.contains('DMT_Bussiness_Approved_End_Date__c'), 'DMT_Bussiness_Approved_End_Date__c should be tracked for Treasury Line Info');
+        Assert.isTrue(trackedFieldsSet.contains('gf_min_raroec_wo_fcg_per__c'), 'gf_min_raroec_wo_fcg_per__c should be tracked for Treasury Line Info');
+        Assert.isTrue(trackedFieldsSet.contains('gf_min_rorc_wo_fcg_per__c'), 'gf_min_rorc_wo_fcg_per__c should be tracked for Treasury Line Info');
     }
 
     @isTest
@@ -2838,12 +3084,20 @@ public class DMT_ViewController_Test {
         Id otherRtId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('OtherProducts').getRecordTypeId();
 
         Test.startTest();
-        List<String> trackedFields = DMT_RendererFactory.getTrackedFields('Line Info', otherRtId);
+        List<String> trackedFields = DMT_RendererFactory.getTrackedFields('Line Info', new DMT_Line__c(RecordTypeId = otherRtId));
         Test.stopTest();
 
         Set<String> trackedFieldsSet = new Set<String>(trackedFields);
         Assert.isTrue(trackedFieldsSet.contains('g_line_commitment_level_type__c'), 'g_line_commitment_level_type__c should be tracked for Other Line Info');
         Assert.isTrue(trackedFieldsSet.contains('DMT_Individual_Disposal_Approval__c'), 'DMT_Individual_Disposal_Approval__c should be tracked for Other Line Info');
+        // CIBGLOBALD-4117 - the same cfSummaryTreasury_Flexcard is used unconditionally for
+        // OtherProducts Lines too (no record-type gate in dmt_lines_tab.html's LINE INFO tab), so
+        // this renderer needs the same fix as Treasury Line Info.
+        Assert.isTrue(trackedFieldsSet.contains('DMT_Business_Approval_Term__c'), 'DMT_Business_Approval_Term__c should be tracked for Other Line Info');
+        Assert.isTrue(trackedFieldsSet.contains('DMT_Bussiness_Approved_Date__c'), 'DMT_Bussiness_Approved_Date__c should be tracked for Other Line Info');
+        Assert.isTrue(trackedFieldsSet.contains('DMT_Bussiness_Approved_End_Date__c'), 'DMT_Bussiness_Approved_End_Date__c should be tracked for Other Line Info');
+        Assert.isTrue(trackedFieldsSet.contains('gf_min_raroec_wo_fcg_per__c'), 'gf_min_raroec_wo_fcg_per__c should be tracked for Other Line Info');
+        Assert.isTrue(trackedFieldsSet.contains('gf_min_rorc_wo_fcg_per__c'), 'gf_min_rorc_wo_fcg_per__c should be tracked for Other Line Info');
     }
 
     @isTest
@@ -2851,7 +3105,7 @@ public class DMT_ViewController_Test {
         Id oppRtId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
 
         Test.startTest();
-        List<String> trackedFields = DMT_RendererFactory.getTrackedFields('Opportunity Info', oppRtId);
+        List<String> trackedFields = DMT_RendererFactory.getTrackedFields('Opportunity Info', new Opportunity(RecordTypeId = oppRtId));
         Test.stopTest();
 
         Set<String> trackedFieldsSet = new Set<String>(trackedFields);
@@ -2868,13 +3122,13 @@ public class DMT_ViewController_Test {
         // (tracked) and 'Limit' (not migrated, contributes nothing) - proving the union doesn't
         // silently drop a migrated component's fields just because another component in the same
         // call has none.
-        List<String> trackedFields = DMT_RendererFactory.getTrackedFields(new List<String>{'Line Info', 'Limit'}, treasuryRtId);
+        List<String> trackedFields = DMT_RendererFactory.getTrackedFields(new List<String>{'Line Info', 'Limit'}, new DMT_Line__c(RecordTypeId = treasuryRtId));
         Test.stopTest();
 
         Set<String> trackedFieldsSet = new Set<String>(trackedFields);
         Assert.isTrue(trackedFieldsSet.contains('Line_Id__c'), 'Line_Id__c from Line Info should be present in the unioned list');
         Assert.areEqual(
-            new Set<String>(DMT_RendererFactory.getTrackedFields('Line Info', treasuryRtId)),
+            new Set<String>(DMT_RendererFactory.getTrackedFields('Line Info', new DMT_Line__c(RecordTypeId = treasuryRtId))),
             trackedFieldsSet,
             'Unioning with an unmigrated component should not add or remove anything beyond what Line Info alone returns'
         );
@@ -2887,9 +3141,65 @@ public class DMT_ViewController_Test {
         Test.startTest();
         // 'Limit' maps to DMT_LimitRenderer, which does not implement DMT_FieldTrackableRenderer yet -
         // must return an empty list, not throw, so unmigrated renderers stay untouched.
-        List<String> trackedFields = DMT_RendererFactory.getTrackedFields('Limit', treasuryRtId);
+        List<String> trackedFields = DMT_RendererFactory.getTrackedFields('Limit', new DMT_Line__c(RecordTypeId = treasuryRtId));
         Test.stopTest();
 
         Assert.isTrue(trackedFields.isEmpty(), 'A renderer that does not implement DMT_FieldTrackableRenderer should return an empty list.');
+    }
+
+    // CIBGLOBALD-4117: Approval Process Data's tracking-method tests (getTrackedFields /
+    // getTrackedFieldsByObject / getChildSections) live in DMT_ApprovalProcessDataRendererTest
+    // instead of here, so that component's deploy is self-contained and never depends on this
+    // file - see that class's header comment.
+
+    @isTest
+    static void testGetCoverageTeamRoles() {
+        TriggerBypass.setBypass();
+        String suffix = String.valueOf(DateTime.now().getTime());
+        Map<String, Schema.RecordTypeInfo> accRts = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName();
+        List<String> roles = new List<String>();
+        for (Schema.PicklistEntry pe : DES_BBVA_Management_team__c.DES_Member_Role__c.getDescribe().getPicklistValues()) {
+            if (pe.isActive() && roles.size() < 2) roles.add(pe.getValue());
+        }
+        Id userA = UserInfo.getUserId();
+        Id userB = [SELECT Id FROM User WHERE IsActive = true AND Id != :userA AND Profile.Name = 'Standard User' LIMIT 1].Id;
+
+        // Supragrupo -> Grupo -> Filial
+        Account supra = new Account(Name = 'CT Supra ' + suffix, DES_ID_Fiscal__c = 'CTS' + suffix, RecordTypeId = accRts.get('Prospect_Group').getRecordTypeId());
+        insert supra;
+        Account grp = new Account(Name = 'CT Group ' + suffix, DES_ID_Fiscal__c = 'CTG' + suffix, RecordTypeId = accRts.get('Prospect_Group').getRecordTypeId(), DES_Main_Parent__c = supra.Id);
+        insert grp;
+        Account sub = new Account(Name = 'CT Sub ' + suffix, DES_ID_Fiscal__c = 'CTF' + suffix, RecordTypeId = accRts.get('Prospect_Subsidiary').getRecordTypeId(), DES_Main_Parent__c = grp.Id);
+        insert sub;
+
+        // userA: dos roles en el grupo. userB: solo en el supragrupo (no debe aparecer nunca)
+        insert new List<DES_BBVA_Management_team__c>{
+            new DES_BBVA_Management_team__c(DES_Client__c = grp.Id,   DES_User__c = userA, DES_Member_Role__c = roles[0]),
+            new DES_BBVA_Management_team__c(DES_Client__c = grp.Id,   DES_User__c = userA, DES_Member_Role__c = roles[1]),
+            new DES_BBVA_Management_team__c(DES_Client__c = supra.Id, DES_User__c = userB, DES_Member_Role__c = roles[0])
+        };
+
+        Opportunity opp = new Opportunity(Name = 'CT Opp', StageName = 'Draft Opp', CloseDate = Date.today(), AccountId = sub.Id,
+        DMT_Opp_Id__c = 'CT-' + suffix, RecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId());
+        DMT_Line__c line = new DMT_Line__c(Name = 'CT Line', Client__c = grp.Id);
+        DMT_Line__c lineNoClient = new DMT_Line__c(Name = 'CT Line No Client');
+        insert opp;
+        insert new List<DMT_Line__c>{ line, lineNoClient };
+
+        Test.startTest();
+        Map<Id, String> fromSubsidiaryOpp = DMT_ViewController.getCoverageTeamRoles(opp.Id);
+        Map<Id, String> fromGroupLine     = DMT_ViewController.getCoverageTeamRoles(line.Id);
+        Test.stopTest();
+
+        // Filial -> sube al grupo; grupo con padre -> no sube al supragrupo; roles agregados
+        Assert.areEqual(new Set<Id>{ userA }, fromSubsidiaryOpp.keySet(), 'Solo debe devolverse el Coverage Team del grupo.');
+        Assert.areEqual(new Set<String>(roles), new Set<String>(fromSubsidiaryOpp.get(userA).split(', ')), 'Los dos roles de userA deben agregarse.');
+        Assert.areEqual(fromSubsidiaryOpp, fromGroupLine, 'Line del grupo y Opp de la filial deben resolver al mismo Coverage Team.');
+
+        // Casos vacíos: null, Line sin cliente, tipo no soportado
+        Assert.isTrue(DMT_ViewController.getCoverageTeamRoles(null).isEmpty(), 'recordId nulo -> vacío.');
+        Assert.isTrue(DMT_ViewController.getCoverageTeamRoles(lineNoClient.Id).isEmpty(), 'Line sin cliente -> vacío.');
+        Assert.isTrue(DMT_ViewController.getCoverageTeamRoles(grp.Id).isEmpty(), 'Tipo no soportado -> vacío.');
+        TriggerBypass.removeBypass();
     }
 }

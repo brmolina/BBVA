@@ -39,7 +39,7 @@
                                 <c-dmt_feature_limit key={feature.name} feature={feature} isbig={isBig} onnotifyparenterror={handleErrorEvent} opp-id={opportunityId}></c-dmt_feature_limit>
                             </template>
                             <template for:each={undefinedFeatures} for:item="feature">
-                                <c-dmt_feature_with_workflow key={feature.name} feature={feature} isbig={isBig} onnotifyparenterror={handleErrorEvent} onnotifyparentreload={refreshWithoutService}></c-dmt_feature_with_workflow>
+                                <c-dmt_feature_with_workflow key={feature.name} feature={feature} isbig={isBig} onnotifyparenterror={handleErrorEvent} onnotifyparentreload={refreshWithoutService} opp-id={opportunityId}></c-dmt_feature_with_workflow>
                             </template>
                             <template for:each={profitabilityFeatures} for:item="feature">
                                 <c-dmt_feature_profitability key={feature.name} feature={feature} isbig={isBig} onnotifyparenterror={handleErrorEvent} onnotifyparentreload={refreshWithoutService} opp-id={opportunityId}></c-dmt_feature_profitability>

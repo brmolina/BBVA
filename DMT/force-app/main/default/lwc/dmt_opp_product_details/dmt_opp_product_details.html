@@ -20,7 +20,8 @@
                 data={recordData}
                 field-options={optionsMap}
                 oneditmodechange={handleEditModeChange}
-                onsectionchange={handleSectionChange}>
+                onsectionchange={handleSectionChange}
+                onfieldchange={handleFieldChange}>
             </c-dmt_opp_product_details_general_information>
         </lightning-accordion-section>
 
@@ -40,11 +41,20 @@
         </lightning-accordion-section>-->
 
         <lightning-accordion-section name="B" label="Deal description" class="delete-border">
+            <lightning-button
+                slot="actions"
+                label="Economics Old & New Money"
+                variant="neutral"
+                disabled={oldMoneyBtnDisabled}
+                onclick={handleOpenOldMoneyModal}>
+            </lightning-button>
             <c-dmt_opp_product_details_deal_description
                 lwc:ref="dealDescription"
                 data={recordData}
+                tenors-data={tenorsData}
                 field-options={optionsMap}
-                oneditmodechange={handleEditModeChange}>
+                oneditmodechange={handleEditModeChange}
+                onfieldchange={handleFieldChange}>
             </c-dmt_opp_product_details_deal_description>
         </lightning-accordion-section>
 
@@ -59,7 +69,8 @@
                 initial-date={currentInitialDate}
                 maturity-date={currentMaturityDate}
                 oneditmodechange={handleEditModeChange}
-                onsectionchange={handleSectionChange}>
+                onsectionchange={handleSectionChange}
+                onfieldchange={handleFieldChange}>
             </c-dmt_opp_product_details_schedule>
         </lightning-accordion-section>
 
@@ -69,7 +80,9 @@
                 lwc:ref="costOfFunding"
                 data={recordData}
                 field-options={optionsMap}
-                oneditmodechange={handleEditModeChange}>
+                onsectionchange={handleSectionChange}
+                oneditmodechange={handleEditModeChange}
+                onfieldchange={handleFieldChange}>
             </c-dmt_opp_product_details_cost_of_funding>
         </lightning-accordion-section>
 
@@ -78,7 +91,8 @@
                 lwc:ref="sustainability"
                 data={recordData}
                 field-options={optionsMap}
-                oneditmodechange={handleEditModeChange}>
+                oneditmodechange={handleEditModeChange}
+                onfieldchange={handleFieldChange}>
             </c-dmt_opp_product_details_sustainability>
         </lightning-accordion-section>
 
@@ -87,7 +101,8 @@
                 lwc:ref="countryRisk"
                 data={recordData}
                 field-options={optionsMap}
-                oneditmodechange={handleEditModeChange}>
+                oneditmodechange={handleEditModeChange}
+                onfieldchange={handleFieldChange}>
             </c-dmt_opp_product_details_country_risk>
         </lightning-accordion-section>
 
@@ -99,7 +114,8 @@
                     end-date-product={currentMaturityDate}
                     data={mitigantsData}
                     catalog-values={optionsMap.catalogValues}
-                    oneditmodechange={handleEditModeChange}>
+                    oneditmodechange={handleEditModeChange}
+                    onfieldchange={handleFieldChange}>
                 </c-dmt_opp_product_table_mitigants>
             </div>
             <div class="slds-p-horizontal_small slds-p-top_medium slds-p-bottom_small">

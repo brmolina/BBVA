@@ -19,19 +19,8 @@ export default class Dmt_selectlabel_flexcard extends FlexCardMixin(LightningEle
         if (Array.isArray(value) && value.length > 0 && value[0].hasOwnProperty('value')) {
 
            const clonedValue = value.map(item => ({ ...item }));
-           const hasDefault = clonedValue.some(item => item.defaultValue === true);
-
-           if (!hasDefault) {
-            clonedValue[0].defaultValue = true;
-           }
-
-            this._list = clonedValue;
-            
-            //const firstOption = value[0];
-
-            //if (firstOption.defaultValue === false) {
-                //this.dispatchEvent(new CustomEvent('enableButton', { detail: true, bubbles: true, composed: true }));
-            //}
+           
+           this._list = clonedValue;
 
         } else {
             // Si no es una lista válida, vacía la lista y fuerza el botón deshabilitado

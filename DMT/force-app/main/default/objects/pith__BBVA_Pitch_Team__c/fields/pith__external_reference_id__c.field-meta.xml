@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>pith__external_reference_id__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Pitch</label>
+    <referenceTo>pith__Pitch__c</referenceTo>
+    <relationshipLabel>BBVA Pitch Team</relationshipLabel>
+    <relationshipName>BBVA_Pitch_Team</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

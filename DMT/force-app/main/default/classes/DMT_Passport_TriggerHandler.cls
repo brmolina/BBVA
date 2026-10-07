@@ -26,7 +26,8 @@ public with sharing class DMT_Passport_TriggerHandler extends DMT_TriggerHandler
     }
 
     public override void afterUpdate() {
-        
+        // CIBGLOBALD-4507: sync approval Cases/Tasks with the features received from Passport
+        DMT_Passport_FeatureSync.sync(this.lstNew, this.mapOld);
     }
 
     public override void beforeUpdate() {

@@ -1,0 +1,24 @@
+.fix-checkbox .slds-form-element__control {
+    transform: scale(0.8);
+    transform-origin: top left;
+}
+
+.fix-checkbox input[type="checkbox"] {
+    width: 1rem !important;
+    height: 1rem !important;
+}
+.slds-checkbox .slds-checkbox__label .slds-form-element__label {
+    display: auto;
+}
+
+
+.slds-checkbox .slds-checkbox_faux, .slds-checkbox .slds-checkbox--faux {
+    width: 1.1rem;
+    height: 1.1rem; 
+}
+
+.slds-checkbox [type=checkbox]:checked+.slds-checkbox_faux:after, .slds-checkbox [type=checkbox]:checked+.slds-checkbox--faux:after, .slds-checkbox [type=checkbox]:checked~.slds-checkbox_faux:after, .slds-checkbox [type=checkbox]:checked~.slds-checkbox--faux:after, .slds-checkbox [type=checkbox]:checked+.slds-checkbox__label .slds-checkbox_faux:after, .slds-checkbox [type=checkbox]:checked+.slds-checkbox__label .slds-checkbox--faux:after {
+
+    height: 0.3rem;
+    width: 0.5rem; 
+}

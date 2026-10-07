@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>bookingGeo_OPP_ES_OP</label>
+    <protected>false</protected>
+    <values>
+        <field>DataType__c</field>
+        <value xsi:type="xsd:string">PICKLIST</value>
+    </values>
+    <values>
+        <field>DependsOnField__c</field>
+        <value xsi:type="xsd:string">DMT_Entity__c</value>
+    </values>
+    <values>
+        <field>DisplayLabel__c</field>
+        <value xsi:type="xsd:string">Booking Country</value>
+    </values>
+    <values>
+        <field>Entific__c</field>
+        <value xsi:type="xsd:string">ES</value>
+    </values>
+    <values>
+        <field>FieldOrder__c</field>
+        <value xsi:type="xsd:double">3.0</value>
+    </values>
+    <values>
+        <field>Field_Edit_Is_Disabled__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Field_View_Is_Disabled__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>FilterText__c</field>
+        <value xsi:type="xsd:string">g_branch_id__c</value>
+    </values>
+    <values>
+        <field>HelpText__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>IsRequired__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>LineType__c</field>
+        <value xsi:type="xsd:string">OP</value>
+    </values>
+    <values>
+        <field>OptionsJson__c</field>
+        <value xsi:type="xsd:string">{ &quot;inputAttributes&quot;: { &quot;placeholder&quot;: &quot;Select booking geography&quot;, &quot;searchable&quot;: true } }</value>
+    </values>
+    <values>
+        <field>SectionOrder__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>Section__c</field>
+        <value xsi:type="xsd:string">Details</value>
+    </values>
+    <values>
+        <field>TaxonomyCatalog__c</field>
+        <value xsi:type="xsd:string">H007</value>
+    </values>
+    <values>
+        <field>TaxonomyFilterRule__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>TemplateSubtype__c</field>
+        <value xsi:type="xsd:string">OPP</value>
+    </values>
+    <values>
+        <field>VisibilityRule__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>isActive__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

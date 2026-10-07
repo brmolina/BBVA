@@ -10,14 +10,46 @@
 
             <div
                 class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_medium">
-                <lightning-card title="Refresh all flexcards (Latest Version)">
-                    <div
-                        class="slds-align_absolute-center slds-p-around_medium">
+                <lightning-card title="Refresh flexcards recientes (24h)">
+                    <div class="slds-p-around_medium">
+                        <p class="slds-text-body_regular slds-m-bottom_medium">Opción principal: refresca solo flexcards modificadas en las últimas 24 horas.</p>
+                        <div class="slds-align_absolute-center">
+                            <lightning-button
+                                variant="brand"
+                                label="Refresh recent"
+                                onclick={handleRefreshRecent}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+
+            <div
+                class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_medium">
+                <lightning-card title="Acciones legacy">
+                    <div class="slds-p-around_medium slds-align_absolute-center">
                         <lightning-button
-                            variant="brand"
-                            label="Refresh"
-                            onclick={handleRefresh}>
+                            variant="base"
+                            label={legacyToggleLabel}
+                            onclick={handleToggleLegacyActions}>
                         </lightning-button>
+                    </div>
+                </lightning-card>
+            </div>
+
+            <template if:true={showLegacyActions}>
+            <div
+                class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-m-bottom_medium">
+                <lightning-card title="Refresh all flexcards (Latest Version)">
+                    <div class="slds-p-around_medium">
+                        <p class="slds-text-body_regular slds-m-bottom_medium">Úsalo solo cuando necesites recompilar todas las flexcards.</p>
+                        <div class="slds-align_absolute-center">
+                            <lightning-button
+                                variant="neutral"
+                                label="Refresh all"
+                                onclick={handleRefresh}>
+                            </lightning-button>
+                        </div>
                     </div>
                 </lightning-card>
             </div>
@@ -100,6 +132,7 @@
                     </div>
                 </lightning-card>
             </div>
+            </template>
 
         </div>
     </div>
@@ -110,8 +143,7 @@
             <div class="slds-modal__container">
                 <header class="slds-modal__header">
                     <h2 id="modal-heading-01"
-                        class="slds-modal__title slds-hyphenate">Confirmación de
-                        Refresco</h2>
+                        class="slds-modal__title slds-hyphenate">{modalTitle}</h2>
                 </header>
 
                 <div class="slds-modal__content slds-p-around_medium"
@@ -125,18 +157,14 @@
                                 size="small"></lightning-icon>
                         </div>
                         <div class="slds-media__body">
-                            <p class="slds-text-heading_large">Ten en cuenta las
+                            <p class="slds-text-heading_large">{modalDescription}</p>
+                            <p class="slds-text-heading_large slds-m-top_small">Ten en cuenta las
                                 siguientes consideraciones:</p>
                             <ul
                                 class="slds-list_dotted slds-m-left_large slds-m-top_x-small">
-                                <li class="slds-text-heading_large">Si hay un
-                                    despliegue/validación o ejecución
-                                    de todos los tests en curso, no se ha de
-                                    lanzar la compilación de flexcards.</li>
-                                <li class="slds-text-heading_large">Si ha
-                                    fallado el script previamente, se ha
-                                    de esperar 10 minutos para volver a
-                                    lanzarlo.</li>
+                                <template for:each={modalConsiderations} for:item="consideration">
+                                    <li key={consideration.id} class="slds-text-heading_large">{consideration.text}</li>
+                                </template>
 
                             </ul>
                         </div>

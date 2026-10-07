@@ -6,6 +6,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
           import pubsub from "omnistudio/pubsub";
           import { getRecord } from "lightning/uiRecordApi";
           
+          
           import data from "./definition";
           
           import styleDef from "./styleDefinition";
@@ -22,6 +23,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
+              
               @track Label={dmt_cl_Amount:"Amount",
         dmt_cl_Globalproduct_Text:"Global Product",
         dmt_cl_Subcategory_Text:"Subcategory",
@@ -33,6 +35,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               customEvent = [];
               
               connectedCallback() {
+                
                 super.connectedCallback();
                 this.setThemeClass(data);
                 this.setStyleDefinition(styleDef);
@@ -45,9 +48,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKE000000L94QYAS"
+                  " card-0koKE000000L9moYAC"
                 );
-                this.loadCustomStylesheetAttachement("00PKE000001vml42AA");
+                this.loadCustomStylesheetAttachement("00PKE000002KNS52AO");
                 
                 
               }

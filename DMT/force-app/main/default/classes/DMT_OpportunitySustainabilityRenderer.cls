@@ -1,4 +1,4 @@
-public with sharing class DMT_OpportunitySustainabilityRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_OpportunitySustainabilityRenderer implements DMT_ViewRenderer {
 
     private List<DMT_FormattingUtils.DisplayField> buildSustainabilityFields(DMT_ViewController.OpportunityProduct oppProduct) {
         String assessPickLabel = Util_Picklist.getLabelFromAPI('OpportunityLineItem','DMT_sustainable_deal_assessment__c').get(oppProduct.sustainableDealAssessment);
@@ -78,67 +78,6 @@ public with sharing class DMT_OpportunitySustainabilityRenderer implements DMT_V
         } catch (Exception e) {
             System.debug('Error in DMT_OpportunitySustainabilityRenderer renderHtml, ' + e.getMessage() + ' ' + e.getLineNumber());
             return '<div>Error: ' + e.getMessage() + ' - ' + e.getLineNumber() + '</div>';
-        }
-    }
-
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        Map<String, Object> component = new Map<String, Object>();
-
-        if (data == null || data.oppProducts == null || data.oppProducts.isEmpty()) {
-            return component;
-        }
-
-        try {
-            List<Object> contentList = new List<Object>();
-            contentList.add(DMT_Create_Pdf_Controller.createTitle('Sustainability'));
-
-            Boolean hasRenderedData = false;
-
-            for (DMT_ViewController.OpportunityProduct oppProduct : data.oppProducts) {
-                if (!hasSustainabilityData(oppProduct)) {
-                    continue;
-                }
-
-                hasRenderedData = true;
-
-                if (String.isNotBlank(oppProduct.name)) {
-                    contentList.add(new Map<String, Object>{
-                        'type' => 'text',
-                        'text' => DMT_FormattingUtils.checkNull(oppProduct.name),
-                        'style' => new Map<String, Object>{
-                            'fontSize' => 14,
-                            'textColor' => '#004481'
-                        }
-                    });
-                }
-
-                contentList.add(DMT_Create_Pdf_Controller.generatePdfList(
-                    buildSustainabilityFields(oppProduct)
-                ));
-            }
-
-            if (!hasRenderedData) {
-                return component;
-            }
-
-            component.put('content', contentList);
-            component.put('name', 'Sustainability');
-
-            return component;
-
-        } catch (Exception e) {
-            System.debug('Error in DMT_OpportunitySustainabilityRenderer renderPdfJson, ' + e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(
-                e.getMessage(),
-                e.getStackTraceString(),
-                e.getLineNumber(),
-                e.getTypeName(),
-                'DMT_OpportunitySustainabilityRenderer',
-                'renderPdfJson',
-                'DMT',
-                ''
-            ));
-            return component;
         }
     }
 }

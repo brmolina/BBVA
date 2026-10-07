@@ -1,5 +1,5 @@
 import { LightningElement, api, wire, track } from 'lwc';
-import getProduct2 from '@salesforce/apex/DMT_TaxonomyMultipleProducts.getProductsDMT';
+import getProduct2 from '@salesforce/apex/DMT_TaxonomyMultipleProducts.getProductsDMTByContext';
 
 export default class ProductSelector extends LightningElement {
     @track products = [];
@@ -18,9 +18,6 @@ export default class ProductSelector extends LightningElement {
     }
     set lineId(value) {
         this.recordId = value;
-        if (value) {
-            this.wiredAllProducts(this.recordId);
-        }
     }
 
     @api
@@ -38,11 +35,13 @@ export default class ProductSelector extends LightningElement {
     }
     set contextCode(value) {
         this._contextCode = value;
+        console.log('[dmt_multipleproducts_otherline] contextCode', this._contextCode);
     }
 
     @wire(getProduct2, { recordId: '$recordId', contextCode: '$_contextCode' })
     wiredAllProducts({ error, data }) {
         if (data) {
+            console.log('[dmt_multipleproducts_otherline] products loaded', JSON.stringify(data));
             this.allproducts = data.map(prod => ({
                 id: prod.Id,
                 code: prod.ProductCode,
@@ -54,6 +53,11 @@ export default class ProductSelector extends LightningElement {
                 g_gbl_product_subcategory_id__c: prod.DMT_Product_Subcategory__c,
                 g_global_product_id__c: prod.DMT_Global_Product_Id__c,
                 Parent_Product__c: prod.Parent_Product__c,
+                DMT_Taxonomy_Value__c: prod.DMT_Taxonomy_Value__c,
+                taxonomyContextRaw: prod.DMT_Taxonomy_Value__r?.gf_catalog_atrb_val7_name__c,
+                taxonomyChildCodes: this.parseChildCodes(prod.DMT_Taxonomy_Value__r?.gf_catalog_atrb_val1_name_c__c),
+                sortOrderRaw: prod.DMT_Taxonomy_Value__r?.gf_catalog_atrb_val2_name__c,
+                manualIndentRaw: prod.DMT_Taxonomy_Value__r?.gf_catalog_atrb_val3_name__c,
                 sortOrder: prod.DMT_Taxonomy_Value__r?.gf_catalog_atrb_val2_name__c
                     ? parseInt(prod.DMT_Taxonomy_Value__r.gf_catalog_atrb_val2_name__c, 10)
                     : 0,
@@ -69,71 +73,137 @@ export default class ProductSelector extends LightningElement {
             }));
             this.buildHierarchyFromProducts();
         } else if (error) {
-            console.error(error);
+            console.error('[dmt_multipleproducts_otherline] products error', error);
         }
     }
 
-    // 🧩 Nueva función: construye la jerarquía a partir del campo Parent_Product__c
-    buildHierarchyFromProducts() {
-    // 1) Crear mapa único por Id asegurando children en la instancia del mapa
-    const productMap = new Map();
-    this.allproducts.forEach(prod => {
-        // Guardamos la misma instancia en el mapa (clon superficial para evitar mutaciones externas)
-        productMap.set(prod.id, {
-            ...prod,
-            children: [],    // garantizamos que exista children en el nodo del mapa
-            __isChild: false // flag temporal
-        });
-    });
-
-    // 2) Enlazar padres con hijos usando las referencias del mapa (modificando el objeto dentro del mapa)
-    this.allproducts.forEach(prod => {
-        const parentId = prod.Parent_Product__c;
-        if (parentId && productMap.has(parentId)) {
-            const parentNode = productMap.get(parentId); // referencia al objeto en el mapa
-            const childNode = productMap.get(prod.id);   // referencia al objeto en el mapa
-
-            // Evitar duplicados por si la relación aparece repetida
-            if (!parentNode.children.some(c => c.id === childNode.id)) {
-                parentNode.children.push(childNode); // modificamos la instancia del mapa
-            }
-
-            // marcamos que este nodo es hijo
-            childNode.__isChild = true;
+    parseChildCodes(rawValue) {
+        if (!rawValue) {
+            return [];
         }
-    });
 
-    // 3) Seleccionar SOLO los nodos que efectivamente tienen hijos (son padres)
-    const parents = Array.from(productMap.values()).filter(node => Array.isArray(node.children) && node.children.length > 0);
+        return rawValue
+            .split(',')
+            .map(code => code.trim())
+            .filter(Boolean);
+    }
 
-    // 4) Ordenar recursivamente por sortOrder (protegemos contra null/undefined)
-    const sortRecursive = (nodes) => {
-        nodes.sort((a, b) => (Number(a.sortOrder || 0) - Number(b.sortOrder || 0)));
-        nodes.forEach(n => {
-            if (n.children && n.children.length > 0) {
-                sortRecursive(n.children);
-            }
+    isLeafProduct(product) {
+        return String(product.sortOrderRaw || '').trim() === '99' &&
+            String(product.manualIndentRaw || '').trim().toUpperCase() === 'XX';
+    }
+
+    isParentProduct(product) {
+        return !this.isLeafProduct(product) && product.taxonomyChildCodes.length > 0;
+    }
+
+    matchesCurrentContext(rawValue) {
+        if (String(this._contextCode || '').trim() === '') {
+            return true;
+        }
+
+        const normalized = String(rawValue || '').toUpperCase();
+        const context = String(this._contextCode || '').trim().toUpperCase();
+
+        if (context === 'OPP') {
+            return normalized.includes('OPP');
+        }
+        if (context === 'L') {
+            return normalized.includes('L');
+        }
+        // Handle comma-separated tokens: 'LC', 'LNC', 'LC,LNC', etc.
+        const tokens = context.split(',').map(t => t.trim()).filter(Boolean);
+        if (tokens.length > 0) {
+            return tokens.some(t => normalized.includes(t));
+        }
+        return true;
+    }
+
+    cloneTree(nodes) {
+        return nodes.map(node => ({
+            ...node,
+            children: this.cloneTree(node.children || [])
+        }));
+    }
+
+    buildHierarchyFromProducts() {
+        const productsByCode = new Map();
+        this.allproducts.forEach(prod => {
+            const bucket = productsByCode.get(prod.code) || [];
+            bucket.push({ ...prod, children: [] });
+            productsByCode.set(prod.code, bucket);
         });
-    };
-    sortRecursive(parents);
 
-    // 5) Limpiar flags internos __isChild
-    const cleanRecursive = (nodes) => {
-        nodes.forEach(n => {
-            delete n.__isChild;
-            if (n.children && n.children.length > 0) {
-                cleanRecursive(n.children);
-            }
+        const parentCandidatesByCode = new Map();
+        this.allproducts
+            .filter(prod => this.isParentProduct(prod) && this.matchesCurrentContext(prod.taxonomyContextRaw))
+            .forEach(parent => {
+                const bucket = parentCandidatesByCode.get(parent.code) || [];
+                bucket.push(parent);
+                parentCandidatesByCode.set(parent.code, bucket);
+            });
+
+        const selectedParents = [];
+        parentCandidatesByCode.forEach((candidates) => {
+            candidates.sort((firstParent, secondParent) => (
+                Number(firstParent.sortOrder || 0) - Number(secondParent.sortOrder || 0)
+                || String(firstParent.displayName || '').localeCompare(String(secondParent.displayName || ''))
+            ));
+            selectedParents.push(candidates[0]);
         });
-    };
-    cleanRecursive(parents);
 
-    // 6) Asignar resultado: SOLO padres (cada uno con sus hijos anidados)
-    // Hacemos copias superficiales para filteredProducts para evitar compartir referencias directas con this.products
-    this.products = parents;
-    this.filteredProducts = parents.map(p => ({ ...p, children: p.children.slice() }));
-    this.isLoading = false;
-}
+        const parentNodes = selectedParents
+            .map(parent => {
+                const uniqueChildCodes = [...new Set(parent.taxonomyChildCodes)];
+                const children = [];
+
+                uniqueChildCodes.forEach(code => {
+                    const candidates = productsByCode.get(code) || [];
+                    const leafCandidates = candidates.filter(child => (
+                        child.id !== parent.id && this.isLeafProduct(child)
+                    ));
+
+                    if (!leafCandidates.length) {
+                        return;
+                    }
+
+                    leafCandidates.sort((firstChild, secondChild) => (
+                        Number(firstChild.sortOrder || 0) - Number(secondChild.sortOrder || 0)
+                        || String(firstChild.displayName || '').localeCompare(String(secondChild.displayName || ''))
+                    ));
+
+                    children.push({
+                        ...leafCandidates[0],
+                        children: []
+                    });
+                });
+
+                return {
+                    ...parent,
+                    children
+                };
+            })
+            .filter(parent => parent.children.length > 0);
+
+        const sortRecursive = (nodes) => {
+            nodes.sort((firstNode, secondNode) => (
+                Number(firstNode.sortOrder || 0) - Number(secondNode.sortOrder || 0)
+                || String(firstNode.displayName || '').localeCompare(String(secondNode.displayName || ''))
+            ));
+
+            nodes.forEach(node => {
+                if (node.children?.length) {
+                    sortRecursive(node.children);
+                }
+            });
+        };
+
+        sortRecursive(parentNodes);
+
+        this.products = parentNodes;
+        this.filteredProducts = this.cloneTree(parentNodes);
+        this.isLoading = false;
+    }
 
     filterProducts() {
         const term = this._searchProduct?.toLowerCase() || '';
@@ -142,7 +212,7 @@ export default class ProductSelector extends LightningElement {
             const nameMatch =
                 node.displayName.toLowerCase().includes(term) ||
                 !term ||
-                term === ''  || term === 'emptyfilter';
+                term === '' || term === 'emptyfilter';
             const filteredChildren = node.children?.map(filterRecursive).filter(Boolean) || [];
 
             if (nameMatch || filteredChildren.length) {
@@ -188,8 +258,6 @@ export default class ProductSelector extends LightningElement {
          this.updateOtherProduct(this.filteredProducts, updated, 'selected');
 
         if (updated.children && updated.children.length > 0) {
-            //this.filteredProducts = [updated];
-            //this.products = [updated];
             this.isFilteredByParent = true;
         }
 
@@ -207,7 +275,6 @@ export default class ProductSelector extends LightningElement {
 
     handleCheck(event) {
         const updated = event.detail.product;
-        // this.updateTreeNode(this.filteredProducts, updated, 'selected');
         this.updateOtherProduct(this.filteredProducts, updated, 'expanded');
         this.updateOtherProduct(this.filteredProducts, updated, 'selected');
         this.updateTreeNode(this.products, updated, 'selected');
@@ -280,7 +347,10 @@ export default class ProductSelector extends LightningElement {
 
     setSelectedRecursive(children, selected) {
         for (let child of children) {
-            this.updateTreeNode(this.products, children, 'selected');
+            this.updateTreeNode(this.products, {
+                ...child,
+                selected
+            }, 'selected');
             if (child.children?.length > 0) {
                 this.setSelectedRecursive(child.children, selected);
             }
@@ -298,10 +368,12 @@ export default class ProductSelector extends LightningElement {
         let selectedCodesId = [];
 
         let selectedTerms = [];
+        const seenSelectedIds = new Set();
 
         const collectSelected = (nodes) => {
             for (let node of nodes) {
-                if (node.selected && (!node.children || node.children.length === 0)) {
+                if (node.selected && (!node.children || node.children.length === 0) && !seenSelectedIds.has(node.id)) {
+                    seenSelectedIds.add(node.id);
                     selectedCodes.push(node?.code);
                     selectedTerms.push(node?.maxTerm);
                     selectedCodesId.push(node?.id);
@@ -329,9 +401,12 @@ export default class ProductSelector extends LightningElement {
             selectedTerms: finalTerms
         };
 
-        const firstSelected = this.allproducts.find(p =>
-            selectedCodes.includes(p.code)
-        );
+        // Resolve by id (not code): the catalog has multiple Product2 records sharing the same
+        // ProductCode with different Names, so matching by code can silently pick a different
+        // duplicate than the one actually linked via DMT_Product__c (productIds, sourced from
+        // this same selectedCodesId array). Matching by id keeps Name/parentProductName
+        // consistent with whichever record ends up as the real lookup.
+        const firstSelected = this.allproducts.find(p => p.id === selectedCodesId[0]);
         console.log('First Selected:', JSON.stringify(firstSelected));
         const hierarchy = [
             'g_global_product_family_id__c',
@@ -351,6 +426,19 @@ export default class ProductSelector extends LightningElement {
                 }
             }
             eventPayload['Name'] = firstSelected?.Name;
+
+            // Surface the child product's own taxonomy value Id so it gets persisted as the
+            // Commercial Product.
+            eventPayload['DMT_Commercial_Product__c'] = firstSelected?.DMT_Taxonomy_Value__c || null;
+
+            // CIBGLOBALD-3779: surface the parent node's Name too, so it can be persisted as the
+            // "Commercial Product Description" alongside the selected child product's code/name.
+            const parentNode = this.products.find(parent =>
+                (parent.children || []).some(child => child.code === firstSelected.code)
+            );
+            eventPayload['parentProductName'] = parentNode?.displayName || parentNode?.Name || null;
+            // Surface the parent node's taxonomy value Id so it gets persisted as the Global Product.
+            eventPayload['DMT_Global_Product__c'] = parentNode?.DMT_Taxonomy_Value__c || null;
         }
         console.log('Event Payload:', JSON.stringify(eventPayload));
         console.log('selectedCodesId:', JSON.stringify(selectedCodesId));
@@ -388,7 +476,7 @@ export default class ProductSelector extends LightningElement {
     }
 
     handleBack() {
-        this.filteredProducts = JSON.parse(JSON.stringify(this.products)); // clonado limpio
+        this.filteredProducts = JSON.parse(JSON.stringify(this.products));
         this.currentParent = null;
         this.isFilteredByParent = false;
         const resetRecursive = (nodes) => {

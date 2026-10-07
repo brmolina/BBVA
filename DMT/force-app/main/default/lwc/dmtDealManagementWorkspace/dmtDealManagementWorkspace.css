@@ -65,10 +65,16 @@
 }
 
 .slds-tabs_default__content.slds-show {
-    flex: 1;
+    /* Match dmt_MainClientSelectionTable .table_height. This is the element
+       carrying slds-box, so the border itself must receive the explicit height. */
+    flex: 0 0 73.4vh;
     display: flex;
     flex-direction: column;
-    min-height: 0;
+    height: 73.4vh;
+    min-height: 73.4vh;
+    max-height: 73.4vh;
+    box-sizing: border-box;
+    overflow: hidden;
     animation: fadeInUp 0.3s ease-out;
 
 }

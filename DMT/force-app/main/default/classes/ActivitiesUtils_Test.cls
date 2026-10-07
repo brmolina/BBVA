@@ -84,8 +84,8 @@ public class ActivitiesUtils_Test {
       insert task2;
   
       // Crear tipos de tarea requeridos
-      DMT_Task_Type__c taskType1 = new DMT_Task_Type__c(Name = 'Risk Approval - Local', DMT_External_Id__c = 'RiskApprovalLocal');
-      DMT_Task_Type__c taskType2 = new DMT_Task_Type__c(Name = 'Risk Analysis (local approval)', DMT_External_Id__c = 'RiskAnalysisLocal');
+      DMT_Task_Type__c taskType1 = new DMT_Task_Type__c(Name = 'Risk Approval - Local', DMT_External_Id__c = 'RiskApprovalLocal', DMT_Scope__c = 'Local');
+      DMT_Task_Type__c taskType2 = new DMT_Task_Type__c(Name = 'Risk Analysis (local approval)', DMT_External_Id__c = 'RiskAnalysisLocal', DMT_Scope__c = 'Local');
       insert new List<DMT_Task_Type__c>{ taskType1, taskType2 };
   
       // Crear línea relacionada con el caso
@@ -194,5 +194,63 @@ public class ActivitiesUtils_Test {
         /*DMT_Consolidated_Line__c updatedConsolidatedLine = [SELECT Id, global_risk_analyst__c, global_risk_analyst_name__c FROM DMT_Consolidated_Line__c LIMIT 1];
         System.assertEquals(testTask.LastModifiedById, updatedConsolidatedLine.global_risk_analyst__c, 'El usuario consolidado debe haberse actualizado');
         System.assertNotEquals(null, updatedConsolidatedLine.global_risk_analyst_name__c, 'El nombre del analista consolidado debe estar actualizado');*/
+    }
+
+
+    @isTest
+    static void testUpdateAuxLastModify() {
+        Task t = new Task();
+        Test.startTest();
+        ActivitiesUtils.updateAuxLastModify(new List<Task>{ t });
+        Test.stopTest();
+        System.assertNotEquals(null, t.AuxLastModDate__c, 'AuxLastModDate__c debe haberse rellenado');
+    }
+
+    @isTest
+    static void testUpdateLineFromTask_Scopes() {
+        insert new List<DMT_Task_Type__c>{
+            new DMT_Task_Type__c(Name='Risk Global',          DMT_External_Id__c='RiskGlobal',    DMT_Scope__c='Global'),
+            new DMT_Task_Type__c(Name='Risk Global y Local', DMT_External_Id__c='RiskGlobLocal', DMT_Scope__c='Global y Local')
+        };
+        DMT_Task_Type__c globalType    = [SELECT Id FROM DMT_Task_Type__c WHERE DMT_Scope__c = 'Global' LIMIT 1];
+        DMT_Task_Type__c glocalType    = [SELECT Id FROM DMT_Task_Type__c WHERE DMT_Scope__c = 'Global y Local' LIMIT 1];
+
+        DMT_Line__c line1 = new DMT_Line__c(Line_Id__c='LINE_G');
+        DMT_Line__c line2 = new DMT_Line__c(Line_Id__c='LINE_GL');
+        insert new List<DMT_Line__c>{ line1, line2 };
+
+        Case case1 = new Case(); insert case1; case1.DMT_Line__c = line1.Id; update case1;
+        Case case2 = new Case(); insert case2; case2.DMT_Line__c = line2.Id; update case2;
+
+        insert new List<Task>{
+            new Task(Status='Completed', Priority=PRIO_NORMAL, Subject=CALL, WhatId=case1.Id, Type=CALL, DMT_Task_Type__c=globalType.Id,  IsPublicEquity__c=false),
+            new Task(Status='Completed', Priority=PRIO_NORMAL, Subject=CALL, WhatId=case2.Id, Type=CALL, DMT_Task_Type__c=glocalType.Id,  IsPublicEquity__c=false)
+        };
+        List<Task> tasks = [SELECT Id FROM Task WHERE WhatId IN (:case1.Id, :case2.Id)];
+
+        Test.startTest();
+        ActivitiesUtils.updateLineFromTask(tasks);
+        Test.stopTest();
+
+        line1 = [SELECT DMT_Global_Risk_Analyst__c, DMT_Local_Risk_Analyst__c FROM DMT_Line__c WHERE Id = :line1.Id];
+        line2 = [SELECT DMT_Global_Risk_Analyst__c, DMT_Local_Risk_Analyst__c FROM DMT_Line__c WHERE Id = :line2.Id];
+        System.assertNotEquals(null, line1.DMT_Global_Risk_Analyst__c, 'Global: analista global actualizado');
+        System.assertEquals   (null, line1.DMT_Local_Risk_Analyst__c,  'Global: analista local NO actualizado');
+        System.assertNotEquals(null, line2.DMT_Global_Risk_Analyst__c, 'Global+Local: analista global actualizado');
+        System.assertNotEquals(null, line2.DMT_Local_Risk_Analyst__c,  'Global+Local: analista local actualizado');
+    }
+
+    @isTest
+    static void testCheckEmptyContactEmail_BlankEmail() {
+        Account acc = [SELECT Id FROM Account LIMIT 1];
+        Contact noEmailContact = UnitTestUtils.GetContact(acc.Id);
+        insert noEmailContact;
+
+        Test.startTest();
+        ActivitiesUtils.check_EmptyContactEmail(new Map<Id, Contact>{ noEmailContact.Id => noEmailContact });
+        Test.stopTest();
+
+        System.assertNotEquals(null, ContactTriggerHandler.map_EmptyEmailContacts.get(noEmailContact.Id),
+            'El contacto sin email debe aparecer en map_EmptyEmailContacts');
     }
 }

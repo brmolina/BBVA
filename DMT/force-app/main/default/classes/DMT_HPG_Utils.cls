@@ -19,8 +19,8 @@ public with sharing class DMT_HPG_Utils {
     static final String GROUP_NAME = 'Group';
     static final String SHARED_GROUP_NAME = 'Shared Management Group';
     static final String TOTAL_CLIENTS = 'TOTAL CLIENTS';
-    static final List<String> ADMIN_PROFILES = new List<String>{'System Administrator', 'Consultation IT'};
-
+    static final List<String> ADMIN_PROFILES = new List<String>{'System Administrator', 'BBVA Standard User'};
+    private static String cachedFederationId;
     static final String HPGR_ACCESS_CUSTOM_PERMISSION = 'hpgr__Access';
     static final String HPGR_ACCESSRISK_CUSTOM_PERMISSION = 'hpgr__AccessRisk';
     static final String HPGR_ADMIN_CUSTOM_PERMISSION = 'hpgr__Admin';
@@ -33,44 +33,11 @@ public with sharing class DMT_HPG_Utils {
         if (Test.isRunningTest()) {
             response = getMock(serviceName);
         } else {
-            response = iaso.GBL_Integration_GenericService.invoke(serviceName, requestStr);system.debug('******* Responsesss from service: ' + response.getBody());
+            response = iaso.GBL_Integration_GenericService.invoke(serviceName, requestStr);
         }
         return response;
     }
 
-    public static HttpResponse callService_DMT(String serviceName, Map<String, Object> request) {
-        return callService_DMT(serviceName, request, false);
-    }
-
-    public static HttpResponse callService_DMT(String serviceName, String requestStr) {
-        return callService_DMT(serviceName, requestStr, false);
-    }
-
-    // New overload for Map with insertLogs
-    public static HttpResponse callService_DMT(String serviceName, Map<String, Object> request, Boolean insertLogs) {
-        request.put('userId', getFederationIdentifier());system.debug('******* Request to service AAAAAAAAAAAAA: ' + request);
-        HttpResponse response = DMT_Integration_GenericService.invoke(serviceName, request);
-        if (insertLogs) {
-            DMT_Integration_GenericService.commitAllLogsViaBatch();
-        }
-        return response;
-    }
-
-    // New overload for String with insertLogs
-    public static HttpResponse callService_DMT(String serviceName, String requestStr, Boolean insertLogs) {
-        // Parse JSON string into Map<String, Object>
-        Map<String, Object> requestMap = (Map<String, Object>) JSON.deserializeUntyped(requestStr);
-
-        // Add userId
-        requestMap.put('userId', getFederationIdentifier());
-
-        // Call service directly, passing the map
-        HttpResponse response = DMT_Integration_GenericService.invoke(serviceName, requestMap);
-        if (insertLogs) {
-            DMT_Integration_GenericService.commitAllLogsViaBatch();
-        }
-        return response;
-    }
 
     public static HttpResponse getMock(String serviceName) {
         final HttpResponse response = new HttpResponse();
@@ -92,11 +59,13 @@ public with sharing class DMT_HPG_Utils {
     }
 
     public static String getFederationIdentifier() {
-        String res;
+        if (cachedFederationId != null) {
+            return cachedFederationId;
+        }
         final Id userId = UserInfo.getUserId();
         final User usr = [SELECT FederationIdentifier FROM User WHERE Id = :userId LIMIT 1];
-        res = usr.FederationIdentifier;
-        return res;
+        cachedFederationId = usr.FederationIdentifier;
+        return cachedFederationId;
     }
 
     //DEPRECATED
@@ -121,7 +90,7 @@ public with sharing class DMT_HPG_Utils {
         final String groupName;
 
         String searchDate = DMT_HPG_Utils.lastDate();        
-        res = DMT_HPG_MainTableCustomController.fetchClientDataFromService(clientId, '1', '2', new List<String>{}, Date.valueOf(searchDate), 'N', null);
+        res = DMT_HPG_MainTableCustomController.fetchClientDataFromService(clientId, '1', '5000', new List<String>{}, Date.valueOf(searchDate), 'N', null);
         if(res.data != null && res.data.size() > 0) {
             groupName = res.data[0].groupName;
         }
@@ -129,36 +98,120 @@ public with sharing class DMT_HPG_Utils {
     }
     
     public static String getAlphaCode(Id clientId) {
-        List<Local_Client__c> localC = [SELECT Alpha_code__c FROM Local_Client__c WHERE Cib_Client__c  =:clientId];
+        List<Account> accList = [SELECT g_customer_id__c FROM Account WHERE Id =:clientId];
 
-        if(localC.isEmpty())
+        if(accList.isEmpty())
         {
             return null;
         }
-        return localC[0].Alpha_code__c;
+        return accList[0].g_customer_id__c;
     }
 
     /**
-     * DEPRECATED
-    * @description Get client data
-    * @param recordId - : Account Id or Local_Client__c
-    * @return retMap account data
-    */
-    /*public static Account getClient(Id recordId) {
-        final String objectName = recordId.getSObjectType().getDescribe().getName();
-        Id clientId;
-        switch on objectName {
-            when 'Local_Client__c' {
-                final Local_Client__c localC = [SELECT Cib_Client__c FROM Local_Client__c WHERE Id =:recordId][0];
-                clientId = localC.Cib_Client__c;
-            }
-            when else {
-                clientId = recordId;
+     * @description Resolves the Main Holder's display name for each Opportunity's current client
+     * structure (Grupo y Main Holder en Opportunity tras migración Multiholder). Mirrors the
+     * classification already proven in DMT_OpportunityClientController.resolveMainHolderClientId():
+     * Subsidiary / Prospect_Subsidiary Accounts always resolve to the Opportunity's own Account
+     * (Custom_Association_Opportunity__c is not even considered for those); every other Account
+     * (standard Group / Prospect_Group) resolves the Main Holder via the client flagged through
+     * Custom_Association_Opportunity__c.g_customer_id__c, falling back to the Opportunity's own
+     * Account when no such association exists. Bulk-safe, SOQL only (no callouts) - safe to call
+     * from trigger context.
+     * @param opportunityIds Ids of the Opportunities to resolve
+     * @param fallbackAccountNameByOppId Opportunity Id -> Account.Name to use when the Opportunity
+     * is Subsidiary-like, or when no Multiholder Custom Association is mapped
+     * @return Map of Opportunity Id -> Main Holder display name
+     */
+    public static Map<Id, String> getMainHolderNames(Set<Id> opportunityIds, Map<Id, String> fallbackAccountNameByOppId) {
+        Map<Id, String> result = new Map<Id, String>();
+        if (opportunityIds == null || opportunityIds.isEmpty()) {
+            return result;
+        }
+
+        Id prospectSubsidiaryRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName()
+            .get('Prospect_Subsidiary')?.getRecordTypeId();
+
+        // Subsidiary-like Opportunities (real Subsidiary or Prospect_Subsidiary Account) always use
+        // their own Account as the Main Holder, regardless of any Custom_Association_Opportunity__c
+        // record that may exist - mirrors DMT_OpportunityClientController.resolveMainHolderClientId().
+        Set<Id> subsidiaryLikeOppIds = new Set<Id>();
+        for (Opportunity opp : [
+            SELECT Id, Account.DES_Client_Type__c, Account.RecordTypeId
+            FROM Opportunity
+            WHERE Id IN :opportunityIds
+            WITH USER_MODE
+        ]) {
+            Boolean isSubsidiary = opp.Account != null && opp.Account.DES_Client_Type__c == 'Subsidiary';
+            Boolean isProspectSubsidiary = opp.Account != null && opp.Account.RecordTypeId == prospectSubsidiaryRtId;
+            if (isSubsidiary || isProspectSubsidiary) {
+                subsidiaryLikeOppIds.add(opp.Id);
             }
         }
-        final Account acc = [SELECT Name, DES_Structure_Type__c, DES_Group_Code__c, DES_Main_Parent__c, DES_Main_Parent__r.Name, DES_Main_Parent__r.DES_Group_Code__c, DES_Main_Parent__r.DES_Structure_Type__c, DES_Main_Parent__r.DES_Main_Parent__r.Name, DES_Main_Parent__r.DES_Main_Parent__r.DES_Group_Code__c, DES_Main_Parent__r.DES_Main_Parent__r.DES_Structure_Type__c FROM Account WHERE Id =:clientId][0];
-        return acc;
-    }*/
+
+        Set<Id> associationLookupOppIds = new Set<Id>(opportunityIds);
+        associationLookupOppIds.removeAll(subsidiaryLikeOppIds);
+
+        Map<Id, String> mainHolderCodeByOpp = new Map<Id, String>();
+        if (!associationLookupOppIds.isEmpty()) {
+            for (Custom_Association_Opportunity__c assoc : [
+                SELECT Opportunity__c, g_customer_id__c
+                FROM Custom_Association_Opportunity__c
+                WHERE Opportunity__c IN :associationLookupOppIds AND g_customer_id__c != null
+                WITH USER_MODE
+                ORDER BY CreatedDate
+            ]) {
+                if (!mainHolderCodeByOpp.containsKey(assoc.Opportunity__c)) {
+                    mainHolderCodeByOpp.put(assoc.Opportunity__c, assoc.g_customer_id__c);
+                }
+            }
+        }
+
+        Set<String> mainHolderCodes = new Set<String>(mainHolderCodeByOpp.values());
+        Map<String, String> accountNameByCustomerId = new Map<String, String>();
+        if (!mainHolderCodes.isEmpty()) {
+            for (Account acc : [
+                SELECT g_customer_id__c, Name
+                FROM Account
+                WHERE g_customer_id__c IN :mainHolderCodes
+                WITH USER_MODE
+            ]) {
+                accountNameByCustomerId.put(acc.g_customer_id__c, acc.Name);
+            }
+        }
+
+        for (Id oppId : opportunityIds) {
+            String fallback = fallbackAccountNameByOppId != null ? fallbackAccountNameByOppId.get(oppId) : null;
+            if (subsidiaryLikeOppIds.contains(oppId)) {
+                result.put(oppId, fallback);
+                continue;
+            }
+            String mainHolderCode = mainHolderCodeByOpp.get(oppId);
+            String mainHolderName = (String.isNotBlank(mainHolderCode) && accountNameByCustomerId.containsKey(mainHolderCode))
+                ? accountNameByCustomerId.get(mainHolderCode)
+                : fallback;
+            result.put(oppId, mainHolderName);
+        }
+        return result;
+    }
+
+    /**
+     * @description Single-Opportunity convenience overload of getMainHolderNames(), for real-time
+     * NBC view rendering (DMT_ViewController).
+     * @param opportunityId Id of the Opportunity
+     * @param fallbackAccountName Account.Name of the Opportunity's own AccountId, used when no
+     * Multiholder Custom Association is mapped
+     * @return the Main Holder's display name
+     */
+    public static String getMainHolderName(Id opportunityId, String fallbackAccountName) {
+        if (opportunityId == null) {
+            return fallbackAccountName;
+        }
+        Map<Id, String> resolved = getMainHolderNames(
+            new Set<Id>{ opportunityId },
+            new Map<Id, String>{ opportunityId => fallbackAccountName }
+        );
+        return resolved.get(opportunityId);
+    }
 
     /**
     * @description get client code used to call 'group-positions' service
@@ -169,9 +222,6 @@ public with sharing class DMT_HPG_Utils {
         Map<String, Object> retMap = new Map<String, Object>();
         final String objectName = recordId.getSObjectType().getDescribe().getName();
         switch on objectName {
-            when 'Local_Client__c' {
-                retMap = getRecordCodeFromLocalClient(recordId);
-            }
             when 'Account' {
                 retMap = getRecordCodeFromAccount(recordId);
             }
@@ -185,7 +235,7 @@ public with sharing class DMT_HPG_Utils {
 
     /**
     * @description: get groupcode from recordId
-    * @param recordId - : Account Id or Local_Client__c Id
+    * @param recordId - : Account Id
     * @return retMap account data
     */
     @AuraEnabled
@@ -230,10 +280,10 @@ public with sharing class DMT_HPG_Utils {
     }
 
     public static Map<String, Object> buildClientGroupStructure(String accountId) {
-    final Map<String, Object> res = new Map<String, Object>();
+        final Map<String, Object> res = new Map<String, Object>();
     Id prospectGroupRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Group').getRecordTypeId();
     Id prospectSubsidiaryRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Subsidiary').getRecordTypeId();
-    
+
     // 1. Buscar la cuenta por su ID de Salesforce
     List<Account> accounts = [SELECT Id, Name, DES_Structure_Type__c, DES_Group_Code__c, G_customer_ID__c, RecordTypeId, participant_id__c, participant_id__r.Name, participant_id__r.DES_Group_Code__c, participant_id__r.RecordTypeId
                               FROM Account
@@ -243,7 +293,7 @@ public with sharing class DMT_HPG_Utils {
     
     if (accounts.isEmpty()) {
         return res;
-    }    
+    }
     Account currentAcc = accounts[0];
 
     //Prospects
@@ -307,7 +357,7 @@ public static void buildAncestorsHierarchy(Id accountId, Map<String, Object> res
                    AMH_Parent_Account__r.DES_Group_Code__c
             FROM AMH_GBL_Account_Relationship__c
             WHERE AMH_Child_Account__c = :currentId
-            WITH USER_MODE
+            WITH SECURITY_ENFORCED
         ];
 
         if (parentRels.isEmpty()) {
@@ -372,8 +422,6 @@ public static void buildAncestorsHierarchy(Id accountId, Map<String, Object> res
         // Call the original method
         Map<String, Object> result = getGroupFromRecordCode(recordCode);
 
-        DMT_Integration_GenericService.commitAllLogsViaBatch();
-
         // Serialize the result to a JSON string
         return JSON.serialize(result);
     }
@@ -387,18 +435,36 @@ public static void buildAncestorsHierarchy(Id accountId, Map<String, Object> res
         final Map<String,Object> res = new Map<String,Object>();
         final Map<String, Object> request = new Map<String, Object>();
         request.put('queryString', 'clientIdentifier=' + recordCode);
-        final DMT_GroupPositions.Wrapper groupPositions = DMT_GroupPositions.getGroupPositions(request);
-        if (groupPositions.success) {system.debug('groupPositions.data'+groupPositions.data);
-            res.put('groupCode', groupPositions.data.groupId);
-            res.put('groupName', groupPositions.data.groupName);
-            res.put('subgroupId', groupPositions.data.subgroupId);
-            res.put('supragroupId', groupPositions.data.supragroupId);
+        final HttpResponse response = callService('DMT_HPG_GetHierarchyPositions', request);
+        if (response.getStatusCode() == 200 || response.getStatusCode() == 201) {
+            final Map<String, Object> parsed = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
+            final List<Object> dataList = (List<Object>) parsed.get('data');
+            for (Object item : dataList) {
+                final Map<String, Object> entry = (Map<String, Object>) item;
+                if (entry.get('hierarchyType') == 'R') {
+                    res.put('groupCode', (String) entry.get('hierarchyLevel1Id'));
+                    break;
+                }
+            }
+            if (!res.containsKey('groupCode')) {
+                if (recordCode != null && isProspectGroup(recordCode)) {
+                    res.put('errorCode', 'PROSPECT_GROUP_NO_SUBSIDIARY');
+                    res.put('errorMessage', 'Please generate a subsidiary for this prospect group before accessing Deal Management.');
+                    return res;
+                }
+                throw new HandledException('Could not find hierarchyType R for record code ' + recordCode);
+            }
         } else {
-            throw new HandledException('Could not obtain group for record code ' + recordCode + ' from group-positions service: ' + groupPositions.errorMessage);
+            throw new HandledException('Could not obtain group for record code ' + recordCode + ' from hierarchy-positions service: ' + response.getBody());
         }
         return res;
     }
 
+    public static Boolean isProspectGroup(String recordCode) {
+        Id prospectGroupRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Group').getRecordTypeId();
+        List<Account> accs = [SELECT RecordTypeId FROM Account WHERE DES_Group_Code__c = :recordCode LIMIT 1];
+        return !accs.isEmpty() && accs[0].RecordTypeId == prospectGroupRtId;
+    }
 
     /*private static boolean getChildrenVisionRisk(Id accountId) {
         final List<dwp_acmh__GBL_Account_Relationship__c> acmh = [SELECT Id from dwp_acmh__GBL_Account_Relationship__c WHERE dwp_acmh__Vision__c = 'Riesgos' AND  dwp_acmh__Parent_Account__c =:accountId LIMIT 1];
@@ -418,6 +484,7 @@ public static void buildAncestorsHierarchy(Id accountId, Map<String, Object> res
         } else {
             res = DMT_Constants.ANON_MX;
         }
+
         return res;
     }
 
@@ -499,22 +566,6 @@ public static void buildAncestorsHierarchy(Id accountId, Map<String, Object> res
     }*/
 
     /**
-    * @description  get groupcode or alphacode from localClient recordId.
-    * @param clientId: Account Id
-    * @return String groupcode
-    */
-    private static Map<String, Object> getRecordCodeFromLocalClient(Id recordId) {
-        final Map<String,Object> res = new Map<String, Object>{'recordCode' => '', 'errorMessage' => 'Could not obtain Client Alphacode from Local Client Id ' + recordId, 'success' => false};
-        final List<Local_Client__c> localClientList = [SELECT Alpha_code__c FROM Local_Client__c WHERE Id =:recordId];
-        if (localClientList.size() > 0 && localClientList[0].Alpha_code__c != '' && localClientList[0].Alpha_code__c != null) {
-            res.put('recordCode', localClientList[0].Alpha_code__c);
-            res.put('errorMessage', '');
-            res.put('success', true);
-        }
-        return res;
-    }
-
-    /**
     * @description get groupcode or alphacode from account recordId.
     * @param clientId: Account Id
     * @return String groupcode
@@ -526,26 +577,19 @@ public static void buildAncestorsHierarchy(Id accountId, Map<String, Object> res
             res.put('recordCode', accountList[0].DES_Group_Code__c);
             res.put('errorMessage', '');
             res.put('success', true);
-        } else {
-            if (accountList[0].RecordType.DeveloperName == 'Prospect_Subsidiary') {
-                res.put('recordCode', accountList[0].g_customer_id__c);
-                res.put('errorMessage', '');
-                res.put('success', true);
-            } else {
-                List<Local_Client__c> localClientList = [SELECT Alpha_code__c FROM Local_Client__c WHERE Cib_Client__c =:recordId];
-                if (localClientList.size() > 0 && localClientList[0].Alpha_code__c != '' && localClientList[0].Alpha_code__c != null) {
-                    res.put('recordCode', localClientList[0].Alpha_code__c);
-                    res.put('errorMessage', '');
-                    res.put('success', true);
-                }
-            }
+        } else if (accountList.size() > 0 && accountList[0].g_customer_id__c != '' && accountList[0].g_customer_id__c != null) {
+            res.put('recordCode', accountList[0].g_customer_id__c);
+            res.put('errorMessage', '');
+            res.put('success', true);
         }
         return res;
     }
 
     public static Map<String, Object> getCustomerHPGS(Map<String, Object> inputMap, Map<String, Object> outMap, Map<String, Object> options) {
+
         final List<String> requiredFields = new List<String>{ 'clientId', 'lastDate', 'customerId' };
         List<String> missingFields = new List<String>();
+
 
         // Validación de campos requeridos (null o vacíos)
         for (String field : requiredFields) {
@@ -553,6 +597,7 @@ public static void buildAncestorsHierarchy(Id accountId, Map<String, Object> res
                 missingFields.add(field);
             }
         }
+
         if (!missingFields.isEmpty()) {
             outMap.put('serviceError', 'HPG Service Error - Missing or null required fields: ' + String.join(missingFields, ', '));
             return outMap;
@@ -570,7 +615,7 @@ public static void buildAncestorsHierarchy(Id accountId, Map<String, Object> res
             (String) inputMap.get('lastDate'),
             'N',
             '1',
-            '100',
+            '4000',
             null
         );
 
@@ -583,6 +628,7 @@ public static void buildAncestorsHierarchy(Id accountId, Map<String, Object> res
                 return outMap;
             }
         }
+
         outMap.put('serviceError', 'HPG Service Error - Customer not found in HPG Service');
         return outMap;
     }
@@ -655,4 +701,55 @@ public static void buildAncestorsHierarchy(Id accountId, Map<String, Object> res
         return outMap;
     }*/
 
+        public static Map<String, Object> getClientDataHPGS(Map<String, Object> inputMap, Map<String, Object> outMap, Map<String, Object> options) {
+        System.debug('log::EN getCustomerHPGS ');
+        System.debug('log::clientId: ' + inputMap.get('clientId'));
+        System.debug('log::lastDate: ' + inputMap.get('lastDate'));
+        System.debug('log::customerId: ' + inputMap.get('customerId'));
+        final List<String> requiredFields = new List<String>{ 'clientId', 'lastDate', 'customerId' };
+        List<String> missingFields = new List<String>();
+
+
+        // Validación de campos requeridos (null o vacíos)
+        for (String field : requiredFields) {
+            if (!inputMap.containsKey(field) || inputMap.get(field) == null || String.valueOf(inputMap.get(field)).trim() == '') {
+                missingFields.add(field);
+            }
+        }
+
+        if (!missingFields.isEmpty()) {
+            outMap.put('serviceError', 'HPG Service Error - Missing or null required fields: ' + String.join(missingFields, ', '));
+            return outMap;
+        }
+
+        // Parámetros de entrada válidos
+        List<String> countries = new List<String>{ 'ALL' };
+        String objectType = 'tcmopportunity';
+
+        DMT_HPG_GlobalPosition.Wrapper wrapperHPG = (DMT_HPG_GlobalPosition.Wrapper)
+        DMT_HPG_MainTableCustomController.fetchClientInitialData(
+            objectType,
+            (Id) inputMap.get('clientId'),
+            countries,
+            (String) inputMap.get('lastDate'),
+            'N',
+            '1',
+            '4000',
+            null
+        );
+
+        String inputCustomerId = (String) inputMap.get('customerId');
+
+        for (DMT_HPG_GlobalPosition.Data item : wrapperHPG.data) {
+            if (item.customerId == inputCustomerId) {
+                System.debug('log::Customer found in HPG Service: ' + item);
+                outMap.put('CustomerHPG', item);
+                outMap.put('LastUpdate', Datetime.now().format('HH:mm:ss'));
+                return outMap;
+            }
+        }
+
+        outMap.put('serviceError', 'HPG Service Error - Customer not found in HPG Service');
+        return outMap;
+    }
 }

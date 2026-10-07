@@ -7,7 +7,7 @@ import getDependentPicklistValues      from '@salesforce/apex/DMT_SustainableDea
 
 const ASSESSMENT_NONE                  = '1';
 const SUSTAINABLE_USE_OF_PROCEEDS      = '6';
-const SUBCATEGORY_TRIGGER_VALUES       = ['5', '6'];
+const SUBCATEGORY_TRIGGER_VALUES       = ['5', '6', '7'];
 const ASSESSMENT_DIRECT_CATALOG_VALUES = ['2', '3', '4', '5'];
 const SSL_ONLY_VALUES                  = ['2', '3', '4'];
 const BONUS_AUTO_TRUE_SUBTYPES         = ['Green', 'Social', 'Green and social'];
@@ -78,6 +78,11 @@ export default class DmtOppProductDetailsSustainability extends LightningElement
         this.isEditMode = false;
     }
 
+    @api validate() {
+        const renderer = this.template.querySelector('c-dmt_form_renderer');
+        return renderer?.validate?.() ?? true;
+    }
+
     @api setReadOnlyMode(readOnly) {
         if (readOnly) {
             if (!this._readOnlySnapshot) {
@@ -128,13 +133,6 @@ export default class DmtOppProductDetailsSustainability extends LightningElement
         return f ? f.label : null;
     }
 
-    @api collectInvalidFields() {
-        const invalidFields = this.fields
-            .filter(f => f.isFieldValid === false)
-            .map(f => f.label || f.apiName);
-        return { isValid: invalidFields.length === 0, invalidFields };
-    }
-
     // ─── Cascade state getters ────────────────────────────────────────────────
 
     get isSubtypeDisabled() {
@@ -177,6 +175,7 @@ export default class DmtOppProductDetailsSustainability extends LightningElement
         const field           = this.fields[idx];
         const apiName         = field.apiName;
         const normalizedValue = apiName === F_BONUS ? this._normalizeBonusToBoolean(value) : value;
+        const sectionChanges  = { [apiName]: normalizedValue };
 
         let newArr  = this.fields.slice();
         newArr[idx] = { ...field, value: normalizedValue, isFieldValid };
@@ -187,9 +186,13 @@ export default class DmtOppProductDetailsSustainability extends LightningElement
                 this.selectedSubtype     = '';
                 this.selectedGreenFilter = '';
                 newArr = this._resetDependentFields(newArr);
+                sectionChanges[F_SUBTYPE] = '';
+                sectionChanges[F_GREEN_FILTER] = '';
+                sectionChanges[F_CATALOG] = '';
                 // Assessment '1' (None) automatically disables bonus
                 if (this.selectedAssessment === ASSESSMENT_NONE) {
                     newArr = this._setFieldValue(newArr, F_BONUS, false);
+                    sectionChanges[F_BONUS] = false;
                 }
                 this._loadDependentPicklist();
                 break;
@@ -197,20 +200,29 @@ export default class DmtOppProductDetailsSustainability extends LightningElement
                 this.selectedSubtype     = normalizedValue || '';
                 this.selectedGreenFilter = '';
                 newArr = this._clearCatalogAndGreenFilter(newArr);
+                sectionChanges[F_GREEN_FILTER] = '';
+                sectionChanges[F_CATALOG] = '';
                 // Green/Social subtypes automatically enable bonus
                 if (BONUS_AUTO_TRUE_SUBTYPES.includes(this.selectedSubtype)) {
                     newArr = this._setFieldValue(newArr, F_BONUS, true);
+                    sectionChanges[F_BONUS] = true;
                 }
                 break;
             case F_GREEN_FILTER:
                 this.selectedGreenFilter = normalizedValue || '';
                 newArr = this._setFieldValue(newArr, F_CATALOG, '');
+                sectionChanges[F_CATALOG] = '';
                 break;
             default:
                 break;
         }
 
         this.fields = this._applyFieldStateRules(newArr);
+        this.dispatchEvent(new CustomEvent('sectionchange', {
+            detail: { changes: sectionChanges },
+            bubbles: true,
+            composed: true
+        }));
         this.dispatchEvent(new CustomEvent('fieldchange', { detail: { fieldId, value: normalizedValue } }));
         this._loadCatalogIfNeeded();
     }

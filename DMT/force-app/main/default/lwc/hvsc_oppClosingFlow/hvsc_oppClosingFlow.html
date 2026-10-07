@@ -1,0 +1,99 @@
+<template>
+    <lightning-modal-header label={header}></lightning-modal-header>
+    <lightning-modal-body>
+        <div class="slds-p-horizontal_large">
+            <template if:true={isClosingStatus}>
+                <div>
+                    <lightning-combobox
+                        name="closingStatusValue"
+                        label="Status"
+                        value={formData.StageName}
+                        placeholder="Select Status"
+                        options={closingStatusOptions}
+                        onchange={handleClosingStatusChange}
+                        required>
+                    </lightning-combobox>
+                    <lightning-combobox
+                        lwc:if={isCloseLost}
+                        name="reasonForClosureValue"
+                        label="Reason for closure"
+                        value={formData.DES_Reasons_Lost__c}
+                        placeholder="Select Reason"
+                        options={reasonForClosureOptions}
+                        onchange={handleReasonForClosureChange}
+                        required>
+                    </lightning-combobox>
+                    <lightning-textarea 
+                        lwc:if={closeStatusSelected}
+                        name="description" 
+                        label="Description" 
+                        value={formData.Description} 
+                        onchange={handleDescriptionChange}>
+                    </lightning-textarea>
+                </div>
+            </template>
+            <template lwc:if={isCredentialSettings}>
+                <p class="slds-text-align_center slds-text-heading_small">
+                    This opportunity will be marked as a credential by default, making it available for future reference and approved business use.
+                </p>
+                <p class="slds-text-align_center slds-text-heading_small slds-m-bottom_medium">If it should not be used as a credential, clear the option below and specify the reason.</p>
+                <lightning-input
+                    type="checkbox"
+                    label="Credential"
+                    name="credential"
+                    checked={formData.DMT_Credentials__c}
+                    onchange={handleCredentialChange}>
+                </lightning-input>
+                <lightning-combobox
+                    lwc:if={isCredentialNotSelected}
+                    name="reasonForExclusion"
+                    label="Reason for exclusion"
+                    value={formData.DES_CredentialExclusionReason__c}
+                    placeholder="Select Reason"
+                    options={reasonForExclusionOptions}
+                    onchange={handleReasonForExclusionChange}
+                    required>
+                </lightning-combobox>
+            </template>
+            <template lwc:if={isFinalReview}>
+                <c-hvsc_recordform
+                    variant="standard"
+                    fields={finalReviewFields}
+                    onfieldchange={handleFinalReviewFieldChange}
+                    >
+                </c-hvsc_recordform>
+            </template>
+        </div>
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <template lwc:if={hasPreviousStep}>
+            <lightning-button 
+                label="Back" 
+                onclick={handlePreviousStep} 
+                class="slds-m-right_small">
+            </lightning-button>
+        </template>
+        <template lwc:else>
+            <lightning-button 
+                label="Cancel" 
+                onclick={handleCancel}
+                class="slds-m-right_small">
+            </lightning-button>
+        </template>
+        <template lwc:if={hasNextStep}>
+            <lightning-button 
+                label="Continue" 
+                disabled={nextStepIsDisabled} 
+                onclick={handleNextStep}>
+            </lightning-button>
+        </template>
+        <template lwc:if={isFinalStep}>
+            <lightning-button 
+                label="Close Opportunity" 
+                variant="brand" 
+                disabled={nextStepIsDisabled}
+                onclick={handleFinish}>
+            </lightning-button>
+        </template>
+    </lightning-modal-footer>
+</template>

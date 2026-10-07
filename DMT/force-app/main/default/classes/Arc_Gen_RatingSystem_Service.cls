@@ -120,8 +120,9 @@ public with sharing class Arc_Gen_RatingSystem_Service {
     /**
     * Call the rating system service.
     */
-    public static ValidationResult callService(Id clientId, String selectedFlow, String bookingCountry) {
-        final Map<String, String> serviceParams = setServiceParams(clientId, bookingCountry);
+    @SuppressWarnings('PMD.ExcessiveParameterList')
+    public static ValidationResult callService(Id clientId, String selectedFlow, String bookingCountry, String relationParentSubsidiaryId) {
+        final Map<String, String> serviceParams = setServiceParams(clientId, bookingCountry, relationParentSubsidiaryId);
         final arce.Arc_Gen_getIASOResponse.ServiceResponse iasoResponse = calloutIASO(serviceParams, bookingCountry);
         final String ratingSystem = processResponse(iasoResponse);
 
@@ -131,7 +132,7 @@ public with sharing class Arc_Gen_RatingSystem_Service {
     /**
     * Set the service parameters
     */
-    private static Map<String, String> setServiceParams(Id clientId, String bookingCountry) {
+    private static Map<String, String> setServiceParams(Id clientId, String bookingCountry, String relationParentSubsidiaryId) {
         final arce.Arc_Gen_Account_Wrapper accWrapper = arce.Arc_Gen_Account_Locator.getAccountInfoById(
                 new List<Id>{ clientId }
             )

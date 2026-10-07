@@ -3,7 +3,8 @@ import { CurrentPageReference } from 'lightning/navigation'
 import { ShowToastEvent } from 'lightning/platformShowToastEvent'
 import { getPicklistValues } from 'lightning/uiObjectInfoApi'
 import { getRecord, updateRecord, notifyRecordUpdateAvailable } from 'lightning/uiRecordApi'
-import validateFeaturesForClosedWon from '@salesforce/apex/DMT_FeaturesController.validateFeaturesForClosedWon';
+//import validateFeaturesForClosedWon from '@salesforce/apex/DMT_FeaturesController.validateFeaturesForClosedWon';
+import validateSemaphoreRulesForStageChange from '@salesforce/apex/DMT_FeaturesController.validateSemaphoreRulesForStageChange';
 import STAGENAME_FIELD from '@salesforce/schema/Opportunity.StageName'
 import ID_FIELD from '@salesforce/schema/Opportunity.Id'
 import RECORDTYPEID_FIELD from '@salesforce/schema/Opportunity.RecordTypeId'
@@ -14,6 +15,7 @@ const ERROR_PERMISSION =
 const SUCCESS_UPDATING = 'Status changed successfully.'
 import getOppLockUser from '@salesforce/apex/DMT_Opportunity_Utils.getOppLockUser';
 import USER_ID from '@salesforce/user/Id';
+import ClosingFlowModal from 'c/hvsc_oppClosingFlow';
 
 import DMT_LABEL_MODAL_UNSAVED_CHANGES_TITLE from '@salesforce/label/c.DMT_Label_Modal_Unsaved_Changes_Title';
 import DMT_LABEL_MODAL_UNSAVED_CHANGES_BODY  from '@salesforce/label/c.DMT_Label_Modal_Unsaved_Changes_Body';
@@ -45,7 +47,6 @@ export default class Dmt_custom_path_opp extends LightningElement {
     reasonsLostOptions = []    // Valores del picklist de razones perdidas [{value, label}]
     _isEditing = false; // Tracks the current editing state of the Opportunity record
     _showPendingChangesModal = false; // Controls visibility of the pending changes modal
-    showModal = false   // Controla visibilidad del modal de Closed
     closedStageSelected = '' // Valor elegido en el select del modal
     reasonsLostSelected = '' // Valor elegido en el select de razones perdidas (si aplica)
     isLoading = false   // Spinner mientras se actualiza
@@ -229,7 +230,7 @@ async handleMarkAsCurrent() {
         // Ya muestra el toast adentro
         return;
     }
-    this.executeMarkAsCurrent();
+    await this.executeMarkAsCurrent();
 }
 
 async isEditingRecord() {
@@ -261,16 +262,21 @@ async isEditingRecord() {
 }
 
 
-    executeMarkAsCurrent() {
+    async executeMarkAsCurrent() {
        // Stage "Closed" seleccionado → siempre modal
         if (this._selectedStage === 'Closed') {
             this.closedStageSelected = ''
-            this.showModal = true
+            ClosingFlowModal.open({
+                size: 'small',
+                recordId: this.recordId
+            });
             return
         }
 
         // Opp cerrada pero seleccionó un stage no-closed → volver a ese stage
         if (this.isClosed) {
+            const isValid = await this.validateSemaphoreForStage(this._selectedStage)
+            if (!isValid) return
             this.updateStatus(this._selectedStage)
             return
         }
@@ -281,14 +287,20 @@ async isEditingRecord() {
             if (!next) {
                 // Último stage lineal → abrir modal de Closed
                 this.closedStageSelected = ''
-                this.showModal = true
+                ClosingFlowModal.open({
+                    size: 'small',
+                    recordId: this.recordId
+                });
                 return
             }
+            const isValid = await this.validateSemaphoreForStage(next)
+            if (!isValid) return
             this.updateStatus(next)
             return
         }
 
-        // Otro stage seleccionado → marcar como current
+        const isValid = await this.validateSemaphoreForStage(this._selectedStage)
+        if (!isValid) return
         this.updateStatus(this._selectedStage)
     }
 
@@ -300,28 +312,49 @@ async isEditingRecord() {
         this.reasonsLostSelected = event.target.value
     }
 
-    async saveModal() {
-        console.log('Closed Stage Selected: ', this.closedStageSelected);
-        if (!this.closedStageSelected) return
+    /**
+     * Valida las reglas de semáforo (Capability + Workflow, AND/OR) para el stage destino.
+     */
+    async validateSemaphoreForStage(targetStage) {
+        try {
+            const result = await validateSemaphoreRulesForStageChange({
+                opportunityId: this.recordId,
+                targetStatus: targetStage
+            })
 
-        if (this.closedStageSelected === 'Closed Won') {
-            console.log('Validating Closed Won requirements for Opportunity ID: ', this.recordId);
-            const validationResult = await this.validateClosedWonRequirements()
-            if (!validationResult.isValid) {
-                return
+            if (!result.isValid && result.incompleteFeatures?.length > 0) {
+                const featureNames = result.incompleteFeatures.join(', ')
+                const featureCount = result.incompleteFeatures.length
+                const messageText = featureCount === 1 
+                    ? `Opportunity cannot advance to ${targetStage} because the feature ${featureNames} has been rejected.`
+                    : `Opportunity cannot advance to ${targetStage} because the features ${featureNames} have been rejected.`
+                this.dispatchEvent(new ShowToastEvent({
+                    title: 'Error',
+                    message: messageText,
+                    variant: 'error',
+                    mode: 'dismissable'
+                }))
+                /*this.dispatchEvent(new ShowToastEvent({
+                    title: 'Error',
+                    message: `Opportunity cannot advance to ${targetStage} because the following features do not meet the required semaphore conditions: ${featureNames}.`,
+                    variant: 'error',
+                    mode: 'dismissable'
+                }))*/
+                return false
             }
+
+            return true
+        } catch (error) {
+            this.dispatchEvent(new ShowToastEvent({
+                title: 'Validation Error',
+                message: error?.body?.message || 'Error validating semaphore rules.',
+                variant: 'error',
+                mode: 'dismissable'
+            }))
+            return false
         }
-
-        this.showModal = false
-        this.updateStatus(this.closedStageSelected)
     }
-
-    closeModal() {
-        this.showModal = false
-        this.closedStageSelected = ''
-    }
-
-    async validateClosedWonRequirements() {
+     /*async validateClosedWonRequirements() {
         try {
             const result = await validateFeaturesForClosedWon({ opportunityId: this.recordId })
 
@@ -350,7 +383,7 @@ async isEditingRecord() {
             }))
             return { isValid: false }
         }
-    }
+    }*/
 
         /* ── Handlers del modal "Pending Changes" ─────────────────────────────── */
 
@@ -366,7 +399,7 @@ async isEditingRecord() {
             composed: true
         }))
         this._showPendingChangesModal = false
-        this.executeMarkAsCurrent();
+        await this.executeMarkAsCurrent();
 
     }
 

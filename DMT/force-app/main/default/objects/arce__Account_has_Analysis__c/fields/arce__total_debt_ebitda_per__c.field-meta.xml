@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__total_debt_ebitda_per__c</fullName>
+    <deprecated>false</deprecated>
+    <description>This field is Total_debt_amount/EBITDA</description>
+    <externalId>false</externalId>
+    <formula>(arce__gross_financial_debt_local_amount__c + arce__debt_comt_not_disb_amount__c) / arce__ebitda_interest_local_number__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Ratio Total Debt/Ebitda</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

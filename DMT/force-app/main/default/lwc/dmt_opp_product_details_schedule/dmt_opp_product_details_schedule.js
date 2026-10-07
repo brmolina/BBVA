@@ -3,6 +3,7 @@ import { scheduleFields } from './dmt_opp_product_details_schedule_fields';
 
 const F_CURRENCY = 'g_currency_id__c';
 const F_AMORT_TYPE = 'gf_amortization_type__c';
+const F_PAYMENT_FREQ = 'gf_payment_frequency__c';
 
 export default class DmtOppProductDetailsSchedule extends LightningElement {
 
@@ -88,7 +89,10 @@ export default class DmtOppProductDetailsSchedule extends LightningElement {
             }
             this.fields = this.fields.map(f => ({ ...f, isReadOnly: true }));
         } else {
-            if (!this._readOnlySnapshot) return;
+            if (!this._readOnlySnapshot) {
+                this.refs?.tableTenors?.setReadOnlyMode?.(readOnly);
+                return;
+            }
             const roMap = new Map(this._readOnlySnapshot.map(f => [f.id, f.isReadOnly]));
             this.fields = this.fields.map(f => ({
                 ...f,
@@ -96,6 +100,7 @@ export default class DmtOppProductDetailsSchedule extends LightningElement {
             }));
             this._readOnlySnapshot = null;
         }
+        this.refs?.tableTenors?.setReadOnlyMode?.(readOnly);
     }
 
     @api collectChanges() {
@@ -122,18 +127,34 @@ export default class DmtOppProductDetailsSchedule extends LightningElement {
         return f ? f.label : null;
     }
 
-    @api collectInvalidFields() {
-        const invalidFields = this.fields
-            .filter(f => f.isFieldValid === false)
-            .map(f => f.label || f.apiName);
+    @api validate() {
+        const renderer = this.template.querySelector('c-dmt_form_renderer');
+        const rendererResult = renderer?.validate?.() ?? { isValid: true, invalidFields: [] };
+        const rendererIsValid = typeof rendererResult === 'object' ? rendererResult.isValid : !!rendererResult;
+        const rendererInvalidFields = (typeof rendererResult === 'object' && Array.isArray(rendererResult.invalidFields))
+            ? rendererResult.invalidFields : [];
 
-        const tenorsBps = this.refs?.tableTenors?.collectBpsFieldsValidation?.();
-        if (tenorsBps?.invalidFields?.length > 0) invalidFields.push(...tenorsBps.invalidFields);
+        const invalidFieldSet = new Set(rendererInvalidFields);
+        for (const field of this.fields) {
+            if (!field.isRequired || field.isHidden || field.isReadOnly) continue;
+            const value = field.value;
+            let fieldValid;
+            if (Array.isArray(value)) {
+                fieldValid = value.length > 0;
+            } else if (value && typeof value === 'object') {
+                fieldValid = !!(value.id || value.Id);
+            } else if (field.type === 'number' || field.type === 'currency' || field.type === 'percent') {
+                fieldValid = value !== null && value !== undefined && value !== '';
+            } else {
+                fieldValid = value !== null && value !== undefined && value !== '';
+            }
+            if (!fieldValid) {
+                invalidFieldSet.add(field.label || field.apiName);
+            }
+        }
 
-        const tenorsNeg = this.refs?.tableTenors?.collectNegativeFieldsValidation?.();
-        if (tenorsNeg?.invalidFields?.length > 0) invalidFields.push(...tenorsNeg.invalidFields);
-
-        return { isValid: invalidFields.length === 0, invalidFields };
+        const invalidFields = [...invalidFieldSet];
+        return { isValid: rendererIsValid && invalidFields.length === 0, invalidFields };
     }
 
     @api collectTenorsChanges() {
@@ -143,35 +164,6 @@ export default class DmtOppProductDetailsSchedule extends LightningElement {
         return {
             upserts: changes.tenorData || [],
             deletes: changes.deletedIds || []
-        };
-    }
-
-    @api collectTenorsBpsValidation() {
-        const tableRef = this.refs?.tableTenors;
-        if (!tableRef) return { isValid: true, invalidFields: [] };
-        return tableRef.collectBpsFieldsValidation?.() || { isValid: true, invalidFields: [] };
-    }
-
-    @api collectTenorsNegativeValidation() {
-        const tableRef = this.refs?.tableTenors;
-        if (!tableRef) return { isValid: true, invalidFields: [] };
-        return tableRef.collectNegativeFieldsValidation?.() || { isValid: true, invalidFields: [] };
-    }
-
-    @api collectBpsFieldsValidation() {
-        const invalidFields = [];
-
-        for (const field of this.fields) {
-            if (!this._isBpsLabel(field.label)) continue;
-            if (field.value === null || field.value === undefined || field.value === '') continue;
-            if (this._hasMoreThanTwoDecimals(field.value)) {
-                invalidFields.push(field.label || field.apiName);
-            }
-        }
-
-        return {
-            isValid: invalidFields.length === 0,
-            invalidFields
         };
     }
 
@@ -194,14 +186,33 @@ export default class DmtOppProductDetailsSchedule extends LightningElement {
             this._currencyCode = value || '';
         } else if (apiName === F_AMORT_TYPE) {
             this._currentAmortizationType = value || '';
+            this.fields = this.fields.map(f =>
+                f.apiName === F_PAYMENT_FREQ ? { ...f, isHidden: value === 'Bullet' } : f
+            );
         }
 
         console.log('**** handlefield '+ JSON.stringify(event.detail));
-        this.dispatchEvent(new CustomEvent('sectionchange', { detail: { apiName, value,isFieldValid } }));
+        this.dispatchEvent(new CustomEvent('sectionchange', { detail: { apiName, value } }));
     }
 
     handleTenorsChange() {
-        // Parent pulls tenor changes on save via collectTenorsChanges.
+        // Get current edited tenors from the table component
+        const tableRef = this.refs?.tableTenors;
+        if (tableRef) {
+            const currentTenors = tableRef.getCurrentRows?.();
+            if (Array.isArray(currentTenors)) {
+                this._tenorsData = currentTenors;
+            }
+        }
+        
+        // Emit updated tenors to parent so dealDescription can recalculate BBVA Commitment in real-time
+        this.dispatchEvent(new CustomEvent('sectionchange', {
+            detail: {
+                updatedTenors: this._tenorsData
+            },
+            bubbles: true,
+            composed: true
+        }));
     }
 
     handleTenorsValidation() {
@@ -228,6 +239,11 @@ export default class DmtOppProductDetailsSchedule extends LightningElement {
             this._currentAmortizationType = this._data[F_AMORT_TYPE] || this._currentAmortizationType;
         }
 
+        const amortType = next.find(f => f.apiName === F_AMORT_TYPE)?.value;
+        next = next.map(f =>
+            f.apiName === F_PAYMENT_FREQ ? { ...f, isHidden: amortType === 'Bullet' } : f
+        );
+
         this.fields = next;
 
         if (this._readOnlySnapshot) {
@@ -243,9 +259,4 @@ export default class DmtOppProductDetailsSchedule extends LightningElement {
         return typeof label === 'string' && label.toLowerCase().includes('bps');
     }
 
-    _hasMoreThanTwoDecimals(value) {
-        const stringValue = String(value);
-        const decimalPart = stringValue.split('.')[1];
-        return !!decimalPart && decimalPart.length > 2;
-    }
 }

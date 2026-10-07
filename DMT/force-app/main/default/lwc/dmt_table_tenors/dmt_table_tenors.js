@@ -12,6 +12,7 @@ import getTenorsData from '@salesforce/apex/DMT_TableTenors.getTenorsData';
 import syncTenors from '@salesforce/apex/DMT_TableTenors.syncTenors';
 import hasLineGodPermission from '@salesforce/customPermission/DMT_Line_God';
 import calculateReadOnlyStatus from '@salesforce/apex/DMT_TableTenors.calculateReadOnlyStatus';
+import getCurrencyLabel from '@salesforce/apex/DMT_Currency_Conversion_Utils.getCurrencyLabel';
 import DMT_Repayment_Schedule from  '@salesforce/label/c.DMT_Repayment_Schedule';
 
 const EVENT_CLICK = 'click';
@@ -37,6 +38,7 @@ export default class Dmt_table_tenors extends LightningElement {
     _amortizationType;
     _oppState;
     _currency;
+    currencyLabel = '';
     _isGodMode = false;
     _isReadOnlyUser = false;
 
@@ -182,6 +184,7 @@ export default class Dmt_table_tenors extends LightningElement {
             this._initialDate = getFieldValue(data, INITIAL_DATE_FIELD);
             this._currency = getFieldValue(data, CURRENCY_FIELD);
             console.log('Currency --> ' + this._currency);
+            this._loadCurrencyLabel(this._currency);
             this.columns = this.getColumnsDefinition();
             this.updateCopyPasteColumns();
             console.log('LDS Fetched Line Item Info:', this._maturityDate, this._amortizationType);
@@ -196,6 +199,17 @@ export default class Dmt_table_tenors extends LightningElement {
             this.tableData = this._decorateRows(this.tableData);
             this.setData(this.tableData);
         }
+    }
+
+    _loadCurrencyLabel(currencyIsoCode) {
+        if (!currencyIsoCode) return;
+        getCurrencyLabel({ currencyIsoCode })
+            .then(result => {
+                this.currencyLabel = result || currencyIsoCode;
+            })
+            .catch(() => {
+                this.currencyLabel = currencyIsoCode;
+            });
     }
 
     get isTableLocked() {
@@ -722,13 +736,13 @@ export default class Dmt_table_tenors extends LightningElement {
                 label: 'Notional Drawn', fieldName: 'gj_nominal_amount_db__c',
                 type: isEdit ? 'custominputRow' : 'currency',
                 hideDefaultActions:true, cellAttributes:{style: 'text-align: center;'},
-                typeAttributes: { currencyCode: this._currency, currencyDisplayAs: 'code', step: '0.001', aviableItem: {fieldName: 'aviableItem'}, inputValue: { fieldName: 'gj_nominal_amount_db__c' }, fieldName: 'gj_nominal_amount_db__c', context: { fieldName: 'Id' } }
+                typeAttributes: { step: '0.001', aviableItem: {fieldName: 'aviableItem'}, inputValue: { fieldName: 'gj_nominal_amount_db__c' }, fieldName: 'gj_nominal_amount_db__c', context: { fieldName: 'Id' } }
             },
             {
                 label: 'Notional Undrawn', fieldName: 'gf_nominal_amount_fb__c',
                 type: isEdit ? 'custominputRow' : 'currency',
                 hideDefaultActions:true, cellAttributes:{style: 'text-align: center;'},
-                typeAttributes: { currencyCode: this._currency, currencyDisplayAs: 'code', step: '0.001', aviableItem: {fieldName: 'aviableItem'}, inputValue: { fieldName: 'gf_nominal_amount_fb__c' }, fieldName: 'gf_nominal_amount_fb__c', context: { fieldName: 'Id' } }
+                typeAttributes: { step: '0.001', aviableItem: {fieldName: 'aviableItem'}, inputValue: { fieldName: 'gf_nominal_amount_fb__c' }, fieldName: 'gf_nominal_amount_fb__c', context: { fieldName: 'Id' } }
             },
             {
                 label: 'Drawn Spread (BPS)', fieldName: 'gf_spread_db__c',

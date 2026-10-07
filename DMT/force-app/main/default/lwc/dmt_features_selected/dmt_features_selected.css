@@ -2,3 +2,9 @@
     z-index: 0;
     position: relative;
 }
+
+.features-border {
+    border: 1px solid var(--slds-g-color-border-base-1, #dddbda);
+    border-radius: 4px;
+    padding: 8px;
+}

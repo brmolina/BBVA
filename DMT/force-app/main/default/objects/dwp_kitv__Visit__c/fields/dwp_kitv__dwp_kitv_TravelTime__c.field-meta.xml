@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>dwp_kitv__dwp_kitv_TravelTime__c</fullName>
+    <deprecated>false</deprecated>
+    <description>This field allows you to indicate and knows a travel time that the executive takes between the branch office to the client office.</description>
+    <inlineHelpText>Please indicate the time it will take to travel from the branch to the client&apos;s office.</inlineHelpText>
+    <label>Travel Time</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>10 Minutos</fullName>
+                <default>false</default>
+                <label>10 Minutos</label>
+            </value>
+            <value>
+                <fullName>20 Minutos</fullName>
+                <default>false</default>
+                <label>20 Minutos</label>
+            </value>
+            <value>
+                <fullName>30 Minutos</fullName>
+                <default>false</default>
+                <label>30 Minutos</label>
+            </value>
+            <value>
+                <fullName>40 Minutos</fullName>
+                <default>false</default>
+                <label>40 Minutos</label>
+            </value>
+            <value>
+                <fullName>60 Minutos</fullName>
+                <default>false</default>
+                <label>60 Minutos</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

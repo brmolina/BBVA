@@ -1,0 +1,77 @@
+<template>
+    <div class="slds-grid slds-wrap slds-gutters">
+        <template for:each={processedFields} for:item="field">
+            <div key={field.apiName} class={field.colClass}>
+                <template lwc:if={field.editing}>
+                    <lightning-textarea
+                        lwc:if={field.isTextarea}
+                        name={field.apiName}
+                        label={field.label}
+                        value={field.value}
+                        max-length={field.maxLength}
+                        onchange={handleInputChange}
+                        onblur={handleInputBlur}>
+                    </lightning-textarea>
+                    <lightning-input
+                        lwc:elseif={field.isCurrency}
+                        name={field.apiName}
+                        type="number"
+                        formatter="currency"
+                        currency-code={field.currencyCode}
+                        label={field.label}
+                        value={field.value}
+                        max={field.max}
+                        onchange={handleInputChange}
+                        onblur={handleInputBlur}>
+                    </lightning-input>
+                    <lightning-input
+                        lwc:else
+                        name={field.apiName}
+                        type={field.type} 
+                        label={field.label}
+                        value={field.value}
+                        max-length={field.maxLength}
+                        max={field.max}
+                        onchange={handleInputChange}
+                        onblur={handleInputBlur}>
+                    </lightning-input>
+                </template>
+                <template lwc:else>
+                    <div>
+                        {field.label}
+                    </div>
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-m-bottom_xx-small" style="min-height: 1.5rem;">
+                        <template lwc:if={field.isCheckbox}>
+                            <lightning-input
+                                name={field.apiName}
+                                type="checkbox" 
+                                label={field.extraLabel}
+                                checked={field.value}
+                                disabled>
+                            </lightning-input>
+                        </template>
+                        <template lwc:elseif={field.isCurrency}>
+                            {field.currencySymbol}&nbsp;{field.value}
+                        </template>
+                        <template lwc:else>
+                            {field.value}
+                        </template>
+                        <lightning-button-icon
+                            lwc:if={field.isEditable}
+                            class="slds-col_bump-left"
+                            icon-name="utility:edit"
+                            variant="bare"
+                            size="small"
+                            alternative-text="Edit"
+                            title="Edit"
+                            data-api-name={field.apiName}
+                            onclick={handleEditClick}>
+                        </lightning-button-icon>
+                    </div>
+                    <div class="slds-border_bottom">
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
+</template>

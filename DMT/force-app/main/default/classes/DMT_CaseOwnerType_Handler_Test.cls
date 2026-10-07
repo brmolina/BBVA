@@ -190,6 +190,41 @@ private without sharing class DMT_CaseOwnerType_Handler_Test {
         System.assertEquals(true, threw, 'Blank caseId should throw an exception.');
     }
 
+    // CIBGLOBALD-4117: getOwnerCaseTypes is the bulk method both DMT_Massive_Task_Closure_Service
+    // and DMT_ApprovalTemplate_Controller now call directly - getOwnerCaseType(String) above is just
+    // a thin single-Id wrapper over it. This test covers what the single-Id tests can't: two Cases
+    // sharing the same Opportunity must only trigger one DML update on it, not a duplicate-Id error.
+    @isTest
+    static void testGetOwnerCaseTypes_DedupesSharedOpportunity() {
+        String token = randomToken();
+        Group q = createCaseQueue('UTQ' + token);
+
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+        DMT_Approver_Type__c businessType = createApproverType('Business');
+        createApproverForQueue(businessType.Id, q.DeveloperName);
+        Case c1 = createOpportunityCase(opp.Id, q.Id, 'approval');
+        Case c2 = createOpportunityCase(opp.Id, q.Id, 'readytoclose');
+
+        Test.startTest();
+        Map<Id, DMT_CaseOwnerType_Handler.ResponseWrapper> results =
+            DMT_CaseOwnerType_Handler.getOwnerCaseTypes(new List<Id>{ c1.Id, c2.Id });
+        Test.stopTest();
+
+        Opportunity oppAfter = [SELECT DMT_Bussiness_Approved_Date__c FROM Opportunity WHERE Id = :opp.Id];
+        Assert.areEqual(Date.today(), oppAfter.DMT_Bussiness_Approved_Date__c, 'The shared Opportunity must be updated exactly once, not fail on a duplicate Id.');
+        Assert.isTrue(results.get(c1.Id).updated, 'Both cases must individually report updated=true.');
+        Assert.isTrue(results.get(c2.Id).updated, 'Both cases must individually report updated=true.');
+    }
+
+    @isTest
+    static void testGetOwnerCaseTypes_EmptyInputReturnsEmptyMap() {
+        Test.startTest();
+        Map<Id, DMT_CaseOwnerType_Handler.ResponseWrapper> results = DMT_CaseOwnerType_Handler.getOwnerCaseTypes(null);
+        Test.stopTest();
+
+        Assert.isTrue(results.isEmpty(), 'A null/empty input must return an empty map, not throw.');
+    }
+
     @isTest
     static void testGetOwnerCaseType_DoesNotUpdate_WhenOwnerIsNotQueue() {
         // Caso con Owner = User (no Group), debe salir por la condición principal sin actualizar.

@@ -13,7 +13,7 @@
                 <div class="loading-copy">
                     <p class="loading-title">{loadingMessage}</p>
                     <p class="loading-subtitle">
-                        Espera mientras se procesan las lineas seleccionadas.
+                        Please wait while the selected lines are processed.
                     </p>
                 </div>
             </section>
@@ -27,7 +27,7 @@
                             <article key={table.key} class="line-table-card">
                                 <header class="line-table-card-header">
                                     <h3 class="line-table-title">{table.title}</h3>
-                                    <span class="line-table-subtitle">{table.lineCount} lineas</span>
+                                    <span class="line-table-subtitle">{table.lineCount} lines</span>
                                 </header>
 
                                 <div class="table-container">
@@ -48,9 +48,9 @@
                                                             <template lwc:if={column.canBulkApply}>
                                                                 <lightning-button-icon
                                                                     icon-name="utility:edit_form"
-                                                                    alternative-text="Edicion masiva"
-                                                                    title="Edicion masiva"
-                                                                    size="xx-small"
+                                                                    alternative-text="Bulk edit"
+                                                                    title="Bulk edit"
+                                                                    size="large"
                                                                     variant="bare"
                                                                     class="bulk-column-trigger"
                                                                     data-table-key={table.templateType}
@@ -146,6 +146,16 @@
                                                             <a href={rowRecord.lineUrl} target="_blank" class="line-link-cell">
                                                                 {rowRecord.lineName}
                                                             </a>
+                                                            <template lwc:if={rowRecord.isCustomClient}>
+                                                                <div class="client-divider"></div>
+                                                                <span class="client-name-list client-custom-badge" title={rowRecord.customClientNamesTooltip}>{rowRecord.customClientNamesTooltip}</span>
+                                                            </template>
+                                                            <template lwc:else>
+                                                                <template lwc:if={rowRecord.clientName}>
+                                                                    <div class="client-divider"></div>
+                                                                    <a href={rowRecord.clientAccountUrl} target="_blank" class="client-name-list">{rowRecord.clientName}</a>
+                                                                </template>
+                                                            </template>
                                                         </td>
                                                     </template>
 
@@ -156,42 +166,8 @@
                                                     <template for:each={rowRecord.cells} for:item="cell">
                                                         <td key={cell.key} class={cell.cellClass}>
                                                             <template lwc:if={cell.editable}>
-                                                                <template lwc:if={cell.isPicklist}>
-                                                                    <lightning-combobox
-                                                                        variant="label-hidden"
-                                                                        label={cell.label}
-                                                                        value={cell.value}
-                                                                        options={cell.options}
-                                                                        required={cell.required}
-                                                                        data-line-record-id={rowRecord.lineRecordId}
-                                                                        data-row-type={rowRecord.rowType}
-                                                                        data-record-id={rowRecord.recordId}
-                                                                        data-section-key={rowRecord.sectionKey}
-                                                                        data-source-object-api-name={cell.sourceObjectApiName}
-                                                                        data-field={cell.fieldApiName}
-                                                                        onchange={handleTableInputChange}>
-                                                                    </lightning-combobox>
-                                                                </template>
-
-                                                                <template lwc:else>
-                                                                    <template lwc:if={cell.isCheckbox}>
-                                                                        <lightning-input
-                                                                            type="checkbox"
-                                                                            variant="label-hidden"
-                                                                            label={cell.label}
-                                                                            checked={cell.checked}
-                                                                            required={cell.required}
-                                                                            data-line-record-id={rowRecord.lineRecordId}
-                                                                            data-row-type={rowRecord.rowType}
-                                                                            data-record-id={rowRecord.recordId}
-                                                                            data-section-key={rowRecord.sectionKey}
-                                                                            data-source-object-api-name={cell.sourceObjectApiName}
-                                                                            data-field={cell.fieldApiName}
-                                                                            onchange={handleTableInputChange}>
-                                                                        </lightning-input>
-                                                                    </template>
-
-                                                                    <template lwc:else>
+                                                                <template lwc:if={cell.isAmountCell}>
+                                                                    <div class="amount-cell-edit-wrapper">
                                                                         <lightning-input
                                                                             type={cell.inputType}
                                                                             variant="label-hidden"
@@ -204,8 +180,66 @@
                                                                             data-section-key={rowRecord.sectionKey}
                                                                             data-source-object-api-name={cell.sourceObjectApiName}
                                                                             data-field={cell.fieldApiName}
+                                                                            data-is-derivatives-amount={cell.isDerivativesAmount}
                                                                             onchange={handleTableInputChange}>
                                                                         </lightning-input>
+                                                                        <span class="cell-currency-label">{cell.currencyCode}</span>
+                                                                    </div>
+                                                                </template>
+
+                                                                <template lwc:else>
+                                                                    <template lwc:if={cell.isPicklist}>
+                                                                        <lightning-combobox
+                                                                            variant="label-hidden"
+                                                                            label={cell.label}
+                                                                            value={cell.value}
+                                                                            options={cell.options}
+                                                                            required={cell.required}
+                                                                            data-line-record-id={rowRecord.lineRecordId}
+                                                                            data-row-type={rowRecord.rowType}
+                                                                            data-record-id={rowRecord.recordId}
+                                                                            data-section-key={rowRecord.sectionKey}
+                                                                            data-source-object-api-name={cell.sourceObjectApiName}
+                                                                            data-field={cell.fieldApiName}
+                                                                            data-is-treasury-end-term={cell.isTreasuryEndTerm}
+                                                                            onchange={handleTableInputChange}>
+                                                                        </lightning-combobox>
+                                                                    </template>
+
+                                                                    <template lwc:else>
+                                                                        <template lwc:if={cell.isCheckbox}>
+                                                                            <lightning-input
+                                                                                type="checkbox"
+                                                                                variant="label-hidden"
+                                                                                label={cell.label}
+                                                                                checked={cell.checked}
+                                                                                required={cell.required}
+                                                                                data-line-record-id={rowRecord.lineRecordId}
+                                                                                data-row-type={rowRecord.rowType}
+                                                                                data-record-id={rowRecord.recordId}
+                                                                                data-section-key={rowRecord.sectionKey}
+                                                                                data-source-object-api-name={cell.sourceObjectApiName}
+                                                                                data-field={cell.fieldApiName}
+                                                                                onchange={handleTableInputChange}>
+                                                                            </lightning-input>
+                                                                        </template>
+
+                                                                        <template lwc:else>
+                                                                            <lightning-input
+                                                                                type={cell.inputType}
+                                                                                variant="label-hidden"
+                                                                                label={cell.label}
+                                                                                value={cell.value}
+                                                                                required={cell.required}
+                                                                                data-line-record-id={rowRecord.lineRecordId}
+                                                                                data-row-type={rowRecord.rowType}
+                                                                                data-record-id={rowRecord.recordId}
+                                                                                data-section-key={rowRecord.sectionKey}
+                                                                                data-source-object-api-name={cell.sourceObjectApiName}
+                                                                                data-field={cell.fieldApiName}
+                                                                                onchange={handleTableInputChange}>
+                                                                            </lightning-input>
+                                                                        </template>
                                                                     </template>
                                                                 </template>
                                                             </template>
@@ -227,14 +261,14 @@
 
                 <template lwc:else>
                     <div class="empty-state">
-                        No hay tablas disponibles para modificar.
+                        No tables are available to modify.
                     </div>
                 </template>
             </template>
 
             <template lwc:else>
                 <div class="empty-state">
-                    No hay lineas disponibles para modificar.
+                    No lines are available to modify.
                 </div>
             </template>
         </template>

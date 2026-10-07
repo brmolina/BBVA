@@ -86,77 +86,97 @@
                                 </div>
 
                             </div>
-                        </div>
+                            <div class="slds-form__row">
+
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="field-row">
+                                        <lightning-output-field field-name="DMT_Financial_Sponsors__c">
+                                        </lightning-output-field>
+                                        <template if:true={canEdit}>
+                                            <lightning-button-icon icon-name="utility:edit" variant="bare"
+                                                alternative-text="Edit" onclick={handleEdit} title="Edit">
+                                            </lightning-button-icon>
+                                        </template>
+                                    </div>
+                                </div>
+
+                            </div>                        </div>
                     </lightning-record-view-form>
                 </template>
 
                 <!-- ══════════════════════════════════════════════
-                     MODO EDICIÓN — lightning-record-edit-form
+                     MODO EDICIÓN — c-dmt_approverfield (búsqueda por miembro)
                 ══════════════════════════════════════════════ -->
                 <template if:false={isReadOnly}>
-                    <lightning-record-edit-form
-                        record-id={recordId}
-                        object-api-name="Opportunity"
-                        onsuccess={handleSuccess}
-                        onerror={handleError}
-                    >
-                        <lightning-messages></lightning-messages>
+                    <div class="slds-p-around_small slds-p-bottom_xx-large">
+                        <lightning-layout multiple-rows="true">
 
-                        <div class="slds-form" role="list">
-                            <div class="slds-form__row">
+                            <lightning-layout-item size="6" padding="around-small">
+                                <c-dmt_approverfield
+                                    label="Booking Unit Risk Approver (Local)"
+                                    field-api-name="DMT_Booking_Unit_Risk_Analyst__c"
+                                    value-id={bookingRiskValueId}
+                                    value-name={bookingRiskValueName}
+                                    app-entific={entific}
+                                    data-field="DMT_Booking_Unit_Risk_Analyst__c"
+                                    onchangeedit={handleApproverChange}
+                                    onchange={handleApproverClear}>
+                                </c-dmt_approverfield>
+                            </lightning-layout-item>
 
-                                <div class="slds-form__item" role="listitem">
-                                    <lightning-input-field field-name="DMT_Booking_Unit_Risk_Analyst__c"
-                                        lwc:ref="DMT_Booking_Unit_Risk_Analyst__c"
-                                        onchange={handleChange}>
-                                    </lightning-input-field>
-                                </div>
+                            <!-- Global Banker: siempre read-only, nunca editable -->
+                            <lightning-layout-item size="6" padding="around-small">
+                                <lightning-record-view-form record-id={recordId} object-api-name="Opportunity">
+                                    <lightning-output-field field-name="DMT_GlobalBanker__c">
+                                    </lightning-output-field>
+                                </lightning-record-view-form>
+                            </lightning-layout-item>
 
-                                <!-- Global Banker: siempre output, nunca editable -->
-                                <div class="slds-form__item" role="listitem">
-                                    <div class="field-row">
-                                        <lightning-output-field field-name="DMT_GlobalBanker__c">
-                                        </lightning-output-field>
-                                    </div>
-                                </div>
+                            <lightning-layout-item size="6" padding="around-small">
+                                <c-dmt_approverfield
+                                    label="Financial Program Risk Approver (Global)"
+                                    field-api-name="DMT_Approver__c"
+                                    value-id={approverValueId}
+                                    value-name={approverValueName}
+                                    app-entific={entific}
+                                    data-field="DMT_Approver__c"
+                                    onchangeedit={handleApproverChange}
+                                    onchange={handleApproverClear}>
+                                </c-dmt_approverfield>
+                            </lightning-layout-item>
 
-                            </div>
-                            <div class="slds-form__row">
+                            <lightning-layout-item size="6" padding="around-small">
+                                <c-dmt_approverfield
+                                    label="Approver Global Banker"
+                                    field-api-name="DMT_ApproverGlobalBanker__c"
+                                    value-id={approverGBValueId}
+                                    value-name={approverGBValueName}
+                                    app-entific={entific}
+                                    data-field="DMT_ApproverGlobalBanker__c"
+                                    onchangeedit={handleApproverChange}
+                                    onchange={handleApproverClear}>
+                                </c-dmt_approverfield>
+                            </lightning-layout-item>
 
-                                <div class="slds-form__item" role="listitem">
-                                    <lightning-input-field field-name="DMT_Approver__c"
-                                        lwc:ref="DMT_Approver__c"
-                                        onchange={handleChange}>
-                                    </lightning-input-field>
-                                </div>
+                            <lightning-layout-item size="6" padding="around-small">
+                                <lightning-input
+                                    type="checkbox"
+                                    label="Financial Sponsors"
+                                    checked={financialSponsorsValue}
+                                    onchange={handleFinancialSponsorsChange}>
+                                </lightning-input>
+                            </lightning-layout-item>
 
-                                <div class="slds-form__item" role="listitem">
-                                    <lightning-input-field field-name="DMT_ApproverGlobalBanker__c"
-                                        lwc:ref="DMT_ApproverGlobalBanker__c"
-                                        onchange={handleChange}>
-                                    </lightning-input-field>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <!-- Submit oculto dentro del form — necesario para que onsuccess/onerror funcionen -->
-                        <lightning-button
-                            type="submit"
-                            label="Save"
-                            class="slds-hide"
-                            lwc:ref="submitBtn"
-                        ></lightning-button>
-
-                    </lightning-record-edit-form>
+                        </lightning-layout>
+                    </div>
                 </template>
 
             </div>
         </article>
     </div>
 
-    <!-- Sticky footer — solo visible en modo edición -->
-    <template if:false={isReadOnly}>
+    <!-- Sticky footer — solo visible en modo edición standalone -->
+    <template lwc:if={showOwnFooter}>
         <div class="slds-docked-form-footer">
             <lightning-button
                 variant="neutral"

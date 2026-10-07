@@ -1,4 +1,4 @@
-public with sharing class DMT_OppSustainableFinanceRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_OppSustainableFinanceRenderer implements DMT_ViewRenderer {
 
     // ====================================================================================================
     // HELPERS: Build the lists dynamically for the specific 2-column fields
@@ -68,43 +68,6 @@ public with sharing class DMT_OppSustainableFinanceRenderer implements DMT_ViewR
         } catch (Exception e) {
             System.debug('Error in DMT_OppSustainableFinanceRenderer renderHtml, ' + e.getMessage() + ' ' + e.getLineNumber());
             return '<div>Error: ' + e.getMessage() + ' - ' + e.getLineNumber() + '</div>';
-        }
-    }
-
-    // ====================================================================================================
-    // PDF RENDERING
-    // ====================================================================================================
-
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null || (data.opportunity.getPopulatedFieldsAsMap().isEmpty() && data.oppClient.getPopulatedFieldsAsMap().isEmpty())) {
-            return new Map<String, Object>();
-        }
-        
-        try {
-            List<DMT_FormattingUtils.DisplayField> fields = buildRenderFieldsGroup1(data);
-
-            if (fields.isEmpty()) {
-                return new Map<String, Object>();
-            }
-
-            String comparisonAccountName = data.oppAccountParentName;
-
-            List<Object> contentList = new List<Object>();
-            Map<String, Object> component = new Map<String, Object>();
-
-            contentList.add(DMT_Create_Pdf_Controller.createTitle('SUSTAINABLE FINANCE' + (String.isNotBlank(comparisonAccountName) ? ' - ' + comparisonAccountName : '')));
-            contentList.add(DMT_Create_Pdf_Controller.generatePdfList(fields));
-
-            component.put('content', contentList);
-            component.put('name', 'Sustainable Finance');
-
-            System.debug('returning component: ' + JSON.serialize(component));
-            return component;
-
-        } catch (Exception e) {
-            System.debug('Error in DMT_OppSustainableFinanceRenderer renderPdfJson, ' + e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),'DMT_OppSustainableFinanceRenderer','renderPdfJson','DMT',''));
-            return new Map<String, Object>();
         }
     }
 }

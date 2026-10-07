@@ -1,0 +1,63 @@
+<template>
+    <lightning-modal-header label={headerLabel}></lightning-modal-header>
+    
+    <lightning-modal-body>
+        <div>
+            <span class="slds-text-body_regular">{bodyMessage}</span>
+        </div>
+        <template lwc:if={isProspectPath}>
+            <div class="slds-grid slds-grid_vertical slds-gutters_x-small">
+                <div class="slds-col slds-m-bottom_small">
+                    <lightning-combobox
+                        name="dormancyReason"
+                        label="Discarded reason"
+                        value={selectedDormancyReason}
+                        placeholder="Select a reason"
+                        options={prospectDormancyReasonOptions}
+                        onchange={handleDormancyReasonChange}>
+                    </lightning-combobox>
+                </div>
+                <div class="slds-col">
+                    <lightning-combobox
+                        name="possibilityReengage"
+                        label="Possibility to reengage in the future"
+                        value={selectedPossibilityReengage}
+                        placeholder="Select an option"
+                        options={prospectPossibilityReengageOptions}
+                        onchange={handlePossibilityReengageChange}>
+                    </lightning-combobox>
+                </div>
+            </div>
+        </template>
+        
+            <template lwc:if={showMergeFlow}>
+                <template lwc:if={mergeFlowLoading}>
+                    <div class="slds-align_absolute-center slds-p-around_large">
+                        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                    </div>
+                </template>
+                <div class={mergeFlowContainerClass}>
+                    <lightning-flow
+                        lwc:ref="mergeFlow"
+                        onstatuschange={handleMergeFlowStatusChange}>
+                    </lightning-flow>
+                </div>
+            </template>
+
+    </lightning-modal-body>
+
+    <lightning-modal-footer lwc:if={showFooter}>
+        <lightning-button
+            label="Cancel"
+            variant="neutral"
+            onclick={handleCancel}
+            class="slds-m-right_x-small">
+        </lightning-button>
+        <lightning-button
+            label="Save Changes"
+            variant="brand"
+            onclick={handleSave}
+            disabled={disableSave}>
+        </lightning-button>
+    </lightning-modal-footer>
+</template>

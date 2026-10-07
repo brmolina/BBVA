@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_NewClient__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>User-editable flag shown at the end of Opportunity Info. Drives the &quot;New Client&quot; indicator shown in the NBC views (formerly &quot;Prospect&quot;).</description>
+    <label>New Client</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

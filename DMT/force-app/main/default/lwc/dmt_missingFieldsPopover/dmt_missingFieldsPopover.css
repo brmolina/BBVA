@@ -1,0 +1,96 @@
+.c-missing-fields-popover {
+    position: absolute;
+    top: 100%;
+    left: -0.5rem;
+    z-index: 7000;
+    width: 18rem;
+    margin-top: var(--slds-g-spacing-3, 0.75rem);
+    display: flex;
+    flex-direction: column;
+    max-height: 20rem;
+}
+
+.c-missing-fields-popover .slds-popover__header,
+.c-missing-fields-popover .c-popover-footer {
+    flex: 0 0 auto;
+}
+
+.c-missing-fields-popover .c-popover-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 8.5rem;
+    overflow-y: auto;
+    padding: var(--slds-g-spacing-2, 0.5rem) var(--slds-g-spacing-3, 0.75rem);
+}
+
+.c-missing-fields-popover .c-popover-footer {
+    padding: var(--slds-g-spacing-2, 0.5rem) var(--slds-g-spacing-3, 0.75rem);
+}
+
+.c-highlight-all-link {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--slds-g-link-color, #0176d3);
+}
+
+.c-highlight-all-link:hover,
+.c-highlight-all-link:focus {
+    text-decoration: underline;
+}
+
+.c-trigger-link {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--slds-g-color-warning-base-40, #b85c00);
+    display: inline-flex;
+    align-items: center;
+}
+
+.c-trigger-link:hover,
+.c-trigger-link:focus {
+    text-decoration: underline;
+}
+
+.c-field-link {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+    color: var(--slds-g-link-color, #0176d3);
+}
+
+.c-field-link:hover,
+.c-field-link:focus {
+    text-decoration: underline;
+}
+
+.c-field-unmapped {
+    color: var(--slds-g-color-neutral-base-30, #5c5c5c);
+    cursor: default;
+}
+
+.c-field-item:last-child {
+    border-bottom: none;
+}
+
+.c-field-item {
+    display: flex;
+    align-items: center;
+    gap: var(--slds-g-spacing-2, 0.5rem);
+}
+
+.c-field-group:first-child .c-group-header {
+    padding-top: 0;
+}
+
+.c-group-header {
+    padding: var(--slds-g-spacing-3, 0.75rem) 0 var(--slds-g-spacing-1, 0.25rem);
+    font-size: 0.6875rem;
+    letter-spacing: 0.0625rem;
+}

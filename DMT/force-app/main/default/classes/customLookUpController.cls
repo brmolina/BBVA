@@ -30,6 +30,7 @@ public with sharing class customLookUpController{
         }
         Map<String, Schema.SObjectField> fieldsMap = Schema.getGlobalDescribe().get(ObjectName).getDescribe().fields.getMap();
         if (!fieldsMap.containsKey(searchField)){
+            System.debug(LoggingLevel.WARN, 'customLookUpController.fetchLookUpValues - Campo no permitido. ObjectName=' + ObjectName + ', searchField=' + searchField);
             throw new AuraHandledException('Campo no permitido');
         }
         final String searchKey = searchKeyWord + '%';

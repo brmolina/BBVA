@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__ll_adj_deb_excl_amount__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Adjustments to Client/group&apos;s debt due to exclusions</description>
+    <label>Debt adjustment due to exclusions</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

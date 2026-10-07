@@ -84,7 +84,7 @@ export default class dmt_page_Deal_Manament extends NavigationMixin(LightningEle
             console.log('hasError:', this.hasError);
 
             if (this.hasError) {
-                this.errorMessage = this.label.noDataFromService;
+                this.errorMessage = this.errorMessage || this.label.noDataFromService;
                 this.showToast('Error', this.errorMessage, 'error');
                 this.isLoading = false;
                 this.dispatchEvent(new CloseActionScreenEvent());
@@ -123,6 +123,11 @@ export default class dmt_page_Deal_Manament extends NavigationMixin(LightningEle
         try {
             const response = await getSerializedGroupFromRecordCode({ recordCode: this.recordCode });
             console.log('getSerializedGroupFromRecordCode response:', response);
+            const parsed = JSON.parse(response);
+            if (parsed.errorCode === 'PROSPECT_GROUP_NO_SUBSIDIARY') {
+                this.errorMessage = parsed.errorMessage;
+                return true;  // Error occurred
+            }
             let groupCode = JSON.parse(response).groupCode;
             this.groupCode = groupCode;
             if (this.groupCode === null) {

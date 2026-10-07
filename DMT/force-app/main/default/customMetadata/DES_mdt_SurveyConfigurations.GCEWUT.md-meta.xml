@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>GCEWUT</label>
+    <protected>false</protected>
+    <values>
+        <field>DES_fld_CompletedReminder__c</field>
+        <value xsi:type="xsd:double">30.0</value>
+    </values>
+    <values>
+        <field>DES_fld_DaysToResetUsage__c</field>
+        <value xsi:type="xsd:double">30.0</value>
+    </values>
+    <values>
+        <field>DES_fld_EmailBody__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>DES_fld_EmailSubject__c</field>
+        <value xsi:type="xsd:string">Tu opinion nos importa</value>
+    </values>
+    <values>
+        <field>DES_fld_EmailTemplate__c</field>
+        <value xsi:type="xsd:string">DES_lmt_SurveyGCESupportTemplate</value>
+    </values>
+    <values>
+        <field>DES_fld_FriendlyReminder__c</field>
+        <value xsi:type="xsd:double">7.0</value>
+    </values>
+    <values>
+        <field>DES_fld_MinimalUse__c</field>
+        <value xsi:type="xsd:double">3.0</value>
+    </values>
+    <values>
+        <field>DES_fld_Notebook__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>DES_fld_Sender__c</field>
+        <value xsi:type="xsd:string">ans_clientcloud@bbva.com</value>
+    </values>
+    <values>
+        <field>DES_fld_SurveyDeveloperName__c</field>
+        <value xsi:type="xsd:string">feedback_gce</value>
+    </values>
+</CustomMetadata>

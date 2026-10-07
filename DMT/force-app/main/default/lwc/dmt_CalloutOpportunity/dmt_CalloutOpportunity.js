@@ -255,7 +255,7 @@ export default class dmt_CalloutOpportunity extends LightningElement {
 
                 if (!this.lines || this.lines.length === 0) {
                     this.showToast('No lines have been found', 'warning');
-                    pubsub.fire(EVT_CLOSE_LWC, EVENT_STRG);
+                    //pubsub.fire(EVT_CLOSE_LWC, EVENT_STRG);
                     return; // Salimos para no continuar con la selección
                 }
                 if (this._lineExternalId) {

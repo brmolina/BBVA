@@ -1,7 +1,7 @@
 import { api, wire, track, LightningElement } from 'lwc';
 import { loadScript } from 'lightning/platformResourceLoader';
 import chartJS from '@salesforce/resourceUrl/DMT_ChartJS';
-import { formatCurrency, customTooltip, toggleNotice, isNull, drawTargets } from './dmt_subfeature_chart_utils.js';
+import { formatCurrency, customTooltip, toggleNotice, isNull, drawTargets, getWrappedLines } from './dmt_subfeature_chart_utils.js';
 import getCurrenciesD from '@salesforce/apex/DMT_Engines_Handler.getCurrenciesD';
 
 let chartJsLoadPromise; // static variable to hold the loading promise
@@ -97,7 +97,7 @@ export default class Dmt_subfeature_chart extends LightningElement {
     }
 
     convertCurrency(value) {
-        const currentCurrency =  this.chartData?.currencies[0];
+        const currentCurrency = this.chartData?.currencies[0] || this.chartData?.originCurrency;
         const originCurrency = this.chartData?.originCurrency;        
         const userSelectedCurrency = this.currencyId;
 
@@ -187,6 +187,9 @@ export default class Dmt_subfeature_chart extends LightningElement {
                         ticks: this.displayAmount,
                         scaleLabel:{
                             display:false
+                        },
+                        gridLines: {
+                            zeroLineColor: 'rgba(0,0,0,0.1)'
                         }
                     }],
                     yAxes: [{
@@ -205,7 +208,8 @@ export default class Dmt_subfeature_chart extends LightningElement {
                         gridLines: {
                             color: "#FFFFFF",
                             zeroLineColor: "#FFFFFF",
-                            zeroLineWidth: 100
+                            zeroLineWidth: 100,
+                            drawBorder: false
                         },
                     }]
                 },
@@ -241,22 +245,39 @@ export default class Dmt_subfeature_chart extends LightningElement {
     showChart() {
 
         if (this.initialized) {
-        return;
+            return;
         }
 
         this.initialized = true;
         const canvas = this.template.querySelector('canvas.chart');
-        const conditionLengths = (this.chartData?.conditions || []).map(condition => (condition || '').length);
-        const maxConditionLength = conditionLengths.length ? Math.max(...conditionLengths) : 0;
-        const estimatedConditionLines = Math.max(1, Math.ceil(maxConditionLength / 70));
         const rows = this.labels?.length || 1;
-        const conditionLineHeight = this.showConditionDesc ? 25 : 13;
-        const messageBottomGap = this.showConditionDesc ? 24 : 26;
-        const estimatedRowHeight = 36 + (estimatedConditionLines * conditionLineHeight) + messageBottomGap;
-        canvas.height = Math.max(220, (rows * estimatedRowHeight) + 80);
 
+        // Pasada 1: altura mínima solo para poder leer el eje X real
+        canvas.height = Math.max(220, rows * 60);
         const ctx = canvas.getContext('2d');
         this.chart = new window.Chart(ctx, this.chartConfig);
+
+        if (this.showConditionDesc) {
+            const xaxis = this.chart.scales['xBar'];
+            const conditionPosX = xaxis.getPixelForValue(0);
+            const conditionMaxWidth = Math.max(canvas.width - conditionPosX - 12, 100);
+            const conditionLineHeight = 16;
+
+            let maxConditionLines = 0;
+            ctx.font = "12px sans-serif";
+            (this.chartData?.conditions || []).forEach(c => {
+                maxConditionLines = Math.max(maxConditionLines, getWrappedLines(ctx, c || '', conditionMaxWidth).length);
+            });
+
+            const rowHeight = 20 + 13 + (maxConditionLines * conditionLineHeight) + 20;
+            const neededHeight = Math.max(220, (rows * rowHeight) + 80);
+
+            if (neededHeight !== canvas.height) {
+                this.chart.destroy();
+                canvas.height = neededHeight;
+                this.chart = new window.Chart(ctx, this.chartConfig);
+            }
+        }
 
         var chart = this.chart;
         this.refs.canvas.addEventListener('mousemove', function (e) {
@@ -277,10 +298,19 @@ export default class Dmt_subfeature_chart extends LightningElement {
         } else {
             this.currencyId = currencyCode;
             this.exchangeRate = exchangeRate;
-            this.chart.clear();
-            this.chart.destroy();
-            this.initialized = false;
-            this.renderChart();
+
+            const chartData = this.chartData;
+            chartData.datasets.forEach((dataset, index) => {
+                this.chart.data.datasets[index].data = dataset.data.map(val => this.convertCurrency(val));
+            });
+
+            this.targets = chartData.targets.map(target => this.convertCurrency(target));
+            this.chart.data.targets = this.targets;
+            this.chart.data.currencyId = this.currencyId;
+            this.chart.data.exchangeRate = this.exchangeRate;
+            this.chart.options.scales.xAxes[0].ticks.suggestedMax = (Math.max(...this.targets, 0) || 0) * 1.1;
+
+            this.chart.update();
         }
     }
 

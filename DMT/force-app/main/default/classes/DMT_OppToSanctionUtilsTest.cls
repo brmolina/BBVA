@@ -20,7 +20,7 @@ public class DMT_OppToSanctionUtilsTest {
 
         // Obtener OpportunityLineItems de los datos de TestSetup
         List<OpportunityLineItem> olis = [SELECT Id, Product2Id,OpportunityId, DMT_Risk_Type__c, gf_amortization_type__c, opportunity_risk_name__c, gf_maturity_date__c, DMT_TXT_Comentarios__c, g_currency_id__c, DMT_Deal_Amount_Tenors__c,
-        gf_initial_date__c, g_branch_id__c,gf_group_priority_opportunity_id__c, g_line_commitment_level_type__c, g_multioperation_ind_type__c, gf_payment_frequency__c
+        gf_initial_date__c, g_branch_id__c,gf_group_priority_opportunity_id__c, g_line_commitment_level_type__c, g_multioperation_ind_type__c, gf_payment_frequency__c,DMT_Line_Tenor__c, DMT_Line_Oneoffdeal__c, DMT_Line_Amount__c, gf_country_risk__c
                                           FROM OpportunityLineItem];
         DMT_Line__c line = [SELECT Id FROM DMT_Line__c LIMIT 1];
         // Preparar wrapper
@@ -40,6 +40,39 @@ public class DMT_OppToSanctionUtilsTest {
         System.assertEquals([SELECT count() FROM DMT_Opportunity_Mitigant__c], warranties.size(), 'Se deben crear Warranties por cada mitigante');
     }
 
+    //  @IsTest
+    // static void testCreateRiskLinesAndWarrantiesDeduplicatesMitigantType() {
+    //     DMT_Test_DataFactory.generateTestSanctionLines();
+
+    //     OpportunityLineItem oli = [SELECT Id, Product2Id, OpportunityId, DMT_Risk_Type__c, gf_amortization_type__c, opportunity_risk_name__c, gf_maturity_date__c, DMT_TXT_Comentarios__c, g_currency_id__c, DMT_Deal_Amount_Tenors__c,
+    //     gf_initial_date__c, g_branch_id__c,gf_group_priority_opportunity_id__c, g_line_commitment_level_type__c, g_multioperation_ind_type__c, gf_payment_frequency__c
+    //                               FROM OpportunityLineItem LIMIT 1];
+    //     DMT_Opportunity_Mitigant__c mitigant = [SELECT Id, DMT_Opportunity_Product__c, Mitigant_Type__c FROM DMT_Opportunity_Mitigant__c WHERE DMT_Opportunity_Product__c = :oli.Id LIMIT 1];
+    //     mitigant.Mitigant_Type__c = 'Guarantee';
+    //     update mitigant;
+    //     mitigant = [SELECT Id, DMT_Opportunity_Product__c, Mitigant_Type__c FROM DMT_Opportunity_Mitigant__c WHERE Id = :mitigant.Id];
+    //     insert new DMT_Opportunity_Mitigant__c(
+    //         DMT_Opportunity_Product__c = oli.Id,
+    //         Mitigant_Type__c = mitigant.Mitigant_Type__c,
+    //         Political_Percentage__c = 1,
+    //         Commercial_Percentage__c = 1
+    //     );
+
+    //     DMT_Line__c line = [SELECT Id FROM DMT_Line__c LIMIT 1];
+    //     DMT_OppToSanctionUtils.OpportunityLineItemWrapper wrapper = new DMT_OppToSanctionUtils.OpportunityLineItemWrapper();
+    //     wrapper.listOli = new List<OpportunityLineItem>{oli};
+    //     wrapper.idLine = line.Id;
+
+    //     Test.startTest();
+    //     DMT_OppToSanctionUtils.createRiskLinesAndWarranties(new List<DMT_OppToSanctionUtils.OpportunityLineItemWrapper>{wrapper});
+    //     Test.stopTest();
+
+    //     List<DMT_Warranty__c> warranties = [SELECT Name FROM DMT_Warranty__c];
+    //     System.assertEquals(1, warranties.size(), 'Debe crearse una sola Warranty por Mitigant_Type__c');
+    //     System.assertEquals(mitigant.Mitigant_Type__c, warranties[0].Name, 'La Warranty creada debe tomar el Mitigant_Type__c persistido');
+    // }
+
+
     @IsTest
     static void testEndTermFromDates() {
         DMT_Test_DataFactory.generateTestSanctionLines();
@@ -50,7 +83,7 @@ public class DMT_OppToSanctionUtilsTest {
         }
 
         OpportunityLineItem oli = [SELECT Id,OpportunityId, Product2Id, DMT_Risk_Type__c, gf_amortization_type__c, opportunity_risk_name__c, gf_maturity_date__c, DMT_TXT_Comentarios__c, g_currency_id__c,
-        DMT_Deal_Amount_Tenors__c, gf_initial_date__c, g_branch_id__c,gf_group_priority_opportunity_id__c, g_line_commitment_level_type__c, g_multioperation_ind_type__c, gf_payment_frequency__c
+        DMT_Deal_Amount_Tenors__c, gf_initial_date__c, g_branch_id__c,gf_group_priority_opportunity_id__c, g_line_commitment_level_type__c, g_multioperation_ind_type__c, gf_payment_frequency__c,DMT_Line_Tenor__c, DMT_Line_Oneoffdeal__c, DMT_Line_Amount__c, gf_country_risk__c
          FROM OpportunityLineItem LIMIT 1];
 
         oli.gf_initial_date__c = Date.today();
@@ -149,7 +182,7 @@ public class DMT_OppToSanctionUtilsTest {
         DMT_Test_DataFactory.generateTestSanctionLines();
 
         OpportunityLineItem oli = [SELECT Id,OpportunityId, Product2Id, DMT_Risk_Type__c, gf_amortization_type__c, opportunity_risk_name__c, gf_maturity_date__c, DMT_TXT_Comentarios__c, g_currency_id__c, gf_payment_frequency__c,
-        DMT_Deal_Amount_Tenors__c, gf_initial_date__c, g_branch_id__c,gf_group_priority_opportunity_id__c, DMT_balloon_amortization_indicator__c, DMT_bullet_amortization_indicator__c, g_line_commitment_level_type__c, g_multioperation_ind_type__c
+        DMT_Deal_Amount_Tenors__c, gf_initial_date__c, g_branch_id__c,gf_group_priority_opportunity_id__c, DMT_balloon_amortization_indicator__c, DMT_bullet_amortization_indicator__c, g_line_commitment_level_type__c, g_multioperation_ind_type__c,DMT_Line_Tenor__c, DMT_Line_Oneoffdeal__c, DMT_Line_Amount__c, gf_country_risk__c
          FROM OpportunityLineItem LIMIT 1];
 
         oli.gf_amortization_type__c = 'User-Defined';
@@ -176,7 +209,7 @@ public class DMT_OppToSanctionUtilsTest {
         DMT_Test_DataFactory.generateTestSanctionLines();
 
         OpportunityLineItem oli = [SELECT Id,OpportunityId, Product2Id, DMT_Risk_Type__c, gf_amortization_type__c, opportunity_risk_name__c, gf_maturity_date__c, DMT_TXT_Comentarios__c, g_currency_id__c, gf_payment_frequency__c,
-        DMT_Deal_Amount_Tenors__c, gf_initial_date__c, g_branch_id__c,gf_group_priority_opportunity_id__c, DMT_balloon_amortization_indicator__c, DMT_bullet_amortization_indicator__c, g_line_commitment_level_type__c, g_multioperation_ind_type__c
+        DMT_Deal_Amount_Tenors__c, gf_initial_date__c, g_branch_id__c,gf_group_priority_opportunity_id__c, DMT_balloon_amortization_indicator__c, DMT_bullet_amortization_indicator__c, g_line_commitment_level_type__c, g_multioperation_ind_type__c,DMT_Line_Tenor__c, DMT_Line_Oneoffdeal__c, DMT_Line_Amount__c, gf_country_risk__c
          FROM OpportunityLineItem LIMIT 1];
 
         oli.gf_amortization_type__c = 'Bullet';
@@ -201,7 +234,7 @@ public class DMT_OppToSanctionUtilsTest {
         DMT_Test_DataFactory.generateTestSanctionLines();
 
         OpportunityLineItem oli = [SELECT Id,OpportunityId, Product2Id, DMT_Risk_Type__c, gf_amortization_type__c, opportunity_risk_name__c, gf_maturity_date__c, DMT_TXT_Comentarios__c, g_currency_id__c,
-        DMT_Deal_Amount_Tenors__c, gf_initial_date__c, g_branch_id__c,gf_group_priority_opportunity_id__c, g_line_commitment_level_type__c, g_multioperation_ind_type__c, gf_payment_frequency__c
+        DMT_Deal_Amount_Tenors__c, gf_initial_date__c, g_branch_id__c,gf_group_priority_opportunity_id__c, g_line_commitment_level_type__c, g_multioperation_ind_type__c, gf_payment_frequency__c,DMT_Line_Tenor__c, DMT_Line_Oneoffdeal__c, DMT_Line_Amount__c, gf_country_risk__c
          FROM OpportunityLineItem LIMIT 1];
 
         oli.gf_amortization_type__c = 'Linear';
@@ -249,7 +282,7 @@ public class DMT_OppToSanctionUtilsTest {
 
         OpportunityLineItem oli = [
             SELECT Id, Product2Id, gf_amortization_type__c, DMT_balloon_amortization_indicator__c,
-                   DMT_bullet_amortization_indicator__c, DMT_Associated_Line_Product__c
+                   DMT_bullet_amortization_indicator__c, DMT_Associated_Line_Product__c,DMT_Line_Tenor__c, DMT_Line_Oneoffdeal__c, DMT_Line_Amount__c, gf_country_risk__c
             FROM OpportunityLineItem
             WHERE OpportunityId = :opp.Id
             LIMIT 1
@@ -327,6 +360,31 @@ public class DMT_OppToSanctionUtilsTest {
         System.assertEquals('ES',  lineAfter.Booking_Geography__c, 'Booking Geography debe heredarse del Entific de la opp');
     }
 
+    
+    // @IsTest
+    // static void testUpdateRiskLinesAndWarrantiesDeduplicatesMitigantType() {
+    //     Id oppId = prepareDataForUpdate('Bullet', false, false);
+    //     OpportunityLineItem oli = [SELECT Id FROM OpportunityLineItem WHERE OpportunityId = :oppId LIMIT 1];
+    //     DMT_Opportunity_Mitigant__c mitigant = [SELECT Id, DMT_Opportunity_Product__c, Mitigant_Type__c FROM DMT_Opportunity_Mitigant__c WHERE DMT_Opportunity_Product__c = :oli.Id LIMIT 1];
+    //     mitigant.Mitigant_Type__c = 'Guarantee';
+    //     update mitigant;
+    //     mitigant = [SELECT Id, DMT_Opportunity_Product__c, Mitigant_Type__c FROM DMT_Opportunity_Mitigant__c WHERE Id = :mitigant.Id];
+    //     insert new DMT_Opportunity_Mitigant__c(
+    //         DMT_Opportunity_Product__c = oli.Id,
+    //         Mitigant_Type__c = mitigant.Mitigant_Type__c,
+    //         Political_Percentage__c = 1,
+    //         Commercial_Percentage__c = 1
+    //     );
+
+    //     Test.startTest();
+    //     DMT_OppToSanctionUtils.updateRiskLinesAndWarranties(oppId, new List<String>(),'risk');
+    //     Test.stopTest();
+
+    //     System.assertEquals(1, [SELECT count() FROM DMT_Warranty__c], 'Debe actualizarse una sola Warranty por Mitigant_Type__c duplicado');
+    //     DMT_Warranty__c warranty = [SELECT Name FROM DMT_Warranty__c LIMIT 1];
+    //     System.assertEquals(mitigant.Mitigant_Type__c, warranty.Name, 'La Warranty conservada debe tomar el Mitigant_Type__c persistido');
+    // }
+
     @IsTest
     static void testUpdateRiskLinesWithUserDefinedBalloonAmortization() {
         Id oppId = prepareDataForUpdate('User-Defined', true, false);
@@ -400,5 +458,46 @@ public class DMT_OppToSanctionUtilsTest {
         Test.stopTest();
 
         System.assertEquals(0, [SELECT count() FROM DMT_Risk_Line_Term__c], 'No debe crearse ningún RiskLineTerm');
+    }
+    @IsTest
+    static void testCommentsTextWithUnderlyingAndGuarantor() {
+        OpportunityLineItem baseOli = [SELECT Id, Product2Id FROM OpportunityLineItem LIMIT 1];
+
+        // Underlying -> rama "Underlying Restriction"
+        DMT_Test_DataFactory.generateUnderlyingRestriction(baseOli);
+
+        // Mitigant con Guarantor_Display -> rama "Guarantor"
+        // (el mitigant del TestSetup, sin Guarantor_Display, ya cubre "Collateral")
+        DMT_Test_DataFactory.generateOpportunityGuarantor(baseOli);
+
+        DMT_Test_DataFactory.generateTestSanctionLines();
+
+        List<OpportunityLineItem> olis = [
+            SELECT Id, Product2Id, OpportunityId, DMT_Risk_Type__c, gf_amortization_type__c,
+                opportunity_risk_name__c, gf_maturity_date__c, DMT_TXT_Comentarios__c,
+                g_currency_id__c, DMT_Deal_Amount_Tenors__c, gf_initial_date__c,
+                g_branch_id__c, gf_group_priority_opportunity_id__c,
+                g_line_commitment_level_type__c, g_multioperation_ind_type__c,
+                gf_payment_frequency__c, DMT_Line_Tenor__c, DMT_Line_Oneoffdeal__c,
+                DMT_Line_Amount__c, gf_country_risk__c
+            FROM OpportunityLineItem
+        ];
+        DMT_Line__c line = [SELECT Id FROM DMT_Line__c LIMIT 1];
+
+        DMT_OppToSanctionUtils.OpportunityLineItemWrapper wrapper = new DMT_OppToSanctionUtils.OpportunityLineItemWrapper();
+        wrapper.listOli = olis;
+        wrapper.idLine = line.Id;
+        List<DMT_Risk_Line_Term__c> rlts = [
+            SELECT DMT_Comments__c 
+            FROM DMT_Risk_Line_Term__c 
+            WHERE DMT_Line__c = :line.Id
+        ];
+        Test.startTest();
+        DMT_OppToSanctionUtils.createRiskLinesAndWarranties(
+            new List<DMT_OppToSanctionUtils.OpportunityLineItemWrapper>{wrapper}
+        );
+        Test.stopTest();
+
+
     }
 }

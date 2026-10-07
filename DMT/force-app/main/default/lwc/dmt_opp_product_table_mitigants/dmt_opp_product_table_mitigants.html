@@ -8,9 +8,10 @@
             titletable={label.TITLETABLE}
             showcopypaste="true"
             rowscopypaste={displayRows}
-            tablecolumnscopypaste={columns}
+            tablecolumnscopypaste={copyPasteColumns}
             context="Mitigants"
-            isreadonlyuser={isReadOnly}>
+            isreadonlyuser={isReadOnly}
+            onsendrowsevent={handlePasteData}>
         </c-dmt_-table-header-section>
 
         <template lwc:if={hasRows}>

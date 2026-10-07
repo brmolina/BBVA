@@ -17,7 +17,7 @@
 
 /* Ensure the form element itself controls the height, not the outer flexbox */
 .slds-combobox__form-element {
-    display: flex;
+   
     align-items: center;
     height: 32px; 
     position: relative;

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Underlying_Type__c</fullName>
+    <label>Underlying Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Restriction</fullName>
+                <default>false</default>
+                <label>Restriction</label>
+            </value>
+            <value>
+                <fullName>Profitability</fullName>
+                <default>false</default>
+                <label>Profitability</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

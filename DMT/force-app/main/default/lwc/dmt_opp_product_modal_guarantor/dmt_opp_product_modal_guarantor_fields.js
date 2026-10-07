@@ -2,7 +2,7 @@ export const guarantorFields = [
 
     {
         id: "Mitigant_Type__c",
-        label: "Mitant Type",
+        label: "Mitigant Type",
         apiName: "Mitigant_Type__c",
         value: "",
         size: "1-of-1",
@@ -18,21 +18,21 @@ export const guarantorFields = [
             { label: 'Personal > Bank', value: 'Personal > Bank' }
         ]
     }, {
-        id: "DMT_Local_Client__c",
-        apiName: "DMT_Local_Client__c",
+        id: "DMT_Guarantor_Account__c",
+        apiName: "DMT_Guarantor_Account__c",
         type: 'customLookup',
         label: "Select Guarantor",
         value: '',
         size: "1-of-2",
         isReadOnly: false,
         isHidden: false,
-        objectApiName: 'Local_Client__c',
-        searchFields: ['Name', 'Alpha_code__c', 'Cib_Client__r.DES_ID_Fiscal__c'],
+        objectApiName: 'Account',
+        searchFields: ['Name', 'g_customer_id__c', 'DES_Tax_Identification_Number__c'],
         primaryField: 'Name',
-        secondaryFields: ['Alpha_code__c', 'Cib_Client__r.DES_ID_Fiscal__c'],
+        secondaryFields: ['g_customer_id__c', 'DES_Tax_Identification_Number__c'],
         filters: {
             AND: [
-                { field: 'Alpha_code__c', operator: 'LIKE', value: '' },
+                { field: 'g_customer_id__c', operator: 'LIKE', value: '' },
             ]
         },
         isRequired: true,

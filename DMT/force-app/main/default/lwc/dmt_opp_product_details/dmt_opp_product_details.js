@@ -1,6 +1,7 @@
 import { LightningElement, api, wire } from 'lwc';
 import { refreshApex }    from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import DmtOppMoneyModal   from 'c/dmt_opp_money_modal';
 import getOpportunityLineItemData from '@salesforce/apex/DMT_OpportunityProductsController.getOpportunityLineItemData';
 import getTenorsData              from '@salesforce/apex/DMT_TableTenors.getTenorsData';
 import getMitigantsData           from '@salesforce/apex/DMT_OpportunityProductsController.getMitigantsData';
@@ -26,6 +27,7 @@ export default class DmtOppProductDetails extends LightningElement {
     optionsMap  = {};
     tenorsData  = [];
     mitigantsData = [];
+    fieldsWithErrors = new Map(); // key: apiName, value: label
 
     currentCurrencyCode = '';
     currentInitialDate  = null;
@@ -105,17 +107,55 @@ export default class DmtOppProductDetails extends LightningElement {
 
     // Keeps local copies of date/currency in sync so child sections share the same context
     handleSectionChange(event) {
-        const { apiName, value } = event.detail;
-        if (apiName === 'gf_initial_date__c')  this.currentInitialDate  = value || null;
-        else if (apiName === 'gf_maturity_date__c') this.currentMaturityDate = value || null;
-        else if (apiName === 'g_currency_id__c')    this.currentCurrencyCode = value || '';
+        const detail  = event.detail || {};
+        const changes = detail.changes
+            ? detail.changes
+            : (detail.apiName ? { [detail.apiName]: detail.value } : null);
 
-        if (apiName && this.recordData) {
-            this.recordData = { ...this.recordData, [apiName]: value };
+        // Handle real-time tenor updates from schedule for BBVA Commitment recalculation
+        if (detail.updatedTenors && Array.isArray(detail.updatedTenors)) {
+            this.tenorsData = detail.updatedTenors;
+        }
+
+        if (!changes) return;
+
+        if ('gf_initial_date__c' in changes)  this.currentInitialDate  = changes.gf_initial_date__c  || null;
+        if ('gf_maturity_date__c' in changes) this.currentMaturityDate = changes.gf_maturity_date__c || null;
+        if ('g_currency_id__c' in changes)    this.currentCurrencyCode = changes.g_currency_id__c    || '';
+
+        this.recordData = { ...this.recordData, ...changes };
+    }
+
+    //Intercept field (dmt_form_renderer) changes to validate information on parent
+    handleFieldChange(event) {
+        const { apiName, label, isFieldValid } = event.detail;
+
+        if (isFieldValid === false) {
+            this.fieldsWithErrors.set(apiName, label ?? apiName);
+        } else {
+            this.fieldsWithErrors.delete(apiName);
         }
     }
 
     // ─── Edit mode ────────────────────────────────────────────────────────────
+
+    get isRenewal() {
+        return !!this.recordData?.Opportunity?.DMT_Parent_Opportunity__c;
+    }
+
+    get oldMoneyBtnDisabled() {
+        return this.isRenewal || !this._canEdit;
+    }
+
+    async handleOpenOldMoneyModal() {
+        if (!this.isEditMode) {
+            this.handleEditModeChange();
+        }
+        await DmtOppMoneyModal.open({
+            size: 'medium',
+            oppProductId: this.currentRecordId
+        });
+    }
 
     handleEditModeChange() {
         if (this.isEditMode || !this._canEdit) return;
@@ -135,26 +175,31 @@ export default class DmtOppProductDetails extends LightningElement {
         this.hasError  = false;
 
         try {
+            // 0. Validate required fields before saving
+            const validation = this._validateBeforeSave();
+            if (!validation.isValid) {
+                this.hasError = true;
+                this.errorMessage = validation.invalidFields.length > 0
+                    ? `Please complete all required fields before saving: ${validation.invalidFields.join(', ')}.`
+                    : 'Please complete all required fields before saving.';
+                this.isLoadingSaving = false;
+                return;
+            }
+
             // 1. Collect field changes and invalid fields from all sections
             const recordFields = { Id: this.currentRecordId };
-            const allInvalidFields = [];
+
             for (const ref of this._sectionRefs()) {
                 const changes = ref.collectChanges?.();
                 if (changes) Object.assign(recordFields, changes);
-
-                const validation = ref.collectInvalidFields?.();
-                if (validation?.invalidFields?.length > 0) {
-                    allInvalidFields.push(...validation.invalidFields);
-                }
-
                 console.log('Collected changes from section:', JSON.stringify(changes));
             }
 
-            if (allInvalidFields.length > 0) {
+            if (this.fieldsWithErrors.size > 0) {
                 this.hasError = true;
-                this.errorMessage = allInvalidFields.length > 3
+                this.errorMessage = this.fieldsWithErrors.size > 3
                     ? 'Review errors on this page'
-                    : `The following fields have invalid values: ${allInvalidFields.join(', ')}`;
+                    : `The following fields have invalid values: ${[...this.fieldsWithErrors.values()].join(', ')}`;
                 this.isLoadingSaving = false;
                 return;
             }
@@ -196,11 +241,11 @@ export default class DmtOppProductDetails extends LightningElement {
                 return;
             }
 
-            // 7. Success: refresh wire data and notify parent
+            // 7. Success: exit edit mode first (clears snapshots), then refresh data
+            this._exitEditModeWithoutRefresh();
             await refreshApex(this._wiredResult);
             await this._loadRelatedData();
             this._notifySuccess('Record updated successfully.');
-            this._exitEditMode();
 
         } catch (error) {
             this._notifyError(error);
@@ -229,6 +274,10 @@ export default class DmtOppProductDetails extends LightningElement {
     }
 
     _exitEditMode() {
+        this._exitEditModeWithoutRefresh();
+    }
+
+    _exitEditModeWithoutRefresh() {
         this.isEditMode   = false;
         for (const ref of this._sectionRefs()) ref.commitEdit?.();
         this.hasError     = false;
@@ -278,6 +327,27 @@ export default class DmtOppProductDetails extends LightningElement {
             if (ref) refs.push(ref);
         }
         return refs;
+    }
+
+    _validateBeforeSave() {
+        let isValid = true;
+        const invalidFields = [];
+        for (const ref of this._sectionRefs()) {
+            if (typeof ref.validate === 'function') {
+                const result = ref.validate();
+                if (result && typeof result === 'object') {
+                    if (!result.isValid) {
+                        isValid = false;
+                        if (Array.isArray(result.invalidFields)) {
+                            invalidFields.push(...result.invalidFields);
+                        }
+                    }
+                } else if (!result) {
+                    isValid = false;
+                }
+            }
+        }
+        return { isValid, invalidFields };
     }
 
     getFieldLabel(apiName) {

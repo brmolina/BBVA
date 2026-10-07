@@ -4,6 +4,7 @@ import { costOfFundingFields } from './dmt_opp_product_details_cost_of_funding_f
 
 const FUNDING_CURVE_MANUAL  = 'Manual';
 const FUNDING_CURVE_BBVA    = 'BBVA SA';
+const LIFE_FUNDING_TERM     = 'Term';
 const F_FUNDING_CURVE       = 'Funding_Curve__c';
 const F_LIFE_FUNDING_TYPE   = 'Life_Funding_Type__c';
 const F_FUNDING_DRAWN       = 'gf_funding_cost_db__c';
@@ -21,15 +22,24 @@ export default class DmtOppProductDetailsCostOfFunding extends LightningElement 
 
     _fieldsOriginal   = [...costOfFundingFields];
     _data;
+    _underlyingsData = [];
     _options          = {};
     _snapshot         = null;
     _readOnlySnapshot = null;
+    _currencyForcedByUnderlyingState = false;
+    _fundingCurveBeforeUnderlyingForce = null;
 
     // ─── Public API ───────────────────────────────────────────────────────────
 
     @api get data() { return this._data; }
     set data(value) {
         this._data = value;
+        this._recompute();
+    }
+
+    @api get underlyingsData() { return this._underlyingsData; }
+    set underlyingsData(value) {
+        this._underlyingsData = Array.isArray(value) ? value : [];
         this._recompute();
     }
 
@@ -68,6 +78,7 @@ export default class DmtOppProductDetailsCostOfFunding extends LightningElement 
                 isReadOnly: roMap.has(f.id) ? roMap.get(f.id) : f.isReadOnly
             }));
             this._readOnlySnapshot = null;
+            this._applyUnderlyingCurrencyLockToFields();
         }
     }
 
@@ -103,9 +114,9 @@ export default class DmtOppProductDetailsCostOfFunding extends LightningElement 
 
         // Enforce persistence rules based on the final Funding_Curve state
         if (finalIsManual) {
-            
+            // Manual: Life_Funding_Type__c is hidden/not applicable, so persist the default value.
             if (this._wasOriginally(F_LIFE_FUNDING_TYPE, snapMap, val => val !== null && val !== '' && val !== undefined)) {
-                changes[F_LIFE_FUNDING_TYPE] = 'Term';
+                changes[F_LIFE_FUNDING_TYPE] = LIFE_FUNDING_TERM;
             }
         } else {
             // BBVA SA: nullify drawn/undrawn fields if they had a value
@@ -115,7 +126,7 @@ export default class DmtOppProductDetailsCostOfFunding extends LightningElement 
             if (this._wasOriginally(F_FUNDING_UNDRAWN, snapMap, val => val !== null && val !== '' && val !== undefined && val !== 0)) {
                 changes[F_FUNDING_UNDRAWN] = null;
             }
-            changes[F_LIFE_FUNDING_TYPE] = 'Term';
+            // Do not force Life_Funding_Type__c here; keep user's selected value (e.g. AvgLife).
         }
 
         return changes;
@@ -133,6 +144,36 @@ export default class DmtOppProductDetailsCostOfFunding extends LightningElement 
         return { isValid: invalidFields.length === 0, invalidFields };
     }
 
+    @api validate() {
+        const renderer = this.template.querySelector('c-dmt_form_renderer');
+        const rendererResult = renderer?.validate?.() ?? { isValid: true, invalidFields: [] };
+        const rendererIsValid = typeof rendererResult === 'object' ? rendererResult.isValid : !!rendererResult;
+        const rendererInvalidFields = (typeof rendererResult === 'object' && Array.isArray(rendererResult.invalidFields))
+            ? rendererResult.invalidFields : [];
+
+        const invalidFieldSet = new Set(rendererInvalidFields);
+        for (const field of this.fields) {
+            if (!field.isRequired || field.isHidden || field.isReadOnly) continue;
+            const value = field.value;
+            let fieldValid;
+            if (Array.isArray(value)) {
+                fieldValid = value.length > 0;
+            } else if (value && typeof value === 'object') {
+                fieldValid = !!(value.id || value.Id);
+            } else if (field.type === 'number' || field.type === 'currency' || field.type === 'percent') {
+                fieldValid = value !== null && value !== undefined && value !== '';
+            } else {
+                fieldValid = value !== null && value !== undefined && value !== '';
+            }
+            if (!fieldValid) {
+                invalidFieldSet.add(field.label || field.apiName);
+            }
+        }
+
+        const invalidFields = [...invalidFieldSet];
+        return { isValid: rendererIsValid && invalidFields.length === 0, invalidFields };
+    }
+
     // ─── Event handlers ───────────────────────────────────────────────────────
 
     handleEditModeChange(event) {
@@ -147,6 +188,7 @@ export default class DmtOppProductDetailsCostOfFunding extends LightningElement 
         const field           = this.fields[idx];
         const apiName         = field.apiName;
         const normalizedValue = apiName === F_FUNDING_CURVE ? this._normalizeToBoolean(value) : value;
+        const sectionChanges  = { [apiName]: normalizedValue };
 
         let newArr  = this.fields.slice();
         newArr[idx] = { ...field, value: normalizedValue, isFieldValid };
@@ -154,13 +196,21 @@ export default class DmtOppProductDetailsCostOfFunding extends LightningElement 
         if (apiName === F_FUNDING_CURVE) {
             const isManual = normalizedValue === true;
             // When switching to Manual, clear Life_Funding_Type__c immediately
-            if (isManual) newArr = this._setFieldValue(newArr, F_LIFE_FUNDING_TYPE, null);
+            if (isManual) {
+                newArr = this._setFieldValue(newArr, F_LIFE_FUNDING_TYPE, null);
+                sectionChanges[F_LIFE_FUNDING_TYPE] = null;
+            }
             // Drawn/Undrawn values are kept in memory when switching to BBVA SA so the user
             // doesn't lose them if they switch back; final nullification is done in collectChanges
             newArr = this._applyVisibilityRules(newArr, isManual);
         }
 
         this.fields = newArr;
+        this.dispatchEvent(new CustomEvent('sectionchange', {
+            detail: { changes: sectionChanges },
+            bubbles: true,
+            composed: true
+        }));
         this.dispatchEvent(new CustomEvent('fieldchange', { detail: { fieldId, value: normalizedValue } }));
     }
 
@@ -181,10 +231,31 @@ export default class DmtOppProductDetailsCostOfFunding extends LightningElement 
             });
         }
 
-        // Funding curve is always auto-derived from currency and margin rate type.
+        // Funding curve is forced only when margin rate type is Fixed.
         let isManual = false;
+        let isFundingCurveReadOnly = false;
         if (this._data) {
-            isManual = this._mustUseManualFunding(this._data);
+            isFundingCurveReadOnly = this._isFixedMarginRateType(this._data);
+            isManual = isFundingCurveReadOnly
+                ? true
+                : this._normalizeToBoolean(this._data[F_FUNDING_CURVE]);
+
+            const shouldForceManual = this._shouldForceManualByUnderlyingCurrency();
+            if (shouldForceManual) {
+                if (!this._currencyForcedByUnderlyingState) {
+                    this._fundingCurveBeforeUnderlyingForce = isManual;
+                }
+                this._currencyForcedByUnderlyingState = true;
+                isManual = true;
+                isFundingCurveReadOnly = true;
+            } else if (this._currencyForcedByUnderlyingState) {
+                isManual = this._fundingCurveBeforeUnderlyingForce !== null
+                    ? this._normalizeToBoolean(this._fundingCurveBeforeUnderlyingForce)
+                    : isManual;
+                this._currencyForcedByUnderlyingState = false;
+                this._fundingCurveBeforeUnderlyingForce = null;
+            }
+
             next = next.map(f => ({
                 ...f,
                 value: f.apiName === F_FUNDING_CURVE ? isManual : this._data[f.apiName]
@@ -193,7 +264,7 @@ export default class DmtOppProductDetailsCostOfFunding extends LightningElement 
 
         next = next.map(f => {
             if (f.apiName === F_FUNDING_CURVE) {
-                return { ...f, value: isManual, isReadOnly: true };
+                return { ...f, value: isManual, isReadOnly: isFundingCurveReadOnly || this._currencyForcedByUnderlyingState };
             }
             return f;
         });
@@ -204,6 +275,8 @@ export default class DmtOppProductDetailsCostOfFunding extends LightningElement 
         if (this._readOnlySnapshot) {
             this.fields = this.fields.map(f => ({ ...f, isReadOnly: true }));
         }
+
+        this._applyUnderlyingCurrencyLockToFields();
     }
 
     _applyVisibilityRules(fieldsArray, isManual) {
@@ -229,10 +302,27 @@ export default class DmtOppProductDetailsCostOfFunding extends LightningElement 
         return this._normalizeToBoolean(f?.value);
     }
 
-    _mustUseManualFunding(data) {
-        const currency = String(data?.[F_CURRENCY] || '').trim().toUpperCase();
+    _isFixedMarginRateType(data) {
         const marginRateType = String(data?.[F_MARGIN_RATE_TYPE] || '').trim();
-        return !AUTO_MANUAL_CURRENCIES.has(currency) || marginRateType === 'Fixed';
+        return marginRateType === 'Fixed';
+    }
+
+    _shouldForceManualByUnderlyingCurrency() {
+        if (!this._data || this._data.DMT_Line_Oneoffdeal__c !== 'Line') {
+            return false;
+        }
+        return Array.isArray(this._underlyingsData) && this._underlyingsData.some(row => {
+            if (!row || row._deleted) return false;
+            const currency = String(row.DMT_Currency__c || '').trim();
+            return currency !== '' && !AUTO_MANUAL_CURRENCIES.has(currency);
+        });
+    }
+
+    _applyUnderlyingCurrencyLockToFields() {
+        if (!this._currencyForcedByUnderlyingState) return;
+        this.fields = this.fields.map(f => f.apiName === F_FUNDING_CURVE
+            ? { ...f, isReadOnly: true }
+            : f);
     }
 
     _wasOriginally(apiName, snapMap, predicate) {

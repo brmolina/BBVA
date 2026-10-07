@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>cond__Account_Campaign</fullName>
+    <fields>Name</fields>
+    <fields>cond__participant_id__c</fields>
+    <fields>cond__campaign_id__c</fields>
+    <fields>cond__campaign_start_date__c</fields>
+    <fields>cond__priority_campaign_type__c</fields>
+    <fields>OwnerId</fields>
+    <label>Account Campaign</label>
+</CompactLayout>

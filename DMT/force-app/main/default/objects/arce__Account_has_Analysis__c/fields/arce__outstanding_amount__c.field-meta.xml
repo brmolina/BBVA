@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__outstanding_amount__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Current outstanding exposure amount for each limit tiplogy, modality, and limit condition if applicable/available</description>
+    <externalId>false</externalId>
+    <label>Current outstanding exposure amount</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

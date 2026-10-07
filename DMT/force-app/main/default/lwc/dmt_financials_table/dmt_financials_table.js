@@ -4,22 +4,25 @@ import getAccountFields from '@salesforce/apex/DMT_BasicFinancialsController.get
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { updateRecord } from "lightning/uiRecordApi";
 
+const TODAY = new Date();
+const CURRENT_FINANCIAL_YEAR =
+    TODAY.getMonth() >= 8
+        ? TODAY.getFullYear() + 1
+        : TODAY.getFullYear();
 export default class Dmt_financials_table extends LightningElement {
 
     @api recordId;
     dmtOpportunityClientId;
     draftValues;
     originalData;
-    
 
-    
     columns = [
-        { label: '', fieldName: 'category', type: 'text', isEditable:false },
-        { label: `${new Date().getFullYear() - 1}`, fieldName: 'lastYear', type: 'number', isEditable: true },
-        { label: `${new Date().getFullYear()}` + ' (optional)', fieldName: 'currentYear', type: 'number', isEditable: true },
-        { label: `${new Date().getFullYear() + 1}` + ' (optional)', fieldName: 'nextYear', type: 'number', isEditable: true },
-        { label: `${new Date().getFullYear() + 2}` + ' (optional)', fieldName: 'nextYear1', type: 'number', isEditable: true },
-        { label: `${new Date().getFullYear() + 3}` + ' (optional)', fieldName: 'nextYear2', type: 'number', isEditable: true }
+        { label: '', fieldName: 'category', type: 'text', isEditable: false },
+        { label: `${CURRENT_FINANCIAL_YEAR - 1}`, fieldName: 'lastYear', type: 'number', isEditable: true },
+        { label: `${CURRENT_FINANCIAL_YEAR} (optional)`, fieldName: 'currentYear', type: 'number', isEditable: true },
+        { label: `${CURRENT_FINANCIAL_YEAR + 1} (optional)`, fieldName: 'nextYear', type: 'number', isEditable: true },
+        { label: `${CURRENT_FINANCIAL_YEAR + 2} (optional)`, fieldName: 'nextYear1', type: 'number', isEditable: true },
+        { label: `${CURRENT_FINANCIAL_YEAR + 3} (optional)`, fieldName: 'nextYear2', type: 'number', isEditable: true }
     ];
 
     columnsHorizontal = [
@@ -72,7 +75,7 @@ export default class Dmt_financials_table extends LightningElement {
                             row.nextYear1Account = resultAccount[0].Account[`${columnKey}_Next_Year_1_number__c`] || 'N/A';
                             row.nextYear2Account = resultAccount[0].Account[`${columnKey}_Next_Year_2_number__c`] || 'N/A';
                             //row.pastYear2 = element.Past2_FY_GTF_amount__c;
-                            
+
                     });
                         rows.push(row);
                         i++;
@@ -86,8 +89,8 @@ export default class Dmt_financials_table extends LightningElement {
                 }).catch(error => {
                     console.error('Error fetching financials:', error);
                 });
-            
-            
+
+
     }
 
     getRowValue(row, fieldName) {
@@ -172,11 +175,11 @@ export default class Dmt_financials_table extends LightningElement {
                         row[fieldName] = cell.value;
                         row.hasChanged = true;
                         this.data[row.Id] = row;
-                        
+
                     }
                     return cell;
                 })
-            }        
+            }
             return row;
         });
     }
@@ -200,7 +203,7 @@ export default class Dmt_financials_table extends LightningElement {
     }
      /**
      * Handles save data event
-     * @param {*} event 
+     * @param {*} event
      */
     handleSave() {
         let modifiedCells = [];

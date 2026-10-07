@@ -20,8 +20,14 @@ export default class dmt_navigateFromDmtToHpg extends NavigationMixin(LightningE
         // Genera la URL para la pageReference
         this[NavigationMixin.GenerateUrl](pageReference)
             .then(url => {
-                // Usa window.open() con el target '_blank' para abrir en una nueva pestaña
-                window.open(url, '_blank');
+                const link = document.createElement('a');
+                link.href = url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
             });
     }
 }

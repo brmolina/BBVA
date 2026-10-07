@@ -1,4 +1,4 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api } from 'lwc';
 import { updateRecord, createRecord } from "lightning/uiRecordApi";
 import pubsub from 'omnistudio/pubsub';
 
@@ -9,7 +9,6 @@ import FEES_FIELD from '@salesforce/schema/DMT_Banking_Pool_Structure__c.DMT_Fee
 import MARGIN_FIELD from '@salesforce/schema/DMT_Banking_Pool_Structure__c.DMT_Margin__c';
 import BANKS_FIELD from '@salesforce/schema/DMT_Banking_Pool_Structure__c.DMT_N_Banks__c';
 
-const EVENT_SAVE = 'Save';
 const EVENT_BUTTON = 'Button';
 
 export default class DmtBankingPoolTable extends LightningElement {
@@ -22,19 +21,18 @@ export default class DmtBankingPoolTable extends LightningElement {
         return this._tableData;
     }
     set tableData(value) {
-        console.log('tableData recibido:', JSON.parse(JSON.stringify(value)));
         this._tableData = Array.isArray(value) ? value : [];
         this.initializeTable();
     }
 
-    @track originalData = [];
-    @track processedData = [];
-    @track isDataProcessed = false;
+    originalData = [];
+    processedData = [];
+    isDataProcessed = false;
 
     _internalEditMode = false;
     _isReadOnly = false;
     _stageName;
-    eventHandlers = {};
+    _dataSnapshot = [];
 
     @api
     get isReadOnlyUser() {
@@ -52,6 +50,7 @@ export default class DmtBankingPoolTable extends LightningElement {
         this._stageName = value;
     }
 
+    // TODO: [DEAD_CODE] StageName (PascalCase) - duplicate of stageName (camelCase), kept for FlexCard backward compat
     @api
     get StageName() {
         return this._stageName;
@@ -72,21 +71,12 @@ export default class DmtBankingPoolTable extends LightningElement {
     set isEditMode(value) {
         const bool = value === true || value === "true";
         this._internalEditMode = bool;
-        if (this.processedData && bool) this.setEditModeForView(true);
+        this.setEditModeForView(bool);
     }
 
     connectedCallback() {
-        this.eventHandlers = {
-            DMT_CLIENT_GROUP_V2: this.handleSave.bind(this)
-        };
-        pubsub.register(EVENT_SAVE, this.eventHandlers);
-
         // Initialize once on connect in case tableData was set before connectedCallback
         this.initializeTable();
-    }
-
-    disconnectedCallback() {
-        pubsub.unregister(EVENT_SAVE, this.eventHandlers);
     }
 
     initializeTable() {
@@ -134,10 +124,27 @@ export default class DmtBankingPoolTable extends LightningElement {
         this.processDataForView();
         this.isDataProcessed = true;
 
+        // Store snapshot for cancel/restore
+        this._dataSnapshot = JSON.parse(JSON.stringify(this.originalData));
+
         // If edit mode was already requested, apply it
         if (this._internalEditMode) {
             this.setEditModeForView(true);
         }
+    }
+
+    @api
+    restoreSnapshot() {
+        this.originalData = JSON.parse(JSON.stringify(this._dataSnapshot));
+        this._internalEditMode = false;
+        this.processDataForView();
+    }
+
+    @api
+    commitEdit() {
+        this._dataSnapshot = JSON.parse(JSON.stringify(this.originalData));
+        this._internalEditMode = false;
+        this.processDataForView();
     }
 
     createDefaultRows() {
@@ -219,14 +226,13 @@ export default class DmtBankingPoolTable extends LightningElement {
             });
         }
 
-        if (isEditing) pubsub.fire(EVENT_BUTTON, "Edit", {});
     }
 
     handleEditCell() {
         if (!this.isEditPencilEnabled) {
             return;
         }
-        this.setEditModeForView(true);
+        this.dispatchEvent(new CustomEvent('editmodechange', { bubbles: true, composed: true }));
     }
 
     handleInputChange(event) {
@@ -243,12 +249,17 @@ export default class DmtBankingPoolTable extends LightningElement {
 
         // reflect changes
         this.processDataForView();
+        this.dispatchEvent(new CustomEvent('fieldchange', { bubbles: true, composed: true }));
+    }
+
+    @api
+    collectChanges() {
+        const changed = this.originalData.filter(r => r.hasChanged);
+        return changed.length > 0 ? { _tableHasChanges: true } : {};
     }
 
     @api
     async handleSave() {
-        console.log("handleSave ejecutado - Banking Pool");
-
         // collect changed rows
         const changed = this.originalData.filter(r => r.hasChanged);
 
@@ -273,34 +284,34 @@ export default class DmtBankingPoolTable extends LightningElement {
             if (row.Id) {
                 fields[ID_FIELD.fieldApiName] = row.Id;
                 try {
-                    console.log('Updating record:', JSON.stringify(fields));
                     await updateRecord({ fields });
                 } catch (err) {
                     console.error('Error updating banking pool record', err);
-                    // you can fire error pubsub if you want
+                    this.dispatchEvent(new CustomEvent('saveerror', { bubbles: true, composed: true, detail: { message: 'Error updating banking pool record' } }));
+                    return;
                 }
             } else {
                 try {
-                    console.log('Creating record:', JSON.stringify(fields));
-                    await createRecord({
+                    const result = await createRecord({
                         apiName: "DMT_Banking_Pool_Structure__c",
                         fields
                     });
+                    row.Id = result.id;
                 } catch (err) {
                     console.error('Error creating banking pool record', err);
+                    this.dispatchEvent(new CustomEvent('saveerror', { bubbles: true, composed: true, detail: { message: 'Error creating banking pool record' } }));
+                    return;
                 }
             }
         }
 
-        // reset flags & view
+        // reset flags & refresh view with current values
         this.originalData.forEach(r => (r.hasChanged = false));
         this._internalEditMode = false;
-
-        // after saving, re-initialize to pick up IDs / persisted values
-        // (if apex or parent refreshed tableData later, that is also fine)
-        await this.initializeTable();
+        this.processDataForView();
 
         // notify
+        this.dispatchEvent(new CustomEvent('savesuccess', { bubbles: true, composed: true }));
         pubsub.fire(EVENT_BUTTON, "FinancialsSave", {});
     }
 }

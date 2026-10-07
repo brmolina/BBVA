@@ -1,0 +1,28 @@
+<template>
+    <lightning-card title="Debug Console" icon-name="utility:bug">
+        <div class="slds-p-around_small">
+
+            <!-- Clear Log Button -->
+            <lightning-button
+                label="Clear Log"
+                onclick={handleClearLogs}
+                variant="destructive"
+                class="slds-m-bottom_small">
+            </lightning-button>
+
+            <!-- Message List -->
+            <template if:true={messages.length}>
+                <template for:each={messages} for:item="msg">
+                    <p key={msg.id}>
+                        <b>{msg.source}</b>: {msg.message}
+                        <i>({msg.timestamp})</i>
+                    </p>
+                </template>
+            </template>
+            <template if:false={messages.length}>
+                <p>No debug messages received yet.</p>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

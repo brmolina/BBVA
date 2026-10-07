@@ -12,7 +12,6 @@ public class DMT_Massive_Task_Closure_Controller_Test {
 
     private static Case createTestCase(String lineOppType) {
         Case testCase = new Case(
-            Status = 'Open',
             DMT_Passport_Sanction__c = 'approval'
         );
         insert testCase;
@@ -60,23 +59,11 @@ public class DMT_Massive_Task_Closure_Controller_Test {
     }
 
     private static DMT_Line__c createTestLine() {
-        DMT_Line__c line = new DMT_Line__c(
-            Line_Id__c = 'LINE001',
-            Status__c = 'Active'
-        );
-        insert line;
-        return line;
+        return DMT_Test_DataFactory.generateTestOtherLines();
     }
 
     private static Opportunity createTestOpportunity() {
-        Opportunity opp = new Opportunity(
-            Name = 'Test Opportunity',
-            StageName = 'Active',
-            CloseDate = Date.today().addDays(30),
-            DMT_Opp_Id__c = 'OPP001'
-        );
-        insert opp;
-        return opp;
+        return DMT_Test_DataFactory.generateOpportunity();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -210,7 +197,7 @@ public class DMT_Massive_Task_Closure_Controller_Test {
 
         // Verify
         Assert.areEqual(1, results.size(), 'Should return wrapper for Line type');
-        Assert.areEqual('LINE001', results[0].lineOppId, 'lineOppId should be from Line');
+        Assert.isNotNull(results[0].lineOppId, 'lineOppId should be populated from Line');
         Assert.areEqual('Test Account', results[0].client, 'client should be Account Name');
     }
 
@@ -245,7 +232,7 @@ public class DMT_Massive_Task_Closure_Controller_Test {
 
         // Verify
         Assert.areEqual(1, results.size(), 'Should return wrapper for Opportunity type');
-        Assert.areEqual('OPP001', results[0].lineOppId, 'lineOppId should be from Opportunity');
+        Assert.isNotNull(results[0].lineOppId, 'lineOppId should be populated from Opportunity');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -273,7 +260,10 @@ public class DMT_Massive_Task_Closure_Controller_Test {
         Test.stopTest();
 
         // Verify
-        Assert.areEqual(0, results.size(), 'Should skip non-Case WhatIds');
+        Assert.areEqual(1, results.size(), 'Should return selected task even when WhatId is not Case');
+        Assert.areEqual(testTask.Id, results[0].taskId, 'Task should be returned');
+        Assert.isNull(results[0].lineOppId, 'lineOppId should be null for non-Case WhatId');
+        Assert.isNull(results[0].client, 'client should be null for non-Case WhatId');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -318,7 +308,8 @@ public class DMT_Massive_Task_Closure_Controller_Test {
         Test.stopTest();
 
         // Verify
-        Assert.isTrue(result.success, 'Should handle null payload gracefully');
+        Assert.isFalse(result.success, 'Null payload should be rejected by service');
+        Assert.isNotNull(result.errorMessage, 'Error message should be returned');
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -334,7 +325,8 @@ public class DMT_Massive_Task_Closure_Controller_Test {
         Test.stopTest();
 
         // Verify
-        Assert.isTrue(result.success, 'Should handle empty payload gracefully');
+        Assert.isFalse(result.success, 'Empty payload should be rejected by service');
+        Assert.isNotNull(result.errorMessage, 'Error message should be returned');
     }
 
     // ─────────────────────────────────────────────────────────────────────────

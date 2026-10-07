@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>acpl__Period_by_priority</fullName>
+    <columns>NAME</columns>
+    <columns>acpl__participant_id__c</columns>
+    <columns>acpl__gf_ap_priority_type_name__c</columns>
+    <filterScope>ScopingRule</filterScope>
+    <filters>
+        <field>acpl__gf_ap_priority_type_name__c</field>
+        <operation>equals</operation>
+        <value>Wave 5</value>
+    </filters>
+    <label>Period by wave</label>
+</ListView>

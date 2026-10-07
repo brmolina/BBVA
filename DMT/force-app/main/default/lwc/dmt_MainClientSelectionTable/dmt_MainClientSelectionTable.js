@@ -45,6 +45,9 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
     _preselectedOrigin = false;
     _isSupraGroup = false;
     _isClientSalesforce = true;
+    _selectedCellId;
+    _selectedClientId;
+    _selectedIsGroup = false;
 
     connectedCallback() {
         this.columns = getColumns(this.selectedTab);
@@ -63,7 +66,57 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
         }
         this.isClientSalesforce();
         this.preselectOrigin();
+        this.reapplySelectionHighlight();
 
+    }
+
+    /**
+     * Re-applies the .isSelected highlight after any re-render (e.g. a data
+     * reload triggered by selecting a different client), since the class is
+     * applied imperatively via the DOM and is lost whenever the underlying
+     * rows are recreated.
+     */
+    reapplySelectionHighlight() {
+        if (this._selectedIsGroup) {
+            const th = this.template.querySelector('th');
+            if (th && !th.classList.contains('isSelected')) {
+                const prev = this.template.querySelector('.isSelected');
+                if (prev) {
+                    prev.classList.remove('isSelected');
+                }
+                th.classList.add('isSelected');
+            }
+            return;
+        }
+
+        if (this._selectedClientId) {
+            const selectedClientCell = [...this.template.querySelectorAll('c-dmt_client_table_cell')]
+                .find(cell => cell.index === 0 && cell.row?.[6] === this._selectedClientId);
+            const target = selectedClientCell?.closest('td');
+
+            if (target && !target.classList.contains('isSelected')) {
+                const prev = this.template.querySelector('.isSelected');
+                if (prev) {
+                    prev.classList.remove('isSelected');
+                }
+                target.classList.add('isSelected');
+                this._selectedCellId = selectedClientCell.cellid;
+            }
+            return;
+        }
+
+        if (!this._selectedCellId) {
+            return;
+        }
+
+        const target = this.template.querySelector(`[data-id="${this._selectedCellId}"]`);
+        if (target && !target.classList.contains('isSelected')) {
+            const prev = this.template.querySelector('.isSelected');
+            if (prev) {
+                prev.classList.remove('isSelected');
+            }
+            target.classList.add('isSelected');
+        }
     }
 
     //INIT
@@ -95,6 +148,7 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
                     this.fetchMore(data.pagination.page + 1, data.pagination.pageSize);
                 } else {
                     this.groupData();
+                    this.notifyIfExposureEmpty();
                 }
             } else {    
                 console.error('ERROR loading initial data: ' + data.errorMessage);
@@ -104,12 +158,12 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
             }
             
         } else if (error) {
-            this.error = error;
+        this.error = error;
             console.error('ERROR:  ' + error);
-            this.isLoading = false;
-            this.showErrorMessage = true;
-            this.fireErrorEvent();
-            this.showSpinner = false;
+        this.isLoading = false;
+        this.showErrorMessage = true;
+        this.fireErrorEvent();
+        this.showSpinner = false;
         }
     };
 
@@ -125,6 +179,7 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
                     this.fetchMore(data.pagination.page + 1, data.pagination.pageSize);
                 } else {
                     this.groupData();
+                    this.notifyIfExposureEmpty();
                 }
             } else {
                 console.error('ERROR loading more data: ' + data.errorMessage);
@@ -136,6 +191,50 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
             this.showErrorMessage = true;
             this.fireErrorEvent();
         });
+    }
+
+    /**
+     * Fetch imperativo con clientPositionsType='Y/N', usado EXCLUSIVAMENTE
+     * para resolver countryMap/mainholder cuando 'With Exposure' no trae clientes.
+     * No modifica groupedData ni selectedData: la tabla visible no se ve afectada.
+     */
+    fetchClientsForCountryMapping() {
+        const params = {
+            selectedTab: this.selectedTab,
+            clientId: this.clientId,
+            lCountries: this.countries,
+            searchDate: this.searchDate,
+            clientPositionsType: 'Y/N',
+            page: '1',
+            pageSize: this.pageSize,
+            customerId: ''
+        };
+
+        return fetchData(params).then(data => {
+            if (data && data.success) {
+                return data.data || [];
+            }
+            console.error('ERROR fallback country mapping: ' + data?.errorMessage);
+            return [];
+        }).catch(error => {
+            console.error('ERROR FETCHING FALLBACK CLIENTS FOR COUNTRY MAPPING: ' + error);
+            return [];
+        });
+    }
+
+    /**
+     * CIBGLOBALD-4344 - After a full "With Exposure" fetch completes with zero clients, tells the
+     * parent (c-dmt_-tree-view-d-m) so it can fall back to "With and Without Exposure" on the
+     * default load. Self-limiting: once the parent switches clientPositionsType away from 'Y',
+     * this condition no longer matches, so it won't fire again for the Y/N fetch.
+     */
+    notifyIfExposureEmpty() {
+        if (this.clientPositionsType === 'Y' && this.groupedData.length === 0) {
+            this.dispatchEvent(new CustomEvent('exposurefallback', {
+                bubbles: true,
+                composed: true
+            }));
+        }
     }
 
     fireErrorEvent() {
@@ -361,66 +460,83 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
     selectRow(event) {
         
         if (event.detail.clientType === 'subgroup' || event.detail.clientType === 'l3group') {
-        const selectionObject = event.detail;
-        const countryMap = {};
+            const selectionObject = event.detail;
 
-        selectionObject.clients.forEach(c => {
-            const externalClientId = c.customerId;
-            const country = c.customerId ? c.customerId.substring(0, 2) : null;;
+            const resolveAndDispatch = (clientRows) => {
+                const countryMap = {};
 
-            if (!externalClientId || !country) {
-                return;
-            }
+                clientRows.forEach(c => {
+                    const externalClientId = c.customerId;
+                    const country = c.customerId ? c.customerId.substring(0, 2) : null;
 
-            if (!countryMap[country]) {
-                countryMap[country] = [];
-            }
+                    if (!externalClientId || !country) {
+                        return;
+                    }
 
-            countryMap[country].push(externalClientId);
-        });
+                    if (!countryMap[country]) {
+                        countryMap[country] = [];
+                    }
 
-        const allExternalIds = [
-            ...new Set(Object.values(countryMap).flat())
-        ];
-
-        getSalesforceAccountIdsByCustomerIds({
-            customerIds: allExternalIds
-        }).then(resultMap => {
-
-            const clientsByCountry = [];
-
-            Object.keys(countryMap).forEach(country => {
-                const externalIds = countryMap[country];
-                const found = externalIds.find(id => resultMap[id]);
-
-                clientsByCountry.push({
-                    country,
-                    clientId: found ? resultMap[found] : null
+                    countryMap[country].push(externalClientId);
                 });
-            });
 
-            console.log(
-                'ABS SUBGROUP FINAL:',
-                JSON.stringify(clientsByCountry)
-            );
+                const allExternalIds = [
+                    ...new Set(Object.values(countryMap).flat())
+                ];
 
-            this.dispatchEvent(new CustomEvent('clientsAssociation', {
-                bubbles: true,
-                composed: true,
-                cancelable: true,
-                detail: {
-                    clientsByCountry
-                }
-            }));
-        });
-    }
+                getSalesforceAccountIdsByCustomerIds({
+                    customerIds: allExternalIds
+                }).then(resultMap => {
+
+                    const clientsByCountry = [];
+
+                    Object.keys(countryMap).forEach(country => {
+                        const externalIds = countryMap[country];
+                        const found = externalIds.find(id => resultMap[id]);
+
+                        clientsByCountry.push({
+                            country,
+                            clientId: found ? resultMap[found] : null
+                        });
+                    });
+
+                    console.log(
+                        'ABS SUBGROUP FINAL:',
+                        JSON.stringify(clientsByCountry)
+                    );
+
+                    this.dispatchEvent(new CustomEvent('clientsAssociation', {
+                        bubbles: true,
+                        composed: true,
+                        cancelable: true,
+                        detail: {
+                            clientsByCountry
+                        }
+                    }));
+                });
+            };
+
+            if (selectionObject.clients && selectionObject.clients.length > 0) {
+                resolveAndDispatch(selectionObject.clients);
+            } else {
+                this.fetchClientsForCountryMapping().then(fallbackClients => {
+                    resolveAndDispatch(fallbackClients);
+                });
+            }
+        }
 
 
         let selected = this.template.querySelector('.isSelected');
         if (selected) {
             selected.classList.remove('isSelected');
         }
-        this.template.querySelector(`[data-id="${event.detail.cellid}"]`).classList.add('isSelected');
+        const target = this.template.querySelector(`[data-id="${event.detail.cellid}"]`);
+        if (target) {
+            target.classList.add('isSelected');
+        }
+        this._selectedCellId = event.detail.cellid;
+        this._selectedClientId = event.detail.clientType === 'client' ? event.detail.clientId : null;
+        this._selectedIsGroup = false;
     }
 
     selectGroup(event) {
@@ -439,86 +555,87 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
     }
 
     sendGroupEvent(event) {
-        const clients =
-            this.selectedData?.toplevel?.clients || [];
-        const countryMap = {};
+        const clients = this.selectedData?.toplevel?.clients || [];
 
-        clients.forEach(c => {
-            const externalClientId = c[6];
-            const country = c[6] ? c[6].substring(0, 2) : null;
-            if (!externalClientId || !country) {
+        const resolveAndDispatch = (clientRows, isRawApexRow) => {
+            const countryMap = {};
+
+            clientRows.forEach(c => {
+                const externalClientId = isRawApexRow ? c.customerId : c[6];
+                const country = externalClientId ? externalClientId.substring(0, 2) : null;
+
+                if (!externalClientId || !country) return;
+                if (!countryMap[country]) countryMap[country] = [];
+                countryMap[country].push(externalClientId);
+            });
+
+            const allExternalIds = [...new Set(Object.values(countryMap).flat())];
+
+            if (allExternalIds.length === 0) {
+                this.dispatchEvent(new CustomEvent('clientsAssociation', {
+                    bubbles: true, composed: true, cancelable: true,
+                    detail: { clientsByCountry: [] }
+                }));
                 return;
             }
 
-            if (!countryMap[country]) {
-                countryMap[country] = [];
-            }
+            getSalesforceAccountIdsByCustomerIds({ customerIds: allExternalIds })
+                .then(resultMap => {
+                    const clientsByCountry = [];
+                    Object.keys(countryMap).forEach(country => {
+                        const externalIds = countryMap[country];
+                        const found = externalIds.find(id => resultMap[id]);
+                        clientsByCountry.push({ country, clientId: found ? resultMap[found] : null });
+                    });
 
-            countryMap[country].push(externalClientId);
-        });
+                    console.log(
+                        isRawApexRow ? 'ABS GROUP FALLBACK (Y/N):' : 'ABS GROUP FINAL:',
+                        JSON.stringify(clientsByCountry)
+                    );
 
-        const allExternalIds = [
-            ...new Set(Object.values(countryMap).flat())
-        ];
-
-
-        getSalesforceAccountIdsByCustomerIds({
-            customerIds: allExternalIds
-        }).then(resultMap => {
-
-            console.log('ABS resultmap '+ JSON.stringify(resultMap));
-            const clientsByCountry = [];
-
-            Object.keys(countryMap).forEach(country => {
-                const externalIds = countryMap[country];
-                const found = externalIds.find(id => resultMap[id]);
-
-                clientsByCountry.push({
-                    country,
-                    clientId: found ? resultMap[found] : null
+                    this.dispatchEvent(new CustomEvent('clientsAssociation', {
+                        bubbles: true, composed: true, cancelable: true,
+                        detail: { clientsByCountry }
+                    }));
                 });
+        };
+
+        if (clients.length > 0 ) {
+            resolveAndDispatch(clients, false);
+        } else {
+            this.fetchClientsForCountryMapping().then(fallbackClients => {
+                resolveAndDispatch(fallbackClients, true);
             });
+        }
 
-            console.log(
-                'ABS GROUP / SUPRAGROUP FINAL:',
-                JSON.stringify(clientsByCountry)
-            );
-
-            this.dispatchEvent(new CustomEvent('clientsAssociation', {
-                bubbles: true,
-                composed: true,
-                cancelable: true,
-                detail: {
-                    clientsByCountry
-                }
-            }));
-        });
         if (event) {
             event.preventDefault();
         }
 
         let selected = this.template.querySelector('.isSelected');
-
         if (selected) {
             selected.classList.remove('isSelected');
         }
-
         this.template.querySelector(`th`).classList.add('isSelected');
+        this._selectedIsGroup = true;
+        this._selectedCellId = null;
+        this._selectedClientId = null;
 
         const params = {
             groupId: this.groupCode || '',
             groupCode: this.groupCode || '',
             groupName: this.groupName || '',
             countryIfoId: '',
-            taxpayerId:'',
+            taxpayerId: '',
             clientId: this.clientId || '',
             clientName: this.groupName || '',
             clientType: ('group' || ''),
-            level3GroupName : this.groupName || '',
-            isSupragroup : this._isSupraGroup,
+            level3GroupName: this.groupName || '',
+            isSupragroup: this._isSupraGroup,
             isClientSalesforce: this._isClientSalesforce,
             generalGroupCode: this.groupCode || ''
         };
+
         var evt = new CustomEvent('selectclient', {
             bubbles: true,
             composed: true,
@@ -526,7 +643,6 @@ export default class Dmt_MainClientSelectionTable extends LightningElement {
             detail: params
         });
         this.dispatchEvent(evt);
-
     }
 
     handleToggleGroup(event) {

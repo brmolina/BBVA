@@ -4,7 +4,7 @@
  * Exposes @AuraEnabled methods to retrieve selected task information
  * and map it to a wrapper consumable by Aura/LWC.
  */
-public with sharing class DMT_Massive_Task_Closure_Controller {
+public without sharing class DMT_Massive_Task_Closure_Controller {
 
     /**
      * Retrieves the selected tasks for the massive closure process.

@@ -1,4 +1,4 @@
-public with sharing class DMT_OppClientTierRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_OppClientTierRenderer implements DMT_ViewRenderer {
 
     // ====================================================================================================
     // HELPER: Build the list dynamically using the data wrapper for 2-column fields ONLY
@@ -34,37 +34,6 @@ public with sharing class DMT_OppClientTierRenderer implements DMT_ViewRenderer 
         } catch (Exception e) {
             System.debug('Error in DMT_OppClientTierRenderer renderHtml, ' + e.getMessage() + ' ' + e.getLineNumber());
             return '<div>Error: ' + e.getMessage() + ' - ' + e.getLineNumber() + '</div>';
-        }
-    }
-
-    // ====================================================================================================
-    // PDF RENDERING
-    // ====================================================================================================
-
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null || (data.opportunity.getPopulatedFieldsAsMap().isEmpty() && data.oppClient.getPopulatedFieldsAsMap().isEmpty())) {
-            return new Map<String, Object>();
-        }
-
-        try {
-            List<Object> contentList = new List<Object>();
-            Map<String, Object> component = new Map<String, Object>();
-
-            contentList.add(DMT_Create_Pdf_Controller.createTitle('CLIENT TIER'));
-
-            List<DMT_FormattingUtils.DisplayField> fieldsToRender = buildRenderFields(data);
-            contentList.add(DMT_Create_Pdf_Controller.generatePdfList(fieldsToRender));
-
-            component.put('content', contentList);
-            component.put('name', 'Client Tier');
-
-            System.debug('returning component: ' + JSON.serialize(component));
-            return component;
-
-        } catch (Exception e) {
-            System.debug('Error in DMT_OppClientTierRenderer renderPdfJson, ' + e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),'DMT_OppClientTierRenderer','renderPdfJson','DMT',''));
-            return new Map<String, Object>();
         }
     }
 }

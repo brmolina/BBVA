@@ -7,34 +7,37 @@
  **/
 global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
 
-    // Maps each Status_JSON_Wrapper property name (the JSON section keys used in
-    // DMT_ViewFieldStatusAtClose__c) to the SObject whose tracked fields
-    // (DMT_AllFieldsInStatus__c) describe it. Used by getComparableFieldKeys so the
-    // field-level diff walks the full configured field list instead of only the
-    // fields that happened to be non-null (and therefore present as JSON keys,
-    // since System.JSON.serialize(x, true) omits null fields entirely) at the time
-    // the snapshot being compared against was taken.
-    private static final Map<String, String> SNAPSHOT_SECTION_TO_OBJECT = new Map<String, String>{
-        'line' => 'DMT_Line__c',
-        'opportunity' => 'Opportunity',
-        'riskLineList' => 'DMT_Risk_Line_Term__c',
-        'customAssociationClientList' => 'Custom_Association_Client__c',
-        'lineProductItemList' => 'DMT_Line_Product_Item__c',
-        'warranties' => 'DMT_Warranty__c',
-        'currencyProvisions' => 'DMT_Currency_Provision__c',
-        'opportunityTenor' => 'DMT_Opportunity_Tenor__c',
-        'opportunityMitigant' => 'DMT_Opportunity_Mitigant__c',
-        'opportunityClient' => 'DMT_Opportunity_Client__c',
-        'opportunityLineItem' => 'OpportunityLineItem',
-        'opportunityXSell' => 'DMT_X_Sell__c'
-    };
+    // CIBGLOBALD-4117 - section-to-object cache for getComparableFieldKeys, used by
+    // previewCompareTasksFromCase.
+    private static Map<String, String> compareTasksFromCaseSectionToObjectCache;
 
-    // MIGRATION IN PROGRESS. Watched fields come from the renderers via DMT_RendererFactory
-    // whenever one returns something for this (component, record type); otherwise the loop below
-    // falls back to the legacy DMT_Campos_componente_Refact__c field. A renderer that implements
-    // neither tracking interface returns nothing, which is itself the "not migrated" signal - there
-    // is no separate list of migrated components anywhere.
-    // Once every component is migrated, the legacy field becomes dead and can be deprecated.
+    // CIBGLOBALD-4117 - section-to-object mapping for getComparableFieldKeys, derived from
+    // DMT_RendererFactory.getChildSections() against one representative record per record type.
+    private static Map<String, String> compareTasksFromCaseSectionToObject() {
+        if (compareTasksFromCaseSectionToObjectCache == null) {
+            Map<String, String> sectionToObject = new Map<String, String>{
+                'line' => 'DMT_Line__c',
+                'opportunity' => 'Opportunity'
+            };
+            Map<String, Schema.RecordTypeInfo> lineRtInfos = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName();
+            Map<String, Schema.RecordTypeInfo> oppRtInfos = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName();
+            List<SObject> representativeRecords = new List<SObject>{
+                new DMT_Line__c(RecordTypeId = lineRtInfos.get('TreasurySettlement')?.getRecordTypeId()),
+                new DMT_Line__c(RecordTypeId = lineRtInfos.get('OtherProducts')?.getRecordTypeId()),
+                new DMT_Line__c(RecordTypeId = lineRtInfos.get('Sanction')?.getRecordTypeId()),
+                new Opportunity(RecordTypeId = oppRtInfos.get('DMT_Opportunity')?.getRecordTypeId())
+            };
+            for (String componentName : DMT_RendererFactory.getTrackedComponentNames()) {
+                for (SObject representative : representativeRecords) {
+                    for (DMT_ApprovalChangeStep_Helper.ChildSection section : DMT_RendererFactory.getChildSections(componentName, representative)) {
+                        sectionToObject.put(section.snapshotSectionKey, section.childObjectApiName);
+                    }
+                }
+            }
+            compareTasksFromCaseSectionToObjectCache = sectionToObject;
+        }
+        return compareTasksFromCaseSectionToObjectCache;
+    }
 
     /**
      * The field keys to compare for a snapshot section, taken from the tracked-field config rather
@@ -48,7 +51,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
      * how the JSON nests them. Falls back to the snapshot's own keys for an unrecognised section.
      */
     private static Set<String> getComparableFieldKeys(String sectionName, Map<String, List<String>> fieldMapFromObject, Set<String> fallbackKeys) {
-        String objectName = SNAPSHOT_SECTION_TO_OBJECT.get(sectionName);
+        String objectName = compareTasksFromCaseSectionToObject().get(sectionName);
         if (objectName == null || !fieldMapFromObject.containsKey(objectName)) {
             return fallbackKeys;
         }
@@ -99,35 +102,26 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
         return outMap;
     }
 
-    /**
-     * @description Method that updates the task with the current status of the records from the view
-     * @author Aníbal Cortés | 10-31-2024
-     * @param recordId
-     **/
-    public static void updateTaskWithStatus(String recordId, Boolean createPdf){
+    // CIBGLOBALD-4117 - resolution of one approver view's DMT_Items__c rows into tracked fields and
+    // components for one record type.
+    public class ItemFieldResolution {
+        public Map<String, List<String>> fieldMapFromObject = new Map<String, List<String>>();
+        public String allFields = '';
+        // CIBGLOBALD-4117 - components from DMT_RendererFactory.getTrackedComponentNames() this view
+        // has a DMT_Items__c row for. Stored on the snapshot (DMT_TrackedComponents__c).
+        public Set<String> trackedComponentNames = new Set<String>();
+    }
 
-        Status_JSON_Wrapper jsonFinal = new Status_JSON_Wrapper();
-
-        Task task = DMT_ApprovalChangeStep_Selector.getTaskById(recordId);
-        Case relatedCase = DMT_ApprovalChangeStep_Selector.getCaseById(task.WhatId);
-
-        // Record type of the Case's own Line or Opportunity, resolved once and reused by every
-        // component's lookup below.
-        Id recordTypeId = relatedCase.DMT_LineOpportunity__c == 'L' ? relatedCase.DMT_Line__r.RecordTypeId : relatedCase.opportunity_id__r.RecordTypeId;
-        String sObjectApiName = relatedCase.DMT_LineOpportunity__c == 'L' ? 'DMT_Line__c' : 'Opportunity';
-
-        Id approverViewId = getApproverViewId(task.OwnerId, relatedCase);
-        List<DMT_Items__c> itemsList = DMT_ApprovalChangeStep_Selector.getItemsByDmtView(approverViewId);
-        System.debug('itemsList: '+ itemsList);
-        // Map that contains each Object and a list of its field Names
-        Map<String, List<String>> fieldMapFromObject = new Map<String, List<String>>();
-        String allFields = '';
-
-        // Collect every watched Object.Field for this approver view, per component.
+    // CIBGLOBALD-4117 - watched Object.Field list for one approver view's DMT_Items__c rows.
+    public static ItemFieldResolution resolveTrackedFieldsForItems(List<DMT_Items__c> itemsList, SObject record, String sObjectApiName) {
+        ItemFieldResolution resolution = new ItemFieldResolution();
         for (DMT_Items__c item : itemsList){
             List<String> fields = new List<String>();
             if (item != null) {
-                Map<String, List<String>> fieldsByObject = DMT_RendererFactory.getTrackedFieldsByObject(item.DMT_Component_Item__c, recordTypeId);
+                if (DMT_RendererFactory.getTrackedComponentNames().contains(item.DMT_Component_Item__c)) {
+                    resolution.trackedComponentNames.add(item.DMT_Component_Item__c);
+                }
+                Map<String, List<String>> fieldsByObject = DMT_RendererFactory.getTrackedFieldsByObject(item.DMT_Component_Item__c, record);
                 if (!fieldsByObject.isEmpty()) {
                     // Multi-object renderer already says which object each field belongs to, so
                     // don't prefix with sObjectApiName like the single-object branch below.
@@ -137,15 +131,11 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                         }
                     }
                 } else {
-                    List<String> trackedFields = DMT_RendererFactory.getTrackedFields(item.DMT_Component_Item__c, recordTypeId);
+                    List<String> trackedFields = DMT_RendererFactory.getTrackedFields(item.DMT_Component_Item__c, record);
                     if (!trackedFields.isEmpty()) {
                         for (String fieldName : trackedFields) {
                             fields.add(sObjectApiName + '.' + fieldName);
                         }
-                    }
-                    // Legacy fallback for components not yet migrated to a renderer.
-                    else if (String.isNotBlank(item.DMT_Campos_componente_Refact__c)) {
-                        fields = item.DMT_Campos_componente_Refact__c.split(';', 0);
                     }
                 }
             }
@@ -155,209 +145,155 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                 String objectName = cadenaPartida.get(0);
                 String fieldName = cadenaPartida.get(1);
                 List<String> fieldsFromMap = new List<String>();
-                if (fieldMapFromObject.containsKey(objectName)){
-                    fieldsFromMap = fieldMapFromObject.get(objectName);
+                if (resolution.fieldMapFromObject.containsKey(objectName)){
+                    fieldsFromMap = resolution.fieldMapFromObject.get(objectName);
                 }
                 // If the field is already on the list, we don't store it again to prevent duplicate fields on query
                 if (!fieldsFromMap.contains(fieldName)){
                     fieldsFromMap.add(fieldName);
-                    fieldMapFromObject.put(objectName, fieldsFromMap);
-                    allFields += objectName + '.' + fieldName + ';';
+                    resolution.fieldMapFromObject.put(objectName, fieldsFromMap);
+                    resolution.allFields += objectName + '.' + fieldName + ';';
                 }
             }
         }
+        resolution.allFields = resolution.allFields.removeEnd(';');
+        return resolution;
+    }
 
-        allFields = allFields.removeEnd(';');
-        System.debug('allFields --> ' + allFields);
+    // CIBGLOBALD-4117 - every ChildSection this view's components declare for this record type,
+    // deduplicated by snapshotSectionKey.
+    public static Map<String, DMT_ApprovalChangeStep_Helper.ChildSection> resolveChildSectionsForItems(List<DMT_Items__c> itemsList, SObject record) {
+        Map<String, DMT_ApprovalChangeStep_Helper.ChildSection> sectionsByKey = new Map<String, DMT_ApprovalChangeStep_Helper.ChildSection>();
+        for (DMT_Items__c item : itemsList) {
+            if (item == null) continue;
+            for (DMT_ApprovalChangeStep_Helper.ChildSection section : DMT_RendererFactory.getChildSections(item.DMT_Component_Item__c, record)) {
+                if (!sectionsByKey.containsKey(section.snapshotSectionKey)) {
+                    sectionsByKey.put(section.snapshotSectionKey, section);
+                }
+            }
+        }
+        return sectionsByKey;
+    }
+
+    // CIBGLOBALD-4117 - queries every ChildSection whose rows hang directly off the parent's own Id
+    // (ChildSection.parentValueField == 'Id').
+    public static Map<String, List<SObject>> queryDirectChildSections(
+            Map<String, DMT_ApprovalChangeStep_Helper.ChildSection> childSectionsByKey,
+            Map<String, List<String>> fieldMapFromObject,
+            Id parentId) {
+        Map<String, List<SObject>> sections = new Map<String, List<SObject>>();
+        if (parentId == null) {
+            return sections;
+        }
+        for (DMT_ApprovalChangeStep_Helper.ChildSection section : childSectionsByKey.values()) {
+            if (section.parentValueField != 'Id') continue;
+            if (!fieldMapFromObject.containsKey(section.childObjectApiName)) continue;
+
+            String query = 'SELECT Id, ' + String.join(fieldMapFromObject.get(section.childObjectApiName), ', ')
+                + ' FROM ' + section.childObjectApiName
+                + ' WHERE ' + section.childLookupField + ' = :parentId'
+                + (String.isBlank(section.orderBy) ? '' : ' ORDER BY ' + section.orderBy);
+            sections.put(section.snapshotSectionKey, Database.query(String.escapeSingleQuotes(query)));
+        }
+        return sections;
+    }
+
+    /**
+     * @description Method that updates the task with the current status of the records from the view
+     * @author Aníbal Cortés | 10-31-2024
+     * @param recordId
+     **/
+    public static void updateTaskWithStatus(String recordId, Boolean createPdf){
+
+        Task task = DMT_ApprovalChangeStep_Selector.getTaskById(recordId);
+        Case relatedCase = DMT_ApprovalChangeStep_Selector.getCaseById(task.WhatId);
+        Boolean isLineCase = relatedCase.DMT_LineOpportunity__c == 'L';
+
+        // CIBGLOBALD-4117 - the Case's own Line or Opportunity record, via the same comprehensive
+        // query DMT_ViewController uses to build the rendering wrapper (same reasoning as
+        // previewCompareTasksFromCase) - every field any renderer's resolveRenderer()/
+        // getTrackedFields() could ever need is already there, so this can never again drift out of
+        // sync with a hand-maintained narrow SELECT.
+        SObject lineOrOpportunityRecord = isLineCase
+            ? (SObject) DMT_View_Selector.getLineWithRelatedData(relatedCase.DMT_Line__c, relatedCase.DMT_Line__r.RecordType.DeveloperName)
+            : (SObject) DMT_View_Selector.getOpportunityWithRelatedData(relatedCase.opportunity_id__c, relatedCase.opportunity_id__r.RecordType.DeveloperName);
+        String sObjectApiName = isLineCase ? 'DMT_Line__c' : 'Opportunity';
+
+        Id approverViewId = getApproverViewId(task.OwnerId, relatedCase);
+        List<DMT_Items__c> itemsList = DMT_ApprovalChangeStep_Selector.getItemsByDmtView(approverViewId);
+
+        ItemFieldResolution resolution = resolveTrackedFieldsForItems(itemsList, lineOrOpportunityRecord, sObjectApiName);
+        Map<String, List<String>> fieldMapFromObject = resolution.fieldMapFromObject;
+        String allFields = resolution.allFields;
+
+        // CIBGLOBALD-4117 - pre-fetched data for DMT_TaskSnapshotService.buildSnapshotJson.
+        Map<Id, SObject> lineMap = new Map<Id, SObject>();
+        Map<Id, SObject> oppMap = new Map<Id, SObject>();
+        Map<Id, List<SObject>> customAssocMap = new Map<Id, List<SObject>>();
+        Map<String, Map<Id, List<SObject>>> childListsBySectionKey = new Map<String, Map<Id, List<SObject>>>();
 
         if (relatedCase.DMT_LineOpportunity__c == 'L'){
-            System.debug('isLine lINE 104');
-            // Makes the query for the DMT_Line__c object and stores on the jsonFinal var
+            Id lineId = relatedCase.DMT_Line__c;
+
+            // Makes the query for the DMT_Line__c object and stores it for the snapshot builder
             if (fieldMapFromObject.containsKey('DMT_Line__c')){
-                Id lineId = relatedCase.DMT_Line__c;
                 String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Line__c'), ',') + ' FROM DMT_Line__c WHERE ID = :lineId';
                 List<DMT_Line__c> linesRetrieved = Database.query(String.escapeSingleQuotes(query));
-                jsonFinal.line = linesRetrieved.get(0);
-            }
-
-            // Makes the query for the DMT_Risk_Line_Term__c object and stores on the jsonFinal var
-            if (fieldMapFromObject.containsKey('DMT_Risk_Line_Term__c')){
-                System.debug('DMT_Risk_Line_Term__c lINE 123');
-                Id lineId = relatedCase.DMT_Line__c;
-                List<String> fieldsToQuery = fieldMapFromObject.get('DMT_Risk_Line_Term__c');
-                String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Risk_Line_Term__c'), ',') + ' FROM DMT_Risk_Line_Term__c WHERE DMT_Line__c = :lineId ORDER BY DMT_Init_Term__c ASC';
-                List<DMT_Risk_Line_Term__c> riskLineTermRetrieved = Database.query(String.escapeSingleQuotes(query));
-                Map<Integer, Map<String, Object>> riskLineListFormatted = new Map<Integer, Map<String, Object>>();
-                Integer counter = 1;
-
-                // 4. Iteramos sobre los resultados para construir el nuevo mapa.
-                for (DMT_Risk_Line_Term__c term : riskLineTermRetrieved){
-                    // Creamos un mapa interno para los atributos de cada registro.
-                    Map<String, Object> termAttributes = new Map<String, Object>();
-                    // Poblamos el mapa de atributos dinámicamente con los campos que consultamos.
-                    for (String field : fieldsToQuery){
-                        termAttributes.put(field, term.get(field));
-                    }
-                    // Añadimos el registro al mapa final con la clave numérica.
-                    riskLineListFormatted.put(counter, termAttributes);
-                    counter++;
+                if (!linesRetrieved.isEmpty()) {
+                    lineMap.put(lineId, linesRetrieved.get(0));
                 }
-
-                // 5. Asignamos el mapa formateado al objeto final.
-                jsonFinal.riskLineList = riskLineListFormatted;
             }
 
-            // Makes the query for the Custom_Association__c object and stores on the jsonFinal var
+            // Makes the query for the Custom_Association__c object and stores it for the snapshot builder
             if (fieldMapFromObject.containsKey('Custom_Association_Client__c')){
                 Id customAssociationLine = relatedCase.DMT_Line__r.Custom_Association__c;
                 String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('Custom_Association_Client__c'), ',') + ' FROM Custom_Association_Client__c WHERE Custom_Association__c = :customAssociationLine ORDER BY Name ASC';
-                Map<Id, Custom_Association_Client__c> customAssociationRetrieved = new Map<Id, Custom_Association_Client__c>((List<Custom_Association_Client__c>)Database.query(String.escapeSingleQuotes(query)));
-                jsonFinal.customAssociationClientList = customAssociationRetrieved;
-            }
-
-           // Makes the query for the DMT_Currency_Provision__c object and stores on the jsonFinal var
-            if (fieldMapFromObject.containsKey('DMT_Currency_Provision__c')){
-                String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Currency_Provision__c'), ',') + ' FROM DMT_Currency_Provision__c WHERE DMT_Risk_Line_Term__r.DMT_Line__c = :lineId ORDER BY Name ASC';
-                Map<Id, DMT_Currency_Provision__c> currencyProvision = new Map<Id, DMT_Currency_Provision__c>((List<DMT_Currency_Provision__c>)Database.query(String.escapeSingleQuotes(query)));
-                jsonFinal.currencyProvisions = currencyProvision;
-            }
-
-           // Makes the query for the DMT_Warranty__c object and stores on the jsonFinal var
-            if (fieldMapFromObject.containsKey('DMT_Warranty__c')){
-                String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Warranty__c'), ',') + ' FROM DMT_Warranty__c WHERE DMT_Risk_Line_Term__r.DMT_Line__c = :lineId ORDER BY Name ASC';
-                Map<Id, DMT_Warranty__c> warrantyRetrieved = new Map<Id, DMT_Warranty__c>((List<DMT_Warranty__c>)Database.query(String.escapeSingleQuotes(query)));
-                jsonFinal.warranties = warrantyRetrieved;
-            }
-
-            // Makes the query for the DMT_Line_Product_Item__c object and stores on the jsonFinal var
-            if (fieldMapFromObject.containsKey('DMT_Line_Product_Item__c')){
-                Id lineId = relatedCase.DMT_Line__c;
-                List<String> fieldsToQuery = fieldMapFromObject.get('DMT_Line_Product_Item__c');
-                String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Line_Product_Item__c'), ',') + ' FROM DMT_Line_Product_Item__c WHERE Line__c = :lineId ORDER BY Name ASC';
-                List<DMT_Line_Product_Item__c> lineProductItemsRetrieved = Database.query(String.escapeSingleQuotes(query));
-
-                Map<Integer, Map<String, Object>> lineProductItemsFormatted = new Map<Integer, Map<String, Object>>();
-                Integer counter = 1;
-
-                // 4. Iteramos sobre los resultados para construir el nuevo mapa.
-                for (DMT_Line_Product_Item__c term : lineProductItemsRetrieved){
-                    // Creamos un mapa interno para los atributos de cada registro.
-                    Map<String, Object> termAttributes = new Map<String, Object>();
-                    // Poblamos el mapa de atributos dinámicamente con los campos que consultamos.
-                    for (String field : fieldsToQuery){
-                        termAttributes.put(field, term.get(field));
-                    }
-                    // Añadimos el registro al mapa final con la clave numérica.
-                    lineProductItemsFormatted.put(counter, termAttributes);
-                    counter++;
-                }
-
-                // 5. Asignamos el mapa formateado al objeto final.
-                jsonFinal.lineProductItemList = lineProductItemsFormatted;
+                customAssocMap.put(customAssociationLine, Database.query(String.escapeSingleQuotes(query)));
             }
         }else if (relatedCase.DMT_LineOpportunity__c == 'O'){
-                // Makes the query for the Opportunity object and stores on the jsonFinal var
-                if (fieldMapFromObject.containsKey('Opportunity')){
-                    Id oppId = relatedCase.opportunity_id__c;
+                Id oppId = relatedCase.opportunity_id__c;
+
+                // Makes the query for the Opportunity object and stores it for the snapshot builder
+                if (fieldMapFromObject.containsKey('Opportunity')){// Añadido opportunity_id__r.StageName como test
                     String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('Opportunity'), ',') + ' FROM Opportunity WHERE ID = :oppId';
                     List<Opportunity> oppRetrieved = Database.query(String.escapeSingleQuotes(query));
-                    jsonFinal.opportunity = oppRetrieved.get(0);
-                }
-                // Makes the query for the DMT_Opportunity_Tenor__c object and stores on the jsonFinal var
-                if (fieldMapFromObject.containsKey('DMT_Opportunity_Tenor__c')){
-                    Id oppId = relatedCase.opportunity_id__c;
-                    List<String> fieldsToQuery = fieldMapFromObject.get('DMT_Opportunity_Tenor__c');
-                    String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Opportunity_Tenor__c'), ',') + ' FROM DMT_Opportunity_Tenor__c WHERE DMT_Opportunity_Product__r.OpportunityId = :oppId ORDER BY gj_nominal_amount_db__c ASC';
-                    List<DMT_Opportunity_Tenor__c> opportunityTenorRetrieved = Database.query(String.escapeSingleQuotes(query));
-                    Map<Integer, Map<String, Object>> opportunityTenorFormatted = new Map<Integer, Map<String, Object>>();
-                    Integer counter = 1;
-
-                    // 4. Iteramos sobre los resultados para construir el nuevo mapa.
-                    for (DMT_Opportunity_Tenor__c tenor : opportunityTenorRetrieved){
-                        // Creamos un mapa interno para los atributos de cada registro.
-                        Map<String, Object> termAttributes = new Map<String, Object>();
-                        // Poblamos el mapa de atributos dinámicamente con los campos que consultamos.
-                        for (String field : fieldsToQuery){
-                            termAttributes.put(field, tenor.get(field));
-                        }
-                        // Añadimos el registro al mapa final con la clave numérica.
-                        opportunityTenorFormatted.put(counter, termAttributes);
-                        counter++;
+                    if (!oppRetrieved.isEmpty()) {
+                        oppMap.put(oppId, oppRetrieved.get(0));
                     }
-
-                    // 5. Asignamos el mapa formateado al objeto final.
-                    jsonFinal.opportunityTenor = opportunityTenorFormatted;
                 }
-                // Makes the query for the DMT_Opportunity_Mitigant__c object and stores on the jsonFinal var
-                if (fieldMapFromObject.containsKey('DMT_Opportunity_Mitigant__c')){
-                    Id oppId = relatedCase.opportunity_id__c;
-                    List<String> fieldsToQuery = fieldMapFromObject.get('DMT_Opportunity_Mitigant__c');
-                    String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Opportunity_Mitigant__c'), ',') + ' FROM DMT_Opportunity_Mitigant__c WHERE DMT_Opportunity_Product__r.OpportunityId = :oppId ORDER BY Mitigant_Type__c ASC';
-                    List<DMT_Opportunity_Mitigant__c> opportunityMitigantRetrieved = Database.query(String.escapeSingleQuotes(query));
-                    Map<Integer, Map<String, Object>> opportunityMitigantFormatted = new Map<Integer, Map<String, Object>>();
-                    Integer counter = 1;
-
-                    // 4. Iteramos sobre los resultados para construir el nuevo mapa.
-                    for (DMT_Opportunity_Mitigant__c mitigant : opportunityMitigantRetrieved){
-                        // Creamos un mapa interno para los atributos de cada registro.
-                        Map<String, Object> termAttributes = new Map<String, Object>();
-                        // Poblamos el mapa de atributos dinámicamente con los campos que consultamos.
-                        for (String field : fieldsToQuery){
-                            termAttributes.put(field,  mitigant.get(field));
-                        }
-                        // Añadimos el registro al mapa final con la clave numérica.
-                        opportunityMitigantFormatted.put(counter, termAttributes);
-                        counter++;
-                    }
-
-                    // 5. Asignamos el mapa formateado al objeto final.
-                    jsonFinal.opportunityMitigant = opportunityMitigantFormatted;
-                }
-                // Makes the query for the OpportunityLineItem object and stores on the jsonFinal var
-                if (fieldMapFromObject.containsKey('OpportunityLineItem')){
-                    Id oppId = relatedCase.opportunity_id__c;
-                    List<String> fieldsToQuery = fieldMapFromObject.get('OpportunityLineItem');
-                    String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('OpportunityLineItem'), ',') + ' FROM OpportunityLineItem WHERE OpportunityId = :oppId ORDER BY DMT_Deal_Amount_Tenors__c ASC';
-                    List<OpportunityLineItem> opportunityLineItemRetrieved = Database.query(String.escapeSingleQuotes(query));
-                    Map<Integer, Map<String, Object>> opportunityLineItemFormatted = new Map<Integer, Map<String, Object>>();
-                    Integer counter = 1;
-
-                    // 4. Iteramos sobre los resultados para construir el nuevo mapa.
-                    for (OpportunityLineItem oppItem : opportunityLineItemRetrieved){
-                        // Creamos un mapa interno para los atributos de cada registro.
-                        Map<String, Object> termAttributes = new Map<String, Object>();
-                        // Poblamos el mapa de atributos dinámicamente con los campos que consultamos.
-                        for (String field : fieldsToQuery){
-                            termAttributes.put(field, oppItem.get(field));
-                        }
-                        // Añadimos el registro al mapa final con la clave numérica.
-                        opportunityLineItemFormatted.put(counter, termAttributes);
-                        counter++;
-                    }
-                    // 5. Asignamos el mapa formateado al objeto final.
-                    jsonFinal.opportunityLineItem = opportunityLineItemFormatted;
-                }
-                // Makes the query for the DMT_Opportunity_Client__c object and stores on the jsonFinal var
-                if (fieldMapFromObject.containsKey('DMT_Opportunity_Client__c')){
-                    Id oppId = relatedCase.opportunity_id__c;
-                    String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Opportunity_Client__c'), ',') + ' FROM DMT_Opportunity_Client__c WHERE DMT_MDE_Opportunity__c = :oppId ORDER BY Name ASC';
-                    Map<Id, DMT_Opportunity_Client__c> opportunityClientRetrieved = new Map<Id, DMT_Opportunity_Client__c>((List<DMT_Opportunity_Client__c>)Database.query(String.escapeSingleQuotes(query)));
-                    jsonFinal.opportunityClient = opportunityClientRetrieved;
-                }
-                if (fieldMapFromObject.containsKey('DMT_X_Sell__c')){
-                    Id oppId = relatedCase.opportunity_id__c;
-                    String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_X_Sell__c'), ',') + ' FROM DMT_X_Sell__c WHERE Opportunity__c = :oppId ORDER BY Name ASC';
-                    Map<Id, DMT_X_Sell__c> opportunityXSellRetrieved = new Map<Id, DMT_X_Sell__c>((List<DMT_X_Sell__c>)Database.query(String.escapeSingleQuotes(query)));
-                    jsonFinal.opportunityXSell = opportunityXSellRetrieved;
-                }
-
         }
+
+            // CIBGLOBALD-4117 - child sections declared by this view's components' renderers.
+            Map<String, DMT_ApprovalChangeStep_Helper.ChildSection> childSectionsByKey = resolveChildSectionsForItems(itemsList, lineOrOpportunityRecord);
+            Id directParentId = relatedCase.DMT_LineOpportunity__c == 'L' ? relatedCase.DMT_Line__c : relatedCase.opportunity_id__c;
+            Map<String, List<SObject>> genericChildSections = queryDirectChildSections(childSectionsByKey, fieldMapFromObject, directParentId);
+
+            for (String sectionKey : genericChildSections.keySet()) {
+                childListsBySectionKey.put(sectionKey, new Map<Id, List<SObject>>{ directParentId => genericChildSections.get(sectionKey) });
+            }
+            Map<String, DMT_ApprovalChangeStep_Helper.ChildSection> lineChildSectionsByKey = relatedCase.DMT_LineOpportunity__c == 'L' ? childSectionsByKey : new Map<String, DMT_ApprovalChangeStep_Helper.ChildSection>();
+            Map<String, DMT_ApprovalChangeStep_Helper.ChildSection> oppChildSectionsByKey = relatedCase.DMT_LineOpportunity__c == 'O' ? childSectionsByKey : new Map<String, DMT_ApprovalChangeStep_Helper.ChildSection>();
+
+            // CIBGLOBALD-4117 - callout-tracked values are never fetched synchronously here.
+            // updateTaskWithStatus is called from several places beyond the ApprovalChangeStep
+            // integration procedure (DMT_ApprovalTemplate_Controller, DMT_Passport_Helper.createTask),
+            // and the IP itself is confirmed (production exception, 2026-09-23) to already have done
+            // DML before invoking this action in at least one real flow - a callout right here throws
+            // "uncommitted work pending" regardless of what this method's own DML looks like. The
+            // baseline is captured after the fact, in a fresh async transaction - see the enqueue
+            // below and freezeCalloutTrackableBaseline().
+            String snapshotJson = DMT_TaskSnapshotService.buildSnapshotJson(
+                relatedCase, fieldMapFromObject, lineMap, oppMap, customAssocMap,
+                lineChildSectionsByKey, oppChildSectionsByKey, childListsBySectionKey,
+                new Map<String, Object>()
+            );
+
             // We create the DMT_TaskStatusWhenCompleted__c record which will store the data and we relate it to the task
             DMT_TaskStatusWhenCompleted__c taskStatus = new DMT_TaskStatusWhenCompleted__c();
-            // We remove the attributes part because it can cause problems in the future and just to store the fields from the view
-            taskStatus.DMT_ViewFieldStatusAtClose__c = System.JSON.serialize(jsonFinal, true).replaceAll('"attributes":\\{[^\\}]*\\},?', '');
+            taskStatus.DMT_ViewFieldStatusAtClose__c = snapshotJson;
             taskStatus.Case__c = task.WhatId;
             taskStatus.DMT_AllFieldsInStatus__c = allFields;
+            taskStatus.DMT_TrackedComponents__c = String.join(new List<String>(resolution.trackedComponentNames), ';');
 
             if (createPdf){
                 //content version and core documents are generated elsewhere. if deprecated.
@@ -372,591 +308,90 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                 update task;
             }
 
+            // CIBGLOBALD-4117 - enqueue after the DML above (taskStatus.Id only exists once
+            // inserted/confirmed) and flushed immediately, since nothing here guarantees a caller
+            // downstream ever calls DMT_AsyncOrchestrator.flush() for this call path.
+            for (String componentName : resolution.trackedComponentNames) {
+                if (DMT_RendererFactory.isCalloutTrackable(componentName)) {
+                    DMT_AsyncOrchestrator.enqueue(new DMT_CalloutTrackableFreezePayload(taskStatus.Id, lineOrOpportunityRecord.Id, componentName));
+                }
+            }
+            if(relatedCase.opportunity_id__c != null && relatedCase.DMT_Related_feature_name__c.contains('Business') && relatedCase.DMT_Passport_Sanction__c == 'approval'){
+                DMT_AsyncOrchestrator.enqueue(
+                    new DMT_DynamicMapperPayload(relatedCase.opportunity_id__c, 'DMT_Finish_PAWIF', relatedCase.opportunity_id__r.StageName)
+            );
+            }
+            
+            DMT_AsyncOrchestrator.flush();
     }
     public static Id getApproverViewId(String ownerId, Case relatedCase) {
         // We make all these queries to obtain the items which contains the fields we want to store within the task
         Group queue = DMT_ApprovalChangeStep_Selector.getGroupById(ownerId);
         DMT_Approver__c approver = DMT_ApprovalChangeStep_Selector.getApproverByDmtGroup(queue.DeveloperName);
-        Id approverViewId;
-        if(relatedCase.DMT_LineOpportunity__c == 'L'){
-            if(relatedCase.DMT_Line__r.RecordType.DeveloperName == 'OtherProducts'){
-                approverViewId = approver.Approvers_View__c;
-            } else if(relatedCase.DMT_Line__r.RecordType.DeveloperName == 'TreasurySettlement'){
-                approverViewId = approver.Approvers_View_Treasury__c;
-            }
-        }else if(relatedCase.DMT_LineOpportunity__c == 'O'){
-            if(relatedCase.opportunity_id__r.RecordType.DeveloperName == 'DMT_Opportunity'){
-                approverViewId = approver.Approvers_View_Opportunity__c;
-            }
-
-        }
+        Id approverViewId = resolveApproverViewId(approver, relatedCase);
         if(approverViewId == null){
             System.debug(LoggingLevel.ERROR, 'The approverViewId is null in DMT_ApprovalChangeStep_Handler in the getApproverViewId method.');
         }
         return approverViewId;
     }
 
-
-    @AuraEnabled(cacheable=false)
-    public static void compareTasksFromCaseLWC(String lineId) {
-        List<Case> records = [SELECT Id, DMT_Related_feature_name__c, DMT_LineOpportunity__c, DMT_Line__c, opportunity_id__c
-                              FROM Case
-                              WHERE DMT_Line__c = :lineId];
-        DMT_ApprovalChangeStep_Handler.Request request = new DMT_ApprovalChangeStep_Handler.Request();
-        request.records= records;system.debug('record case'+records);
-        compareTasksFromCase(new List<DMT_ApprovalChangeStep_Handler.Request>{request});
+    // CIBGLOBALD-4117 - approver view for an approver/case pair, by record type.
+    public static Id resolveApproverViewId(DMT_Approver__c approver, Case relatedCase) {
+        if (approver == null || relatedCase == null) {
+            return null;
+        }
+        if (relatedCase.DMT_LineOpportunity__c == 'L') {
+            String lineRecordType = relatedCase.DMT_Line__r?.RecordType?.DeveloperName;
+            if (lineRecordType == 'OtherProducts') {
+                return approver.Approvers_View__c;
+            } else if (lineRecordType == 'TreasurySettlement') {
+                return approver.Approvers_View_Treasury__c;
+            }
+        } else if (relatedCase.DMT_LineOpportunity__c == 'O') {
+            if (relatedCase.opportunity_id__r?.RecordType?.DeveloperName == 'DMT_Opportunity') {
+                return approver.Approvers_View_Opportunity__c;
+            }
+        }
+        return null;
     }
 
-    /**
-     * @description Method that updates the task with the current status of the records from the view
-     * @author Aníbal Cortés | 10-31-2024
-     * @param recordId
-     *
-     * KNOWN DUPLICATION - deliberate, not an oversight. This method still has its own inline
-     * createResetTask/createResetCase pairs and its own copy of the row-matching rule that now
-     * lives in DMT_ApprovalChangeStep_Helper. The trigger-side gates were unified onto that helper;
-     * this path was not, because switching it would change behaviour, not just move code:
-     *   - it bypasses restartTasksForRecord, so it has no Savepoint and never publishes the
-     *     DMT_Task__e CASE_UPDATE event the passport LWCs listen to;
-     *   - the green-feature skip (CIBGLOBALD-3233) is interleaved through the loop.
-     * Worth doing, but needs its own pass with its own regression testing.
-     */
-    @InvocableMethod(label = 'Compare tasks from case' description = 'Compares tasks from a list of cases')
-    public static void compareTasksFromCase(List<Request> request){
-        List<Case> records = request.get(0).records;
-        String passportSanctionFilter = request.get(0).passportSanctionFilter;
-
-        if (records == null || records.isEmpty()) {
-            return;
-        }
-
-        // This filter only applies to Opportunity-related cases and is optional.
-        // If no filter is provided, the current behavior remains unchanged.
-        if (records.get(0).DMT_LineOpportunity__c == 'O' && String.isNotBlank(passportSanctionFilter)) {
-            String normalizedFilter = passportSanctionFilter.trim().toLowerCase();
-            List<Case> filteredRecords = new List<Case>();
-            for (Case c : records) {
-                if (c.DMT_Passport_Sanction__c != null && c.DMT_Passport_Sanction__c.trim().toLowerCase() == normalizedFilter) {
-                    filteredRecords.add(c);
-                }
-            }
-            records = filteredRecords;
-
-            if (records.isEmpty()) {
-                return;
-            }
-        }
-
-        Status_JSON_Wrapper jsonFinal = new Status_JSON_Wrapper();
-        // Map that contains each Object and a list of its field Names
-        Map<String, List<String>> fieldMapFromObject = new Map<String, List<String>>();
-        //Case relatedCase = [SELECT DMT_Line__c, DMT_Line__r.Custom_Association__c, DMT_LineOpportunity__c FROM Case WHERE Id IN :recordId WITH SECURITY_ENFORCED LIMIT 1];
-
-
-        Set<Id> casesIds = new Set<Id>();
-        for (Case c : records){
-            casesIds.add(c.Id);
-        }
-
-        // CIBGLOBALD-3233: already-approved ("green") features must not be reset even when
-        // tracked fields differ - restored after being found missing from the deployed org
-        // (still present in git history, commit 92e4a3ab63, never reverted there).
-        Set<Id> opportunityIds = new Set<Id>();
-        for (Case caseRecord : records){
-            if (caseRecord.DMT_LineOpportunity__c == 'O' && caseRecord.opportunity_id__c != null){
-                opportunityIds.add(caseRecord.opportunity_id__c);
-            }
-        }
-
-        Map<Id, Map<String, String>> featureStatesByOpportunityId = new Map<Id, Map<String, String>>();
-        if (!opportunityIds.isEmpty()){
-            List<Passport__c> passports = [
-                SELECT Id, Opportunity__c, DMT_Passport_Save__c, CreatedDate
-                FROM Passport__c
-                WHERE Opportunity__c IN :opportunityIds
-                ORDER BY CreatedDate DESC
-            ];
-
-            for (Passport__c passport : passports){
-                Map<String, String> featureStates = extractFeatureStatesFromPassport(passport.DMT_Passport_Save__c);
-                if (passport.Opportunity__c != null && !featureStatesByOpportunityId.containsKey(passport.Opportunity__c)){
-                    featureStatesByOpportunityId.put(passport.Opportunity__c, featureStates);
-                }
-            }
-        }
-
-        Map<Id, Boolean> caseFeatureIsGreenMap = new Map<Id, Boolean>();
-        for (Case caseRecord : records){
-            Boolean isGreen = false;
-            String relatedFeatureName = caseRecord.DMT_Related_feature_name__c;
-            if (caseRecord.DMT_LineOpportunity__c == 'O' && caseRecord.opportunity_id__c != null && !String.isBlank(relatedFeatureName)){
-                Map<String, String> featureStates = featureStatesByOpportunityId.get(caseRecord.opportunity_id__c);
-                if (featureStates != null){
-                    String featureState = featureStates.get(relatedFeatureName.toUpperCase());
-                    isGreen = featureState != null && featureState.equalsIgnoreCase('GREEN');
-                }
-            }
-            caseFeatureIsGreenMap.put(caseRecord.Id, isGreen);
-        }
-
-        Map<Id, Task> tasksMap = new Map<Id, Task>([SELECT Id, OwnerId, Owner.Name, DMT_Task_Type__c, WhatId, Subject, DMT_ViewStatusAtClose__c, RecordTypeId, DMT_Not_Restart__c, Status
-                                                    FROM Task
-                                                    WHERE WhatId IN:casesIds AND Status != :DMT_Constants.CANCELLED AND DMT_Not_Restart__c = false]);
-
-        Map<Id, Task> tasksStatusWithTaskMap = new Map<Id, Task>();
-        Map<Id, List<Task>> casesWithTasksToCancel = new Map<Id, List<Task>>();
-
-        for (Task task : tasksMap.values()){
-            tasksStatusWithTaskMap.put(task.DMT_ViewStatusAtClose__c, task);
-            List<Task> tasksList = new List<Task>();
-            if (casesWithTasksToCancel.containsKey(task.WhatId)){
-                tasksList = casesWithTasksToCancel.get(task.WhatId);
-            }
-            tasksList.add(task);
-            casesWithTasksToCancel.put(task.WhatId, tasksList);
-        }
-
-        Map<Id, DMT_TaskStatusWhenCompleted__c> mapTaskStatus = new Map<Id, DMT_TaskStatusWhenCompleted__c>([SELECT Id, DMT_ViewFieldStatusAtClose__c, DMT_AllFieldsInStatus__c, Case__c, Case__r.Status
-                                                                                                             FROM DMT_TaskStatusWhenCompleted__c
-                                                                                                             WHERE Id IN:tasksStatusWithTaskMap.keySet()
-                                                                                                             ORDER BY CreatedDate ASC]);
-        Map<Id, List<DMT_TaskStatusWhenCompleted__c>> mapCasesTaskStatus = new Map<Id, List<DMT_TaskStatusWhenCompleted__c>>();
-
-        for (DMT_TaskStatusWhenCompleted__c taskStatus : mapTaskStatus.values()){
-            if (taskStatus.DMT_AllFieldsInStatus__c != null){
-                List<DMT_TaskStatusWhenCompleted__c> taskStatusList = new List<DMT_TaskStatusWhenCompleted__c>();
-                if (mapCasesTaskStatus.containsKey(taskStatus.Case__c)){
-                    taskStatusList = mapCasesTaskStatus.get(taskStatus.Case__c);
-                }
-                taskStatusList.add(taskStatus);
-                mapCasesTaskStatus.put(taskStatus.Case__c, taskStatusList);
-            }
-        }
-
-        for (DMT_TaskStatusWhenCompleted__c taskStatus : mapTaskStatus.values()){
-            // We get a list of each Object.Field
-            if (taskStatus.DMT_AllFieldsInStatus__c != null){
-                List<String> fields = taskStatus.DMT_AllFieldsInStatus__c.split(';', 0);
-                //We obtain the Object Name and Field Name for each and store it in the Map
-                for (String field : fields){
-                    List<String> cadenaPartida = field.split('\\.', 2);
-                    String objectName = cadenaPartida.get(0);
-                    String fieldName = cadenaPartida.get(1);
-                    List<String> fieldsFromMap = new List<String>();
-                    if (fieldMapFromObject.containsKey(objectName)){
-                        fieldsFromMap = fieldMapFromObject.get(objectName);
-                    }
-                    // If the field is already on the list, we don't store it again to prevent duplicate fields on query
-                    if (!fieldsFromMap.contains(fieldName)){
-                        fieldsFromMap.add(fieldName);
-                        fieldMapFromObject.put(objectName, fieldsFromMap);
-                    }
-                }
-            }
-        }
-
-        if(!records.isEmpty() && records != null){
-             System.debug('records: '+records);
-            if(records.get(0).DMT_LineOpportunity__c == 'L'){
-                DMT_Line__c line = [SELECT Id, Custom_Association__c
-                                    FROM DMT_Line__c
-                                    WHERE Id = :records.get(0).DMT_Line__c
-                                    WITH SECURITY_ENFORCED];
-                // Makes the query for the DMT_Line__c object and stores on the jsonFinal var
-                if (fieldMapFromObject.containsKey('DMT_Line__c')){
-                    Id lineId = line.Id;
-                    String query = 'SELECT Id, ' + String.join(fieldMapFromObject.get('DMT_Line__c'), ',') + ' FROM DMT_Line__c WHERE ID = :lineId';
-                    List<DMT_Line__c> linesRetrieved = Database.query(String.escapeSingleQuotes(query));
-                    jsonFinal.line = linesRetrieved.get(0);
-                }
-
-                // Makes the query for the DMT_TeamMember__c object and stores on the jsonFinal var
-                // if (fieldMapFromObject.containsKey('DMT_TeamMember__c')) {
-                //     Id lineId = line.Id;
-                //     String query = 'SELECT Id, ' + String.join(fieldMapFromObject.get('DMT_TeamMember__c'),',') + ' FROM DMT_TeamMember__c WHERE Line__c = :lineId ORDER BY Name ASC';
-                //     Map<Id, DMT_TeamMember__c> membersRetrieved = new Map<Id, DMT_TeamMember__c>((List<DMT_TeamMember__c>) Database.query(String.escapeSingleQuotes(query)));
-                //     jsonFinal.participantList = membersRetrieved;
-                // }
-
-                // Makes the query for the DMT_Risk_Line_Term__c object and stores on the jsonFinal var
-                if (fieldMapFromObject.containsKey('DMT_Risk_Line_Term__c')){
-                    Id lineId = line.Id;
-                    List<String> fieldsToQuery = fieldMapFromObject.get('DMT_Risk_Line_Term__c');
-                    String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Risk_Line_Term__c'), ',') + ' FROM DMT_Risk_Line_Term__c WHERE DMT_Line__c = :lineId ORDER BY DMT_Init_Term__c ASC';
-                    List<DMT_Risk_Line_Term__c> riskLineTermRetrieved = Database.query(String.escapeSingleQuotes(query));
-                    Map<Integer, Map<String, Object>> riskLineListFormatted = new Map<Integer, Map<String, Object>>();
-                    Integer counter = 1;
-
-                    // 4. Iteramos sobre los resultados para construir el nuevo mapa.
-                    for (DMT_Risk_Line_Term__c term : riskLineTermRetrieved){
-                        // Creamos un mapa interno para los atributos de cada registro.
-                        Map<String, Object> termAttributes = new Map<String, Object>();
-                        // Poblamos el mapa de atributos dinámicamente con los campos que consultamos.
-                        for (String field : fieldsToQuery){
-                            termAttributes.put(field, term.get(field));
-                        }
-                        // Añadimos el registro al mapa final con la clave numérica.
-                        riskLineListFormatted.put(counter, termAttributes);
-                        counter++;
-                    }
-
-                    // 5. Asignamos el mapa formateado al objeto final.
-                    jsonFinal.riskLineList = riskLineListFormatted;
-                }
-
-                // Makes the query for the Custom_Association__c object and stores on the jsonFinal var
-                if (fieldMapFromObject.containsKey('Custom_Association_Client__c')){
-                    Id customAssociationLine = line.Custom_Association__c;
-                    String query = 'SELECT Id, ' + String.join(fieldMapFromObject.get('Custom_Association_Client__c'), ',') + ' FROM Custom_Association_Client__c WHERE Custom_Association__c = :customAssociationLine ORDER BY Name ASC';
-                    Map<Id, Custom_Association_Client__c> customAssociationRetrieved = new Map<Id, Custom_Association_Client__c>((List<Custom_Association_Client__c>)Database.query(String.escapeSingleQuotes(query)));
-                    jsonFinal.customAssociationClientList = customAssociationRetrieved;
-                }
-
-                // Makes the query for the DMT_Currency_Provision__c object and stores on the jsonFinal var
-                if (fieldMapFromObject.containsKey('DMT_Currency_Provision__c')){
-                    String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Currency_Provision__c'), ',') + ' FROM DMT_Currency_Provision__c WHERE DMT_Risk_Line_Term__r.DMT_Line__c = :lineId ORDER BY Name ASC';
-                    Map<Id, DMT_Currency_Provision__c> currencyProvision = new Map<Id, DMT_Currency_Provision__c>((List<DMT_Currency_Provision__c>)Database.query(String.escapeSingleQuotes(query)));
-                    jsonFinal.currencyProvisions = currencyProvision;
-                }
-
-                // Makes the query for the DMT_Warranty__c object and stores on the jsonFinal var
-                if (fieldMapFromObject.containsKey('DMT_Warranty__c')){
-                    String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Warranty__c'), ',') + ' FROM DMT_Warranty__c WHERE DMT_Risk_Line_Term__r.DMT_Line__c = :lineId ORDER BY Name ASC';
-                    Map<Id, DMT_Warranty__c> warrantyRetrieved = new Map<Id, DMT_Warranty__c>((List<DMT_Warranty__c>)Database.query(String.escapeSingleQuotes(query)));
-                    jsonFinal.warranties = warrantyRetrieved;
-                }
-
-                // Makes the query for the DMT_Line_Product_Item__c object and stores on the jsonFinal var
-                if (fieldMapFromObject.containsKey('DMT_Line_Product_Item__c')){
-                    Id lineId = line.Id;
-                    List<String> fieldsToQuery = fieldMapFromObject.get('DMT_Line_Product_Item__c');
-                    String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Line_Product_Item__c'), ',') + ' FROM DMT_Line_Product_Item__c WHERE Line__c = :lineId ORDER BY Name ASC';
-                    List<DMT_Line_Product_Item__c> lineProductItemsRetrieved = Database.query(String.escapeSingleQuotes(query));
-
-                    Map<Integer, Map<String, Object>> lineProductItemsFormatted = new Map<Integer, Map<String, Object>>();
-                    Integer counter = 1;
-
-                    // 4. Iteramos sobre los resultados para construir el nuevo mapa.
-                    for (DMT_Line_Product_Item__c term : lineProductItemsRetrieved){
-                        // Creamos un mapa interno para los atributos de cada registro.
-                        Map<String, Object> termAttributes = new Map<String, Object>();
-                        // Poblamos el mapa de atributos dinámicamente con los campos que consultamos.
-                        for (String field : fieldsToQuery){
-                            termAttributes.put(field, term.get(field));
-                        }
-                        // Añadimos el registro al mapa final con la clave numérica.
-                        lineProductItemsFormatted.put(counter, termAttributes);
-                        counter++;
-                    }
-
-                    // 5. Asignamos el mapa formateado al objeto final.
-                    jsonFinal.lineProductItemList = lineProductItemsFormatted;
-                }
-            }else if(records.get(0).DMT_LineOpportunity__c == 'O'){
-
-                // Makes the query for the Opportunity object and stores on the jsonFinal var
-                    if (fieldMapFromObject.containsKey('Opportunity')){
-                        Id oppId = records.get(0).opportunity_id__c;
-                        String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('Opportunity'), ',') + ' FROM Opportunity WHERE ID = :oppId';
-                        List<Opportunity> oppRetrieved = Database.query(String.escapeSingleQuotes(query));
-                        System.debug('oppRetrieved --> ' + oppRetrieved);
-                        System.debug('oppRetrieved --> ' + oppRetrieved.get(0));
-                        jsonFinal.opportunity = oppRetrieved.get(0);
-                    }
-                    // Makes the query for the DMT_Opportunity_Tenor__c object and stores on the jsonFinal var
-                    if (fieldMapFromObject.containsKey('DMT_Opportunity_Tenor__c')){
-                        Id oppId = records.get(0).opportunity_id__c;
-                        List<String> fieldsToQuery = fieldMapFromObject.get('DMT_Opportunity_Tenor__c');
-                        String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Opportunity_Tenor__c'), ',') + ' FROM DMT_Opportunity_Tenor__c WHERE DMT_Opportunity_Product__r.OpportunityId = :oppId ORDER BY gj_nominal_amount_db__c ASC';
-                        List<DMT_Opportunity_Tenor__c> opportunityTenorRetrieved = Database.query(String.escapeSingleQuotes(query));
-                        Map<Integer, Map<String, Object>> opportunityTenorFormatted = new Map<Integer, Map<String, Object>>();
-                        Integer counter = 1;
-
-                        // 4. Iteramos sobre los resultados para construir el nuevo mapa.
-                        for (DMT_Opportunity_Tenor__c tenor : opportunityTenorRetrieved){
-                            // Creamos un mapa interno para los atributos de cada registro.
-                            Map<String, Object> termAttributes = new Map<String, Object>();
-                            // Poblamos el mapa de atributos dinámicamente con los campos que consultamos.
-                            for (String field : fieldsToQuery){
-                                termAttributes.put(field, tenor.get(field));
-                            }
-                            // Añadimos el registro al mapa final con la clave numérica.
-                            opportunityTenorFormatted.put(counter, termAttributes);
-                            counter++;
-                        }
-
-                        // 5. Asignamos el mapa formateado al objeto final.
-                        jsonFinal.opportunityTenor = opportunityTenorFormatted;
-                    }
-                    // Makes the query for the DMT_Opportunity_Mitigant__c object and stores on the jsonFinal var
-                    if (fieldMapFromObject.containsKey('DMT_Opportunity_Mitigant__c')){
-                        Id oppId = records.get(0).opportunity_id__c;
-                        List<String> fieldsToQuery = fieldMapFromObject.get('DMT_Opportunity_Mitigant__c');
-                        String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Opportunity_Mitigant__c'), ',') + ' FROM DMT_Opportunity_Mitigant__c WHERE DMT_Opportunity_Product__r.OpportunityId = :oppId ORDER BY Mitigant_Type__c ASC';
-                        List<DMT_Opportunity_Mitigant__c> opportunityMitigantRetrieved = Database.query(String.escapeSingleQuotes(query));
-                        Map<Integer, Map<String, Object>> opportunityMitigantFormatted = new Map<Integer, Map<String, Object>>();
-                        Integer counter = 1;
-
-                        // 4. Iteramos sobre los resultados para construir el nuevo mapa.
-                        for (DMT_Opportunity_Mitigant__c mitigant : opportunityMitigantRetrieved){
-                            // Creamos un mapa interno para los atributos de cada registro.
-                            Map<String, Object> termAttributes = new Map<String, Object>();
-                            // Poblamos el mapa de atributos dinámicamente con los campos que consultamos.
-                            for (String field : fieldsToQuery){
-                                termAttributes.put(field,  mitigant.get(field));
-                            }
-                            // Añadimos el registro al mapa final con la clave numérica.
-                            opportunityMitigantFormatted.put(counter, termAttributes);
-                            counter++;
-                        }
-
-                        // 5. Asignamos el mapa formateado al objeto final.
-                        jsonFinal.opportunityMitigant = opportunityMitigantFormatted;
-                    }
-                    // Makes the query for the OpportunityLineItem object and stores on the jsonFinal var
-                    if (fieldMapFromObject.containsKey('OpportunityLineItem')){
-                        Id oppId = records.get(0).opportunity_id__c;
-                        List<String> fieldsToQuery = fieldMapFromObject.get('OpportunityLineItem');
-                        String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('OpportunityLineItem'), ',') + ' FROM OpportunityLineItem WHERE OpportunityId = :oppId ORDER BY DMT_Deal_Amount_Tenors__c ASC';
-                        List<OpportunityLineItem> opportunityLineItemRetrieved = Database.query(String.escapeSingleQuotes(query));
-                        Map<Integer, Map<String, Object>> opportunityLineItemFormatted = new Map<Integer, Map<String, Object>>();
-                        Integer counter = 1;
-
-                        // 4. Iteramos sobre los resultados para construir el nuevo mapa.
-                        for (OpportunityLineItem oppItem : opportunityLineItemRetrieved){
-                            // Creamos un mapa interno para los atributos de cada registro.
-                            Map<String, Object> termAttributes = new Map<String, Object>();
-                            // Poblamos el mapa de atributos dinámicamente con los campos que consultamos.
-                            for (String field : fieldsToQuery){
-                                termAttributes.put(field, oppItem.get(field));
-                            }
-                            // Añadimos el registro al mapa final con la clave numérica.
-                            opportunityLineItemFormatted.put(counter, termAttributes);
-                            counter++;
-                        }
-                        // 5. Asignamos el mapa formateado al objeto final.
-                        jsonFinal.opportunityLineItem = opportunityLineItemFormatted;
-                    }
-                    // Makes the query for the DMT_Opportunity_Client__c object and stores on the jsonFinal var
-                    if (fieldMapFromObject.containsKey('DMT_Opportunity_Client__c')){
-                        Id oppId = records.get(0).opportunity_id__c;
-                        String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Opportunity_Client__c'), ',') + ' FROM DMT_Opportunity_Client__c WHERE DMT_MDE_Opportunity__c = :oppId ORDER BY Name ASC';
-                        Map<Id, DMT_Opportunity_Client__c> opportunityClientRetrieved = new Map<Id, DMT_Opportunity_Client__c>((List<DMT_Opportunity_Client__c>)Database.query(String.escapeSingleQuotes(query)));
-                        jsonFinal.opportunityClient = opportunityClientRetrieved;
-                    }
-                    if (fieldMapFromObject.containsKey('DMT_X_Sell__c')){
-                        Id oppId = records.get(0).opportunity_id__c;
-                        String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_X_Sell__c'), ',') + ' FROM DMT_X_Sell__c WHERE Opportunity__c = :oppId ORDER BY Name ASC';
-                        Map<Id, DMT_X_Sell__c> opportunityXSellRetrieved = new Map<Id, DMT_X_Sell__c>((List<DMT_X_Sell__c>)Database.query(String.escapeSingleQuotes(query)));
-                        jsonFinal.opportunityXSell = opportunityXSellRetrieved;
-                    }
-            }
-        }
-
-
-
-        String jsonFinalSerialized = System.JSON.serialize(jsonFinal, true).replaceAll('"attributes":\\{[^\\}]*\\},?', '');
-        Map<String, Object> mapJsonFinal = (Map<String, Object>)JSON.deserializeUntyped(jsonFinalSerialized);
-        List<Case> casesToUpdate = new List<Case>();
-        List<Task> tasksToUpdate = new List<Task>();
-        List<Task> tasksToCreate = new List<Task>();
-
-        for (Id caseId : mapCasesTaskStatus.keySet()){
-            Boolean isDifferent = false;
-
-            for (Integer i = 0; i < mapCasesTaskStatus.get(caseId).size(); i++){
-                Map<String, Object> mapTaskStatusJson = (Map<String, Object>)JSON.deserializeUntyped(mapCasesTaskStatus.get(caseId)[i].DMT_ViewFieldStatusAtClose__c);
-                for (String fieldName : mapTaskStatusJson.keySet()){
-                    //if (!isDifferent) {
-                    if (!fieldName.equalsIgnoreCase('line') && !fieldName.equalsIgnoreCase('opportunity')){
-                        Map<String, Object> listFromTask = (Map<String, Object>)mapTaskStatusJson.get(fieldName);
-                        Map<String, Object> listFromJson = (Map<String, Object>)mapJsonFinal.get(fieldName);
-                        if (listFromTask != null && listFromTask.size() == listFromJson.size() && listFromTask.keySet().equals(listFromJson.keySet())){
-                            for (String item : listFromTask.keySet()){
-                                System.debug( 'listFromTask.get(item) --> ' + listFromTask.get(item));
-                                Map<String, Object> itemFromTask = (Map<String, Object>)listFromTask.get(item);
-                                Map<String, Object> itemFull = (Map<String, Object>)listFromJson.get(item);
-                                for (String fieldFromItem : getComparableFieldKeys(fieldName, fieldMapFromObject, itemFromTask.keySet())){
-                                    if (itemFull.get(fieldFromItem) != itemFromTask.get(fieldFromItem)){
-                                        if (caseFeatureIsGreenMap.containsKey(caseId) && caseFeatureIsGreenMap.get(caseId)){
-                                            continue;
-                                        }
-                                        tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).Status = DMT_Constants.CANCELLED;
-                                        if (!isDifferent){
-                                            tasksToCreate.add(DMT_ApprovalChangeStep_Helper.createResetTask(tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id)));
-                                            casesToUpdate.add(DMT_ApprovalChangeStep_Helper.createResetCase(caseId, tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).OwnerId));
-                                        }
-                                        isDifferent = true;
-                                    }
-                                }
-                            }
-                        } else{
-                            if (caseFeatureIsGreenMap.containsKey(caseId) && caseFeatureIsGreenMap.get(caseId)){
-                                continue;
-                            }
-                            tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).Status = DMT_Constants.CANCELLED;
-                            if (!isDifferent){
-                                tasksToCreate.add(DMT_ApprovalChangeStep_Helper.createResetTask(tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id)));
-                                casesToUpdate.add(DMT_ApprovalChangeStep_Helper.createResetCase(caseId, tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).OwnerId));
-                            }
-                            isDifferent = true;
-                        }
-                    } else if (fieldName.equalsIgnoreCase('line')){
-                        Map<String, Object> itemFromTask = (Map<String, Object>)mapTaskStatusJson.get(fieldName);
-                        Map<String, Object> itemFull = (Map<String, Object>)mapJsonFinal.get(fieldName);
-                        if (itemFromTask != null && !itemFromTask.isEmpty()){
-                            for (String fieldFromItem : getComparableFieldKeys(fieldName, fieldMapFromObject, itemFromTask.keySet())){
-                                if (fieldFromItem.equalsIgnoreCase('Client__r')){
-                                    Map<String, Object> clientFromLine = (Map<String, Object>)itemFromTask.get(fieldFromItem);
-                                    Map<String, Object> clientFromJSONFull = (Map<String, Object>)itemFull.get(fieldFromItem);
-                                    for (String fieldFromClient : clientFromLine.keySet()){
-                                        if (clientFromJSONFull.get(fieldFromClient) != clientFromLine.get(fieldFromClient)){
-                                            tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).Status = DMT_Constants.CANCELLED;
-
-                                            if (!isDifferent){
-                                                tasksToCreate.add(DMT_ApprovalChangeStep_Helper.createResetTask(tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id)));
-                                                casesToUpdate.add(DMT_ApprovalChangeStep_Helper.createResetCase(caseId, tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).OwnerId));
-                                            }
-                                            isDifferent = true;
-                                        }
-                                    }
-                                } else if (itemFull.get(fieldFromItem) != itemFromTask.get(fieldFromItem)){
-
-                                    tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).Status = DMT_Constants.CANCELLED;
-                                    if (!isDifferent){
-                                        tasksToCreate.add(DMT_ApprovalChangeStep_Helper.createResetTask(tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id)));
-                                        casesToUpdate.add(DMT_ApprovalChangeStep_Helper.createResetCase(caseId, tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).OwnerId));
-                                    }
-                                    isDifferent = true;
-                                }
-                            }
-                        }
-                    }else if (fieldName.equalsIgnoreCase('opportunity')){
-                        Map<String, Object> itemFromTask = (Map<String, Object>)mapTaskStatusJson.get(fieldName);
-                        Map<String, Object> itemFull = (Map<String, Object>)mapJsonFinal.get(fieldName);
-                        if (itemFromTask != null && !itemFromTask.isEmpty()){
-                            for (String fieldFromItem : getComparableFieldKeys(fieldName, fieldMapFromObject, itemFromTask.keySet())){
-                                if (itemFull.get(fieldFromItem) != itemFromTask.get(fieldFromItem)){
-                                    if (caseFeatureIsGreenMap.containsKey(caseId) && caseFeatureIsGreenMap.get(caseId)){
-                                        continue;
-                                    }
-                                    tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).Status = DMT_Constants.CANCELLED;
-                                    if (!isDifferent){
-                                        tasksToCreate.add(DMT_ApprovalChangeStep_Helper.createResetTask(tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id)));
-                                        casesToUpdate.add(DMT_ApprovalChangeStep_Helper.createResetCase(caseId, tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).OwnerId));
-                                    }
-                                    isDifferent = true;
-                                }
-                            }
-                        }
-                    }
-
-                    //}
-                }
-                if (isDifferent){
-                    tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).Status = DMT_Constants.CANCELLED;
-                }
-            }
-
-            // if (!isDifferent && mapCasesTaskStatus.get(caseId)[0].Case__r.Status != DMT_Constants.FINISHED ) {
-            //     tasksToCreate.add(DMT_ApprovalChangeStep_Helper.createResetTask(tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[mapCasesTaskStatus.get(caseId).size()-1].Id)));
-            //     //isDifferent = true;
-            //     casesToUpdate.add(DMT_ApprovalChangeStep_Helper.createResetCase(caseId, tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[mapCasesTaskStatus.get(caseId).size()-1].Id).OwnerId));
-            // }
-            if (isDifferent){
-                for (Task t : casesWithTasksToCancel.get(caseId)){
-                    if (t.Status == DMT_Constants.FINISHED){
-                        Task task = t.clone(true, true, false);
-                        task.Status = 'Completed';
-                        tasksToUpdate.add(task);
-                    }
-                    if (t.Status != DMT_Constants.COMPLETED && t.Status != DMT_Constants.FINISHED){
-                        Task task = t.clone(true, true, false);
-                        task.Status = 'Cancelled';
-                        tasksToUpdate.add(task);
-                    }
-                }
-            }
-
-        }
-        System.debug('Queries usadas before tasksToUpdate: ' + Limits.getQueries());
-        if (tasksToUpdate.size() > 0){
-            update tasksToUpdate;
-        }
-        System.debug('Queries usadas before casesToUpdate: ' + Limits.getQueries());
-        if (casesToUpdate.size() > 0){
-            update casesToUpdate;
-        }
-        System.debug('Queries usadas before tasksToCreate: ' + Limits.getQueries());
-        if (tasksToCreate.size() > 0){
-            insert tasksToCreate;
-        }
-        System.debug('Queries usadas before updateTaskWithStatus: ' + Limits.getQueries());
-        for (Task t : tasksToCreate) {
-            System.debug('t debug: ' + t);
-            System.debug('Queries usadas inside for: ' + Limits.getQueries());
-            updateTaskWithStatus(t.Id, false);
-        }
-        System.debug('Queries usadas after updateTaskWithStatus: ' + Limits.getQueries());
-    }
 
     /**
-     * @description CIBGLOBALD-3233: parses the Passport JSON and returns each feature's
-     * current stateName keyed by uppercased feature name, used to identify already-approved
-     * ("green") features so their cases are skipped when resetting tasks.
-     * @author Alejandro Muñoz Lujan | 05-05-2026
-     **/
-    private static Map<String, String> extractFeatureStatesFromPassport(String passportJson){
-        Map<String, String> featureStates = new Map<String, String>();
-        if (String.isBlank(passportJson)){
-            return featureStates;
-        }
-
-        try {
-            Map<String, Object> rootMap = (Map<String, Object>)JSON.deserializeUntyped(passportJson);
-            if (rootMap == null){
-                return featureStates;
-            }
-
-            Map<String, Object> dataMap = (Map<String, Object>)rootMap.get('data');
-            Object featuresObj = dataMap != null ? dataMap.get('features') : rootMap.get('features');
-            if (featuresObj == null || !(featuresObj instanceof List<Object>)){
-                return featureStates;
-            }
-
-            for (Object featureObj : (List<Object>)featuresObj){
-                if (featureObj instanceof Map<String, Object>){
-                    Map<String, Object> featureMap = (Map<String, Object>)featureObj;
-                    String featureName = (String)featureMap.get('name');
-                    String stateName = (String)featureMap.get('stateName');
-                    if (!String.isBlank(featureName) && !String.isBlank(stateName)){
-                        featureStates.put(featureName.toUpperCase(), stateName);
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            System.debug(LoggingLevel.WARN, 'Error parsing passport JSON in DMT_ApprovalChangeStep_Handler.extractFeatureStatesFromPassport: ' + ex.getMessage());
-        }
-
-        return featureStates;
-    }
-
-    /**
-     * @description Method that previews the task that will be re-opened for every case.
+     * @description Previews the task(s) that will be re-opened for every case on a Line or
+     * Opportunity - CIBGLOBALD-4117: works off whichever parent is populated on the Case.
      * @author Aníbal Cortés | 10-02-2025
      **/
     @AuraEnabled
-    public static List<FeatureChangeWrapper> previewCompareTasksFromCase(String lineId){
-        List<Case> records = [SELECT Id, DMT_Related_feature_name__c
+    public static List<FeatureChangeWrapper> previewCompareTasksFromCase(String recordId){
+        // CIBGLOBALD-4117 - the two RecordType.DeveloperName relationship fields ride along on this
+        // same query (no extra SOQL) so the DMT_View_Selector calls below can pass the real record
+        // type instead of guessing/hardcoding it.
+        List<Case> records = [SELECT Id, DMT_Related_feature_name__c, DMT_LineOpportunity__c, DMT_Line__c,
+                              DMT_Line__r.Custom_Association__c, DMT_Line__r.RecordType.DeveloperName,
+                              opportunity_id__c, opportunity_id__r.RecordType.DeveloperName
                               FROM Case
-                              WHERE DMT_Line__c = :lineId];
-        Status_JSON_Wrapper jsonFinal = new Status_JSON_Wrapper();
+                              WHERE DMT_Line__c = :recordId OR opportunity_id__c = :recordId];
+        if (records.isEmpty()) {
+            return new List<FeatureChangeWrapper>();
+        }
+        Boolean isLine = records[0].DMT_LineOpportunity__c == 'L';
+        String parentSectionKey = isLine ? 'line' : 'opportunity';
+        String parentRecordTypeDeveloperName = isLine
+            ? records[0].DMT_Line__r.RecordType.DeveloperName
+            : records[0].opportunity_id__r.RecordType.DeveloperName;
+
         // Map that contains each Object and a list of its field Names
         Map<String, List<String>> fieldMapFromObject = new Map<String, List<String>>();
-        DMT_Line__c line = [SELECT Id, Custom_Association__c
-                            FROM DMT_Line__c
-                            WHERE Id = :lineId
-                            WITH SECURITY_ENFORCED];
+        // CIBGLOBALD-4117 - reuses the same comprehensive query DMT_ViewController uses to build the
+        // rendering wrapper, instead of a hand-maintained narrow SELECT. Every field any renderer's
+        // resolveRenderer()/getTrackedFields() could ever need (DMT_Product_Area__c,
+        // DMT_Capital_Action__c, Custom_Association__c, etc.) is already there, so this can never again
+        // drift out of sync the way DMT_ApprovalChangeStep_Selector.getCaseById did. Both selector
+        // classes are now without sharing, so this carries no record-visibility regression.
+        SObject parentRecord = isLine
+            ? (SObject) DMT_View_Selector.getLineWithRelatedData(recordId, parentRecordTypeDeveloperName)
+            : (SObject) DMT_View_Selector.getOpportunityWithRelatedData(recordId, parentRecordTypeDeveloperName);
+        Id parentId = (Id) parentRecord.get('Id');
         Map<Id, String> mapCasesFeatureName = new Map<Id, String>();
         for (Case c : records){
             mapCasesFeatureName.put(c.Id, c.DMT_Related_feature_name__c);
@@ -1018,90 +453,73 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
             }
         }
 
-        // Makes the query for the DMT_Line__c object and stores on the jsonFinal var
-        if (fieldMapFromObject.containsKey('DMT_Line__c')){
-            //Id lineId = line.Id;
-            String query = 'SELECT Id, ' + String.join(fieldMapFromObject.get('DMT_Line__c'), ',') + ' FROM DMT_Line__c WHERE ID = :lineId';
-            List<DMT_Line__c> linesRetrieved = Database.query(String.escapeSingleQuotes(query));
-            jsonFinal.line = linesRetrieved.get(0);
-        }
-
-        // Makes the query for the DMT_Risk_Line_Term__c object and stores on the jsonFinal var
-        if (fieldMapFromObject.containsKey('DMT_Risk_Line_Term__c')){
-            //Id lineId = line.Id;
-            List<String> fieldsToQuery = fieldMapFromObject.get('DMT_Risk_Line_Term__c');
-            String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Risk_Line_Term__c'), ',') + ' FROM DMT_Risk_Line_Term__c WHERE DMT_Line__c = :lineId ORDER BY DMT_Init_Term__c ASC';
-            List<DMT_Risk_Line_Term__c> riskLineTermRetrieved = Database.query(String.escapeSingleQuotes(query));
-            Map<Integer, Map<String, Object>> riskLineListFormatted = new Map<Integer, Map<String, Object>>();
-            Integer counter = 1;
-
-            // 4. Iteramos sobre los resultados para construir el nuevo mapa.
-            for (DMT_Risk_Line_Term__c term : riskLineTermRetrieved){
-                // Creamos un mapa interno para los atributos de cada registro.
-                Map<String, Object> termAttributes = new Map<String, Object>();
-                // Poblamos el mapa de atributos dinámicamente con los campos que consultamos.
-                for (String field : fieldsToQuery){
-                    termAttributes.put(field, term.get(field));
+        // CIBGLOBALD-4117 - live snapshot, built the same way updateTaskWithStatus/DMT_Massive_Task_Closure_Service do.
+        Map<Id, SObject> lineMap = new Map<Id, SObject>();
+        Map<Id, SObject> oppMap = new Map<Id, SObject>();
+        String parentObjectApiName = isLine ? 'DMT_Line__c' : 'Opportunity';
+        if (fieldMapFromObject.containsKey(parentObjectApiName)) {
+            String query = 'SELECT Id, ' + String.join(fieldMapFromObject.get(parentObjectApiName), ',') + ' FROM ' + parentObjectApiName + ' WHERE ID = :recordId';
+            List<SObject> parentsRetrieved = Database.query(String.escapeSingleQuotes(query));
+            if (!parentsRetrieved.isEmpty()) {
+                if (isLine) {
+                    lineMap.put(parentId, parentsRetrieved.get(0));
+                } else {
+                    oppMap.put(parentId, parentsRetrieved.get(0));
                 }
-                // Añadimos el registro al mapa final con la clave numérica.
-                riskLineListFormatted.put(counter, termAttributes);
-                counter++;
             }
-
-            // 5. Asignamos el mapa formateado al objeto final.
-            jsonFinal.riskLineList = riskLineListFormatted;
         }
 
-        // Makes the query for the Custom_Association__c object and stores on the jsonFinal var
-        if (fieldMapFromObject.containsKey('Custom_Association_Client__c')){
-            Id customAssociationLine = line.Custom_Association__c;
+        Map<Id, List<SObject>> customAssocMap = new Map<Id, List<SObject>>();
+        if (isLine && fieldMapFromObject.containsKey('Custom_Association_Client__c')) {
+            Id customAssociationLine = (Id) parentRecord.get('Custom_Association__c');
             String query = 'SELECT Id, ' + String.join(fieldMapFromObject.get('Custom_Association_Client__c'), ',') + ' FROM Custom_Association_Client__c WHERE Custom_Association__c = :customAssociationLine ORDER BY Name ASC';
-            Map<Id, Custom_Association_Client__c> customAssociationRetrieved = new Map<Id, Custom_Association_Client__c>((List<Custom_Association_Client__c>)Database.query(String.escapeSingleQuotes(query)));
-            jsonFinal.customAssociationClientList = customAssociationRetrieved;
+            customAssocMap.put(customAssociationLine, Database.query(String.escapeSingleQuotes(query)));
         }
 
-        // Makes the query for the DMT_Currency_Provision__c object and stores on the jsonFinal var
-        if (fieldMapFromObject.containsKey('DMT_Currency_Provision__c')){
-            String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Currency_Provision__c'), ',') + ' FROM DMT_Currency_Provision__c WHERE DMT_Risk_Line_Term__r.DMT_Line__c = :lineId ORDER BY Name ASC';
-            Map<Id, DMT_Currency_Provision__c> currencyProvision = new Map<Id, DMT_Currency_Provision__c>((List<DMT_Currency_Provision__c>)Database.query(String.escapeSingleQuotes(query)));
-            jsonFinal.currencyProvisions = currencyProvision;
-        }
-
-        // Makes the query for the DMT_Warranty__c object and stores on the jsonFinal var
-        if (fieldMapFromObject.containsKey('DMT_Warranty__c')){
-            String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Warranty__c'), ',') + ' FROM DMT_Warranty__c WHERE DMT_Risk_Line_Term__r.DMT_Line__c = :lineId ORDER BY Name ASC';
-            Map<Id, DMT_Warranty__c> warrantyRetrieved = new Map<Id, DMT_Warranty__c>((List<DMT_Warranty__c>)Database.query(String.escapeSingleQuotes(query)));
-            jsonFinal.warranties = warrantyRetrieved;
-        }
-
-        // Makes the query for the DMT_Line_Product_Item__c object and stores on the jsonFinal var
-        if (fieldMapFromObject.containsKey('DMT_Line_Product_Item__c')){
-            //Id lineId = line.Id;
-            List<String> fieldsToQuery = fieldMapFromObject.get('DMT_Line_Product_Item__c');
-            String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('DMT_Line_Product_Item__c'), ',') + ' FROM DMT_Line_Product_Item__c WHERE Line__c = :lineId ORDER BY Name ASC';
-            List<DMT_Line_Product_Item__c> lineProductItemsRetrieved = Database.query(String.escapeSingleQuotes(query));
-
-            Map<Integer, Map<String, Object>> lineProductItemsFormatted = new Map<Integer, Map<String, Object>>();
-            Integer counter = 1;
-
-            // 4. Iteramos sobre los resultados para construir el nuevo mapa.
-            for (DMT_Line_Product_Item__c term : lineProductItemsRetrieved){
-                // Creamos un mapa interno para los atributos de cada registro.
-                Map<String, Object> termAttributes = new Map<String, Object>();
-                // Poblamos el mapa de atributos dinámicamente con los campos que consultamos.
-                for (String field : fieldsToQuery){
-                    termAttributes.put(field, term.get(field));
+        Map<String, DMT_ApprovalChangeStep_Helper.ChildSection> childSectionsByKey = new Map<String, DMT_ApprovalChangeStep_Helper.ChildSection>();
+        for (String componentName : DMT_RendererFactory.getTrackedComponentNames()) {
+            for (DMT_ApprovalChangeStep_Helper.ChildSection section : DMT_RendererFactory.getChildSections(componentName, parentRecord)) {
+                if (!childSectionsByKey.containsKey(section.snapshotSectionKey)) {
+                    childSectionsByKey.put(section.snapshotSectionKey, section);
                 }
-                // Añadimos el registro al mapa final con la clave numérica.
-                lineProductItemsFormatted.put(counter, termAttributes);
-                counter++;
             }
+        }
+        Map<String, List<SObject>> genericChildSections = queryDirectChildSections(childSectionsByKey, fieldMapFromObject, parentId);
+        Map<String, Map<Id, List<SObject>>> childListsBySectionKey = new Map<String, Map<Id, List<SObject>>>();
+        for (String sectionKey : genericChildSections.keySet()) {
+            childListsBySectionKey.put(sectionKey, new Map<Id, List<SObject>>{ parentId => genericChildSections.get(sectionKey) });
+        }
+        Map<String, DMT_ApprovalChangeStep_Helper.ChildSection> lineChildSectionsByKey = isLine ? childSectionsByKey : new Map<String, DMT_ApprovalChangeStep_Helper.ChildSection>();
+        Map<String, DMT_ApprovalChangeStep_Helper.ChildSection> oppChildSectionsByKey = isLine ? new Map<String, DMT_ApprovalChangeStep_Helper.ChildSection>() : childSectionsByKey;
 
-            // 5. Asignamos el mapa formateado al objeto final.
-            jsonFinal.lineProductItemList = lineProductItemsFormatted;
+        // CIBGLOBALD-4117 - live callout-tracked values for this preview. This method itself
+        // does no DML, but a defensive try/catch is kept anyway (matching updateTaskWithStatus) so
+        // an external-service failure can never break the preview, just omit the callout-tracked
+        // part of the comparison.
+        Map<String, Object> calloutTrackedValuesByComponent = new Map<String, Object>();
+        try {
+            for (String componentName : DMT_RendererFactory.getTrackedComponentNames()) {
+                DMT_CalloutTrackableRenderer calloutRenderer = DMT_RendererFactory.getCalloutTrackableRenderer(componentName);
+                if (calloutRenderer != null) {
+                    calloutTrackedValuesByComponent.put(componentName, calloutRenderer.fetchLiveTrackedValues(parentRecord));
+                }
+            }
+        } catch (Exception e) {
+            // Flushed immediately - this is an @AuraEnabled preview action, not a trigger, so
+            // nothing downstream is guaranteed to call DMT_AsyncOrchestrator.flush() for us.
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
+                e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
+                'DMT_ApprovalChangeStep_Handler', 'previewCompareTasksFromCase', 'DMT', 'DMT_CalloutTrackableRenderer'
+            ));
+            DMT_AsyncOrchestrator.flush();
+            calloutTrackedValuesByComponent.clear();
         }
 
-        String jsonFinalSerialized = System.JSON.serialize(jsonFinal, true).replaceAll('"attributes":\\{[^\\}]*\\},?', '');
+        String jsonFinalSerialized = DMT_TaskSnapshotService.buildSnapshotJson(
+            records[0], fieldMapFromObject, lineMap, oppMap, customAssocMap,
+            lineChildSectionsByKey, oppChildSectionsByKey, childListsBySectionKey,
+            calloutTrackedValuesByComponent
+        );
         Map<String, Object> mapJsonFinal = (Map<String, Object>)JSON.deserializeUntyped(jsonFinalSerialized);
 
         List<FeatureChangeWrapper> listFeaturesToReturn = new List<FeatureChangeWrapper>();
@@ -1115,12 +533,12 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
             for (Integer i = 0; i < mapCasesTaskStatus.get(caseId).size(); i++){
                 Map<String, Object> mapTaskStatusJson = (Map<String, Object>)JSON.deserializeUntyped(mapCasesTaskStatus.get(caseId)[i].DMT_ViewFieldStatusAtClose__c);
                 for (String fieldName : mapTaskStatusJson.keySet()){
-                    if (!fieldName.equalsIgnoreCase('line')){
+                    if (!fieldName.equalsIgnoreCase(parentSectionKey)){
                         Map<String, Object> listFromTask = (Map<String, Object>)mapTaskStatusJson.get(fieldName);
                         Map<String, Object> listFromJson = (Map<String, Object>)mapJsonFinal.get(fieldName);
                         System.debug('listFromTask: ' + listFromTask);
                         System.debug('listFromJson: ' + listFromJson);
-                        if (listFromTask != null && listFromTask.size() == listFromJson.size() && listFromTask.keySet().equals(listFromJson.keySet())){
+                        if (listFromTask != null && listFromJson != null && listFromTask.size() == listFromJson.size() && listFromTask.keySet().equals(listFromJson.keySet())){
                             for (String item : listFromTask.keySet()){
                                 Map<String, Object> itemFromTask = (Map<String, Object>)listFromTask.get(item);
                                 Map<String, Object> itemFull = (Map<String, Object>)listFromJson.get(item);
@@ -1174,11 +592,11 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                         Map<String, Object> itemFull = (Map<String, Object>)mapJsonFinal.get(fieldName);
                         if (itemFromTask != null && !itemFromTask.isEmpty()){
                             for (String fieldFromItem : getComparableFieldKeys(fieldName, fieldMapFromObject, itemFromTask.keySet())){
-                                if (fieldFromItem.equalsIgnoreCase('Client__r')){
-                                    Map<String, Object> clientFromLine = (Map<String, Object>)itemFromTask.get(fieldFromItem);
-                                    Map<String, Object> clientFromJSONFull = (Map<String, Object>)itemFull.get(fieldFromItem);
-                                    for (String fieldFromClient : clientFromLine.keySet()){
-                                        if (clientFromJSONFull.get(fieldFromClient) != clientFromLine.get(fieldFromClient)){
+                                if (itemFromTask.get(fieldFromItem) instanceof Map<String, Object>){
+                                    Map<String, Object> nestedFromTask = (Map<String, Object>)itemFromTask.get(fieldFromItem);
+                                    Map<String, Object> nestedFromJsonFull = (Map<String, Object>)itemFull.get(fieldFromItem);
+                                    for (String fieldFromNested : nestedFromTask.keySet()){
+                                        if (nestedFromJsonFull.get(fieldFromNested) != nestedFromTask.get(fieldFromNested)){
                                             tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).Status = DMT_Constants.CANCELLED;
                                             if (!isDifferent){
                                                 String featureName = mapCasesFeatureName.get(caseId);
@@ -1246,48 +664,6 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
         }
 
         return listFeaturesToReturn;
-    }
-
-    public class Status_JSON_Wrapper{
-        public DMT_Line__c line;
-        //public Map<Id, DMT_TeamMember__c> participantList;
-        public Map<Integer, Map<String, Object>> riskLineList;
-        public Map<Id, Custom_Association_Client__c> customAssociationClientList;
-        public Map<Integer, Map<String, Object>> lineProductItemList;
-        public Map<Id, DMT_Warranty__c> warranties;
-        public Map<Id, DMT_Currency_Provision__c>  currencyProvisions;
-
-        // Opportunity
-        public Opportunity opportunity;
-        public Map<Integer, Map<String, Object>>  opportunityTenor;
-        public Map<Integer, Map<String, Object>>  opportunityMitigant;
-        public Map<Id, 	DMT_Opportunity_Client__c>  opportunityClient;
-        public Map<Integer, Map<String, Object>>  opportunityLineItem;
-        public Map<Id, 	altm__Commercial_Alert__c>  altmCommercialAlert;
-        public Map<Id, 	DMT_X_Sell__c>  opportunityXSell;
-
-    }
-
-    public class Response{
-        @InvocableVariable
-        public List<WRAPPER_Response_Flow> messageList;
-    }
-
-    public class Request{
-        @InvocableVariable
-        public List<Case> records;
-
-        @InvocableVariable
-        public String passportSanctionFilter;
-    }
-
-    public class WRAPPER_Response_Flow{
-        @InvocableVariable
-        public Id caseId;
-        @InvocableVariable
-        public Id taskType;
-        @InvocableVariable
-        public Id approver;
     }
 
     public class WRAPPER_Response_NewField{

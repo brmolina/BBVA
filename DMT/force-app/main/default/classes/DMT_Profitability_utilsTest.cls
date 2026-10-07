@@ -196,4 +196,95 @@ public with sharing class DMT_Profitability_utilsTest {
         System.assertEquals(0, (Decimal) total.get('nominalFb'), 'TOTAL nominalFb debe ser 0');
         System.assertEquals(0, (Decimal) total.get('nominalDb'), 'TOTAL nominalDb debe ser 0');
     }
+
+    @isTest
+    static void testGetRwaRegLinkInfo_BlankOppId() {
+        Test.startTest();
+        Map<String, Object> result = DMT_Profitability_utils.getRwaRegLinkInfo(null);
+        Test.stopTest();
+
+        System.assertEquals(false, (Boolean) result.get('enabled'), 'Con oppId nulo no debe habilitarse el link');
+        System.assertEquals('', (String) result.get('explanationId'), 'Con oppId nulo explanationId debe ir vacio');
+        System.assertEquals('', (String) result.get('entific'), 'Con oppId nulo entific debe ir vacio');
+    }
+
+    @isTest
+    static void testGetRwaRegLinkInfo_NoBranchValues() {
+        Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
+        OpportunityLineItem oli = [SELECT Id FROM OpportunityLineItem LIMIT 1];
+
+        // Forzamos datos vacios para validar el retorno por defecto.
+        opp.DMT_branch_id_c__c = null;
+        oli.g_branch_id__c = null;
+        update new List<SObject>{ opp, oli };
+
+        Test.startTest();
+        Map<String, Object> result = DMT_Profitability_utils.getRwaRegLinkInfo(opp.Id);
+        Test.stopTest();
+
+        System.assertEquals(false, (Boolean) result.get('enabled'), 'Sin branch en Opp ni OLI no debe habilitarse el link');
+        System.assertEquals('', (String) result.get('explanationId'), 'Sin match explanationId debe ir vacio');
+        System.assertEquals('', (String) result.get('entific'), 'Sin match entific debe ir vacio');
+    }
+
+    @isTest
+    static void testCallExternalOrchestrators_BlankOppId() {
+        Test.startTest();
+        Map<String, Object> result = DMT_Profitability_utils.callExternalOrchestrators(null);
+        Test.stopTest();
+
+        System.assertEquals(false, (Boolean) result.get('success'));
+        System.assertEquals('Opportunity Id is required.', (String) result.get('message'));
+    }
+
+    @isTest
+    static void testCallExternalOrchestrators_Success() {
+        Opportunity opp = [SELECT Id, DMT_Opp_Id__c FROM Opportunity LIMIT 1];
+        opp.DMT_Opp_Id__c = 'ESCD25OPP00000001ES';
+        update opp;
+
+        Test.startTest();
+        Map<String, Object> result = DMT_Profitability_utils.callExternalOrchestrators(opp.Id);
+        Test.stopTest();
+
+        System.assertEquals(true, (Boolean) result.get('success'));
+        System.assertEquals(201, (Integer) result.get('statusCode'));
+    }
+
+    @isTest
+    static void testGetUnderlyingDetailsByIds_Empty() {
+        Test.startTest();
+        Map<String, Map<String, Object>> result = DMT_Profitability_utils.getUnderlyingDetailsByIds(new List<String>());
+        Test.stopTest();
+
+        System.assertNotEquals(null, result, 'El resultado no debe ser nulo');
+        System.assertEquals(0, result.size(), 'Con lista vacia debe devolver mapa vacio');
+    }
+
+    @isTest
+    static void testGetUnderlyingDetailsByIds_Success() {
+        DMT_Underlying__c underlying = new DMT_Underlying__c(
+            Name = 'Underlying Test',
+            DMT_Drawn_Reference_Amount__c = 1250.5,
+            DMT_Undrawn_Reference_Amount__c = 349.25
+        );
+        insert underlying;
+
+        Test.startTest();
+        Map<String, Map<String, Object>> result = DMT_Profitability_utils.getUnderlyingDetailsByIds(
+            new List<String>{ underlying.Id }
+        );
+        Test.stopTest();
+
+        System.assertEquals(1, result.size(), 'Debe devolver el underlying solicitado');
+        System.assert(result.containsKey(underlying.Id), 'Debe contener la clave del underlying');
+
+        Map<String, Object> row = result.get(underlying.Id);
+        System.assertEquals(underlying.Id, (String) row.get('Id'));
+        System.assertEquals('Underlying Test', (String) row.get('Name'));
+        System.assertEquals(1250.5, (Decimal) row.get('nominalDb'));
+        System.assertEquals(349.25, (Decimal) row.get('nominalFb'));
+    }
+
+    
 }

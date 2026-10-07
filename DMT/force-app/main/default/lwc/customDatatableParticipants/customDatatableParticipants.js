@@ -3,6 +3,7 @@ import { FlowNavigationNextEvent} from 'lightning/flowSupport';
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { loadStyle } from 'lightning/platformResourceLoader';
 import dataTableWithoutTruncate from '@salesforce/resourceUrl/DataTableTruncateCss';
+import getCoverageTeamRoles from '@salesforce/apex/DMT_ViewController.getCoverageTeamRoles';
 
 const DUPLICATE_ERROR_TITTLE = 'Duplicate value';
 const DUPLICATE_ERROR_MESSAGE = 'The selected user already exists in the list.';
@@ -27,6 +28,8 @@ export default class CustomDatatableProduct extends LightningElement {
     _isOpp;
     _addParticipant;
     procesado = false;
+    _loadingTimeout = null;
+    coverageRolesByUser = null;
 
 
     //form values
@@ -126,6 +129,15 @@ export default class CustomDatatableProduct extends LightningElement {
       this.tryProcess();
 
     }
+    startLoading() {
+        if (this._loadingTimeout) clearTimeout(this._loadingTimeout);
+        this.isLoading = true;
+        this._loadingTimeout = setTimeout(() => {
+            this.isLoading = false;
+            this._loadingTimeout = null;
+        }, 2000);
+    }
+
     closeModal(){
       this.isModalOpen = false;
       this.isLoading = false;
@@ -150,6 +162,10 @@ export default class CustomDatatableProduct extends LightningElement {
     }
 
     processTableData(value) {
+      if (this._loadingTimeout) {
+          clearTimeout(this._loadingTimeout);
+          this._loadingTimeout = null;
+      }
 
       let valueCopy = JSON.parse(JSON.stringify(value));
       valueCopy.forEach((element) => {
@@ -167,8 +183,7 @@ export default class CustomDatatableProduct extends LightningElement {
           seenUserIds.add(item.userId);
           return true;
     });
-      this.tableData = undefined;
-      this.tableData = JSON.parse(JSON.stringify(filteredValueCopy));
+      this.tableData = this.applyCoverageRoles(filteredValueCopy);
 
       this.setColumns();
 
@@ -222,13 +237,7 @@ export default class CustomDatatableProduct extends LightningElement {
                 , readonlyAttr : { fieldName: 'userDisabled' }// make readonly access level if Access Level is all
                 , showReadOnlyWarning: { fieldName: 'showReadOnlyWarning' }
             }},
-            { label: 'TEAM ROLE', fieldName: 'teamRoleValue',  type:'picklist',hideDefaultActions:true, typeAttributes: {
-            placeholder: 'Select...', options: this.teamRole, isDisabled : readOnlyAccessCurrentUser, fieldName: 'teamRoleValue' // list of all picklist options
-            , value: { fieldName: 'teamRoleValue' } // default value for picklist
-            , context: { fieldName: 'Id' } // binding account Id with context variable to be returned back
-            , readonlyAttr : { fieldName: 'userDisabled' }// make readonly access level if Access Level is all
-            , showReadOnlyWarning: { fieldName: 'showReadOnlyWarning' }
-              }},
+            { label: 'COVERAGE TEAM ROLE', fieldName: 'coverageRole', type: 'text', hideDefaultActions: true, wrapText: true },
             {
                 type:  'button-icon',
                 initialWidth: 90,hideDefaultActions:true,
@@ -268,13 +277,7 @@ export default class CustomDatatableProduct extends LightningElement {
             , showReadOnlyWarning: { fieldName: 'showReadOnlyWarning' }
         }},
 
-        { label: 'TEAM ROLE', fieldName: 'teamRoleValue',  type:'picklist',hideDefaultActions:true, typeAttributes: {
-            placeholder: 'Select...', options: this.teamRole, isDisabled : readOnlyAccessCurrentUser, fieldName: 'teamRoleValue' // list of all picklist options
-            , value: { fieldName: 'teamRoleValue' } // default value for picklist
-            , context: { fieldName: 'Id' } // binding account Id with context variable to be returned back
-            , readonlyAttr : { fieldName: 'userDisabled' }// make readonly access level if Access Level is all
-            , showReadOnlyWarning: { fieldName: 'showReadOnlyWarning' }
-        }},
+        { label: 'COVERAGE TEAM ROLE', fieldName: 'coverageRole', type: 'text', hideDefaultActions: true, wrapText: true },
         {
             type:  'button-icon',
             initialWidth: 70,hideDefaultActions:true,
@@ -298,50 +301,38 @@ export default class CustomDatatableProduct extends LightningElement {
 }
     connectedCallback(){
       loadStyle(this, dataTableWithoutTruncate);
+      this.loadCoverageRoles();
     }
 
     handleSaveData(){
 
       let copyTable = JSON.parse(JSON.stringify(this.tableData));
-                let i = 0;
-                let copyDataNew = [];
-                if(copyTable.length > 0){
-                  copyTable.forEach((element) => {
-                  element.Id = i;
-                  copyDataNew.push(element);
-                  if (i == copyTable.length - 1) {
-                    i++;
-                    copyDataNew.push( {
-                      "AccessLevel": "Read",
-                      "teamRoleValue": "",
-                      "userName": "",
-                      "showReadOnlyWarning": false,
-                      "Id": i,
-                      "recordId": this.recordId,
-                      "field1": "",
-                      "field2": "",
-                      "fieldHistory" : '{"field1" : "", "field2": ""}'
-                    });
-                  }
-                  i++;
-                });
-                }else{
-                   copyDataNew.push( {
-                    "AccessLevel": "Read",
-                    "teamRoleValue": "",
-                    "userName": "",
-                    "showReadOnlyWarning": false,
-                    "Id": i,
-                    "recordId": this.recordId,
-                    "field1": "",
-                    "field2": ""})
-                    
-                }
-                
-                this.tableData = undefined;
+      //empty placeholder rows (no participant selected) must never be sent
+      //to the backend, only rows with an actual participant are kept
+      let filledRows = copyTable.filter((element) => !!element.userName);
+      let i = 0;
+      let copyDataNew = [];
+      filledRows.forEach((element) => {
+        element.Id = i;
+        copyDataNew.push(element);
+        i++;
+      });
+      copyDataNew.push( {
+        "AccessLevel": "Read",
+        "teamRoleValue": "",
+        "userName": "",
+        "showReadOnlyWarning": false,
+        "Id": i,
+        "recordId": this.recordId,
+        "field1": "",
+        "field2": "",
+        "fieldHistory" : '{"field1" : "", "field2": ""}'
+      });
 
-      console.log('handle save data: '+JSON.stringify(copyTable));
-      this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyDataNew} ));
+      this.tableData = undefined;
+
+      //this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyDataNew} ));
+      this.emitTableChanges(copyDataNew);
 
     }
 
@@ -355,6 +346,12 @@ export default class CustomDatatableProduct extends LightningElement {
       if (!updatedItem.userId) updatedItem.AccessLevel = 'Read';
       updatedItem["dmtUserRole"] = dataRecieved.dmtUserRole;
       updatedItem["showReadOnlyWarning"] = dataRecieved.dmtUserRole == null;
+      // Auto-assign 'User-Defined' teamRole for manually added participants
+      // (rows with no existing teamRoleValue are new rows added manually from the UI)
+      const existingRow = this.tableData ? this.tableData.find(item => item.Id === dataRecieved.context) : null;
+      if (!existingRow || !existingRow.teamRoleValue) {
+        updatedItem.teamRoleValue = 'User-Defined';
+      }
       /*if (dataRecieved.fieldname == 'userName') {
         let name = this.pickListOrder.find(({value}) => value === dataRecieved.value)?.label;
         updatedItem.Name = name;
@@ -371,8 +368,9 @@ export default class CustomDatatableProduct extends LightningElement {
         let copyData = this.tableData.filter(function(item) {
           return item.Id !== updatedItem.Id
         })
-        this.isLoading = true;
-        this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyData} ));
+        this.startLoading();
+        //this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyData} ));
+        this.emitTableChanges(copyData);
 
         this.dispatchEvent(new ShowToastEvent({
           title: DUPLICATE_ERROR_TITTLE,
@@ -386,12 +384,45 @@ export default class CustomDatatableProduct extends LightningElement {
       }
     }
 
+    isUntouchedPlaceholderRow(item) {
+        return !item.userName && !item.userId && !item.teamRoleValue;
+    }
+
+    applyCoverageRoles(rows) {
+    const roles = this.coverageRolesByUser || {};
+    return rows.map(row => ({
+      ...row,
+      coverageRole: (row.userId && roles[row.userId]) || ''
+    }));
+  }
+
+    async loadCoverageRoles() {
+      if (!this.recordId) {
+        this.coverageRolesByUser = {};
+        return;
+      }
+      try {
+        this.coverageRolesByUser = (await getCoverageTeamRoles({ recordId: this.recordId })) || {};
+      } catch (error) {
+        console.error('Error loading Coverage Team roles', error);
+        this.coverageRolesByUser = {};
+      }
+      if (this.tableData) {
+        this.tableData = this.applyCoverageRoles(this.tableData);
+      }
+    }
+
+    emitTableChanges(rows) {
+      const clean = rows.map(({ coverageRole, ...rest }) => rest);
+      this.dispatchEvent(new CustomEvent('tableProductChanges', { bubbles: true, composed: true, detail: clean }));
+    }
+
     updateDataValues(updateItem) {
-        let copyData = this.copiarLista(this.tableData);console.log('updateItem',JSON.stringify(updateItem))
-        this.isLoading = true;
+        let copyData = this.copiarLista(this.tableData);
+        this.startLoading();
         let thereIsEmptyElement = false;
         copyData.forEach(item => {
-          if (updateItem.Id !== item.Id && (!item.AccessLevel || !item.userName)) {
+          if (updateItem.Id !== item.Id && !this.isUntouchedPlaceholderRow(item) && (!item.AccessLevel || !item.userName)) {
             thereIsEmptyElement = true;
           }
             else if (item.Id === updateItem.Id) {
@@ -412,9 +443,10 @@ export default class CustomDatatableProduct extends LightningElement {
                   thereIsEmptyElement = true;
                 }
             }
-        });console.log('data to send',JSON.stringify(copyData))
+        });
         //write changes back to original data
-        this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyData} ));
+        //this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyData} ));
+        this.emitTableChanges(copyData);
         if (!thereIsEmptyElement) {
           //this.dispatchEvent(new CustomEvent('editModeOff',  { bubbles:true, composed:true} ));
         //} else {
@@ -456,7 +488,7 @@ export default class CustomDatatableProduct extends LightningElement {
     //updates datatable
 comboboxChange(event) {
       event.stopPropagation();
-      this.isLoading = true;
+      this.startLoading();
       let dataRecieved = event.detail.data;
       let updatedItem;
       updatedItem = { Id: dataRecieved.context};
@@ -479,8 +511,9 @@ comboboxChange(event) {
         let copyData = this.tableData.filter(function(item) {
           return item.Id !== updatedItem.Id
         })
-        this.isLoading = true;
-        this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyData} ));
+        this.startLoading();
+        //this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyData} ));
+        this.emitTableChanges(copyData);
 
         this.dispatchEvent(new ShowToastEvent({
           title: "Valor duplicado",
@@ -497,7 +530,6 @@ comboboxChange(event) {
     picklistChanged(event) {
         event.stopPropagation();
         let dataRecieved = event.detail.data;
-        console.log('dataRecieved',JSON.stringify(dataRecieved));
         let updatedItem;
         if(dataRecieved.fieldname == 'AccessLevel') {
         updatedItem = { Id: dataRecieved.context, AccessLevel: dataRecieved.value };
@@ -510,7 +542,7 @@ comboboxChange(event) {
     }
 
     //handler to handle cell changes & update values in draft values
-    handleCellChange(event) {console.log('cell change',event)
+    handleCellChange(event) {
         this.updateDraftValues(event.detail.draftValues[0]);
     }
 
@@ -538,7 +570,7 @@ comboboxChange(event) {
       handleRowAction(event) {
         const action = event.detail.action;
         const row = event.detail.row;
-        this.isLoading = true;
+        this.startLoading();
         switch (action.name) {
             case 'deleteRecord':
                 let copyData = this.tableData.filter(function(item) {
@@ -556,7 +588,8 @@ comboboxChange(event) {
                   }
                 });
                 this.tableData = undefined;
-                this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyData} ));
+                //this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyData} ));
+                this.emitTableChanges(copyData);
                 if (!thereIsEmptyElement) {
                   //this.dispatchEvent(new CustomEvent('editModeOff',  { bubbles:true, composed:true} ));
                 //} else {
@@ -600,13 +633,13 @@ comboboxChange(event) {
                   },
                   ...this.tableData.slice(index+1)
               ];
-              console.log(copyDataNew);
               let i = 0;
                 copyDataNew.forEach((element) => {
                   element.Id = i;
                   i++;
                 });*/
-              this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyDataNew} ));
+              //this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyDataNew} ));
+              this.emitTableChanges(copyDataNew);
               //this.dispatchEvent(new CustomEvent('editModeOff',  { bubbles:true, composed:true} ));
             break;
             case 'addOppTeamMember':

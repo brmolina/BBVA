@@ -56,7 +56,7 @@
                                     <h1>
                                         <span if:true={recordInfoHasLabel}>{recordInfo.label}</span>
                                         <span class="slds-page-header__title slds-truncate" title={recordInfo.name}>
-                                            {recordInfo.name}<template if:true={isConfidential}><span class="confidential-tag"> - CONFIDENTIAL</span></template>
+                                            {recordInfo.name}<template if:true={isConfidential}><span class="confidential-tag"> - CONFIDENTIAL</span></template><template if:true={isProspect}><span class="prospect-tag"> - PROSPECT</span></template>
                                         </span>
                                     </h1>
                                 </div>

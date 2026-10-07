@@ -153,7 +153,14 @@
                 </lightning-layout>
 
                 <lightning-record-edit-form object-api-name="DMT_Line__c" record-id={recordId}>
-                    <lightning-input-field field-name="DMT_Client_Use__c" onchange={handleStandardFieldChange}></lightning-input-field>
+                    <lightning-textarea
+                        label="Client Use"
+                        value={clientUseValue}
+                        max-length={CLIENT_USE_MAX_LENGTH}
+                        onchange={handleClientUseChange}
+                        oninput={handleClientUseInput}>
+                    </lightning-textarea>
+                    <div class={clientUseCounterClass}>{clientUseCounterLabel}</div>
 
                     <template if:false={isTreasury}>
                         <lightning-input-field field-name="DMT_Comments__c" onchange={handleStandardFieldChange}></lightning-input-field>

@@ -1,4 +1,4 @@
-public with sharing class DMT_OppIntroOpportunityDealRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_OppIntroOpportunityDealRenderer implements DMT_ViewRenderer {
 
     // ====================================================================================================
     // HELPER: Build the list dynamically using the data wrapper
@@ -51,49 +51,6 @@ public with sharing class DMT_OppIntroOpportunityDealRenderer implements DMT_Vie
         } catch (Exception e) {
             System.debug('Error in DMT_OppIntroOpportunityDealRenderer renderHtml, ' + e.getMessage() + ' ' + e.getLineNumber());
             return '<div>Error: ' + e.getMessage() + ' - ' + e.getLineNumber() + '</div>';
-        }
-    }
-
-    // ====================================================================================================
-    // PDF RENDERING
-    // ====================================================================================================
-
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null || (data.opportunity.getPopulatedFieldsAsMap().isEmpty() && data.oppClient.getPopulatedFieldsAsMap().isEmpty())) {
-            return new Map<String, Object>();
-        }
-        
-        try {
-            List<Object> contentList = new List<Object>();
-            Map<String, Object> component = new Map<String, Object>();
-
-            // Promoted Main Title
-            contentList.add(DMT_Create_Pdf_Controller.createTitle('Intro Opportunity Deal'));
-
-            // Commitment Deadline & Exception Pool
-            List<DMT_FormattingUtils.DisplayField> fieldsToRender = buildRenderFields(data);
-            contentList.add(DMT_Create_Pdf_Controller.generatePdfList(fieldsToRender));
-            
-            // Tiering Action Table
-            List<List<String>> tierHead = new List<List<String>>{ new List<String>{'Tiering Action', 'Current', 'Target'} };
-            List<List<String>> tierBody = new List<List<String>>{
-                new List<String>{
-                    DMT_FormattingUtils.checkNull(data.oppClient.DMT_Tiering_Action__c),
-                    DMT_FormattingUtils.checkNull(data.oppClient.DMT_Current__c),
-                    DMT_FormattingUtils.checkNull(data.oppClient.DMT_Target__c)}
-            };
-            contentList.add(DMT_Create_Pdf_Controller.createTable(tierHead, tierBody));
-
-            component.put('content', contentList);
-            component.put('name', 'Intro Opportunity Deal');
-
-            System.debug('returning component: ' + JSON.serialize(component));
-            return component;
-
-        } catch (Exception e) {
-            System.debug('Error in DMT_OppIntroOpportunityDealRenderer renderPdfJson, ' + e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(), 'DMT_OppIntroOpportunityDealRenderer', 'renderPdfJson', 'DMT', ''));
-            return new Map<String, Object>();
         }
     }
 }

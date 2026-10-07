@@ -10,19 +10,34 @@ export default class Dmt_generic_record_picker extends LightningElement {
     @api disabled;
     @api variant;
     @api label;
+    @api showSubLabel = false;
 
     _context;
     @api get context() { return this._context; }
     set context(v) { this._context = v; }
 
-    @api options = []; 
-    
+    _options = [];
+    @api get options() { return this._options; }
+    set options(v) {
+        this._options = v || [];
+        // Re-filter with current term when parent pushes fresh server results
+        if (this.searchText) {
+            this.filterOptions(this.searchText);
+            if (this._displayOptions.length > 0 && this._isFocused) {
+                this.showDropdown = true;
+                // eslint-disable-next-line @lwc/lwc/no-async-operation
+                requestAnimationFrame(() => this._measurePosition());
+            }
+        }
+    }
+
     @track searchText = '';
     @track showDropdown = false;
     @track selectedLabel = '';
     
     @track _displayOptions = [];
     @track highlightedIndex = 0;
+    @track selectedSubLabel = '';
 
     // Coordinates for the floating dropdown
     @track _coords = { top: 0, left: 0, width: 0 };
@@ -30,6 +45,7 @@ export default class Dmt_generic_record_picker extends LightningElement {
     _preventBlurClose = false;
     _isFocused = false;
     _handlerScroll;
+    _searchTimer = null;
 
     connectedCallback() {
         this._handlerScroll = this.handleWindowScroll.bind(this);
@@ -64,11 +80,18 @@ export default class Dmt_generic_record_picker extends LightningElement {
     // Adds 'slds-has-focus' class to the item currently highlighted by keyboard
     get computedOptions() {
         return this._displayOptions.map((opt, index) => {
+            const hasSubLabel = this.showSubLabel && opt.subLabel;
+
+            const baseClass = hasSubLabel
+                ? 'lookup-option lookup-option_two-lines slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_center slds-p-around_x-small'
+                : 'lookup-option slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_center slds-p-around_x-small';
+
             return {
                 ...opt,
-                cssClass: index === this.highlightedIndex 
-                    ? 'slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_center slds-p-around_x-small slds-has-focus'
-                    : 'slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_center slds-p-around_x-small'
+                showSubLabel: hasSubLabel,
+                cssClass: index === this.highlightedIndex
+                    ? `${baseClass} slds-has-focus`
+                    : baseClass
             };
         });
     }
@@ -110,9 +133,12 @@ export default class Dmt_generic_record_picker extends LightningElement {
             verticalVal = modalElement ? (r.bottom - topOffset + 5) : (r.bottom + 5);
         }
 
+        const minDropdownWidth = 420;
+        const dropdownWidth = Math.max(r.width, minDropdownWidth);
+
         this._coords = { 
             left: r.left - leftOffset, 
-            width: r.width,
+            width: dropdownWidth,
             placement: placement,
             val: verticalVal,
             isModal: !!modalElement
@@ -148,6 +174,7 @@ export default class Dmt_generic_record_picker extends LightningElement {
 
         // If cleared via 'X' button or backspace, close immediately
         if (!this.searchText) {
+            this.selectedSubLabel = '';
             this.notifyChange(null, '');
             this.closeDropdown();
             return;
@@ -164,6 +191,19 @@ export default class Dmt_generic_record_picker extends LightningElement {
         } else {
             this.closeDropdown();
         }
+
+        // Debounced server-side search event
+        if (this._searchTimer) {
+            clearTimeout(this._searchTimer);
+        }
+        // eslint-disable-next-line @lwc/lwc/no-async-operation
+        this._searchTimer = window.setTimeout(() => {
+            this.dispatchEvent(new CustomEvent('recordpickersearch', {
+                bubbles: true,
+                composed: true,
+                detail: { term: this.searchText, fieldname: this.fieldname }
+            }));
+        }, 300);
     }
 
     openDropdown() {
@@ -181,18 +221,81 @@ export default class Dmt_generic_record_picker extends LightningElement {
 
     filterOptions(term) {
         this.highlightedIndex = 0;
+
         if (!this.options || this.options.length === 0) {
             this._displayOptions = [];
             return;
         }
+
         if (!term) {
-            this._displayOptions = [...this.options];
-        } else {
-            const lowerTerm = term.toLowerCase();
-            this._displayOptions = this.options.filter(opt => 
-                opt.label && opt.label.toLowerCase().includes(lowerTerm)
-            );
+            this._displayOptions = [...this.options].slice(0, 50);
+            return;
         }
+
+        const normalizedTerm = this.normalizeText(term);
+
+        this._displayOptions = this.options
+        .map(opt => {
+            const searchableText = opt.searchText || `${opt.label || ''} ${opt.subLabel || ''}`;
+            return {
+                ...opt,
+                _score: this.getMatchScore(searchableText, normalizedTerm)
+            };
+        })
+        .filter(opt => opt._score < 99)
+        .sort((a, b) => {
+            // Primary: server group (1 = exact word, 2 = prefix); options without group sort last
+            const aGroup = a.group != null ? a.group : 999;
+            const bGroup = b.group != null ? b.group : 999;
+            if (aGroup !== bGroup) return aGroup - bGroup;
+            // Secondary: score (for non-grouped options or as tiebreaker)
+            if (a._score !== b._score) return a._score - b._score;
+            return (a.label || '').localeCompare(b.label || '');
+        })
+        .slice(0, 500);
+    }
+
+    normalizeText(value) {
+        return (value || '')
+            .toString()
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .trim();
+    }
+
+    getMatchScore(label, normalizedTerm) {
+        const normalizedLabel = this.normalizeText(label);
+
+        if (!normalizedLabel || !normalizedTerm) {
+            return 99;
+        }
+
+        if (normalizedLabel === normalizedTerm) {
+            return 1;
+        }
+
+        if (normalizedLabel.startsWith(normalizedTerm + ' ')) {
+            return 2;
+        }
+
+        const words = normalizedLabel.split(/[\s\-_,.()\/]+/).filter(Boolean);
+        if (normalizedLabel.startsWith(normalizedTerm)) {
+            return 3;
+        }
+        if (words.slice(1).some(word => word === normalizedTerm)) {
+            return 4;
+        }
+
+        if (words.slice(1).some(word => word.startsWith(normalizedTerm))) {
+            return 5;
+        }
+
+        if (normalizedLabel.includes(normalizedTerm)) {
+            return 9;
+        }
+
+        return 99;
     }
 
     handleSelect(event) {
@@ -200,9 +303,11 @@ export default class Dmt_generic_record_picker extends LightningElement {
         event.stopPropagation();
         const recordId = event.currentTarget.dataset.value;
         const recordLabel = event.currentTarget.dataset.label;
+        const recordSubLabel = event.currentTarget.dataset.sublabel || '';
     
         this._preventBlurClose = true;
         this.searchText = recordLabel;
+        this.selectedSubLabel = recordSubLabel;
         
         this.closeDropdown();
         this.notifyChange(recordId, recordLabel);
@@ -214,6 +319,9 @@ export default class Dmt_generic_record_picker extends LightningElement {
     notifyChange(val, lbl) {
         this.value = val;
         this.selectedLabel = lbl;
+        if (!val) {
+            this.selectedSubLabel = '';
+        }
         
         this.dispatchEvent(new CustomEvent('recordpickerchange', {
             composed: true,
@@ -262,6 +370,7 @@ export default class Dmt_generic_record_picker extends LightningElement {
             
             if (selectedOption) {
                 this.searchText = selectedOption.label;
+                this.selectedSubLabel = selectedOption.subLabel || '';
                 this.notifyChange(selectedOption.value, selectedOption.label);
                 this.closeDropdown();
                 

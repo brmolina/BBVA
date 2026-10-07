@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__removed_from_structure__c</fullName>
+    <defaultValue>false</defaultValue>
+    <deprecated>false</deprecated>
+    <description>Internal field to control if an element has been removed from group structure.</description>
+    <label>Removed from structure</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

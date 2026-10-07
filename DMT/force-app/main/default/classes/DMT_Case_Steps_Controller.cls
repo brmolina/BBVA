@@ -295,6 +295,15 @@ public without sharing class DMT_Case_Steps_Controller {
 
     }
 
+    @AuraEnabled(cacheable=true)
+    public static List<WRAPPER_Step> getStepsFromParentCase(Id caseId) {
+        Case currentCase = [SELECT ParentId FROM Case WHERE Id = :caseId WITH USER_MODE LIMIT 1];
+        if (currentCase.ParentId == null) {
+            return new List<WRAPPER_Step>();
+        }
+        return getStepsFromCase(currentCase.ParentId);
+    }
+
     @AuraEnabled(cacheable=false)
     public static List<WRAPPER_Step> getCurrentStepsFromCases(List<Case> casesList) {
         List<Task> listTaskToProcess = new List<Task>();
@@ -733,10 +742,11 @@ public without sharing class DMT_Case_Steps_Controller {
     Map<Id, DMT_PassportLineWrapper> mapWrapperByLineorOpportunityId = new Map<Id, DMT_PassportLineWrapper>();
     Map<Id,Passport__c> mapPassportRecordsByCaseId = new Map<Id,Passport__c>();
     Map<Id,Map<String,Case>> mapFeaturesCasesByLineorOpportunityID = new  Map<Id,Map<String,Case>>();
-    List<Task> listTaskRelated = DMT_Case_Steps_Selector.getTasksByCase(new Set<Id>{ newToProcess.Id });
-    if(newToProcess == null ){
+    if(newToProcess == null || oldCaseToProcess == null ){
       return;
     }
+
+    List<Task> listTaskRelated = DMT_Case_Steps_Selector.getTasksByCase(new Set<Id>{ newToProcess.Id });
 
     Id lineId = newToProcess.DMT_Line__c;
     Id oppId  = newToProcess.opportunity_id__c;
@@ -750,7 +760,7 @@ public without sharing class DMT_Case_Steps_Controller {
 
     Id contextId = isLineContext ? lineId : oppId;
 
-    if(newToProcess.RecordTypeId == recordTypeCaseApproval && newToProcess.IsClosed == true && oldCaseToProcess.IsClosed == false && newToProcess.DMT_Passport_Sanction__c != null && newToProcess.DMT_Passport_Sanction__c.equalsIgnoreCase(DMT_Constants.APPROVAL)  && !listTaskRelated.isEmpty() && listTaskRelated[0].DMT_Step_Result__c == 'Yes' ) {
+    if(newToProcess.RecordTypeId == recordTypeCaseApproval && newToProcess.IsClosed == true && !(newToProcess.isSet(Case.DMT_Closed_By_Passport__c) && newToProcess.DMT_Closed_By_Passport__c == true) && oldCaseToProcess.IsClosed == false && newToProcess.DMT_Passport_Sanction__c != null && newToProcess.DMT_Passport_Sanction__c.equalsIgnoreCase(DMT_Constants.APPROVAL)  && !listTaskRelated.isEmpty() && listTaskRelated[0].DMT_Step_Result__c == 'Yes' ) {
       mapCasesToProcess.put(newToProcess.Id, newToProcess);
       setLinesorOpportunitiesIds.add(contextId);
     }
@@ -886,7 +896,8 @@ public without sharing class DMT_Case_Steps_Controller {
           cw.caseStatus =   cw.myCase != null ? cw.myCase.Status : null;
           System.debug('**cw.myCase'  + JSON.serializePretty(cw.myCase));
 
-          if(cw.myCase == null || (cw.myCase != null && cw.myCase.IsClosed == false) ){
+                    if(cw.myCase == null || (cw.myCase != null && cw.myCase.IsClosed == false
+                            && (cw.featureType == 'Business' || cw.featureType == 'Risk')) ){
             listCaseFeatureWrappers.add(cw);
           }
         }
@@ -896,6 +907,7 @@ public without sharing class DMT_Case_Steps_Controller {
     System.debug('**Lista listCaseFeatureWrappers 2'  + JSON.serializePretty(listCaseFeatureWrappers));
     List<DMT_CaseFeatureWrapper> listBussiness = new List<DMT_CaseFeatureWrapper>();
     List<DMT_CaseFeatureWrapper> listRisk = new List<DMT_CaseFeatureWrapper>();
+    List<DMT_CaseFeatureWrapper> listOther = new List<DMT_CaseFeatureWrapper>();
 
     //Next feature:
     if(!listCaseFeatureWrappers.isEmpty()){
@@ -906,41 +918,156 @@ public without sharing class DMT_Case_Steps_Controller {
           listBussiness.add(feature);
         } else if(feature.featureType == 'Risk'){
           listRisk.add(feature);
+                } else {
+                    listOther.add(feature);
         }
       }
 
       System.debug('*** Lista Negocio Size: ' + listBussiness.size());
       System.debug('*** Lista Riesgo Size: ' + listRisk.size());
+        System.debug('*** Lista otras Features Size: ' + listOther.size());
 
-      if (listBussiness.size() > 0) {
-        DMT_CaseFeatureWrapper nextBusinessFeature = listBussiness[0];
-        System.enqueueJob(new StartCaseQueueable(
-          nextBusinessFeature.externalLineid,
-        nextBusinessFeature.approverId,
-        nextBusinessFeature.taskId,
-        JSON.serialize(nextBusinessFeature.taskList),
-        nextBusinessFeature.featureId,
-        nextBusinessFeature.featureName,
-        '',
-        nextBusinessFeature.passportSanction
-          ));
-      } else if(listRisk.size()>0){
-        DMT_CaseFeatureWrapper nextRiskFeature = listRisk[0];
-        System.enqueueJob(new StartCaseQueueable(
-          nextRiskFeature.externalLineid,
-        nextRiskFeature.approverId,
-        nextRiskFeature.taskId,
-        JSON.serialize(nextRiskFeature.taskList),
-        nextRiskFeature.featureId,
-        nextRiskFeature.featureName,
-        '',
-        nextRiskFeature.passportSanction
-          ));
-      }
+            if (listBussiness.size() > 0) {
+                DMT_CaseFeatureWrapper nextBusinessFeature = listBussiness[0];
+                enqueueStartCaseQueueable(nextBusinessFeature);
+        } else if(listRisk.size()>0){
+            DMT_CaseFeatureWrapper nextRiskFeature = listRisk[0];
+            enqueueStartCaseQueueable(nextRiskFeature);
+
+            // Lanzamiento en paralelo de features "Other" (Financial Sponsor, Estructurado, etc.)
+            // SOLO para Oportunidades; para Líneas el comportamiento se mantiene igual que antes (solo Risk)
+            if (isOppContext) {
+            for (DMT_CaseFeatureWrapper otherFeature : listOther) {
+                enqueueStartCaseQueueable(otherFeature);
+            }
+            }
+        }
     }else if (isOppContext) {
         moveStatusToReadyToClose(contextId);
     }
   }
+
+    private static void enqueueStartCaseQueueable(DMT_CaseFeatureWrapper feature) {
+        if (feature == null || Limits.getQueueableJobs() >= Limits.getLimitQueueableJobs()) {
+            System.debug(LoggingLevel.ERROR, 'Unable to enqueue approval feature: Queueable limit reached.');
+            return;
+    }
+
+        System.enqueueJob(new StartCaseQueueable(
+            feature.externalLineid,
+            feature.approverId,
+            feature.taskId,
+            JSON.serialize(feature.taskList),
+            feature.featureId,
+            feature.featureName,
+            '',
+            feature.passportSanction
+        ));
+    }
+
+    public static void startFirstBusinessApprovalFeature(Id contextId) {
+    if (contextId == null) return;
+    System.enqueueJob(new StartFirstBusinessApprovalQueueable(contextId));
+}
+
+    private static void processFirstBusinessApprovalFeature(Id contextId) {
+        if (contextId == null) return;
+
+                List<Passport__c> listPassportRecords = DMT_Case_Steps_Selector.getPassportsByOpportunityIds(new Set<Id>{ contextId });
+
+        System.debug('###IRENE### listPassportRecords.size()=' + listPassportRecords.size());
+
+        if (listPassportRecords.isEmpty() || listPassportRecords[0].DMT_Passport_Save__c == null) return;
+
+        DMT_PassportLineWrapper wrapper = DMT_PassportLineWrapper.parseLinePassport(listPassportRecords[0].DMT_Passport_Save__c);
+        if (wrapper?.data?.features == null) return;
+
+        List<Case> existingCases = DMT_Case_Steps_Selector.getApprovalCasesByOpportunityIds(new Set<Id>{ contextId });
+
+        if (!existingCases.isEmpty()) return;
+
+        List<String> approversIdList = new List<String>();
+        for (DMT_PassportLineWrapper.feature f : wrapper.data.features) {
+            if (f.passportSanction == 'approval' && f.tasks != null && !f.tasks.isEmpty()
+                && f.tasks[0].approvers != null && !f.tasks[0].approvers.isEmpty()) {
+                approversIdList.add(f.tasks[0].approvers[0].Id);
+            }
+        }
+        Map<String, String> approverTypeMap = buildApproverTypeMap(
+            DMT_Passport_Handler.getFeatureTypeByApproverType(approversIdList)
+        );
+
+        // CAMBIO: ya no filtramos solo Business aquí; recogemos ambos tipos y decidimos después,
+        // igual que hace processStartNextCaseApproval
+        List<DMT_CaseFeatureWrapper> pending = new List<DMT_CaseFeatureWrapper>();
+        for (DMT_PassportLineWrapper.feature f : wrapper.data.features) {
+            if (f.passportSanction != 'approval' || f.tasks == null || f.tasks.isEmpty()) continue;
+
+            String approverId = (f.tasks[0].approvers != null && !f.tasks[0].approvers.isEmpty()) ? f.tasks[0].approvers[0].Id : null;
+            if (approverId == null) continue;
+
+            String featureType = approverTypeMap.get(approverId);
+            if (featureType != 'Business' && featureType != 'Risk') continue;
+
+            DMT_CaseFeatureWrapper cw = new DMT_CaseFeatureWrapper();
+            cw.featureId = String.valueOf(f.id);
+            cw.featureName = f.name;
+            cw.passportSanction = f.passportSanction;
+            cw.featureOrder = f.orderNumber;
+            cw.externalLineid = wrapper.data.opportunityId;
+            cw.taskId = f.tasks[0].id;
+            cw.approverId = approverId;
+            cw.featureType = featureType;
+
+            Object untyped = JSON.deserializeUntyped(JSON.serialize(f.tasks));
+            List<Map<String, Object>> taskListAsMaps = new List<Map<String, Object>>();
+            if (untyped instanceof List<Object>) {
+                for (Object o : (List<Object>) untyped) {
+                    if (o instanceof Map<String, Object>) taskListAsMaps.add((Map<String, Object>) o);
+                }
+            }
+            cw.taskList = taskListAsMaps;
+            pending.add(cw);
+        }
+
+        if (pending.isEmpty()) return;
+        pending.sort();
+
+        // CAMBIO: separar por tipo y priorizar Business, igual que processStartNextCaseApproval
+        List<DMT_CaseFeatureWrapper> businessPending = new List<DMT_CaseFeatureWrapper>();
+        List<DMT_CaseFeatureWrapper> riskPending = new List<DMT_CaseFeatureWrapper>();
+        for (DMT_CaseFeatureWrapper cw : pending) {
+            if (cw.featureType == 'Business') {
+                businessPending.add(cw);
+            } else if (cw.featureType == 'Risk') {
+                riskPending.add(cw);
+            }
+        }
+
+        DMT_CaseFeatureWrapper first = !businessPending.isEmpty() ? businessPending[0]
+            : (!riskPending.isEmpty() ? riskPending[0] : null);
+        if (first == null) return;
+
+        List<Map<String, Object>> taskListCopy = first.taskList;
+        if (!taskListCopy.isEmpty()) taskListCopy.remove(0);
+
+        System.enqueueJob(new StartCaseQueueable(
+            first.externalLineid, first.approverId, first.taskId,
+            JSON.serialize(taskListCopy), first.featureId, first.featureName, '', first.passportSanction
+        ));
+    }
+
+    public class StartFirstBusinessApprovalQueueable implements Queueable {
+        private final Id contextId;
+
+        public StartFirstBusinessApprovalQueueable(Id contextId) {
+            this.contextId = contextId;
+        }
+
+        public void execute(QueueableContext context) {
+            processFirstBusinessApprovalFeature(contextId);
+        }
+    }
 
   @TestVisible
     private static void moveStatusToReadyToClose(Id contextId) {

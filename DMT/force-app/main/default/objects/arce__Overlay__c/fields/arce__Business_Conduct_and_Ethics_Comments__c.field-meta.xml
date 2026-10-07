@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Business_Conduct_and_Ethics_Comments__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Ethics, AML, and CTF policies comment.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Business Conduct and Ethics Comments</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>TextArea</type>
+</CustomField>

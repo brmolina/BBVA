@@ -42,9 +42,13 @@ public with sharing class TaskTriggerHandler {
     }
     timesExecuted ++;
     List<Task> dmtTasks = DES_RecordType_Utils.filter((List<SObject>) Trigger.new, 'Task', 'DMT_Step_Approval');
-    if (dmtTasks.isEmpty()) {
-    Task_Helper_Comm_Alert.changeCommAlertStatusInsert(newList);
-  }
+    if (!dmtTasks.isEmpty()) {
+      // Send Task Assigned notifications for DMT tasks
+      DMT_CloseWonNotificationService.sendTaskAssignedLineNotifications(dmtTasks);
+      DMT_CloseWonNotificationService.sendTaskAssignedOppNotifications(dmtTasks);
+    } else {
+      Task_Helper_Comm_Alert.changeCommAlertStatusInsert(newList);
+    }
   }
 
   /*---------------------------------------------------------------------------------------

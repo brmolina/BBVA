@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_TrackedComponents__c</fullName>
+    <description>CIBGLOBALD-4117: semicolon-joined list of DMT_Items__c.DMT_Component_Item__c values that were actually configured for this task&apos;s approver view at freeze time (e.g. &quot;Line Info;Client;Approval Process Data&quot;). Lets the restart watch gate (DMT_ApprovalChangeStep_Helper.isTaskStale) scope its field comparison to only the components that could actually have been frozen for this specific task, instead of blindly checking every renderer-tracked component regardless of whether it was ever part of this view. Blank on older snapshots predating this field - the watch gate falls back to the unscoped check in that case.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Tracked Components</label>
+    <length>4096</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

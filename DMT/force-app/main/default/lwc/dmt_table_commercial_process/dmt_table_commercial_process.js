@@ -1,5 +1,6 @@
 import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import getCurrencyLabel from '@salesforce/apex/DMT_Currency_Conversion_Utils.getCurrencyLabel';
 
 const READ_COLUMNS = [
     { type: 'button-icon', hideDefaultActions: true, initialWidth: 60, cellAttributes: { alignment: 'center' }, typeAttributes: { iconName: 'utility:edit', label: ' ', name: 'editRecord', variant: 'bare' } },
@@ -78,13 +79,14 @@ export default class dmt_table_commercial_process extends LightningElement {
     _rawInput         = [];
     _editState        = false;
     _isReadOnlyUser   = false;
+    _currencyLabelCache      = {};
+    _pendingCurrencyFetches  = new Set();
     @track tableData  = [];
     @track columns    = this._buildReadColumns();
     @track isEditMode = false;
 
     get isEditPencilEnabled() {
-        return this._isReadOnlyUser === false
-            && (this.stageName === 'Draft' || this.stageName === 'Proposal');
+        return this._isReadOnlyUser === false;
     }
 
 
@@ -142,10 +144,12 @@ export default class dmt_table_commercial_process extends LightningElement {
             const feeNext = this._toNum(item.fee_next_12m_amount__c);
             const potential = this._toNum(item.pre_oppy_revenue_next_12m_amount__c);
             const currency = item.g_currency_id__c || 'EUR';
+            const currencyLabel = this._getCurrencyLabel(currency);
 
             return {
                 ...item,
                 g_currency_id__c: currency,
+                currency_label_display: currencyLabel,
                 deferred_fee_amount__c: deferred,
                 no_deferred_fee_amount__c: noDeferred,
                 undrawn_fee_next_12m_amount__c: annual,
@@ -228,7 +232,7 @@ export default class dmt_table_commercial_process extends LightningElement {
             hideDefaultActions: true,
             cellAttributes: { alignment: 'center' },
             typeAttributes: {
-                suffix: { fieldName: 'g_currency_id__c' },
+                suffix: { fieldName: 'currency_label_display' },
                 step: '0.01',
                 aviableItem: { fieldName: true },
                 inputValue: { fieldName: field },
@@ -284,16 +288,28 @@ export default class dmt_table_commercial_process extends LightningElement {
     }
 
 
+    @api
+    getTableData() {
+        return this.tableData.map(({ editDisabled, ...rest }) => {
+            const clean = { ...rest };
+            // eliminar campos _display que son sólo para presentación
+            Object.keys(clean).forEach(k => {
+                if (k.endsWith('_display')) delete clean[k];
+            });
+            return clean;
+        });
+    }
+
     handleRowAction(event) {
         console.log('ABS edit button '+ JSON.stringify(event.detail.action));
         const action = event.detail.action;
         if (action.name !== 'editRecord') return;
         if (!this.isEditPencilEnabled) return;
 
-        this.dispatchEvent(new CustomEvent('editModeTableOliFees', {
+        this.dispatchEvent(new CustomEvent('editmodechange', {
             bubbles: true,
             composed: true,
-            detail: { editState: true },
+            detail: { isEditMode: true, source: 'table' },
         }));
     }
 
@@ -348,15 +364,52 @@ export default class dmt_table_commercial_process extends LightningElement {
             maximumFractionDigits: 10
         }).format(value);
 
-        const currencyMap = {
-            EUR: '€'
-        };
+        const label = this._getCurrencyLabel(currencyCode);
 
-        const symbol = currencyMap[currencyCode];
+        return `${formattedNumber} ${label}`.trim();
+    }
 
-        return symbol 
-            ? `${formattedNumber} ${symbol}` 
-            : `${formattedNumber} ${currencyCode || ''}`.trim();
+    // ─── Currency label (metadata: DMT_Currency_Conversion__mdt) ─────────────
+
+    _getCurrencyLabel(currencyCode) {
+        const code = currencyCode || 'EUR';
+        if (this._currencyLabelCache[code]) return this._currencyLabelCache[code];
+
+        if (!this._pendingCurrencyFetches.has(code)) {
+            this._pendingCurrencyFetches.add(code);
+            getCurrencyLabel({ currencyIsoCode: code })
+                .then(result => {
+                    this._currencyLabelCache[code] = result || code;
+                })
+                .catch(() => {
+                    this._currencyLabelCache[code] = code;
+                })
+                .finally(() => {
+                    this._pendingCurrencyFetches.delete(code);
+                    this._refreshDisplayFields();
+                });
+        }
+
+        return code;
+    }
+
+    _refreshDisplayFields() {
+        if (!this.tableData || this.tableData.length === 0) return;
+        this.tableData = this.tableData.map(row => {
+            const currency = row.g_currency_id__c || 'EUR';
+            const currencyLabel = this._getCurrencyLabel(currency);
+            return {
+                ...row,
+                currency_label_display: currencyLabel,
+                deferred_fee_amount_display: this._formatAmountWithCurrency(row.deferred_fee_amount__c, currency),
+                no_deferred_fee_amount_display: this._formatAmountWithCurrency(row.no_deferred_fee_amount__c, currency),
+                undrawn_fee_next_12m_amount_display: this._formatAmountWithCurrency(row.undrawn_fee_next_12m_amount__c, currency),
+                pre_net_margin_next_12m_amount_display: this._formatAmountWithCurrency(row.pre_net_margin_next_12m_amount__c, currency),
+                periodic_fee_amount_display: this._formatAmountWithCurrency(row.periodic_fee_amount__c, currency),
+                fee_next_12m_amount_display: this._formatAmountWithCurrency(row.fee_next_12m_amount__c, currency),
+                pre_oppy_revenue_next_12m_amount_display: this._formatAmountWithCurrency(row.pre_oppy_revenue_next_12m_amount__c, currency),
+            };
+        });
     }
 
     _formatWithSuffix(value, suffix) {

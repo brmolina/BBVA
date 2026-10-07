@@ -55,6 +55,7 @@ export default class Dmt_massive_task_closure_modal extends LightningElement {
     pendingFocusBulkComment = false;
     pendingFocusBulkApproverLabel = false;
     pendingFocusTaskCommentId = null;
+    activeBulkEditorColumnKey = null;
     _viewPreloadStarted = false;
     _viewPreloadPromise = null;
 
@@ -115,11 +116,60 @@ export default class Dmt_massive_task_closure_modal extends LightningElement {
 
     get tableColumns() {
         return [
-            { key: 'task', label: 'Task', sortIcon: this.getSortIcon('task'), isResizable: true },
-            { key: 'result', label: 'Result', sortIcon: this.getSortIcon('result'), isResizable: true },
-            { key: 'comments', label: 'Comments', sortIcon: this.getSortIcon('comments'), isResizable: true },
-            { key: 'approverLabel', label: 'Approver Label', sortIcon: this.getSortIcon('approverLabel'), isResizable: true },
-            { key: 'files', label: 'Files', sortIcon: this.getSortIcon('files'), isResizable: false }
+            {
+                key: 'task',
+                label: 'Task',
+                sortTitle: 'Sort by Task',
+                sortIcon: this.getSortIcon('task'),
+                isResizable: true,
+                canBulkEdit: false,
+                isBulkEditorOpen: false
+            },
+            {
+                key: 'result',
+                label: 'Result',
+                sortTitle: 'Sort by Result',
+                sortIcon: this.getSortIcon('result'),
+                isResizable: true,
+                canBulkEdit: !this.isCloseForReviewMode,
+                isBulkEditorOpen: this.activeBulkEditorColumnKey === 'result',
+                isResultColumn: true,
+                isCommentColumn: false,
+                isApproverLabelColumn: false
+            },
+            {
+                key: 'comments',
+                label: 'Comments',
+                sortTitle: 'Sort by Comments',
+                sortIcon: this.getSortIcon('comments'),
+                isResizable: true,
+                canBulkEdit: true,
+                isBulkEditorOpen: this.activeBulkEditorColumnKey === 'comments',
+                isResultColumn: false,
+                isCommentColumn: true,
+                isApproverLabelColumn: false
+            },
+            {
+                key: 'approverLabel',
+                label: 'Approver Label',
+                sortTitle: 'Sort by Approver Label',
+                sortIcon: this.getSortIcon('approverLabel'),
+                isResizable: true,
+                canBulkEdit: true,
+                isBulkEditorOpen: this.activeBulkEditorColumnKey === 'approverLabel',
+                isResultColumn: false,
+                isCommentColumn: false,
+                isApproverLabelColumn: true
+            },
+            {
+                key: 'files',
+                label: 'Files',
+                sortTitle: 'Sort by Files',
+                sortIcon: this.getSortIcon('files'),
+                isResizable: false,
+                canBulkEdit: false,
+                isBulkEditorOpen: false
+            }
         ];
     }
 
@@ -506,6 +556,56 @@ export default class Dmt_massive_task_closure_modal extends LightningElement {
     }
 
     handleBulkResultChange(event) { this.bulkResult = event.detail.value; }
+
+    handleOpenBulkEditor(event) {
+        event.stopPropagation();
+        const columnKey = event.currentTarget.dataset.columnKey;
+        const nextColumnKey = this.activeBulkEditorColumnKey === columnKey
+            ? null
+            : columnKey;
+        this.activeBulkEditorColumnKey = nextColumnKey;
+        if (nextColumnKey !== 'result') {
+            this.openBulkResultDropdown = false;
+        }
+    }
+
+    handleCloseBulkEditor(event) {
+        if (event) {
+            event.stopPropagation();
+        }
+        this.openBulkResultDropdown = false;
+        this.activeBulkEditorColumnKey = null;
+    }
+
+    handleBulkPopoverClick(event) {
+        event.stopPropagation();
+    }
+
+    handleHeaderBulkResultChange(event) {
+        this.bulkResult = event.detail?.value ?? event.target?.value ?? '';
+    }
+
+    handleHeaderBulkCommentChange(event) {
+        this.bulkComment = event.detail?.value ?? event.target?.value ?? '';
+    }
+
+    handleHeaderBulkApproverLabelChange(event) {
+        this.bulkApproverLabel = event.detail?.value ?? event.target?.value ?? '';
+    }
+
+    handleApplyBulkEditor(event) {
+        event.stopPropagation();
+        const columnKey = event.currentTarget.dataset.columnKey;
+        if (columnKey === 'result') {
+            this.applyBulkResultInternal();
+        } else if (columnKey === 'comments') {
+            this.applyBulkComment();
+        } else if (columnKey === 'approverLabel') {
+            this.applyBulkApproverLabel();
+        }
+        this.openBulkResultDropdown = false;
+        this.activeBulkEditorColumnKey = null;
+    }
     handleBulkCommentChange(event) {
         this.bulkComment = event.detail?.value ?? event.target?.value ?? '';
     }
@@ -535,20 +635,32 @@ export default class Dmt_massive_task_closure_modal extends LightningElement {
     }
 
     get bulkResultDisplay() {
-        return this.bulkResult;
+        const selectedOption = (this.globalResultOptions || []).find(option => option.value === this.bulkResult);
+        return selectedOption ? selectedOption.label : this.bulkResult;
     }
 
-    get bulkResultBadgeClass() {
-        if (this.bulkResult === 'Yes') {
+    get headerBulkResultOptions() {
+        return (this.globalResultOptions || []).map(option => ({
+            ...option,
+            badgeClass: this.getResultBadgeClass(option.value)
+        }));
+    }
+
+    getResultBadgeClass(resultValue) {
+        if (resultValue === 'Yes') {
             return 'square-badge badge-success';
         }
-        if (this.bulkResult === 'No') {
+        if (resultValue === 'No') {
             return 'square-badge badge-error';
         }
-        if (this.bulkResult === 'N/A') {
+        if (resultValue === 'N/A') {
             return 'square-badge badge-na';
         }
         return 'square-badge';
+    }
+
+    get bulkResultBadgeClass() {
+        return this.getResultBadgeClass(this.bulkResult);
     }
 
     handleToggleBulkResultDropdown(event) {
@@ -569,7 +681,47 @@ export default class Dmt_massive_task_closure_modal extends LightningElement {
         this.openBulkResultDropdown = false;
     }
 
-    applyBulkChanges() {
+    applyBulkResult() {
+        this.applyBulkResultInternal();
+    }
+
+    applyBulkComment() {
+        this.closureData = this.sortRows(this.closureData.map(item => {
+            const warning = item.reviewBlocked === true || item.hasWarning === true;
+            const newRow = {
+                ...item,
+                comments: this.bulkComment || item.comments,
+                isEditingComment: false,
+                isEditingApproverLabel: false,
+                hasWarning: warning
+            };
+            return this.updateRowVisuals(newRow);
+        }));
+
+        this.openBulkCommentEditor = false;
+        this.pendingFocusBulkComment = false;
+        this.checkGlobalWarningState();
+    }
+
+    applyBulkApproverLabel() {
+        this.closureData = this.sortRows(this.closureData.map(item => {
+            const warning = item.reviewBlocked === true || item.hasWarning === true;
+            const newRow = {
+                ...item,
+                committeeLabel: this.bulkApproverLabel || item.committeeLabel,
+                isEditingComment: false,
+                isEditingApproverLabel: false,
+                hasWarning: warning
+            };
+            return this.updateRowVisuals(newRow);
+        }));
+
+        this.openBulkApproverLabelEditor = false;
+        this.pendingFocusBulkApproverLabel = false;
+        this.checkGlobalWarningState();
+    }
+
+    applyBulkResultInternal() {
         this.closureData = this.sortRows(this.closureData.map(item => {
             let appliedGeneric = item.genericResult;
             let invalidGeneric = item.invalidGenericResult;
@@ -592,10 +744,11 @@ export default class Dmt_massive_task_closure_modal extends LightningElement {
                 ...item,
                 genericResult: appliedGeneric,
                 invalidGenericResult: invalidGeneric,
-                comments: this.bulkComment || item.comments,
-                committeeLabel: this.bulkApproverLabel || item.committeeLabel,
+                comments: item.comments,
+                committeeLabel: item.committeeLabel,
                 hasWarning: warning,
-                isEditingComment: false
+                isEditingComment: false,
+                isEditingApproverLabel: false
             };
 
             return this.updateRowVisuals(newRow);
@@ -603,11 +756,7 @@ export default class Dmt_massive_task_closure_modal extends LightningElement {
 
         this.checkGlobalWarningState();
         this.bulkResult = '';
-        this.bulkComment = '';
-        this.bulkApproverLabel = '';
         this.openBulkResultDropdown = false;
-        this.openBulkCommentEditor = false;
-        this.openBulkApproverLabelEditor = false;
     }
 
     get openDropdownRow() {
@@ -710,6 +859,7 @@ export default class Dmt_massive_task_closure_modal extends LightningElement {
         this.openBulkResultDropdown = false;
         this.openBulkCommentEditor = false;
         this.openBulkApproverLabelEditor = false;
+        this.activeBulkEditorColumnKey = null;
 
         if (this.closureData.some(row => row.isEditingComment || row.isEditingApproverLabel)) {
             this.closureData = this.closureData.map(row => ({
@@ -1181,6 +1331,13 @@ export default class Dmt_massive_task_closure_modal extends LightningElement {
         }
     }
 
+    normalizeResultForPersistence(resultValue) {
+        if (resultValue === 'N/A') {
+            return 'NA';
+        }
+        return resultValue;
+    }
+
 
     async handleConfirmAll() {
         if (this.isLoading || this.snapshotsInProgress) {
@@ -1215,7 +1372,7 @@ export default class Dmt_massive_task_closure_modal extends LightningElement {
             return {
                 taskId: row?.taskId ? String(row.taskId) : null,
                 caseId: row?.caseId ? String(row.caseId) : null,
-                result: genericResult,
+                result: this.normalizeResultForPersistence(genericResult),
                 comments: row?.comments || '',
                 committeeLabel: row?.committeeLabel || '',
                 updateToDraft: this.isCloseForReviewMode === true

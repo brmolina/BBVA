@@ -4,17 +4,4 @@
     <isExposed>true</isExposed>
     <masterLabel>approvalValidation</masterLabel>
     <runtimeNamespace>omnistudio</runtimeNamespace>
-    <targets>
-      <target>lightning__RecordPage</target>
-        <target>lightning__AppPage</target>
-        <target>lightning__HomePage</target>
-        </targets>
-      <targetConfigs>
-    <targetConfig targets="lightning__RecordPage">
-                        <property name="debug" type="Boolean"></property>
-                        <property name="recordId" type="String"></property>
-                      </targetConfig><targetConfig targets="lightning__AppPage">
-                      <property name="debug" type="Boolean"></property>
-                      <property name="recordId" type="String"></property>
-                    </targetConfig>
-    </targetConfigs></LightningComponentBundle>
+    </LightningComponentBundle>

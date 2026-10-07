@@ -1,0 +1,24 @@
+<template>
+    <!-- Spinner while loading -->
+    <template lwc:if={showSpinner}>
+        <lightning-spinner alternative-text="Loading Deal Management" size="large"></lightning-spinner>
+    </template>
+
+    <!-- Error state -->
+    <template lwc:if={showError}>
+        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+            <span class="slds-assistive-text">error</span>
+            <h2>{errorMessage}</h2>
+        </div>
+    </template>
+
+    <!-- Workspace - replaces the FlexCard custom LWC element -->
+    <template lwc:if={workspaceData}>
+        <c-dmt-deal-management-workspace
+            data={workspaceData}
+            onselectclient={handleSelectClient}
+            onupdatetablelines={handleUpdateTableLines}
+            onupdatetableopportunities={handleUpdateTableOpportunities}>
+        </c-dmt-deal-management-workspace>
+    </template>
+</template>

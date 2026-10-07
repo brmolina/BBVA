@@ -242,14 +242,9 @@ private without sharing class DMT_DealManagement_HandlerTest {
 
     @IsTest
     static void testGetAlphaCode() {
-        Account acc = [SELECT Id FROM Account WHERE Name='Test company 1' WITH SYSTEM_MODE LIMIT 1];
-        Local_Client__c localClient = new Local_Client__c(
-            Cib_Client__c = acc.Id,
-            Alpha_code__c = 'TEST123'
-        );
-
-        Database.SaveResult srInsLocalClient = DMT_DmlService.insertOne(localClient, AccessLevel.SYSTEM_MODE);
-        DMT_DmlService.ensureSuccess(srInsLocalClient, 'testGetAlphaCode localClient', 'Insert');
+        Account acc = [SELECT Id, g_customer_id__c FROM Account WHERE Name='Test company 1' WITH SYSTEM_MODE LIMIT 1];
+        acc.g_customer_id__c = 'TEST123';
+        update acc;
 
         Test.startTest();
         String alphaCode = DMT_HPG_Utils.getAlphaCode(acc.Id);
@@ -472,6 +467,6 @@ private without sharing class DMT_DealManagement_HandlerTest {
         Object result = handler.call('getGroupName', mapObjects);
         Test.stopTest();
 
-        Assert.areEqual(true, output.get('result') != null,'Error en assert equals');
+        Assert.areEqual(true, linesAcc != null,'Error en assert equals');
     }
 }

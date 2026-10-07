@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_htl_ptnr_cpt_cont_cmnt_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Additional comments percentage of capita</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Additional comments percentage of capita</label>
+    <length>300</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

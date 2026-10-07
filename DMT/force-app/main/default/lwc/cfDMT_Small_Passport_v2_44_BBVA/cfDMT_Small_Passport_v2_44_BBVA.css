@@ -1,0 +1,34 @@
+@media screen and (min-width: 1024px) {
+    .slds-sticky {
+        display: flex;
+        position: fixed;
+        max-height: calc(100vh - (3.125rem + 2.5rem + 0.75rem) - 300px);
+        overflow: auto;
+        scrollbar-width: thin;
+        margin-right: 0.7rem;
+        z-index: 90;
+    }
+}
+
+@media screen and (max-width: 1023px) {
+    .slds-sticky {
+        position: static;
+        top: auto;
+        right: auto;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-width: 320px;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 1rem;
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+        z-index: auto;
+        float: none;
+        clear: both;
+    }
+}

@@ -1,4 +1,4 @@
-public with sharing class DMT_LineSancAppProcessDataRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_LineSancAppProcessDataRenderer implements DMT_ViewRenderer {
 
     // ==========================================
     // HELPER: Build the DisplayField List
@@ -34,37 +34,6 @@ public with sharing class DMT_LineSancAppProcessDataRenderer implements DMT_View
         } catch (Exception e){
             System.debug('Error in DMT_LineSancAppProcessDataRenderer renderHtml, '+ e.getMessage() + ' ' + e.getLineNumber());
             return '<div>Error: '+e.getMessage()+' - '+e.getLineNumber()+'</div>';
-        }
-    }
-
-    // ==========================================
-    // PDF RENDERING
-    // ==========================================
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null || data.line.getPopulatedFieldsAsMap().isEmpty()) {
-            return new Map<String, Object>();
-        }
-
-        try {
-            List<Object> contentList = new List<Object>();
-            Map<String, Object> component = new Map<String, Object>(); 
-            
-            // 1. Create Title
-            contentList.add(DMT_Create_Pdf_Controller.createTitle('APPROVAL PROCESS DATA'));
-            
-            // 2. Generate the Dynamic List using the shared helper
-            List<DMT_FormattingUtils.DisplayField> fieldsToRender = buildRenderFields(data);
-            contentList.add(DMT_Create_Pdf_Controller.generatePdfList(fieldsToRender));
-
-            component.put('content', contentList);
-            component.put('name', 'Sanction Approval Process Data');
-            
-            return component;
-
-        } catch (Exception e){
-            System.debug('Error in DMT_LineSancAppProcessDataRenderer renderPdfJson, '+ e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(), 'DMT_LineSancAppProcessDataRenderer', 'renderPdfJson', 'DMT', ''));
-            return new Map<String, Object>();
         }
     }
 }

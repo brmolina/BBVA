@@ -28,6 +28,10 @@ global with sharing class DMT_DealManagement_Handler implements Callable {
                 List<Object> args = (List<Object>) inputMap.get('arguments');
                 System.debug('getGroupName args: '+args);
                 System.debug('(String) args[0]: '+(String) args[0]);
+                if(args == null || args.isEmpty() || args[0] == null || String.valueOf(args[0]).trim() == ''){
+                    outMap.put('result' ,  'No group found');
+                    return outMap;
+                }
                 String groupName = DMT_HPG_Utils.getGroupName((String) args[0]);
                 System.debug('groupName: '+groupName);
                 result = new Map<String, Object>{ 'result' => groupName };

@@ -1,0 +1,15 @@
+.footer-bar {
+    background-color: rgba(243, 243, 243, 0.95);
+    opacity: 0.95;
+    height: 3.4rem;
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.pageDescription {
+    color: #000000;
+}

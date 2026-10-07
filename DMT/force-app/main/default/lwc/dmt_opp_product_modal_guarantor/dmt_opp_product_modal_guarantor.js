@@ -62,10 +62,10 @@ export default class DmtOppProductModalGuarantor extends LightningModal {
         // Apply entity filter to the local client lookup field
         const entityPrefix = this.entity ? `%${this.entity}%` : '%%';
         this.fields = this._fieldsOriginal.map(f => {
-            if (f.apiName !== 'DMT_Local_Client__c') return { ...f };
+            if (f.apiName !== 'DMT_Guarantor_Account__c') return { ...f };
             return {
                 ...f,
-                filters: { AND: [{ field: 'Alpha_code__c', operator: 'LIKE', value: entityPrefix }] }
+                filters: { AND: [{ field: 'g_customer_id__c', operator: 'LIKE', value: entityPrefix }] }
             };
         });
         this._assignPicklistOptions();
@@ -152,7 +152,10 @@ export default class DmtOppProductModalGuarantor extends LightningModal {
                 };
             }
             if (FIN_INST_MUTEX.has(f.apiName)) {
-                return { ...f, isRequired: false, value: isFinInst ? f.value : '' };
+                // External_Rating__c stays visible and editable for every Guarantor Type,
+                // unlike SCRA__c above which is only shown for Fin Inst — so its value
+                // must never be cleared based on counterpart type.
+                return { ...f, isRequired: false };
             }
             return f;
         });

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_shareholders_detail_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Comments with the detail of the shareholders. It can cover both modifications and additions or increases of the shares / shareholders of the subsidiaries that are analyzed.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Comments on Shareholders details</label>
+    <length>1000</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

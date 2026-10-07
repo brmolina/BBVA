@@ -57,13 +57,6 @@ public with sharing class DMT_OpportunityRenewUtilTest {
             User__c        = UserInfo.getUserId(),
             AccessLevel__c = 'Read'
         );
-
-        insert new Local_Client__c(
-            Name         = 'test local client',
-            RecordTypeId = Schema.SObjectType.Local_Client__c
-                               .getRecordTypeInfosByName().get('Client').getRecordTypeId(),
-            Cib_Client__c = opp.AccountId
-        );
     }
 
     // ─── Test renew success ───────────────────────────────────────────────────────

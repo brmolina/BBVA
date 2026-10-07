@@ -32,7 +32,7 @@
                                             {labels.DMT_ClientType}:
                                         </div>
                                         <div class="slds-col slds-size_4-of-6 slds-p-around_none slds-text-body_small slds-hyphenate slds-align-bottom">
-                                            {clientType}
+                                            {clientTypeLabel}
                                         </div>
                                     </div>
 
@@ -115,13 +115,11 @@
                             </template>
                         </div>
                         <!-- ENTITY (new, always disabled) -->
-                        <template if:true={showEntity}>
-                            <div class="slds-m-top_small">
+                        <div class="slds-m-top_small">
                                 <lightning-combobox label={labels.DMT_EntityText} value={entity} options={entityOptions}
                                     onchange={handleEntityChange} disabled={entityDisabled} placeholder={labels.DMT_SeltectWithTreePointText}>
-                                </lightning-combobox>
-                            </div>
-                        </template>
+                            </lightning-combobox>
+                        </div>
                     </div>
                 </div>
 

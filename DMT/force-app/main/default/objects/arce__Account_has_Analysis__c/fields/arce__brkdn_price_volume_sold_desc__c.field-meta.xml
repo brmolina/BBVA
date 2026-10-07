@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__brkdn_price_volume_sold_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Breakdown of price and volume sold Period t &amp; Period (t-1)</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Breakdown of price and volume sold Perio</label>
+    <length>350</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

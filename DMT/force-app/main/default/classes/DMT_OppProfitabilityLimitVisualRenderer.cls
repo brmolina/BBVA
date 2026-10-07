@@ -1,4 +1,4 @@
-public with sharing class DMT_OppProfitabilityLimitVisualRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_OppProfitabilityLimitVisualRenderer implements DMT_ViewRenderer {
     /**
      * Renders HTML for the Opportunity Profitability feature.
      * @param data The LineDataWrapper containing featuresList.
@@ -31,11 +31,11 @@ public with sharing class DMT_OppProfitabilityLimitVisualRenderer implements DMT
             return '<div class="error-message">no Profitability results found.</div>';
         }
 
-        if (Test.isRunningTest() && data.forceException) {
-            throw new AuraHandledException('Forced exception for test');
-        }
-
         try {
+            if (Test.isRunningTest() && data.forceException) {
+                throw new AuraHandledException('Forced exception for test');
+            }
+
             String html = '';
             Boolean hasProfitabilityVisual = false;
 
@@ -45,7 +45,7 @@ public with sharing class DMT_OppProfitabilityLimitVisualRenderer implements DMT
                 + '</div>';
             */
 
-            if (data.isImg64 && !data.itemImgBase64.isEmpty() && data.itemImgBase64.size() > 7) {
+            if (data.isImg64 && !data.itemImgBase64.isEmpty() && data.itemImgBase64.size() > 0) {
                 html += '<div>'
                     + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">Profitability Visual</h2>'
                     + '<div class="slds-scope">';
@@ -83,91 +83,6 @@ public with sharing class DMT_OppProfitabilityLimitVisualRenderer implements DMT
         } catch (Exception e) {
             System.debug('Error in DMT_OppProfitabilityLimitVisualRenderer renderHtml, ' + e.getMessage() + ' ' + e.getLineNumber());
             return '<div>Error: ' + e.getMessage() + ' - ' + e.getLineNumber() + '</div>';
-        }
-    }
-
-    /**
-     * Generates PDF JSON for the Opportunity Profitability feature.
-     * @param data The LineDataWrapper containing featuresList.
-     * @return PDF JSON string.
-     */
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        Map<String, Object> componentLimitDetailVisual = new Map<String, Object>();
-
-        if (data == null || data.featuresList == null || data.featuresList.isEmpty()) {
-            return componentLimitDetailVisual;
-        }
-
-        if (data.opportunity.getPopulatedFieldsAsMap().isEmpty() || data.opportunity.OpportunityLineItems.isEmpty()) {
-            return componentLimitDetailVisual;
-        }
-
-        Map<String, Object> feature = getProfitabilityFeature(data.featuresList);
-        if (feature.isEmpty() || !feature.containsKey('profitability')) {
-            return componentLimitDetailVisual;
-        }
-
-        Map<String, Object> profitability = (Map<String, Object>) feature.get('profitability');
-        List<Object> results = (List<Object>) profitability.get('results');
-        Map<String, Object> audit = profitability.containsKey('audit') && profitability.get('audit') != null
-            ? (Map<String, Object>) profitability.get('audit')
-            : new Map<String, Object>();
-
-        if (results == null || results.isEmpty()) {
-            return componentLimitDetailVisual;
-        }
-
-        try {
-            if (Test.isRunningTest() && data.forceException) {
-                throw new TestException('Forced exception for test');
-            }
-
-            List<Object> contentListLimitDetailVisual = new List<Object>();
-
-            // Main Title: Profitability Visual
-            Map<String, Object> pageBreak = new Map<String, Object>{
-                'type' => 'pageBreak',
-                'threshold' => 0
-            };
-            contentListLimitDetailVisual.add(pageBreak);
-            contentListLimitDetailVisual.add(DMT_Create_Pdf_Controller.createTitle('Profitability Visual'));
-
-            // --- 1. IMAGE ---
-            if (data.isImg64 && !data.itemImgBase64.isEmpty()) {
-                Map<String, Object> img = new Map<String, Object>{
-                    'type' => 'image',
-                    'src' => data.itemImgBase64[0]?.imgB64,
-                    'width' => 170,
-                    'aspectRatio' => 0.40,
-                    'format' => 'JPEG',
-                    'margin' => new Map<String, Object>{
-                        'top' => 5,
-                        'bottom' => 5,
-                        'left' => 5,
-                        'right' => 5
-                    }
-                };
-
-                contentListLimitDetailVisual.add(img);
-            }
-
-            componentLimitDetailVisual.put('content', contentListLimitDetailVisual);
-            return componentLimitDetailVisual;
-        } catch (Exception e) {
-            System.debug('Error in DMT_OppProfitabilityLimitVisualRenderer renderPdfJson: ' + e.getMessage() + ' ' + e.getLineNumber());
-            DMT_AsyncOrchestrator.enqueue(
-                new DMT_LogExceptionPayload(
-                    e.getMessage(),
-                    e.getStackTraceString(),
-                    e.getLineNumber(),
-                    e.getTypeName(),
-                    'DMT_OppProfitabilityLimitVisualRenderer',
-                    'renderPdfJson',
-                    'DMT',
-                    ''
-                )
-            );
-            return componentLimitDetailVisual;
         }
     }
 

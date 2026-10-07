@@ -184,6 +184,9 @@
                         <valueListItems>
                             <value>Account.arce_SCRA</value>
                         </valueListItems>
+                        <valueListItems>
+                            <value>Account.TEST_Deal_Management2</value>
+                        </valueListItems>
                     </valueList>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
@@ -200,6 +203,10 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>hideChatterActions</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>hideSlackAction</name>
                     <value>false</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
@@ -2117,6 +2124,10 @@
                     <value>Name</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
+                    <name>equalizeCardHeights</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
                     <name>hasModalCloseEvent</name>
                     <value>false</value>
                 </componentInstanceProperties>
@@ -2129,6 +2140,10 @@
                     <value>BBVABusiness,CommercialActivityCSFil,Top3Geographies,ClientInfo</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
+                    <name>onClick</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
                     <name>readAllRecords</name>
                     <value>false</value>
                 </componentInstanceProperties>
@@ -2138,6 +2153,14 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>relationMode</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>showButtonAdd</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>showButtonTable</name>
                     <value>false</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>

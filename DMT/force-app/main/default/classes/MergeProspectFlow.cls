@@ -10,6 +10,7 @@
 **/
 @SuppressWarnings('sf:AvoidLiteralsInIfCondition')
 public without sharing class MergeProspectFlow {
+  private static List<Account> deletedProspects;
   /**
   * SINGLETON PATTERN
   */
@@ -40,13 +41,14 @@ public without sharing class MergeProspectFlow {
 
     final List<Account> prospect = new List<Account>([
       SELECT Id, Name, DES_ID_Fiscal__c, participant_id__c, customer_stock_exchange_name__c, gf_customer_prospect_id__c,
-      participant_status_type__c, gf_stock_exchange_company_id__c, gf_cust_orig_prospect_ind_type__c, DES_Prospect_status__c
+      participant_status_type__c, gf_stock_exchange_company_id__c, gf_cust_orig_prospect_ind_type__c, DES_Prospect_status__c,
+      g_customer_id__c, DES_Group_Code__c, RecordType.DeveloperName
       FROM Account WHERE Id = :mgList[0].idProspect
     ]);
 
     final List<Account> clientToMerge = new List<Account>([
       SELECT Id, Name, DES_ID_Fiscal__c, participant_id__c, customer_stock_exchange_name__c, gf_customer_prospect_id__c, DES_Contact__c,
-      participant_status_type__c, gf_stock_exchange_company_id__c, gf_cust_orig_prospect_ind_type__c, DES_Group_Code__c, DES_Main_Parent__c, g_customer_id__c
+      participant_status_type__c, gf_stock_exchange_company_id__c, gf_cust_orig_prospect_ind_type__c, DES_Group_Code__c, DES_Main_Parent__c, g_customer_id__c, DES_Main_Parent__r.DES_Group_Code__c
       FROM Account WHERE Id = :mgList[0].idClient
     ]);
 
@@ -54,6 +56,12 @@ public without sharing class MergeProspectFlow {
       SELECT Id, Name, AccountId
       FROM Opportunity
       WHERE AccountId = :mgList[0].idProspect
+    ]);
+
+    final List<DMT_Line__c> lineProspect = new List<DMT_Line__c>([
+      SELECT Id, Name, Client__c
+      FROM DMT_Line__c 
+      WHERE Client__c = :mgList[0].idProspect
     ]);
 
     final List<dwp_kitv__Visit__c> visitsProspect = new List<dwp_kitv__Visit__c>([
@@ -65,6 +73,12 @@ public without sharing class MergeProspectFlow {
     final List<Contact> contactsProspect = new List<Contact>([
       SELECT Id, Name, AccountId
       FROM Contact
+      WHERE AccountId = :mgList[0].idProspect
+    ]);
+
+    final List<Case> casesProspect = new List<Case>([
+      SELECT Id, Subject, AccountId
+      FROM Case
       WHERE AccountId = :mgList[0].idProspect
     ]);
 
@@ -82,7 +96,9 @@ public without sharing class MergeProspectFlow {
 
     final List<Contact> contactsToUpdate = addToList(contactsProspect, mgList[0].idClient, 'AccountId');
     final List<Opportunity> oppsToUpdate = addToList(oppsProspect, mgList[0].idClient, 'AccountId');
+    final List<DMT_Line__c> linesToUpdate = addToList(lineProspect, mgList[0].idClient, 'Client__c');
     final List<dwp_kitv__Visit__c> visitsToUpdate = addToList(visitsProspect, mgList[0].idClient, 'dwp_kitv__account_id__c');
+    final List<Case> casesToUpdate = addToList(casesProspect, mgList[0].idClient, 'AccountId');
 
     if (!toolkitsProspect.isEmpty() && toolkitsClientToMerge.isEmpty()) {
       updateToolkitRelationships(toolkitsProspect.get(0), prospect.get(0), clientToMerge.get(0));
@@ -93,7 +109,9 @@ public without sharing class MergeProspectFlow {
     migrateFields(clientToMerge.get(0), prospect.get(0));
     updateList(contactsToUpdate);
     updateList(oppsToUpdate);
+    updateList(linesToUpdate);
     updateList(visitsToUpdate);
+    updateList(casesToUpdate);
 
     if(mgList[0].arceList != null && mgList[0].hasNoArce) {
       final List<arce__Account_has_Analysis__c> arceProspect = updateAHA(mgList.get(0), true);
@@ -125,13 +143,19 @@ public without sharing class MergeProspectFlow {
 
       updateAnalysis(arceIds, false, clientToMerge.get(0), mgList.get(0));
     }
-    updateCustomAssociationsForMerge(mgList[0].idProspect, clientToMerge.get(0));
 
-    //final DES_Arc_ProspectController.WrapperService wrap = new DES_Arc_ProspectController.WrapperService(prospect.get(0), mgList[0].lClientAlpha, false);
-    //System.enqueueJob(new MergeProspectConvertQueueable(JSON.serialize(wrap)));
-    System.debug('** Antes de llamar al DMT_ProspectCallService -> ' + JSON.serialize(mgList[0]));
-    DMT_ProspectCallService.callMergeProspectService(clientToMerge.get(0).g_customer_id__c, prospect.get(0).gf_customer_prospect_id__c, clientToMerge.get(0).DES_Group_Code__c);
-    deleteGroupsPros(prospect.get(0).participant_id__c, mgList[0].idProspect, clientToMerge.get(0));    
+    DES_DMT_ProspectUtils.updateCustomAssociationsForMerge(mgList[0].idProspect, clientToMerge.get(0));
+
+    deleteGroupsPros(prospect.get(0).participant_id__c, mgList[0].idProspect, clientToMerge.get(0));
+
+    List<Account> prospectsToNotify = new List<Account>{prospect.get(0)};
+    if (deletedProspects != null && !deletedProspects.isEmpty()) {
+      prospectsToNotify.addAll(deletedProspects);
+    }
+    for (Account prospectToNotify : prospectsToNotify) {
+      System.enqueueJob(new DMT_MergeProspectCalloutQueueable(new List<Account>{prospectToNotify}, clientToMerge.get(0)));
+    }
+
   }
 
   /*
@@ -145,18 +169,6 @@ public without sharing class MergeProspectFlow {
       DES_Arc_ProspectController.callConvertProspect(wrap.pros.Name, wrap.pros.DES_ID_Fiscal__c, wrap.pros.gf_customer_prospect_id__c, wrap.alphacode);
     }
   }
-
-  /*private class MergeProspectConvertQueueable implements Queueable, Database.AllowsCallouts {
-    private final String wrapJson;
-
-    public MergeProspectConvertQueueable(String wrapJson) {
-      this.wrapJson = wrapJson;
-    }
-
-    public void execute(QueueableContext context) {
-      callWSConvert(wrapJson);
-    }
-  }*/
 
   /*
   * Private method to add record to List
@@ -344,6 +356,7 @@ public without sharing class MergeProspectFlow {
   /*
   * Private method to set fields of objects related to toolkit.
   */
+  @TestVisible
   private static sObject setFieldsObject(sObject record, String prospectUnique, String toolUnique, String accountId) {
     final String sobjType = String.valueOf(record.getSObjectType());
     switch on sobjType {
@@ -451,6 +464,7 @@ public without sharing class MergeProspectFlow {
   * Private method to delete prospect group
   */
   private static void deleteGroupsPros(String groupId, String idProspect, Account clientToMerge) {
+    deletedProspects = new List<Account>();
     final List <Account> accsToDelete = new List <Account>();
     final List<Account> prosNotConvert = new List<Account>([
       SELECT Id, DES_ID_Fiscal__c, participant_id__c FROM Account WHERE participant_id__c = :groupId AND participant_id__r.RecordType.DeveloperName = 'Prospect_Group' AND RecordType.DeveloperName = 'Prospect_Subsidiary'
@@ -481,7 +495,24 @@ public without sharing class MergeProspectFlow {
           Account toolkitGroupAccount = [SELECT ID, Name, DES_Group_Code__c, gf_customer_prospect_id__c FROM Account WHERE ID = : clientToMerge.DES_Main_Parent__c LIMIT 1];
           updateToolkitRelationships(toolkitProspect, prospectToMerge, toolkitGroupAccount);
         }
-      }  
+      }
+      // (DMT) Antes de eliminar el Prospect Group, reasignar líneas y oportunidades DMT del Prospect Group
+      DES_DMT_ProspectUtils.transferProspectRecords(groupId, clientToMerge.DES_Main_Parent__c);
+
+      // Reasignar Cases del Prospect Group al grupo destino antes de eliminar
+      final List<Case> casesGroup = [SELECT Id, AccountId FROM Case WHERE AccountId = :groupId];
+      if (!casesGroup.isEmpty()) {
+        for (Case c : casesGroup) {
+          c.AccountId = clientToMerge.DES_Main_Parent__c;
+        }
+        update casesGroup;
+      }
+
+      List<Account> groupToDelete = [SELECT Id, g_customer_id__c, DES_Group_Code__c, RecordTypeId, RecordType.DeveloperName  FROM Account WHERE Id = :groupId LIMIT 1];
+      if (!groupToDelete.isEmpty()) {
+        deletedProspects.add(groupToDelete[0]);
+      }
+
       final Account accAux = new Account(Id = groupId);
       accsToDelete.add(accAux);
     }
@@ -546,173 +577,7 @@ public without sharing class MergeProspectFlow {
     if(!arceDelete.isEmpty()) {
       delete arceDelete;
     }
-  }
-
-  /**
-  * @description Actualiza Custom_Association__c y Custom_Association_Client__c del Prospect con datos del cliente final en lineas
-  * Actualiza Custom_Association_Opportunity__c y DMT_Opportunity_Client__c del Prospect con datos del cliente final en oportunidades
-  * @param prospectId Id del prospect
-  * @param clientToMerge Account del cliente final
-  */
-  private static void updateCustomAssociationsForMerge(Id prospectId, Account clientToMerge) {
-    // 1. Reasignar primero las lineas que apuntan directamente al prospect.
-    final List<DMT_Line__c> linesToUpdate = [
-      SELECT Id, Client__c, Custom_Association__c
-      FROM DMT_Line__c
-      WHERE Client__c = :prospectId
-    ];
-
-    final Set<Id> customAssociationIds = new Set<Id>();
-    for (DMT_Line__c line : linesToUpdate) {
-      line.Client__c = clientToMerge.Id;
-      if (line.Custom_Association__c != null) {
-        customAssociationIds.add(line.Custom_Association__c);
-      }
-    }
-
-    // 2. Obtener el g_customer_id__c del Prospect
-    final List<Account> prospectAccounts = [
-      SELECT Id, g_customer_id__c
-      FROM Account
-      WHERE Id = :prospectId
-      LIMIT 1
-    ];
-
-    if (prospectAccounts.isEmpty()) {
-      System.debug('log::Prospect not found');
-      return;
-    }
-
-    final String prospectCustomerId = prospectAccounts[0].g_customer_id__c;
-
-    if (String.isBlank(prospectCustomerId)) {
-      System.debug('log::Prospect g_customer_id__c is blank, fallback to line associations');
-    }
-
-    // 3. Consultar Local_Client__c del clientToMerge
-    final List<Local_Client__c> localClientList = [
-      SELECT Id, Alpha_code__c 
-      FROM Local_Client__c 
-      WHERE Cib_Client__c = :clientToMerge.Id 
-      LIMIT 1
-    ];
-    final Local_Client__c localClient = !localClientList.isEmpty() ? localClientList[0] : null;
-
-    // 4. Obtener groupStructure y determinar el código del grupo
-    final Map<String, Object> groupStructure = DMT_HPG_Utils.buildClientGroupStructure(clientToMerge.Id);
-
-    String groupCode = null;
-    if (groupStructure.get('supragroupId') != null) {
-      groupCode = (String) groupStructure.get('supragroupId');
-    } else if (groupStructure.get('groupCode') != null) {
-      groupCode = (String) groupStructure.get('groupCode');
-    }
-
-    // 5. Extraer g_entific_id__c del clientToMerge
-    final String entificId = String.isNotBlank(clientToMerge.g_customer_id__c) && clientToMerge.g_customer_id__c.length() >= 2 ? clientToMerge.g_customer_id__c.substring(0, 2) : null;
-
-    // 6. Buscar el Account del Group usando el código determinado
-    Id groupAccountId = null;
-    if (String.isNotBlank(groupCode)) {
-      final List<Account> groupAccounts = [
-        SELECT Id 
-        FROM Account 
-        WHERE DES_Group_Code__c = :groupCode 
-        LIMIT 1
-      ];
-      if (!groupAccounts.isEmpty()) {
-        groupAccountId = groupAccounts[0].Id;
-      }
-    }
-
-    // 7. Consultar y actualizar Custom_Association__c (Líneas)
-    List<Custom_Association__c> customAssociationsLine = new List<Custom_Association__c>();
-    if (String.isNotBlank(prospectCustomerId)) {
-      customAssociationsLine = [
-        SELECT Id, Group__c, g_customer_id__c, g_group_id__c
-        FROM Custom_Association__c
-        WHERE g_customer_id__c = :prospectCustomerId
-          AND DMT_Line__c != null
-      ];
-    } else if (!customAssociationIds.isEmpty()) {
-      customAssociationsLine = [
-        SELECT Id, Group__c, g_customer_id__c, g_group_id__c
-        FROM Custom_Association__c
-        WHERE Id IN :customAssociationIds
-      ];
-    }
-    
-    for (Custom_Association__c ca : customAssociationsLine) {
-      ca.Group__c = groupAccountId;
-      ca.g_customer_id__c = clientToMerge.g_customer_id__c;
-      ca.g_group_id__c = groupCode;
-    }
-
-    // 8. Consultar y actualizar Custom_Association_Opportunity__c (Oportunidades)
-    List<Custom_Association_Opportunity__c> customAssociationsOpp = new List<Custom_Association_Opportunity__c>();
-    if (String.isNotBlank(prospectCustomerId)) {
-      customAssociationsOpp = [
-        SELECT Id, Group__c, g_customer_id__c, g_group_id__c
-        FROM Custom_Association_Opportunity__c
-        WHERE g_customer_id__c = :prospectCustomerId
-          AND Opportunity__c != null
-      ];
-    }
-    
-    for (Custom_Association_Opportunity__c cao : customAssociationsOpp) {
-      cao.Group__c = groupAccountId;
-      cao.g_customer_id__c = clientToMerge.g_customer_id__c;
-      cao.g_group_id__c = groupCode;
-    }
-
-    // 9. Consultar y actualizar Custom_Association_Client__c (Lineas)
-    List<Custom_Association_Client__c> customAssociationClients = new List<Custom_Association_Client__c>();
-    if (String.isNotBlank(prospectCustomerId)) {
-      customAssociationClients = [
-        SELECT Id, Name, Alpha_Code_Client__c, Local_Client_Child__c, g_customer_id__c, g_entific_id__c
-        FROM Custom_Association_Client__c
-        WHERE g_customer_id__c = :prospectCustomerId
-      ];
-    } else if (!customAssociationIds.isEmpty()) {
-      customAssociationClients = [
-        SELECT Id, Name, Alpha_Code_Client__c, Local_Client_Child__c, g_customer_id__c, g_entific_id__c
-        FROM Custom_Association_Client__c
-        WHERE Custom_Association__c IN :customAssociationIds
-      ];
-    }
-    
-    for (Custom_Association_Client__c cac : customAssociationClients) {
-      if (localClient != null) {
-        cac.Alpha_Code_Client__c = localClient.Alpha_code__c;
-        cac.Local_Client_Child__c = localClient.Id;
-      }
-      cac.g_customer_id__c = clientToMerge.g_customer_id__c;
-      cac.g_entific_id__c = entificId;
-      cac.Name = clientToMerge.Name;
-    }
-
-    // 10. Consultar y actualizar DMT_Opportunity_Client__c (Oportunidades)
-    List<DMT_Opportunity_Client__c> opportunityClients = new List<DMT_Opportunity_Client__c>();
-    if (String.isNotBlank(prospectCustomerId)) {
-      opportunityClients = [
-        SELECT Id, Alpha_Code_Client__c
-        FROM DMT_Opportunity_Client__c
-        WHERE Alpha_Code_Client__c = :prospectCustomerId
-      ];
-    }
-    
-    for (DMT_Opportunity_Client__c oc : opportunityClients) {
-      if (localClient != null) {
-        oc.Alpha_Code_Client__c = localClient.Alpha_code__c;
-      }
-    }
-
-    updateList(linesToUpdate);
-    updateList(customAssociationsLine);
-    updateList(customAssociationsOpp);
-    updateList(customAssociationClients);
-    updateList(opportunityClients);
-  }
+  } 
 
   /*
   * Entrada del method invocable addMemberGroup

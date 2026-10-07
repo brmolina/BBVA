@@ -1,4 +1,4 @@
-public with sharing class DMT_ClientNBCRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_ClientNBCRenderer implements DMT_ViewRenderer, DMT_TrackedComponent, DMT_CalloutTrackableRenderer {
     private static Map<Id, DMT_ViewRenderer> recordTypeRenderers = new Map<Id, DMT_ViewRenderer>();
 
     static {
@@ -28,19 +28,38 @@ public with sharing class DMT_ClientNBCRenderer implements DMT_ViewRenderer {
         }
     }
 
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null) {
-            return new Map<String, Object>();
+    // CIBGLOBALD-4117 - opts this delegator into the approval-restart watch gate. Only
+    // DMT_OppClientNBCRenderer currently backs a DMT_CalloutTrackableRenderer implementation; the
+    // other record types simply have nothing to check yet.
+    public Boolean isComponentTracked() {
+        return true;
+    }
+
+    public String getCalloutCacheKey(SObject record) {
+        DMT_CalloutTrackableRenderer renderer = calloutRendererFor(record);
+        return renderer == null ? null : renderer.getCalloutCacheKey(record);
+    }
+
+    public Map<String, Object> fetchLiveTrackedValues(SObject record) {
+        DMT_CalloutTrackableRenderer renderer = calloutRendererFor(record);
+        return renderer == null ? new Map<String, Object>() : renderer.fetchLiveTrackedValues(record);
+    }
+
+    // record is only guaranteed to carry its Id (see DMT_CalloutTrackableRenderer) - a record
+    // queried without RecordTypeId throws SObjectException on a bare .get(), not null, so isSet()
+    // guards the read; an async job's bare shell (Id only, never queried) is safe either way.
+    private DMT_CalloutTrackableRenderer calloutRendererFor(SObject record) {
+        Id recordTypeId = record.isSet('RecordTypeId') ? (Id) record.get('RecordTypeId') : null;
+        if (recordTypeId == null && record.Id != null) {
+            // Dynamic SOQL only binds a simple variable name, not a dotted expression like
+            // :record.Id (that syntax only works in static/bracket SOQL) - assign it to its own
+            // variable first.
+            Id recordId = record.Id;
+            String objectApiName = recordId.getSObjectType().getDescribe().getName();
+            SObject queried = Database.query('SELECT RecordTypeId FROM ' + objectApiName + ' WHERE Id = :recordId LIMIT 1');
+            recordTypeId = (Id) queried.get('RecordTypeId');
         }
-        try {
-            DMT_ViewRenderer renderer = recordTypeRenderers.get(data.recordTypeId);
-            if (renderer == null) {
-                throw new IllegalArgumentException('No Opportunity Client NBC renderer for record type Id: ' + data.recordTypeId);
-            }
-            return renderer.renderPdfJson(data);
-        } catch (Exception e){
-            System.debug(e.getMessage());
-            return new Map<String, Object>();
-        }
+        DMT_ViewRenderer renderer = recordTypeRenderers.get(recordTypeId);
+        return (renderer instanceof DMT_CalloutTrackableRenderer) ? (DMT_CalloutTrackableRenderer) renderer : null;
     }
 }

@@ -1,8 +1,9 @@
-import { LightningElement, track, api } from 'lwc';
+// TODO: [DEAD_CODE] @track removed from showErrorPopover - not needed for primitive properties in modern LWC
+import { LightningElement, api } from 'lwc';
 
 export default class DmtDockedFormFooter extends LightningElement {
 
-    @track showErrorPopover = false;
+    showErrorPopover = false;
 
     _isLoading = false;
     @api get isLoading() { return this._isLoading; }

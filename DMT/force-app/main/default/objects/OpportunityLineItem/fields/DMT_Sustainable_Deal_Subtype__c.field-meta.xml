@@ -24,6 +24,16 @@
                 <default>false</default>
                 <label>Green and social</label>
             </value>
+            <value>
+                <fullName>Use of proceeds</fullName>
+                <default>false</default>
+                <label>Use of proceeds</label>
+            </value>
+            <value>
+                <fullName>Sustainability Linked Loan (SSL)</fullName>
+                <default>false</default>
+                <label>Sustainability Linked Loan (SSL)</label>
+            </value>
         </valueSetDefinition>
         <valueSettings>
             <controllingFieldValue>6</controllingFieldValue>
@@ -38,6 +48,14 @@
         <valueSettings>
             <controllingFieldValue>5</controllingFieldValue>
             <valueName>Green and social</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>7</controllingFieldValue>
+            <valueName>Use of proceeds</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>7</controllingFieldValue>
+            <valueName>Sustainability Linked Loan (SSL)</valueName>
         </valueSettings>
     </valueSet>
 </CustomField>

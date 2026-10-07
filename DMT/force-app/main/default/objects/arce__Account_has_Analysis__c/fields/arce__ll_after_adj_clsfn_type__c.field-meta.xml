@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__ll_after_adj_clsfn_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Reason why the client is marked as Leveraged Lending before Debt and Ebitda&apos;s adjustments</description>
+    <label>Leveraged Lending Class after adjustment</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>FS</fullName>
+                <default>false</default>
+                <label>Financial Sponsor investment grade</label>
+            </value>
+            <value>
+                <fullName>NI</fullName>
+                <default>false</default>
+                <label>Financial Sponsor non-investment grade</label>
+            </value>
+            <value>
+                <fullName>R4</fullName>
+                <default>false</default>
+                <label>Leveraged R4 type</label>
+            </value>
+            <value>
+                <fullName>R6</fullName>
+                <default>false</default>
+                <label>Leveraged R6 type</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

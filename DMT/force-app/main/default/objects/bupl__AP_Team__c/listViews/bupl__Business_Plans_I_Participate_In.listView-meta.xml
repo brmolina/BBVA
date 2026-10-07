@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>bupl__Business_Plans_I_Participate_In</fullName>
+    <columns>bupl__gf_business_plan_id__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>bupl__gf_ap_user_team_ind_type__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <label>Business Plans I Participate In</label>
+</ListView>

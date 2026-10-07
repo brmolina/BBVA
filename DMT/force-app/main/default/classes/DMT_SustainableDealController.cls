@@ -37,6 +37,7 @@ public with sharing class DMT_SustainableDealController {
             Map<String, List<String>> validSubtypesByAssessment = new Map<String, List<String>>();
             validSubtypesByAssessment.put(DMT_Constants.DMT_SUSTAINABILITY_SUSTAINABLE_LOAN, new List<String>{DMT_Constants.DMT_SUSTAINABLE_GREEN, DMT_Constants.DMT_SUSTAINABLE_SOCIAL, DMT_Constants.DMT_SUSTAINABLE_GREEN_AND_SOCIAL});
             validSubtypesByAssessment.put(DMT_Constants.DMT_SUSTAINABILITY_USE_OF_PROCEEDS, new List<String>{DMT_Constants.DMT_SUSTAINABLE_GREEN, DMT_Constants.DMT_SUSTAINABLE_SOCIAL});
+            validSubtypesByAssessment.put(DMT_Constants.DMT_SUSTAINABILITY_TRANSITION_FINANCE, new List<String>{ DMT_Constants.DMT_SUSTAINABLE_USE_OF_PROCEEDS_SUBTYPE, DMT_Constants.DMT_SUSTAINABLE_SSL_SUBTYPE });
             List<String> validValues = validSubtypesByAssessment.get(controllingFieldValue);
             if (validValues != null) {
                 for (Schema.PicklistEntry entry : dependentEntries) {
@@ -94,6 +95,8 @@ public with sharing class DMT_SustainableDealController {
                 catalogOptions = getCatalogFromDatabase(DMT_Constants.DMT_TAXO_CATALOG_RBGR, greenFilter, enableGreenFilter);
             } else if (subtypeValue == DMT_Constants.DMT_SUSTAINABLE_SOCIAL) {
                 catalogOptions = getCatalogFromDatabase(DMT_Constants.DMT_TAXO_CATALOG_RBSO, greenFilter, enableGreenFilter);
+            } else if (subtypeValue == DMT_Constants.DMT_SUSTAINABLE_USE_OF_PROCEEDS_SUBTYPE || subtypeValue == DMT_Constants.DMT_SUSTAINABLE_SSL_SUBTYPE){
+                catalogOptions = getCatalogFromDatabase(DMT_Constants.DMT_TAXO_CATALOG_RBST, greenFilter, enableGreenFilter);
             }
         } catch (Exception e) {
             throw new AuraHandledException('Error getting catalog by subtype: ' + e.getMessage());
@@ -111,6 +114,7 @@ public with sharing class DMT_SustainableDealController {
         Set<String> uniqueValues = new Set<String>();
         final String TXT_DELEGATED  = 'delegated';
         final String TXT_OTHER  = 'other';
+        final String TXT_LABEL_TO_FILTER  = 'Delegated Label CIB';
         try {
                 String dynamicSoql =
                     'SELECT Id, DMT_Value__c, DMT_Name_EN__c, gf_catalog_atrb_val1_name_c__c ' +
@@ -120,9 +124,9 @@ public with sharing class DMT_SustainableDealController {
             if (enableGreenFilter && String.isNotBlank(greenFilter)) {
                 // condicion en funcion del filtro: nos falta saber como van a marcar las delegated y las otras
                 if(greenFilter.equals(TXT_DELEGATED)){
-                    //dynamicSoql +=' AND gf_catalog_atrb_val2_name__c = :greenFilter';
+                    dynamicSoql +=' AND gf_catalog_atrb_val17_name__c =\''+TXT_LABEL_TO_FILTER+'\'';
                 }else if(greenFilter.equals(TXT_OTHER)){
-                    //dynamicSoql +=' AND gf_catalog_atrb_val2_name__c != :TXT_DELEGATED';
+                    dynamicSoql +=' AND gf_catalog_atrb_val17_name__c != \''+TXT_LABEL_TO_FILTER+'\'';
                 }
             }
 

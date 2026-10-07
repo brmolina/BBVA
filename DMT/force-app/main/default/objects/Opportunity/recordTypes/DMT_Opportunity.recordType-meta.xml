@@ -1591,6 +1591,41 @@
         </values>
     </picklistValues>
     <picklistValues>
+        <picklist>DES_CredentialExclusionReason__c</picklist>
+        <values>
+            <fullName>Client confidentiality</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Incomplete or inaccurate information</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Internal use only</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Not suitable for external reference</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pending client approval</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Regulatory or legal restrictions</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sensitive commercial information</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>DES_Missed_reason__c</picklist>
         <values>
             <fullName>Categorización 1</fullName>

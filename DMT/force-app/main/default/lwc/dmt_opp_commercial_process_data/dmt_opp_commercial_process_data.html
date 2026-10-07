@@ -1,0 +1,60 @@
+<template>
+    <div class="slds-p-around_medium">
+
+        <div class={formContainerClass}>
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading..." size="medium" variant="brand">
+                </lightning-spinner>
+            </template>
+
+            <lightning-accordion active-section-name={allSections} allow-multiple-sections-open>
+
+                <!-- ── Section 1: Client Need ── -->
+                <lightning-accordion-section name="clientNeed" label="Client Need">
+                    <c-dmt_form_renderer
+                        fields={fieldsClientNeed}
+                        is-edit-mode={isEditMode}
+                        oneditmodechange={handleEditModeChange}
+                        onfieldchange={handleFieldChangeNeed}>
+                    </c-dmt_form_renderer>
+                </lightning-accordion-section>
+
+                <!-- ── Section 2: Client Solution ── -->
+                <lightning-accordion-section name="clientSolution" label="Client Solution" class="delete-border">
+                    <c-dmt_form_renderer
+                        fields={fieldsClientSolution}
+                        is-edit-mode={isEditMode}
+                        oneditmodechange={handleEditModeChange}
+                        onfieldchange={handleFieldChangeSolution}>
+                    </c-dmt_form_renderer>
+
+                    <div class="slds-p-vertical_large slds-p-horizontal_x-small ">
+                        <c-dmt_table_commercial_process
+                            lwc:ref="tableCommercialProcess"
+                            table-input={tableLineItems}
+                            edit-state={isEditMode}
+                            is-read-only-user={disableEdit}
+                            stage-name={stageRecord}
+                            oneditmodechange={handleEditModeChange}>
+                        </c-dmt_table_commercial_process>
+                    </div>
+
+
+                </lightning-accordion-section>
+
+            </lightning-accordion>
+        </div>
+
+        <!-- ── Docked footer (edit mode only) ── -->
+        <template if:true={isEditMode}>
+            <c-dmt_docked_form_footer
+                is-loading={isLoading}
+                has-error={hasError}
+                error-message={errorMessage}
+                onsave={handleSave}
+                oncancel={handleCancel}>
+            </c-dmt_docked_form_footer>
+        </template>
+
+    </div>
+</template>

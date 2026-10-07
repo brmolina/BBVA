@@ -60,6 +60,14 @@ global with sharing class DMT_PicklistUtils  implements Callable {
         }
 
         Schema.DescribeFieldResult fieldResult = fieldMap.get(fieldApiName).getDescribe();
+
+        if (objectApiName == 'DMT_Line__c' && (fieldApiName == 'First_Breakclause__c' || fieldApiName == 'Breakclause_Frequency__c')) {
+            optionsList.add(new Map<String, Object>{
+                'defaultValue' => false,
+                'label' => ' ',
+                'value' => ' '
+            });
+        }
         
         for (Schema.PicklistEntry entry : fieldResult.getPicklistValues()) {
             if (entry.isActive()) {

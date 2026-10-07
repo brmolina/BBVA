@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__group_asset_header_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Type of relation of the client with the group. Indicates if the client is the header or a subsidiary</description>
+    <label>Group client relation type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>1</fullName>
+                <default>false</default>
+                <label>Parent Company</label>
+            </value>
+            <value>
+                <fullName>2</fullName>
+                <default>false</default>
+                <label>Subsidiary</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

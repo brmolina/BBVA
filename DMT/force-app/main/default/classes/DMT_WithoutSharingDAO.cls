@@ -91,5 +91,43 @@ public without sharing class DMT_WithoutSharingDAO {
         }
     }
 
+    /**
+    * @description AuraEnabled wrapper to delete a single record by Id from LWC without sharing restrictions.
+    * @author BBVA DMT
+    * @param recordId Id of the record to delete
+    **/
+    @AuraEnabled
+    public static void deleteRecordById(Id recordId){
+        deleteRecords(new sObject[]{ recordId.getSObjectType().newSObject(recordId) });
+    }
+
+    /**
+    * @description 
+    * @author BBVA DMT
+    * @param so 
+    **/
+    public static void deleteRecord(sObject so){
+        deleteRecords(new sObject[]{ so });
+    }
+
+    /**
+    * @description 
+    * @author BBVA DMT
+    * @param soList 
+    **/
+    public static void deleteRecords(sObject[] soList){
+        try {
+            String sObjectType = soList[0].getSObjectType().getDescribe().getName();
+            Schema.DescribeSObjectResult describeResult = Schema.getGlobalDescribe().get(sObjectType).getDescribe();
+            if (!describeResult.isDeletable()) {
+                return; // Salir si el usuario no tiene permisos de borrado
+            }
+            Database.DeleteResult[] deleteResults = Database.delete(soList, false);
+        } catch (Exception e) {
+            System.debug('Error on delete sObjects: ' + e.getMessage());
+            DES_Exception_Utils.logException(e,'DMT_WithoutSharingDAO', 'deleteRecords', 'DMT', '');
+        }
+    }
+
 
 }

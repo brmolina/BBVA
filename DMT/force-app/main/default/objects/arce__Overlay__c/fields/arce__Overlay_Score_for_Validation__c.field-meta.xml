@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Overlay_Score_for_Validation__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Retrieves original value from arce__rating__c object to be validated.</description>
+    <externalId>false</externalId>
+    <formula>TEXT(arce__Account_has_AnalysisId__r.arce__ffss_for_rating_id__r.arce__rating_id__r.arce__overlay_score_number__c)</formula>
+    <label>Overlay Score for Validation</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

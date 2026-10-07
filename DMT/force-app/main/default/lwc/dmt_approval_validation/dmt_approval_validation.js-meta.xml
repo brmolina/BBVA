@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>DMT Approval Validation</masterLabel>
+    <description>LWC replacement for OmniStudio FlexCard approvalValidation. Modal for approving/rejecting tasks in DMT approval workflow.</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <property name="recordId" type="String" label="Record ID" description="Task ID for approval" required="true"/>
+            <property name="caseId" type="String" label="Case ID" description="Related Case ID" required="false"/>
+            <property name="statusLine" type="String" label="Status Line" description="Approval status (Proposal or other)" required="false"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

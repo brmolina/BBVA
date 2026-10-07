@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__stage_collective_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Regulatory situation that indicates the credit quality of the client / group, may be 1, 2 or 3 depending on whether the situation is normal, impaired or in arrears.</description>
+    <label>Stage</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Performing</fullName>
+                <default>false</default>
+                <label>Performing</label>
+            </value>
+            <value>
+                <fullName>Portfolio without default, but with a significant increase in PD from the origination</fullName>
+                <default>false</default>
+                <label>Portfolio without default, but with a significant increase in PD from the origination</label>
+            </value>
+            <value>
+                <fullName>Default</fullName>
+                <default>false</default>
+                <label>Default</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

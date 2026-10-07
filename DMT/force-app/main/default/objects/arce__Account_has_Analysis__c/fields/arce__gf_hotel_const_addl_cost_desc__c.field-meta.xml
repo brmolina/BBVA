@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_hotel_const_addl_cost_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Additional comments on the mitigation of additional costs derived from the New Hotel / Hotel under construction</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Additional comments on the mitigation o</label>
+    <length>500</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

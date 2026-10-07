@@ -3,7 +3,7 @@
  * DMT_Opportunity_Client__c Trigger Handler
  * ────────────────────────────────────────────────────────────────────
  */
-public with sharing class DMT_OpportunityClientTriggerHandler extends DMT_TriggerHandler {
+public without sharing class DMT_OpportunityClientTriggerHandler extends DMT_TriggerHandler {
 
     private List<DMT_Opportunity_Client__c> lstNew;
     private Map<Id, DMT_Opportunity_Client__c> mapNew;
@@ -20,5 +20,31 @@ public with sharing class DMT_OpportunityClientTriggerHandler extends DMT_Trigge
     public override void beforeInsert() {
         DMT_OpportunityClientTriggerHelper helper = new DMT_OpportunityClientTriggerHelper();
         helper.syncInitialXSellTotals(lstNew);
+        helper.syncInferredAccountGroupFields(lstNew); // CIBGLOBALD-3981
     }
+
+    public override void afterInsert() {
+
+
+        // DMT_AsyncOrchestrator.flush() must always be the LAST statement of
+        // afterInsert()/afterUpdate(). enqueue() only queues a payload; flush() is what actually
+        // dispatches everything queued so far. Call it once per trigger context, after every Helper
+        // method has had a chance to enqueue - never inside a Helper's own loop.
+        DMT_AsyncOrchestrator.flush();
+    }
+
+    public override void afterUpdate() {
+        DMT_OpportunityClientTriggerHelper helper = new DMT_OpportunityClientTriggerHelper();
+        helper.checkOpportunityClientChanges(lstNew, mapOld);
+
+        
+        // DMT_AsyncOrchestrator.flush() must always be the LAST statement of
+        // afterInsert()/afterUpdate(). enqueue() only queues a payload; flush() is what actually
+        // dispatches everything queued so far. Call it once per trigger context, after every Helper
+        // method has had a chance to enqueue - never inside a Helper's own loop.
+        DMT_AsyncOrchestrator.flush();
+    }
+
+    
+
 }

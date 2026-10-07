@@ -389,27 +389,32 @@ public static Opportunity getOppLockUser(Id oppId) {
 
             for (Object o : rawGuarantors) {
                 Map<String, Object> guarantorsMap = (Map<String, Object>)o;
+                // Skip non-Real mitigants - this validation only applies to Real (Collateral) guarantees
+                String mitigantTypeCheck = String.valueOf(guarantorsMap.get('Mitigant_Type__c'));
+                if (String.isBlank(mitigantTypeCheck) || !mitigantTypeCheck.startsWith('Real > ')) {
+                    continue;
+                }
                 if(guarantorsMap.containsKey('Id')){
                     if(guarantorsMap.get('Id') == '0' && ((!guarantorsMap.containsKey('External_Rating__c') && !guarantorsMap.containsKey('Internal_Rating__c') && !guarantorsMap.containsKey('Commercial_Percentage__c') && !guarantorsMap.containsKey('Political_Percentage__c') 
-                    && !guarantorsMap.containsKey('CurrencyIsoCode') && !guarantorsMap.containsKey('Mitigant_Type__c') && !guarantorsMap.containsKey('Liquidation_Period__c')) || (String.isBlank(String.valueOf(guarantorsMap.get('Internal_Rating__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('External_Rating__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('Commercial_Percentage__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('Political_Percentage__c')))
-                    && String.isBlank(String.valueOf(guarantorsMap.get('CurrencyIsoCode'))) && String.isBlank(String.valueOf(guarantorsMap.get('Mitigant_Type__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('Liquidation_Period__c')))))){
+                    && !guarantorsMap.containsKey('DMT_Currency__c') && !guarantorsMap.containsKey('Mitigant_Type__c') && !guarantorsMap.containsKey('Liquidation_Period__c')) || (String.isBlank(String.valueOf(guarantorsMap.get('Internal_Rating__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('External_Rating__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('Commercial_Percentage__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('Political_Percentage__c')))
+                    && String.isBlank(String.valueOf(guarantorsMap.get('DMT_Currency__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('Mitigant_Type__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('Liquidation_Period__c')))))){
                         break;
                     }else if(guarantorsMap.get('Id') == '1' && ((!guarantorsMap.containsKey('External_Rating__c') && !guarantorsMap.containsKey('Internal_Rating__c') && !guarantorsMap.containsKey('Commercial_Percentage__c') && !guarantorsMap.containsKey('Political_Percentage__c') 
-                    && !guarantorsMap.containsKey('CurrencyIsoCode') && !guarantorsMap.containsKey('Mitigant_Type__c') && !guarantorsMap.containsKey('Liquidation_Period__c')) || (String.isBlank(String.valueOf(guarantorsMap.get('Internal_Rating__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('External_Rating__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('Commercial_Percentage__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('Political_Percentage__c')))
-                    && String.isBlank(String.valueOf(guarantorsMap.get('CurrencyIsoCode'))) && String.isBlank(String.valueOf(guarantorsMap.get('Mitigant_Type__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('Liquidation_Period__c')))))){
+                    && !guarantorsMap.containsKey('DMT_Currency__c') && !guarantorsMap.containsKey('Mitigant_Type__c') && !guarantorsMap.containsKey('Liquidation_Period__c')) || (String.isBlank(String.valueOf(guarantorsMap.get('Internal_Rating__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('External_Rating__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('Commercial_Percentage__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('Political_Percentage__c')))
+                    && String.isBlank(String.valueOf(guarantorsMap.get('DMT_Currency__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('Mitigant_Type__c'))) && String.isBlank(String.valueOf(guarantorsMap.get('Liquidation_Period__c')))))){
                         break;
                     }
                     else{
                         String cr = String.valueOf(guarantorsMap.get('Commercial_Percentage__c'));
                         String pr = String.valueOf(guarantorsMap.get('Political_Percentage__c'));
-                        String currencyField = String.valueOf(guarantorsMap.get('CurrencyIsoCode'));
+                        String currencyField = String.valueOf(guarantorsMap.get('DMT_Currency__c'));
                         String mitigantType = String.valueOf(guarantorsMap.get('Mitigant_Type__c'));
                         String liqPeriod = String.valueOf(guarantorsMap.get('Liquidation_Period__c'));
                         List<String> validValuesLabelReal = new List<String> {'Real > Cash','Real > Gold Bullion','Real > Debt securities',
                         'Real > Debt securities issued by central governments or central Banks','Real > Index equities and Index convertible bonds','Real > Securitisation'};
                         hasCurrency = currencyField != '' && currencyField != null;
                         hasCR = cr != '' && cr != null;
-                        hasPR = pr != '' && cr != null;
+                        hasPR = pr != '' && pr != null;
                         if (validValuesLabelReal.contains(mitigantType)) {
                             hasLiqPeriodToRealFinance =  liqPeriod != '' &&  liqPeriod != null;
                         } 
@@ -456,40 +461,68 @@ public static Opportunity getOppLockUser(Id oppId) {
         }
         return result;
     }
-public static Map<String, Object> createProductsOpportunity(List<Object> products, Object oppId) {
+public static Map<String, Object> createProductsOpportunity(List<Object> products, Object oppId, String contextCode) {
     Map<String, Object> result = new Map<String, Object>();
     try {
+        if (products == null || products.isEmpty()) {
+            throw new IllegalArgumentException('At least one product is required');
+        }
+
         Opportunity opp = DMT_Opportunity_Selector.getOpportunity(String.valueOf(oppId));
         Passport__c passport = DMT_Opportunity_Selector.getPassport(String.valueOf(oppId));
-        List<String> listProduct2 = new List<String>();
-        Set<Id> setProduct2Ids = new Set<Id>();
+        Map<Id, Map<String, Object>> productDataById = new Map<Id, Map<String, Object>>();
+        Set<Id> globalProductIds = new Set<Id>();
+        String lineOneOffDealValue = resolveLineOneOffDealValue(contextCode);
 
-        for (Object o : (List<Object>)products) {
-            String prodIdStr = String.valueOf(o);
-            listProduct2.add(prodIdStr);
-            try {
-                setProduct2Ids.add((Id)prodIdStr);
-            } catch (Exception e) {
-                System.debug('Invalid product Id format: ' + prodIdStr);
+        for (Object rawProduct : products) {
+            Map<String, Object> productData = normalizeProductSelection(rawProduct);
+            Id productId = parseOptionalId(productData.get('productId'));
+            if (productId == null) {
+                throw new IllegalArgumentException('Invalid or missing productId');
+            }
+            productDataById.put(productId, productData);
+
+            Id globalProductId = parseOptionalId(productData.get('DMT_Global_Product__c'));
+            if (globalProductId != null) {
+                globalProductIds.add(globalProductId);
             }
         }
 
         String bookingGeography = getBranchbyEntity(opp.DMT_Entity__c, opp.Entific__c);
-        Map<Id, PricebookEntry> mapIdToPricebookEntry = 
+        Map<Id, PricebookEntry> pricebookEntriesById =
             DMT_Opportunity_Selector.getStandardActivePBEs(
-                setProduct2Ids,
+                productDataById.keySet(),
                 opp.CurrencyIsoCode
             );
 
-        Map<Id, Id> mapIoProduct2ToPBE = new Map<Id, Id>();
-        for (PricebookEntry pbe : mapIdToPricebookEntry.values()) {
-            mapIoProduct2ToPBE.put(pbe.Product2Id, pbe.Id);
+        Map<Id, PricebookEntry> pricebookEntryByProductId = new Map<Id, PricebookEntry>();
+        for (PricebookEntry pbe : pricebookEntriesById.values()) {
+            pricebookEntryByProductId.put(pbe.Product2Id, pbe);
+        }
+
+        Map<Id, DMT_Taxonomy_Values__c> globalProductsById = new Map<Id, DMT_Taxonomy_Values__c>();
+        if (!globalProductIds.isEmpty()) {
+            globalProductsById = new Map<Id, DMT_Taxonomy_Values__c>([
+                SELECT Id, DMT_Name_EN__c
+                FROM DMT_Taxonomy_Values__c
+                WHERE Id IN :globalProductIds
+                WITH SYSTEM_MODE
+            ]);
         }
 
         List<OpportunityLineItem> oppLineItemsToInsert = new List<OpportunityLineItem>();
-        for (Object o : (List<Object>)products) {
+        for (Id productId : productDataById.keySet()) {
+            PricebookEntry pricebookEntry = pricebookEntryByProductId.get(productId);
+            if (pricebookEntry == null) {
+                throw new IllegalArgumentException(
+                    'No active standard PricebookEntry was found for product ' + productId +
+                    ' and currency ' + opp.CurrencyIsoCode
+                );
+            }
+
+            Map<String, Object> productData = productDataById.get(productId);
             OpportunityLineItem oli = new OpportunityLineItem();
-            oli.Product2Id = String.valueOf(o);
+            oli.Product2Id = productId;
             oli.OpportunityId = String.valueOf(oppId);
             oli.TotalPrice = 0;
             oli.gf_maturity_date__c = opp.DMT_DATE_Maturity_Date__c != null ? opp.DMT_DATE_Maturity_Date__c : Date.today().addMonths(12);
@@ -502,11 +535,18 @@ public static Map<String, Object> createProductsOpportunity(List<Object> product
             } else {
                 oli.g_branch_id__c = bookingGeography;
             }
-            oli.PricebookEntryId = mapIoProduct2ToPBE.get(oli.Product2Id);
-            String productName = mapIdToPricebookEntry.get(mapIoProduct2ToPBE.get(oli.Product2Id)).Product2.Name;
+            oli.PricebookEntryId = pricebookEntry.Id;
+            String productName = pricebookEntry.Product2.Name;
+            Id globalProductId = parseOptionalId(productData.get('DMT_Global_Product__c'));
+            DMT_Taxonomy_Values__c globalProduct = globalProductsById.get(globalProductId);
+            if (globalProduct != null && String.isNotBlank(globalProduct.DMT_Name_EN__c)) {
+                productName = globalProduct.DMT_Name_EN__c;
+            }
             oli.DMT_TXT_ProductNameOLI__c = (productName != null && productName.length() > 50)
                 ? productName.substring(0, 50)
                 : productName;
+            oli.DMT_Commercial_Product__c = parseOptionalId(productData.get('DMT_Commercial_Product__c'));
+            oli.DMT_Global_Product__c = globalProductId;
             oli.gf_payment_frequency__c = PAYMENTFREQUENCY;
             oli.gf_amortization_type__c = AMORTIZATIONTYPE;
             oli.customer_cib_ind_type__c = 'CIB';
@@ -516,6 +556,9 @@ public static Map<String, Object> createProductsOpportunity(List<Object> product
             oli.Funding_Curve__c = 'BBVA SA';
             oli.DMT_Sustainability_bonus_eligible__c = 'No';
             oli.Life_Funding_Type__c = 'Term';
+            if (String.isNotBlank(lineOneOffDealValue)) {
+                oli.DMT_Line_Oneoffdeal__c = lineOneOffDealValue;
+            }
 
             oppLineItemsToInsert.add(oli);
         }
@@ -538,6 +581,48 @@ public static Map<String, Object> createProductsOpportunity(List<Object> product
         result.put('errorMessage', e.getMessage());
         return result;
     }
+}
+
+public static Map<String, Object> createProductsOpportunity(List<Object> products, Object oppId) {
+    return createProductsOpportunity(products, oppId, null);
+}
+
+private static Map<String, Object> normalizeProductSelection(Object rawProduct) {
+    Object normalizedProduct = JSON.deserializeUntyped(JSON.serialize(rawProduct));
+    if (normalizedProduct instanceof Map<String, Object>) {
+        return (Map<String, Object>) normalizedProduct;
+    }
+    return new Map<String, Object>{
+        'productId' => normalizedProduct
+    };
+}
+
+private static Id parseOptionalId(Object rawValue) {
+    if (rawValue == null || String.isBlank(String.valueOf(rawValue))) {
+        return null;
+    }
+    return (Id) String.valueOf(rawValue);
+}
+
+private static String resolveLineOneOffDealValue(String contextCode) {
+    if (String.isBlank(contextCode)) {
+        return null;
+    }
+
+    Set<String> tokens = new Set<String>();
+    for (String token : contextCode.split(',')) {
+        tokens.add(String.valueOf(token).trim().toUpperCase());
+    }
+
+    if (tokens.contains('OPP') || tokens.contains('OP') || tokens.contains('ONE_OFF')) {
+        return 'One-off deal';
+    }
+
+    if (tokens.contains('L') || tokens.contains('LC') || tokens.contains('LNC') || tokens.contains('TO') || tokens.contains('LINE')) {
+        return 'Line';
+    }
+
+    return null;
 }
 
  public static String getBranchbyEntity(String entity, String clientCountry) {
@@ -564,7 +649,7 @@ public static Map<String, Object> createProductsOpportunity(List<Object> product
             }
         }
 
-        return entityPorDefecto	;
+        return entityPorDefecto ;
         
         
     }
@@ -630,29 +715,32 @@ public static Map<String, Object> createProductsOpportunity(List<Object> product
             Id oppAccountId;
 
             if (inputMap != null && inputMap.containsKey('oppAccountId') && inputMap.get('oppAccountId') != null) {
+                System.debug('+++++++++En el if de oppAccId');
                 oppAccountId = (Id) String.valueOf(inputMap.get('oppAccountId'));
             }
-
+            System.debug('++++++++++++oppAccountId =>'+oppAccountId);
             if (oppAccountId == null) {
+                
                 result.put('error', true);
                 result.put('errorMessage', 'oppAccountId es null o es inválido');
                 return result;
             }
 
             Account sourceAccount = [SELECT Id, Name, DES_Structure_Type__c FROM Account WHERE Id = :oppAccountId LIMIT 1];
-
+            System.debug('+++++QUery SOURCEACCOUNT '+sourceAccount);
             Id accountToCheckId;
 
             // Si la cuenta origen es subsidiaria, no se compara contra sí misma. Se empieza revisando el padre directo.
             if (isSubsidiaryType(sourceAccount.DES_Structure_Type__c)) {
                 accountToCheckId = getParentAccountId(sourceAccount.Id);
+                System.debug('+++++++++++accountToCheckId'+accountToCheckId);
             } else {
                 // Para Subgroup/Group/Supragroup, se empieza revisando la propia cuenta.
                 accountToCheckId = sourceAccount.Id;
             }
 
             Account comparisonAccount = findFirstValidComparisonAccount(accountToCheckId);
-
+            System.debug('++++++++++ComparisionAcc =>'+comparisonAccount);
             if (comparisonAccount != null) {
                 result.put('comparisonAccountId', comparisonAccount.Id);
                 result.put('comparisonAccountName', comparisonAccount.Name);
@@ -748,12 +836,120 @@ public static Map<String, Object> createProductsOpportunity(List<Object> product
         return hierarchyIds;
     }
 
+
+    /**
+     * @description Retorna oportunidades con Prospect en cliente directo o multiholder
+     * Cliente directo: Busca Prospect_Group O Prospect_Subsidiary
+     * Multiholder: Solo busca Prospect_Subsidiary
+     * 
+     * @param opportunityIds IDs de oportunidades a validar
+     * @param accountIds IDs de clientes directos (AccountId)
+     * @return IDs de oportunidades con Prospect
+     */
+    public static Set<Id> getOpportunityIdsWithProspectInClientOrMultiholder(Set<Id> opportunityIds, Set<Id> accountIds) {
+        Id prospectGroupRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Group').getRecordTypeId();
+        Id prospectSubsidiaryRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Subsidiary').getRecordTypeId();        
+        Set<Id> oppsWithProspect = new Set<Id>();
+        
+        if (opportunityIds == null || opportunityIds.isEmpty() || accountIds == null || accountIds.isEmpty()) {
+            return oppsWithProspect;
+        }
+        
+        //Trae todas las opps con cliente directo
+        List<Opportunity> opps = [SELECT Id,
+                                        AccountId,
+                                        Account.RecordTypeId
+                                    FROM Opportunity
+                                    WHERE Id IN :opportunityIds
+                                    WITH SYSTEM_MODE
+                                ];
+        
+        // PASO 1: Verificar cliente directo (Prospect_Group O Prospect_Subsidiary)
+        for (Opportunity opp : opps) {
+            if (opp.Account != null && (opp.Account.RecordTypeId == prospectGroupRtId || opp.Account.RecordTypeId == prospectSubsidiaryRtId)) {
+                oppsWithProspect.add(opp.Id);
+            }
+        }
+        
+        // PASO 2: Verificar multiholder via DMT_Custom_Association_ClientOpportunity__c (solo en opps sin Prospect directo)
+        Set<Id> nonProspectOppIds = new Set<Id>();
+        for (Opportunity opp : opps) {
+            if (!oppsWithProspect.contains(opp.Id)) {
+                nonProspectOppIds.add(opp.Id);
+            }
+        }
+
+        Set<String> alphaCodes = new Set<String>();
+        Map<String, Set<Id>> alphaCodeToOppIds = new Map<String, Set<Id>>();
+
+        if (!nonProspectOppIds.isEmpty()) {
+            for (DMT_Custom_Association_ClientOpportunity__c caco : [
+                SELECT DMT_g_customer_id__c, DMT_Custom_Association_Opportunity__r.Opportunity__c
+                FROM DMT_Custom_Association_ClientOpportunity__c
+                WHERE DMT_Custom_Association_Opportunity__r.Opportunity__c IN :nonProspectOppIds
+                  AND DMT_g_customer_id__c != null
+                WITH SYSTEM_MODE
+            ]) {
+                Id oppId = caco.DMT_Custom_Association_Opportunity__r.Opportunity__c;
+                String alpha = caco.DMT_g_customer_id__c;
+                alphaCodes.add(alpha);
+
+                if (!alphaCodeToOppIds.containsKey(alpha)) {
+                    alphaCodeToOppIds.put(alpha, new Set<Id>());
+                }
+                alphaCodeToOppIds.get(alpha).add(oppId);
+            }
+        }
+        
+        if (!alphaCodes.isEmpty()) {
+            List<Account> prospectAccounts = [SELECT g_customer_id__c FROM Account WHERE g_customer_id__c IN :alphaCodes AND RecordTypeId = :prospectSubsidiaryRtId WITH SYSTEM_MODE];
+            
+            // Marcar opps que tienen Prospect en multiholder
+            for (Account acc : prospectAccounts) {
+                if (alphaCodeToOppIds.containsKey(acc.g_customer_id__c)) {
+                    oppsWithProspect.addAll(alphaCodeToOppIds.get(acc.g_customer_id__c));
+                }
+            }
+        }        
+        return oppsWithProspect;
+    }
+
+    /**
+     * @description Valida si oportunidades tienen Prospect en cliente directo o multiholder
+     * @param oppIds IDs de oportunidades a validar
+     * @return Lista de boolean (true si tiene Prospect, false si no)
+     */
+    @AuraEnabled(cacheable=false)
+    public static List<Boolean> checkProspectInOpportunity(List<Id> oppIds) {
+        List<Boolean> results = new List<Boolean>();
+        
+        if (oppIds == null || oppIds.isEmpty()) {
+            results.add(false);
+            return results;
+        }
+        
+        Set<Id> accountIds = new Set<Id>();
+        for (Opportunity opp : [SELECT AccountId FROM Opportunity WHERE Id IN :oppIds]) {
+            if (opp.AccountId != null) {
+                accountIds.add(opp.AccountId);
+            }
+        }
+        
+        Set<Id> oppsWithProspect = getOpportunityIdsWithProspectInClientOrMultiholder(new Set<Id>(oppIds), accountIds);
+        
+        for (Id oppId : oppIds) {
+            results.add(oppsWithProspect.contains(oppId));
+        }
+        return results;
+    }
+
     /**
      * @description
      * Devuelve el padre directo de una cuenta usando AMH_GBL_Account_Relationship__c y filtrando por AMH_Vision__c = 'Riesgos'.
      * Si hay varios padres, se prioriza (Subgroup > Group > Supragroup).
      */
     public static Id getParentAccountId(Id childAccountId) {
+        System.debug('++++++++childAccountId'+childAccountId);
         if (childAccountId == null) {
             return null;
         }
@@ -766,7 +962,6 @@ public static Map<String, Object> createProductsOpportunity(List<Object> product
 
         for (AMH_GBL_Account_Relationship__c rel : relationships) {
             String type = rel.AMH_Parent_Account__r.DES_Structure_Type__c;
-
             if (type == 'Subgroup' && subgroupId == null) {
                 subgroupId = rel.AMH_Parent_Account__c;
             } else if (type == 'Group' && groupId == null) {
@@ -774,7 +969,13 @@ public static Map<String, Object> createProductsOpportunity(List<Object> product
             } else if (type == 'Supragroup' && supragroupId == null) {
                 supragroupId = rel.AMH_Parent_Account__c;
             }
+           System.debug('+++++++++++type'+type);
+
         }
+        System.debug('++++++subgroupId =>'+subgroupId);
+        System.debug('++++++groupId =>'+groupId);
+        System.debug('++++++supragroupId =>'+supragroupId);
+
 
         if (subgroupId != null) return subgroupId;
         if (groupId != null) return groupId;
@@ -1083,6 +1284,92 @@ public static Map<String, Object> createProductsOpportunity(List<Object> product
             }
         }
         return xsellsToInsert;
+    }
+
+    // ─── Opportunity Money ────────────────────────────────────────────────────────
+
+    /**
+     * @description Wrapper that holds the Old Money and New Money records for a given product.
+     */
+    public class MoneyRecordPair {
+        @AuraEnabled public DMT_Opportunity_Money__c oldMoney { get; set; }
+        @AuraEnabled public DMT_Opportunity_Money__c newMoney { get; set; }
+        public MoneyRecordPair() {
+            this.oldMoney = new DMT_Opportunity_Money__c();
+            this.newMoney = new DMT_Opportunity_Money__c();
+        }
+    }
+
+    /**
+     * @description Returns both the Old Money and New Money records for a given OLI.
+     *              If a record does not yet exist, an empty sObject is returned in its place.
+     * @param oppLineItemId Id of the OpportunityLineItem.
+     * @return MoneyRecordPair containing oldMoney and newMoney records.
+     */
+    @AuraEnabled
+    public static MoneyRecordPair getOpportunityMoney(String oppLineItemId) {
+        MoneyRecordPair pair = new MoneyRecordPair();
+        if (String.isBlank(oppLineItemId)) {
+            return pair;
+        }
+        List<DMT_Opportunity_Money__c> records = [
+            SELECT Id, DMT_Is_Old_Money__c,
+                   DMT_Up_Front_Fee_Accrual__c,
+                   DMT_Up_Front_Fee_Non_Accrual__c,
+                   DMT_Funding_Cost__c,
+                   DMT_Liquidity_Fee__c,
+                   DMT_Interest_Rate_Period__c,
+                   DMT_Applicable_Margin__c,
+                   DMT_Pricing_Grid_or_Step_ups__c,
+                   DMT_Commitment_Fee__c,
+                   DMT_Utilisation_Fee__c,
+                   DMT_Extension_Duration_Fee__c,
+                   DMT_Other_Fees_Accrual__c,
+                   DMT_Other_Fees_Non_Accrual__c,
+                   DMT_Expected_Drawn__c,
+                   DMT_All_in_Drawn__c,
+                   DMT_All_in_Undrawn__c
+            FROM DMT_Opportunity_Money__c
+            WHERE DMT_Opportunity_Product__c = :oppLineItemId
+        ];
+        for (DMT_Opportunity_Money__c rec : records) {
+            if (rec.DMT_Is_Old_Money__c == true) {
+                pair.oldMoney = rec;
+            } else {
+                pair.newMoney = rec;
+            }
+        }
+        return pair;
+    }
+
+    /**
+     * @description Upserts both the Old Money and New Money records for a given OLI.
+     *              Forces DMT_Is_Old_Money__c = true/false regardless of the incoming JSON.
+     * @param oldMoneyJson Serialized DMT_Opportunity_Money__c for Old Money.
+     * @param newMoneyJson Serialized DMT_Opportunity_Money__c for New Money.
+     * @return MoneyRecordPair with the saved records (including their Ids).
+     */
+    @AuraEnabled
+    public static MoneyRecordPair upsertOpportunityMoney(String oldMoneyJson, String newMoneyJson) {
+        DMT_Opportunity_Money__c oldRec = buildMoneyRecord(oldMoneyJson, true);
+        DMT_Opportunity_Money__c newRec = buildMoneyRecord(newMoneyJson, false);
+        upsert new List<DMT_Opportunity_Money__c>{ oldRec, newRec };
+        MoneyRecordPair result = new MoneyRecordPair();
+        result.oldMoney = oldRec;
+        result.newMoney = newRec;
+        return result;
+    }
+
+    private static DMT_Opportunity_Money__c buildMoneyRecord(String recordJson, Boolean isOldMoney) {
+        DMT_Opportunity_Money__c record = (DMT_Opportunity_Money__c) JSON.deserialize(
+            recordJson,
+            DMT_Opportunity_Money__c.class
+        );
+        record.DMT_Is_Old_Money__c = isOldMoney;
+        if (String.isBlank(record.Name)) {
+            record.Name = (isOldMoney ? 'OM-OLD-' : 'OM-NEW-') + record.DMT_Opportunity_Product__c;
+        }
+        return record;
     }
 
 }

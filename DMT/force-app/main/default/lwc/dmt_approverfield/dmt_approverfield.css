@@ -29,3 +29,7 @@
   cursor: default;
   user-select: none;
 }
+
+.slds-input__icon_right {
+    top: calc(50% + 3.5px) !important;
+}

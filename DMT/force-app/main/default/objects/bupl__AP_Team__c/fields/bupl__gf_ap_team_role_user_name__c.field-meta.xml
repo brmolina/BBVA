@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>bupl__gf_ap_team_role_user_name__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Member Role</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Global Banker</fullName>
+                <default>false</default>
+                <label>Global Banker</label>
+            </value>
+            <value>
+                <fullName>CIB Banker</fullName>
+                <default>false</default>
+                <label>CIB Banker</label>
+            </value>
+            <value>
+                <fullName>Industry Head</fullName>
+                <default>false</default>
+                <label>Industry Head</label>
+            </value>
+            <value>
+                <fullName>Local Banker</fullName>
+                <default>false</default>
+                <label>Local Banker</label>
+            </value>
+            <value>
+                <fullName>Regional Banker</fullName>
+                <default>false</default>
+                <label>Regional Banker</label>
+            </value>
+            <value>
+                <fullName>Product Specialist</fullName>
+                <default>false</default>
+                <label>Product Specialist</label>
+            </value>
+            <value>
+                <fullName>Risk Analyst</fullName>
+                <default>false</default>
+                <label>Risk Analyst</label>
+            </value>
+            <value>
+                <fullName>Global Banker Team</fullName>
+                <default>false</default>
+                <label>Global Banker Team</label>
+            </value>
+            <value>
+                <fullName>GCC pool</fullName>
+                <default>false</default>
+                <label>GCC pool</label>
+            </value>
+            <value>
+                <fullName>Transaction Banker</fullName>
+                <default>false</default>
+                <label>Transaction Banker</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Others</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

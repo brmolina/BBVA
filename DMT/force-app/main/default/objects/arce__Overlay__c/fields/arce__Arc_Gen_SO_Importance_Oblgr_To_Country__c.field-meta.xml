@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Arc_Gen_SO_Importance_Oblgr_To_Country__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Importance of Obligor to Cntry</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetName>arce__answer_yes_no</valueSetName>
+    </valueSet>
+</CustomField>

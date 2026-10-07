@@ -33,10 +33,14 @@
                                     data-field={col.fieldName}
                                     style={col.widthStyle}
                                     class="slds-is-sortable slds-text-title--caps fixed-header fixed-row-header"
-                                    scope="col">
+                                    scope="col"
+                                    onclick={handleHeaderClick}>
                                     <div class="slds-truncate column-header-wrapper" title={col.label}>
                                         <lightning-formatted-rich-text
                                             value={col.label}></lightning-formatted-rich-text>
+                                            <template lwc:if={col.isSorted}>
+                                                <lightning-icon icon-name="utility:arrowdown" size="xx-small" class={col.sortIconClass}></lightning-icon>
+                                            </template>
                                         <button
                                             type="button"
                                             class="resize-handle"

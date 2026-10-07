@@ -3,6 +3,7 @@ import { ShowToastEvent }  from 'lightning/platformShowToastEvent';
 import { deleteRecord }    from 'lightning/uiRecordApi';
 import LightningConfirm    from 'lightning/confirm';
 import syncTenors          from '@salesforce/apex/DMT_TableTenors.syncTenors';
+import getCurrencyLabel    from '@salesforce/apex/DMT_Currency_Conversion_Utils.getCurrencyLabel';
 import DMT_Repayment_Schedule from '@salesforce/label/c.DMT_Repayment_Schedule';
 
 const AMORT_TYPE_USER_DEFINED = 'User-Defined';
@@ -12,6 +13,13 @@ const ROLE_INIT               = 'INIT';
 const ROLE_MIDDLE             = 'MIDDLE';
 const ROLE_END                = 'END';
 const TEMP_ID_PREFIX          = 'NEW_';
+const NON_ACCRUAL_FEES_FIELD  = '_nonAccrualFeesValue';
+const NON_ACCRUAL_UNIT_AMOUNT = 'Amount';
+const NON_ACCRUAL_UNIT_BPS    = 'BPS';
+const NON_ACCRUAL_UNIT_OPTIONS = [
+    { label: NON_ACCRUAL_UNIT_AMOUNT, value: NON_ACCRUAL_UNIT_AMOUNT },
+    { label: NON_ACCRUAL_UNIT_BPS, value: NON_ACCRUAL_UNIT_BPS }
+];
 
 const NOMINAL_FIELDS      = ['gj_nominal_amount_db__c', 'gf_nominal_amount_fb__c'];
 const BPS_FIELDS          = ['gf_spread_db__c', 'gf_spread_fb__c', 'gf_accrual_fees_bp__c', 'gf_non_accrual_fees_bp__c'];
@@ -33,7 +41,9 @@ export default class DmtOppProductsTableTenors extends LightningElement {
     _maturityDate     = '';
     _amortizationType = '';
     _currencyCode     = '';
+    _currencyLabel    = '';
     _data             = [];
+    _nonAccrualUnitByRowId = new Map();
 
     // ─── Public API ───────────────────────────────────────────────────────────
 
@@ -81,6 +91,7 @@ export default class DmtOppProductsTableTenors extends LightningElement {
     @api get currencyCode() { return this._currencyCode; }
     set currencyCode(value) {
         this._currencyCode = value || '';
+        this._loadCurrencyLabel(this._currencyCode);
         this.columns = this._buildColumns();
     }
 
@@ -102,6 +113,8 @@ export default class DmtOppProductsTableTenors extends LightningElement {
         if (this._snapshot) {
             this.rows      = this._snapshot.map(r => ({ ...r }));
             this._snapshot = null;
+            this._invalidCells.clear();
+            this._nonAccrualUnitByRowId.clear();
             this._refreshDerivedState();
         }
     }
@@ -110,6 +123,8 @@ export default class DmtOppProductsTableTenors extends LightningElement {
         this.rows      = this.rows.filter(r => !r._deleted);
         this.rows      = this._applyRolesAndConstraints(this.rows);
         this._snapshot = null;
+        this._invalidCells.clear();
+        this._nonAccrualUnitByRowId.clear();
         this._loadFromData();
     }
 
@@ -120,6 +135,7 @@ export default class DmtOppProductsTableTenors extends LightningElement {
     }
 
     @api getCurrentRows() {
+        console.log('**** getCurrentRows'+ JSON.stringify(this.rows.filter(r => !r._deleted).map(r => this._cleanRow(r))));
         return this.rows.filter(r => !r._deleted).map(r => this._cleanRow(r));
     }
 
@@ -129,12 +145,14 @@ export default class DmtOppProductsTableTenors extends LightningElement {
         this._canEdit = newCanEdit;
         this._refreshDerivedState();
     }
-
+    
     @api collectBpsFieldsValidation() {
         const invalidFields = [];
         
-        // Construye el mapa de apiName -> label desde las columnas ya existentes
-        const labelMap = {};
+        const labelMap = {
+            gf_accrual_fees_bp__c: 'Accrual Fees (BPS)',
+            gf_non_accrual_fees_bp__c: 'Non Accrual Fees'
+        };
         for (const col of this.columns) {
             if (col.fieldName && BPS_FIELDS.includes(col.fieldName)) {
                 labelMap[col.fieldName] = col.label;
@@ -165,7 +183,10 @@ export default class DmtOppProductsTableTenors extends LightningElement {
     @api collectNegativeFieldsValidation() {
         const invalidFields = [];
 
-        const labelMap = {};
+        const labelMap = {
+            gf_accrual_fees_bp__c: 'Accrual Fees (BPS)',
+            gf_non_accrual_fees_bp__c: 'Non Accrual Fees'
+        };
         for (const col of this.columns) {
             if (col.fieldName && ALL_NUMERIC_FIELDS.includes(col.fieldName)) {
                 labelMap[col.fieldName] = col.label;
@@ -203,6 +224,7 @@ export default class DmtOppProductsTableTenors extends LightningElement {
 
     _snapshot       = null;
     _tempIdCounter  = 0;
+    _invalidCells   = new Set();
     currentPage     = 1;
     totalPages      = 1;
     disablePrevious = true;
@@ -225,8 +247,9 @@ export default class DmtOppProductsTableTenors extends LightningElement {
 
     _decorateNewRow(row) {
         const hasRealId = isRealId(row.Id);
+        const normalizedRow = this._normalizeNonAccrualFeeFields(row);
         return {
-            ...row,
+            ...normalizedRow,
             Id      : hasRealId ? row.Id : this._newTempId(),
             _role   : ROLE_MIDDLE,
             _deleted: false,
@@ -264,6 +287,7 @@ export default class DmtOppProductsTableTenors extends LightningElement {
             ALL_NUMERIC_FIELDS.forEach(f => {
                 if (r[f] === '' || r[f] == null) r[f] = 0;
             });
+            Object.assign(r, this._normalizeNonAccrualFeeFields(r));
         });
 
         return rowsArr;
@@ -402,7 +426,14 @@ export default class DmtOppProductsTableTenors extends LightningElement {
     }
 
     _loadPastedRowsInMemory(pasted) {
-        const incoming = pasted.map(r => this._decorateNewRow(r));
+        const incoming = pasted.map(r => {
+            const keepId = isRealId(r.Id) && r.DMT_Opportunity_Product__c === this.oppProduct;
+            return this._decorateNewRow({
+                ...this._normalizePastedNonAccrualFeeFields(r),
+                Id                        : keepId ? r.Id : null,
+                DMT_Opportunity_Product__c: this.oppProduct || null
+            });
+        });
         this.rows      = this._applyRolesAndConstraints(incoming);
         this._refreshDerivedState();
     }
@@ -413,11 +444,14 @@ export default class DmtOppProductsTableTenors extends LightningElement {
             return;
         }
         this.isLoading  = true;
-        let rowsToSend  = JSON.parse(JSON.stringify(pasted));
+        let rowsToSend  = JSON.parse(JSON.stringify(pasted)).map(row => this._normalizePastedNonAccrualFeeFields({
+            ...row,
+            DMT_Opportunity_Product__c: this.oppProduct || null
+        }));
         rowsToSend      = rowsToSend.map(row => ({
             ...row,
             gf_spread_db__c: this._clampDrawnSpreadBps(row.gf_spread_db__c)
-        }));
+        })).map(row => this._cleanRow(row));
 
         if (this._maturityDate) {
             const maturityRow = rowsToSend.find(r => r.gf_tenor_date__c === this._maturityDate);
@@ -451,7 +485,7 @@ export default class DmtOppProductsTableTenors extends LightningElement {
 
     handleCellInput(event) {
         event.stopPropagation();
-        const { context: id, fieldname: field } = event.detail.data;
+        const { context: id, fieldname: field, fieldlabel, isFieldValid  } = event.detail.data;
         let value = event.detail.data.value;
         const idx = this.rows.findIndex(r => r.Id === id);
         if (idx === -1) return;
@@ -462,7 +496,9 @@ export default class DmtOppProductsTableTenors extends LightningElement {
 
         if (value === '') value = 0;
 
-        if (NOMINAL_FIELDS.includes(field)) {
+        if (field === NON_ACCRUAL_FEES_FIELD) {
+            value = this._parseNumeric(value, false);
+        } else if (NOMINAL_FIELDS.includes(field)) {
             value = this._parseNumeric(value, true);
         } else if (BPS_FIELDS.includes(field)) {
             value = this._parseNumeric(value, false);
@@ -473,8 +509,51 @@ export default class DmtOppProductsTableTenors extends LightningElement {
         }
 
         const newArr  = [...this.rows];
-        newArr[idx]   = { ...row, [field]: value };
+        if (field === NON_ACCRUAL_FEES_FIELD) {
+            newArr[idx] = this._applyNonAccrualValueSelection(row, this._getNonAccrualUnit(row), value);
+        } else {
+            newArr[idx] = { ...row, [field]: value };
+        }
         this.rows     = newArr;
+
+        //Refresh de datos en el padre informando errores: 
+        this.dispatchEvent(new CustomEvent('fieldchange', {
+            detail: {
+                fieldId: id,
+                label: fieldlabel,
+                apiName: field || null,
+                value: value,
+                isFieldValid
+            },
+            bubbles: true,
+            composed: true
+        }));
+
+        // Emit tenorschange event when nominal fields change (Drawn Amount or Undrawn Amount)
+        if (NOMINAL_FIELDS.includes(field)) {
+            this.dispatchEvent(new CustomEvent('tenorschange', {
+                bubbles: true,
+                composed: true
+            }));
+        }
+
+        this._refreshDerivedState();
+    }
+
+    handlePicklistChange(event) {
+        event.stopPropagation();
+        const { context: id, fieldname: field, value } = event.detail.data;
+        if (field !== '_nonAccrualUnitDisplay') return;
+
+        const idx = this.rows.findIndex(r => r.Id === id);
+        if (idx === -1) return;
+
+        const row = this.rows[idx];
+        if (row._role === ROLE_END) return;
+
+        const newArr = [...this.rows];
+        newArr[idx] = this._applyNonAccrualUnitSelection(row, value);
+        this.rows = newArr;
         this._refreshDerivedState();
     }
 
@@ -521,8 +600,25 @@ export default class DmtOppProductsTableTenors extends LightningElement {
             lockDate       = false;
         }
 
+        const errorFlags = {};
+        for (const fieldApi of ALL_NUMERIC_FIELDS) {
+            errorFlags['hasError_' + fieldApi] = this._invalidCells.has(`${row.Id}::${fieldApi}`);
+        }
+
+        const currencyDisplayFields = {};
+        for (const fieldApi of NOMINAL_FIELDS) {
+            currencyDisplayFields[fieldApi + '_currencyDisplay'] = this._formatCurrencyDisplay(row[fieldApi]);
+        }
+
+        const nonAccrualUnit = this._getNonAccrualUnit(row);
+        const nonAccrualValue = this._getNonAccrualValueForRow(row, nonAccrualUnit);
+
         return {
             ...row,
+            ...errorFlags,
+            ...currencyDisplayFields,
+            [NON_ACCRUAL_FEES_FIELD]: nonAccrualValue,
+            _nonAccrualUnitDisplay: nonAccrualUnit,
             deleteDisabled,
             editDisabled,
             buttonDisabled: addDisabled,
@@ -570,8 +666,8 @@ export default class DmtOppProductsTableTenors extends LightningElement {
             this._numericColumn('Undrawn Amount',        'gf_nominal_amount_fb__c',   true,  isEdit),
             this._numericColumn('Drawn Spread (BPS)',      'gf_spread_db__c',           false, isEdit),
             this._numericColumn('Undrawn Spread (BPS)',    'gf_spread_fb__c',           false, isEdit),
-            this._numericColumn('Non Accrual Fees (amount)',        'gf_accrual_fees_bp__c',     false, isEdit),
-            this._numericColumn('Non Accrual Fees (BPS)',  'gf_non_accrual_fees_bp__c', false, isEdit),
+            this._numericColumn('Non Accrual Fees', NON_ACCRUAL_FEES_FIELD, false, isEdit),
+            this._nonAccrualUnitColumn(isEdit),
             {
                 type: 'button-icon', hideDefaultActions: true, initialWidth: 60,
                 cellAttributes: { alignment: 'center' },
@@ -591,31 +687,79 @@ export default class DmtOppProductsTableTenors extends LightningElement {
     }
 
     _numericColumn(label, field, isCurrency, isEdit) {
-        const baseType  = isEdit ? 'custominputRow' : (isCurrency ? 'currency' : 'text');
+        if (!isEdit && isCurrency) {
+            return {
+                label, fieldName: field + '_currencyDisplay', type: 'text', hideDefaultActions: true,
+                cellAttributes: {  alignment: 'center' }
+            };
+        }
+
+        const baseType  = isEdit ? 'custominputRow' : 'text';
         const typeAttrs = {
             aviableItem: { fieldName: 'aviableItem' },
             inputValue : { fieldName: field },
             fieldName  : field,
-            context    : { fieldName: 'Id' }
+            fieldlabel : label,
+            context    : { fieldName: 'Id' },
+            suffix     : isCurrency ? this._currencyLabel : ''
         };
-        if (isCurrency) {
-            typeAttrs.currencyCode      = this._currencyCode;
-            typeAttrs.currencyDisplayAs = 'code';
-            typeAttrs.step              = '0.001';
-        }
         if (isEdit) {
+            typeAttrs.hasError = { fieldName: 'hasError_' + field };
             typeAttrs.validateNegative = true;
         }
-        return { label, fieldName: field, type: baseType, hideDefaultActions: true, cellAttributes: { style: 'text-align: center;' }, typeAttributes: typeAttrs };
+        return { label, fieldName: field, type: baseType, hideDefaultActions: true, cellAttributes: {  alignment: 'center'  }, typeAttributes: typeAttrs }; //style: 'text-align: center;'
+    }
+
+    _nonAccrualUnitColumn(isEdit) {
+        if (!isEdit) {
+            return {
+                label: 'BPS/Amount',
+                fieldName: '_nonAccrualUnitDisplay',
+                type: 'text',
+                hideDefaultActions: true,
+                initialWidth: 110,
+                cellAttributes: { alignment: 'center' }
+            };
+        }
+
+        return {
+            label: 'BPS/Amount',
+            fieldName: '_nonAccrualUnitDisplay',
+            type: 'picklist',
+            hideDefaultActions: true,
+            initialWidth: 110,
+            cellAttributes: { alignment: 'center' },
+            typeAttributes: {
+                label: 'Non Accrual Fees Unit',
+                placeholder: 'Select...',
+                options: NON_ACCRUAL_UNIT_OPTIONS,
+                value: { fieldName: '_nonAccrualUnitDisplay' },
+                context: { fieldName: 'Id' },
+                fieldName: '_nonAccrualUnitDisplay',
+                isDisabled: { fieldName: 'editDisabled' }
+            }
+        };
     }
 
     // ─── Copy / Paste ─────────────────────────────────────────────────────────
 
     _updateCopyPasteData() {
-        this.copyPasteRows    = this.getCurrentRows().map(r => ({ ...r, amortizationType: this._amortizationType }));
+        this.copyPasteRows    = this.rows
+            .filter(r => !r._deleted)
+            .map(r => this._decorateForDisplay(r))
+            .map(r => ({
+            ...r,
+            amortizationType: this._amortizationType
+        }));
         this.copyPasteColumns = this.columns
             .filter(c => c.type !== 'button' && c.type !== 'action' && c.type !== 'button-icon')
-            .map(c => ({ ...c, editable: true }));
+            .map(c => {
+                // Strip _currencyDisplay suffix so paste maps to actual DB fields
+                const fieldName = c.fieldName?.endsWith('_currencyDisplay')
+                    ? c.fieldName.slice(0, -'_currencyDisplay'.length)
+                    : c.fieldName;
+                return { ...c, fieldName, editable: true };
+            });
     }
 
     // ─── Numeric helpers ──────────────────────────────────────────────────────
@@ -657,7 +801,106 @@ export default class DmtOppProductsTableTenors extends LightningElement {
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
+    _loadCurrencyLabel(currencyIsoCode) {
+        if (!currencyIsoCode) return;
+        getCurrencyLabel({ currencyIsoCode })
+            .then(result => {
+                this._currencyLabel = result || currencyIsoCode;
+                this.columns = this._buildColumns();
+                this._refreshDerivedState();
+            })
+            .catch(() => {
+                this._currencyLabel = currencyIsoCode;
+                this.columns = this._buildColumns();
+                this._refreshDerivedState();
+            });
+    }
 
+    _formatCurrencyDisplay(value) {
+        const numeric = value === null || value === undefined || value === '' ? 0 : Number(value);
+        const formatted = Number.isNaN(numeric) ? value : numeric.toLocaleString('en-US');
+        return this._currencyLabel ? `${formatted} ${this._currencyLabel}` : formatted;
+    }
+
+    _normalizeNonAccrualFeeFields(row) {
+        const normalizedUnit = this._getNonAccrualUnit(row);
+        const normalizedValue = row?.[NON_ACCRUAL_FEES_FIELD] === undefined
+            ? this._getNonAccrualValueForRow(row, normalizedUnit)
+            : this._parseNumeric(row?.[NON_ACCRUAL_FEES_FIELD], false);
+
+        return this._applyNonAccrualUnitSelection({
+            ...row,
+            [NON_ACCRUAL_FEES_FIELD]: normalizedValue
+        }, normalizedUnit);
+    }
+
+    _normalizePastedNonAccrualFeeFields(row) {
+        const pastedUnit = row?._nonAccrualUnitDisplay;
+        const normalizedUnit = pastedUnit === NON_ACCRUAL_UNIT_BPS ? NON_ACCRUAL_UNIT_BPS : NON_ACCRUAL_UNIT_AMOUNT;
+
+        if (row?.[NON_ACCRUAL_FEES_FIELD] !== undefined) {
+            return this._applyNonAccrualValueSelection(row, normalizedUnit, row[NON_ACCRUAL_FEES_FIELD]);
+        }
+
+        return this._normalizeNonAccrualFeeFields(row);
+    }
+
+    _getNonAccrualUnit(row) {
+        const storedUnit = this._nonAccrualUnitByRowId.get(row?.Id);
+        if (storedUnit === NON_ACCRUAL_UNIT_AMOUNT || storedUnit === NON_ACCRUAL_UNIT_BPS) {
+            return storedUnit;
+        }
+
+        const amountValue = this._toFiniteNumber(row?.gf_accrual_fees_bp__c);
+        const bpsValue = this._toFiniteNumber(row?.gf_non_accrual_fees_bp__c);
+        if (bpsValue !== 0 && amountValue === 0) return NON_ACCRUAL_UNIT_BPS;
+        if (amountValue !== 0 && bpsValue === 0) return NON_ACCRUAL_UNIT_AMOUNT;
+        return NON_ACCRUAL_UNIT_AMOUNT;
+    }
+
+    _applyNonAccrualUnitSelection(row, selectedUnit) {
+        const unit = selectedUnit === NON_ACCRUAL_UNIT_BPS ? NON_ACCRUAL_UNIT_BPS : NON_ACCRUAL_UNIT_AMOUNT;
+        const currentUnit = this._getNonAccrualUnit(row);
+        const currentValue = this._getNonAccrualValueForRow(row, currentUnit);
+        const nextRow = {
+            ...row,
+            gf_accrual_fees_bp__c: unit === NON_ACCRUAL_UNIT_AMOUNT ? currentValue : 0,
+            gf_non_accrual_fees_bp__c: unit === NON_ACCRUAL_UNIT_BPS ? currentValue : 0
+        };
+
+        if (row?.Id) {
+            this._nonAccrualUnitByRowId.set(row.Id, unit);
+        }
+        return nextRow;
+    }
+
+    _applyNonAccrualValueSelection(row, selectedUnit, inputValue) {
+        const unit = selectedUnit === NON_ACCRUAL_UNIT_BPS ? NON_ACCRUAL_UNIT_BPS : NON_ACCRUAL_UNIT_AMOUNT;
+        const normalizedValue = this._toFiniteNumber(inputValue);
+        const nextRow = {
+            ...row,
+            gf_accrual_fees_bp__c: unit === NON_ACCRUAL_UNIT_AMOUNT ? normalizedValue : 0,
+            gf_non_accrual_fees_bp__c: unit === NON_ACCRUAL_UNIT_BPS ? normalizedValue : 0
+        };
+
+        if (row?.Id) {
+            this._nonAccrualUnitByRowId.set(row.Id, unit);
+        }
+        return nextRow;
+    }
+
+    _getNonAccrualValueForRow(row, unit) {
+        return unit === NON_ACCRUAL_UNIT_BPS
+            ? this._toFiniteNumber(row?.gf_non_accrual_fees_bp__c)
+            : this._toFiniteNumber(row?.gf_accrual_fees_bp__c);
+    }
+
+    _toFiniteNumber(value) {
+        if (value === null || value === undefined || value === '') return 0;
+        if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+        const parsed = this._parseNumeric(value, false);
+        return Number.isFinite(parsed) ? parsed : 0;
+    }
     _cleanRow(row) {
         const cleaned = {};
         for (const f of BUSINESS_FIELDS) {

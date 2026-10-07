@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_Visit_Topic_Compact_Layout</fullName>
+    <fields>dwp_kitv__topic_desc__c</fields>
+    <fields>dwp_kitv__visit_id__c</fields>
+    <fields>dwp_kitv__opportunity_id__c</fields>
+    <fields>dwp_kitv__summary__c</fields>
+    <fields>DES_Client_Prospect__c</fields>
+    <label>Visit Topic Compact Layout</label>
+</CompactLayout>

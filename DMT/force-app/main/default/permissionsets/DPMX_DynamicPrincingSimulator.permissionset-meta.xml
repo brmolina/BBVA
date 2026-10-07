@@ -3163,6 +3163,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Opportunity.DMT_Booking_System_Code__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Template_Configurations__c.Booking_type__c</field>
         <readable>true</readable>
     </fieldPermissions>

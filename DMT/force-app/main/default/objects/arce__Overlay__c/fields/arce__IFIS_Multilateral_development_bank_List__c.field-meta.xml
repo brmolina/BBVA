@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__IFIS_Multilateral_development_bank_List__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Multilateral development bank List</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>006679767</fullName>
+                <default>false</default>
+                <label>International Bank for Reconstruction and Development</label>
+            </value>
+            <value>
+                <fullName>024617674</fullName>
+                <default>false</default>
+                <label>International Finance Corporation</label>
+            </value>
+            <value>
+                <fullName>008039767</fullName>
+                <default>false</default>
+                <label>Inter-American Development Bank</label>
+            </value>
+            <value>
+                <fullName>008261267</fullName>
+                <default>false</default>
+                <label>Asian Development Bank</label>
+            </value>
+            <value>
+                <fullName>007467167</fullName>
+                <default>false</default>
+                <label>African Development Bank</label>
+            </value>
+            <value>
+                <fullName>012731604</fullName>
+                <default>false</default>
+                <label>Council of Europe Development Bank</label>
+            </value>
+            <value>
+                <fullName>011048967</fullName>
+                <default>false</default>
+                <label>Nordic Investment Bank</label>
+            </value>
+            <value>
+                <fullName>8</fullName>
+                <default>false</default>
+                <label>Caribbean Development Bank</label>
+            </value>
+            <value>
+                <fullName>011423667</fullName>
+                <default>false</default>
+                <label>European Bank for Reconstruction and Development</label>
+            </value>
+            <value>
+                <fullName>007205367</fullName>
+                <default>false</default>
+                <label>European Investment Bank</label>
+            </value>
+            <value>
+                <fullName>009983667</fullName>
+                <default>false</default>
+                <label>European Investment Fund</label>
+            </value>
+            <value>
+                <fullName>012767745</fullName>
+                <default>false</default>
+                <label>Multilateral Investment Guarantee Agency</label>
+            </value>
+            <value>
+                <fullName>13</fullName>
+                <default>false</default>
+                <label>International Finance Facility for Immunisation</label>
+            </value>
+            <value>
+                <fullName>14</fullName>
+                <default>false</default>
+                <label>Islamic Development Bank</label>
+            </value>
+            <value>
+                <fullName>15</fullName>
+                <default>false</default>
+                <label>International Development Association</label>
+            </value>
+            <value>
+                <fullName>16</fullName>
+                <default>false</default>
+                <label>Asian Infrastructure Investment Bank</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <label>Other Multilateral development banks</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

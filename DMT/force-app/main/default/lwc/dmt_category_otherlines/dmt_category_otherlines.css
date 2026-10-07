@@ -1,3 +1,17 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    width: min(45rem, calc(100vw - 2rem));
+    max-height: calc(100vh - 4rem);
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.slds-modal__header,
+.slds-modal__footer {
+    flex: 0 0 auto;
+}
+
 .row {
     min-height: 3rem;
     display: flex;
@@ -69,8 +83,12 @@ input:checked + .radio-circle::after {
 }
 
 .containerClass{
-    max-height: 40vh;
-    width: 45rem;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: calc(100vh - 12rem);
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .exampleHolder {

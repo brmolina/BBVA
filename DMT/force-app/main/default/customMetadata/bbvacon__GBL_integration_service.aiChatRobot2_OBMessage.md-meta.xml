@@ -27,6 +27,10 @@
         <value xsi:type="xsd:boolean">true</value>
     </values>
     <values>
+        <field>bbvacon__Endpoint_Path_Template__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
         <field>bbvacon__Headers_Class__c</field>
         <value xsi:nil="true"/>
     </values>

@@ -2,7 +2,7 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Client_Type__c</fullName>
     <externalId>false</externalId>
-    <formula>IF(NOT(ISBLANK(Custom_Association__c)), &quot;Custom&quot;,IF(Client__r.DES_Client_Type__c == &quot;Subsidiary&quot;, &quot;Customer&quot;,IF(ISBLANK(Client__c) &amp;&amp; ISBLANK(Custom_Association__c),&quot;No Client&quot;,&quot;Group&quot;)))</formula>
+    <formula>IF(NOT(ISBLANK(Golden_Code__c)), &quot;Golden&quot;,IF(NOT(ISBLANK(Custom_Association__c)), &quot;Custom&quot;,IF(Client__r.DES_Client_Type__c == &quot;Subsidiary&quot;, &quot;Customer&quot;,IF(ISBLANK(Client__c) &amp;&amp; ISBLANK(Custom_Association__c),&quot;No Client&quot;,&quot;Group&quot;))))</formula>
     <label>Client Type</label>
     <required>false</required>
     <trackHistory>false</trackHistory>

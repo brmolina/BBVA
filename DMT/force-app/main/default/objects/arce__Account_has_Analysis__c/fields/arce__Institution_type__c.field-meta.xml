@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Institution_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>A code that enables to segment between different type of companies: IFIS, Public Institutions, SOberaigns, etc</description>
+    <label>Type of institution</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Private</fullName>
+                <default>false</default>
+                <label>Private</label>
+            </value>
+            <value>
+                <fullName>Public</fullName>
+                <default>false</default>
+                <label>Public</label>
+            </value>
+            <value>
+                <fullName>Government Company</fullName>
+                <default>false</default>
+                <label>Government Company</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

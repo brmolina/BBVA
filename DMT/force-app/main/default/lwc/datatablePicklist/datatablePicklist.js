@@ -4,14 +4,50 @@ import DMT_HELPTEXT_WARNING from '@salesforce/label/c.DMT_ReadOnly_Warningtoolti
 export default class DatatablePicklist extends LightningElement {
     @api label;
     @api placeholder;
-    @api options;
-    @api value;
     @api context;
     @api fieldname;
-    @api isdisabled;
     @api requieresvaluerecopick;
     @api showreadonlywarning;
-    @api optionslimit;
+
+    _isdisabled = false;
+    _options = [];
+    _value = '';
+    _optionslimit = null;
+
+    @api
+    get isdisabled() {
+        return this._isdisabled;
+    }
+    set isdisabled(val) {
+        this._isdisabled = val === true || val === 'true';
+    }
+
+    @api
+    get options() {
+        return this._options;
+    }
+    set options(val) {
+        this._options = val;
+        this.initOptions();
+    }
+
+    @api
+    get value() {
+        return this._value;
+    }
+    set value(val) {
+        this._value = val;
+        this.initOptions();
+    }
+
+    @api
+    get optionslimit() {
+        return this._optionslimit;
+    }
+    set optionslimit(val) {
+        this._optionslimit = val;
+        this.initOptions();
+    }
 
     @track optionsValue = [];
     @track showDropdown = false;
@@ -30,7 +66,7 @@ export default class DatatablePicklist extends LightningElement {
     }
     set readonlyAttr(val) {
         this._readOnly = val;
-        if (this.value === "All") {
+        if (this._value === "All") {
             this._readOnly = true;
         }
     }
@@ -45,7 +81,7 @@ export default class DatatablePicklist extends LightningElement {
 
     @api
     get readonlywarning() {     
-        return (this.value == "Edit" || this.value == "All") && this.showreadonlywarning;
+        return (this._value == "Edit" || this._value == "All") && this.showreadonlywarning;
     }
 
     connectedCallback() {
@@ -55,13 +91,24 @@ export default class DatatablePicklist extends LightningElement {
 
     // Standardized option initialization
     initOptions() {
-        let opts = Array.isArray(this.options) ? JSON.parse(JSON.stringify(this.options)) : [];
-        if (this.optionslimit) {
-            const index = opts.findIndex(o => o.value === this.optionslimit);
+        let opts = [];
+        if (typeof this._options === 'string') {
+            try {
+                opts = JSON.parse(this._options);
+            } catch (e) {
+                opts = [];
+            }
+        } else if (Array.isArray(this._options)) {
+            opts = JSON.parse(JSON.stringify(this._options));
+        }
+
+        if (this._optionslimit != null && this._optionslimit !== '') {
+            const limitStr = String(this._optionslimit);
+            const index = opts.findIndex(o => String(o.value) === limitStr);
             if (index !== -1) opts = opts.slice(index + 1);
         }
-        if (this.value && !opts.find(o => o.value === this.value)) {
-            opts.push({ label: this.label || this.value, value: this.value });
+        if (this._value != null && this._value !== '' && !opts.find(o => String(o.value) === String(this._value))) {
+            opts.push({ label: this.label || String(this._value), value: this._value });
         }
         this.optionsValue = opts.map(opt => ({
             ...opt,
@@ -79,13 +126,16 @@ export default class DatatablePicklist extends LightningElement {
     }
 
     get selectedLabel() {
-        if (!this.value) return '';
-        const found = this.optionsValue.find(opt => opt.value === this.value);
-        return found ? found.label : this.value;
+        if (this._value == null || this._value === '') return '';
+        const valStr = String(this._value);
+        const found = this.optionsValue.find(opt => String(opt.value) === valStr);
+        return found ? found.label : this._value;
     }
 
     @api get readOnlyField() {
-        return this._readOnly || (this.isdisabled || this.requieresvaluerecopick);
+        const disabledBool = this._isdisabled === true || this._isdisabled === 'true';
+        const reqBool = this.requieresvaluerecopick === true || this.requieresvaluerecopick === 'true';
+        return this._readOnly || disabledBool || reqBool;
     }
 
     get dropdownStyle() {
@@ -152,10 +202,12 @@ export default class DatatablePicklist extends LightningElement {
     }
 
     openDropdown() {
-        if (this.readOnlyField || this.showDropdown) return;
+        if (this.readOnlyField || this.showDropdown) {
+            return;
+        }
         
         this.showDropdown = true;
-        const currentIdx = this.optionsValue.findIndex(opt => opt.value === this.value);
+        const currentIdx = this.optionsValue.findIndex(opt => String(opt.value) === String(this._value));
         this.focusedIndex = currentIdx >= 0 ? currentIdx : 0;
         this.updateOptionsWithFocus();
 
@@ -176,7 +228,8 @@ export default class DatatablePicklist extends LightningElement {
 
     selectOption(newVal) {
         // [CRITICAL] This updates the internal value so the UI and Parent see the change
-        this.value = newVal; 
+        this._value = newVal; 
+        this.initOptions();
         
         this.closeDropdown();
 
@@ -188,7 +241,7 @@ export default class DatatablePicklist extends LightningElement {
             detail: { 
                 data: { 
                     context: this.context, 
-                    value: this.value, 
+                    value: this._value, 
                     fieldname: this.fieldname 
                 } 
             }
@@ -203,8 +256,10 @@ export default class DatatablePicklist extends LightningElement {
     }
 
     handleSelect(event) {
+        console.log('handleSelect event:', event);
         this.selectOption(event.currentTarget.dataset.value);
     }
+    
 
     scrollToFocusedOption() {
         // Use timeout to ensure DOM update is finished

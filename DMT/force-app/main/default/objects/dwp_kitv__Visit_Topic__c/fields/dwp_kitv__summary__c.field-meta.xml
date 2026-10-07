@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>dwp_kitv__summary__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Formula field that gets the value from Opportunity Name and/or Topic Name.</description>
+    <externalId>false</externalId>
+    <formula>IF(NOT(ISBLANK(dwp_kitv__opportunity_id__c )), IF(NOT(ISBLANK(dwp_kitv__topic_desc__c)), dwp_kitv__opportunity_id__r.Name + &apos; · &apos; + dwp_kitv__topic_desc__c, dwp_kitv__opportunity_id__r.Name), IF(NOT(ISBLANK(dwp_kitv__topic_desc__c)), dwp_kitv__topic_desc__c, &apos;&apos;))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Summary Topic</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

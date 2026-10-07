@@ -1,22 +1,24 @@
 /**
  * @description       : Class to control the creation of Lightning Web Component for flexcards. Is the controller for the LWC des_omnistudioadmin
  * @author            : Aníbal Cortés
- * @group             : 
+ * @group             :
  * @last modified on  : 07-10-2025
  * @last modified by  : Aníbal Cortés
 **/
 public without sharing class DES_OmnistudioAdmin_Controller {
 
+    private static final Integer DEFAULT_RECENT_WINDOW_MINUTES = 1440;
+
     /**
     * @description Method that refreshes all flexcards from ORG, it is primarily used on deployments
-    * @author Aníbal Cortés | 07-10-2025 
-    * @return String 
+    * @author Aníbal Cortés | 07-10-2025
+    * @return String
     **/
     @AuraEnabled
     public static String refreshAllFlexcardsLatestVersion() {
         List<OmniUiCard> omniUiCardListDesactive = [select Id,IsActive  from OmniUiCard where isActive  = true];
 
-        for (OmniUiCard flexcard : omniUiCardListDesactive) {    
+        for (OmniUiCard flexcard : omniUiCardListDesactive) {
             flexcard.isActive = false;
         }
 
@@ -62,18 +64,35 @@ public without sharing class DES_OmnistudioAdmin_Controller {
             contadorIntentos--;
         }
 
-        String baseUrl = URL.getOrgDomainUrl().toExternalForm();  String finalUrl;
-        if (baseUrl.contains('sandbox')) {
-            finalUrl = baseUrl;  finalUrl += '/apex/omnistudio__FlexCardCompilePage?id=';
-        } else {
-            finalUrl = baseUrl;    finalUrl += '/apex/omnistudio__FlexCardCompilePage?id=';
-        }
-        for (OmniUiCard flexcard : flexCardsToUpdate) {    
-            finalUrl = finalUrl + flexcard.Id + '%2C';
-        }
-        finalUrl = finalUrl.removeEndIgnoreCase(',');
+        return buildFlexCardCompileUrl(flexCardsToUpdate);
+    }
 
-        return finalUrl;
+    /**
+    * @description Method that refreshes only the flexcards modified recently.
+    * @param minutesWindow Window in minutes used to detect recent uploads.
+    * @return String
+    **/
+    @AuraEnabled
+    public static String refreshRecentlyModifiedFlexcards(Integer minutesWindow) {
+        Integer safeWindowMinutes = (minutesWindow == null || minutesWindow <= 0)
+            ? DEFAULT_RECENT_WINDOW_MINUTES
+            : minutesWindow;
+
+        Datetime nowDateTime = System.now();
+        Datetime cutoff = nowDateTime.addMinutes(-safeWindowMinutes);
+
+        Map<String, OmniUiCard> latestRecentByName = getLatestRecentFlexcards(cutoff, nowDateTime);
+
+        if (latestRecentByName.isEmpty()) {
+            return null;
+        }
+
+        deactivateActiveFlexcardsByName(latestRecentByName.keySet());
+
+        List<OmniUiCard> flexCardsToUpdate = buildFlexcardsToActivate(latestRecentByName.values());
+        activateFlexcardsWithRetry(flexCardsToUpdate);
+
+        return buildFlexCardCompileUrl(flexCardsToUpdate);
     }
 
     @AuraEnabled
@@ -150,6 +169,87 @@ public without sharing class DES_OmnistudioAdmin_Controller {
 
     private static List<Database.SaveResult> makeUpdateOfFlexcards(List<OmniUiCard> flexCardsToUpdate) {
         return Database.update(flexCardsToUpdate, false);
+    }
+
+    private static Map<String, OmniUiCard> getLatestRecentFlexcards(Datetime cutoff, Datetime upperBound) {
+        List<OmniUiCard> recentFlexcards = [
+            SELECT Id, Name, VersionNumber, IsActive, LastModifiedDate
+            FROM OmniUiCard
+            WHERE LastModifiedDate >= :cutoff
+            AND LastModifiedDate <= :upperBound
+            ORDER BY Name ASC, LastModifiedDate DESC, VersionNumber DESC
+        ];
+
+        Map<String, OmniUiCard> latestRecentByName = new Map<String, OmniUiCard>();
+        for (OmniUiCard flexcard : recentFlexcards) {
+            if (!latestRecentByName.containsKey(flexcard.Name)) {
+                latestRecentByName.put(flexcard.Name, flexcard);
+            }
+        }
+
+        return latestRecentByName;
+    }
+
+    private static void deactivateActiveFlexcardsByName(Set<String> flexcardNames) {
+        List<OmniUiCard> activeFlexcards = [
+            SELECT Id, IsActive, Name
+            FROM OmniUiCard
+            WHERE Name IN :flexcardNames
+            AND IsActive = true
+        ];
+
+        for (OmniUiCard flexcard : activeFlexcards) {
+            flexcard.IsActive = false;
+        }
+
+        if (!activeFlexcards.isEmpty()) {
+            update activeFlexcards;
+        }
+    }
+
+    private static List<OmniUiCard> buildFlexcardsToActivate(Iterable<OmniUiCard> sourceFlexcards) {
+        List<OmniUiCard> flexCardsToUpdate = new List<OmniUiCard>();
+        for (OmniUiCard flexcard : sourceFlexcards) {
+            OmniUiCard flexcardToActivate = new OmniUiCard();
+            flexcardToActivate.Id = flexcard.Id;
+            flexcardToActivate.IsActive = true;
+            flexCardsToUpdate.add(flexcardToActivate);
+        }
+
+        return flexCardsToUpdate;
+    }
+
+    private static void activateFlexcardsWithRetry(List<OmniUiCard> flexCardsToUpdate) {
+        Boolean success = false;
+        Integer contadorIntentos = 10;
+        List<Database.SaveResult> updatedFlexcardsResult = makeUpdateOfFlexcards(flexCardsToUpdate);
+        while (!success && contadorIntentos > 0) {
+            List<OmniUiCard> flexCardsToRelaunch = new List<OmniUiCard>();
+            success = true;
+            for (Database.SaveResult saveResult : updatedFlexcardsResult) {
+                if (!saveResult.isSuccess()) {
+                    success = false;
+                    OmniUiCard flexcard = new OmniUiCard();
+                    flexcard.Id = saveResult.getId();
+                    flexcard.IsActive = true;
+                    flexCardsToRelaunch.add(flexcard);
+                }
+            }
+            if (flexCardsToRelaunch.size() > 0) {
+                updatedFlexcardsResult = makeUpdateOfFlexcards(flexCardsToRelaunch);
+            }
+            contadorIntentos--;
+        }
+    }
+
+    private static String buildFlexCardCompileUrl(List<OmniUiCard> flexCardsToUpdate) {
+        String baseUrl = URL.getOrgDomainUrl().toExternalForm();
+        List<String> flexCardIds = new List<String>();
+        for (OmniUiCard flexcard : flexCardsToUpdate) {
+            flexCardIds.add(String.valueOf(flexcard.Id));
+        }
+
+        return baseUrl + '/apex/omnistudio__FlexCardCompilePage?id=' + String.join(flexCardIds, ',');
     }
 
 

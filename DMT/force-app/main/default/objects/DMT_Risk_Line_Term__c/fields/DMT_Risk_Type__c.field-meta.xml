@@ -30,6 +30,11 @@
                 <default>false</default>
                 <label>Singular</label>
             </value>
+            <value>
+                <fullName>Repos</fullName>
+                <default>false</default>
+                <label>Repos</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

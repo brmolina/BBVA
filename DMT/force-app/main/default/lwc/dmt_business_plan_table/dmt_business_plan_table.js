@@ -5,6 +5,11 @@ import DMT_Styles from "@salesforce/resourceUrl/DMT_Styles";
 import { loadStyle } from "lightning/platformResourceLoader";
 import { updateRecord } from "lightning/uiRecordApi";
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+const TODAY = new Date();
+const CURRENT_FINANCIAL_YEAR =
+    TODAY.getMonth() >= 8
+        ? TODAY.getFullYear() 
+        : TODAY.getFullYear() - 1;
 
 export default class Dmt_business_plan_table extends LightningElement {
     @api recordId;
@@ -14,10 +19,10 @@ export default class Dmt_business_plan_table extends LightningElement {
 
     columns = [
         { label: '', fieldName: 'category', type: 'text', isEditable: false },
-        { label: 'FY' + `${new Date().getFullYear() - 1}`, fieldName: 'pastYear2', type: 'text', isEditable: true },
-        { label: 'FY' + `${new Date().getFullYear()}`, fieldName: 'pastYear', type: 'text', isEditable: true },
-        { label: 'FY' + `${new Date().getFullYear() + 1}` + 'E', fieldName: 'currentYear', type: 'text', isEditable: true },
-        { label: 'FY' + `${new Date().getFullYear() + 2}` + 'E', fieldName: 'nextYear', type: 'text', isEditable: true }
+        { label: `FY${CURRENT_FINANCIAL_YEAR - 1}`, fieldName: 'pastYear2', type: 'text', isEditable: true },
+        { label: `FY${CURRENT_FINANCIAL_YEAR}`, fieldName: 'pastYear', type: 'text', isEditable: true },
+        { label: `FY${CURRENT_FINANCIAL_YEAR + 1}E`, fieldName: 'currentYear', type: 'text', isEditable: true },
+        { label: `FY${CURRENT_FINANCIAL_YEAR + 2}E`, fieldName: 'nextYear', type: 'text', isEditable: true }
     ];
 
     columnsHorizontal = [

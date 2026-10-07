@@ -4,7 +4,11 @@
     <active>true</active>
     <errorConditionFormula>AND(
     ISPICKVAL(StageName, &quot;Closed Won&quot;),
-    Account.gf_cust_orig_prospect_ind_type__c = TRUE
+    ISCHANGED(StageName),
+    OR(
+        Account.RecordType.DeveloperName = &quot;Prospect_Group&quot;,
+        Account.RecordType.DeveloperName = &quot;Prospect_Subsidiary&quot;
+    )
 )</errorConditionFormula>
-    <errorMessage>&quot;Error: You cannot close an Opportunity if the associated client is a &apos;Prospect&apos;. Closing an Opportunity implies that the contract is signed and the client must be &apos;Onboarded&apos; (or &apos;Active&apos;).&quot;</errorMessage>
+    <errorMessage>&quot;You cannot close an Opportunity if the associated client is a &apos;Prospect&apos;. Closing an Opportunity implies that the contract is signed and the client must be &apos;Onboarded&apos; (or &apos;Active&apos;).&quot;</errorMessage>
 </ValidationRule>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_audit_client_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Comments on audits carried out by the client.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Comments on audits</label>
+    <length>1000</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

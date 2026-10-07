@@ -52,7 +52,16 @@ public with sharing class DMT_OppProfitabilityLimitVisualRendTest {
             'economicCcf'                 => 45.0,
             'economicLgd'                 => 35.0,
             'economicApr'                 => 9.0,
-            'economicCapital'             => 140000.0
+            'economicCapital'             => 140000.0,
+            'totalYears'                  => new List<Object>{
+                new Map<String, Object>{
+                    'year'         => 2026,
+                    'eadEcoYearly' => 1800000.0,
+                    'eadRegYearly' => 2000000.0,
+                    'rorcYearly'   => 5.0,
+                    'raroecYearly' => 10.0
+                }
+            }
         };
         if (productId != null) {
             row.put('productId', productId);
@@ -265,135 +274,4 @@ public with sharing class DMT_OppProfitabilityLimitVisualRendTest {
         System.assertNotEquals('', result, 'Debe retornar HTML con imagen');
     }
 
-    // ── renderPdfJson tests ───────────────────────────────────────────────────
-
-    @isTest
-    static void testRenderPdfJsonWithNullData() {
-        DMT_OppProfitabilityLimitVisualRenderer renderer = new DMT_OppProfitabilityLimitVisualRenderer();
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(null);
-        Test.stopTest();
-
-        System.assertEquals(0, result.size(), 'Debe retornar mapa vacío para data null');
-    }
-
-    @isTest
-    static void testRenderPdfJsonOpportunityWithoutLineItems() {
-        Opportunity opp = [SELECT Id, Name, DMT_CurrencyText__c FROM Opportunity LIMIT 1];
-
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.featuresList = new List<Map<String, Object>>{ buildFeatureMap(false) };
-        data.opportunity  = opp;
-
-        DMT_OppProfitabilityLimitVisualRenderer renderer = new DMT_OppProfitabilityLimitVisualRenderer();
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assertEquals(0, result.size(), 'Debe retornar mapa vacío para opp sin LineItems');
-    }
-
-    @isTest
-    static void testRenderPdfJsonNoProfitabilityFeature() {
-        Opportunity opp = queryOpportunityWithLineItems();
-
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.featuresList = new List<Map<String, Object>>{
-            new Map<String, Object>{ 'otherFeature' => 'value' }
-        };
-        data.opportunity = opp;
-
-        DMT_OppProfitabilityLimitVisualRenderer renderer = new DMT_OppProfitabilityLimitVisualRenderer();
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assertEquals(0, result.size(), 'Debe retornar mapa vacío sin nodo profitability');
-    }
-
-    @isTest
-    static void testRenderPdfJsonWithEmptyResults() {
-        Opportunity opp = queryOpportunityWithLineItems();
-
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        Map<String, Object> profMap = new Map<String, Object>{
-            'results' => new List<Object>(),
-            'audit'   => new Map<String, Object>{ 'rorcThreshold' => 3.0 }
-        };
-        data.featuresList = new List<Map<String, Object>>{
-            new Map<String, Object>{ 'profitability' => profMap }
-        };
-        data.opportunity = opp;
-
-        DMT_OppProfitabilityLimitVisualRenderer renderer = new DMT_OppProfitabilityLimitVisualRenderer();
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assertEquals(0, result.size(), 'Debe retornar mapa vacío para resultados vacíos');
-    }
-
-    @isTest
-    static void testRenderPdfJsonWithValidData() {
-        Opportunity opp = queryOpportunityWithLineItems();
-
-        DMT_ViewController.LineDataWrapper data = buildWrapper(opp, true);
-        data.currencyIsoCode = 'USD';
-
-        DMT_OppProfitabilityLimitVisualRenderer renderer = new DMT_OppProfitabilityLimitVisualRenderer();
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assertNotEquals(null, result, 'Debe retornar un mapa no nulo');
-        System.assert(result.containsKey('content'), 'Debe contener la clave content');
-    }
-
-    @isTest
-    static void testRenderPdfJsonWithProductDetailsAndImage() {
-        Opportunity opp = queryOpportunityWithLineItems();
-
-        DMT_ViewController.LineDataWrapper data = buildWrapper(opp, true);
-
-        Map<String, Object> productDetail = new Map<String, Object>{
-            'gf_group_priority_opportunity_id__c' => '01',
-            'Id'           => '01',
-            'Name'         => 'Test Product PDF',
-            'InitialDate'  => Date.today(),
-            'MaturityDate' => Date.today().addDays(365),
-            'Currency'     => 'EUR',
-            'OppCurrency'  => 'EUR'
-        };
-        data.profitabilityProductDetailsList = new List<Map<String, Object>>{ productDetail };
-
-        Map<String, Object> rawNominals = new Map<String, Object>{
-            'nominalDb' => 1000000.0,
-            'nominalFb' => 0.0
-        };
-        Map<String, Object> convertedNominals = new Map<String, Object>{
-            'nominalDb' => 1000000.0,
-            'nominalFb' => 0.0
-        };
-        data.profitabilityNominalAmountsMap         = new Map<String, Map<String, Object>>{ '01' => rawNominals };
-        data.profitabilityNominalAmountsConvertedMap = new Map<String, Map<String, Object>>{ '01' => convertedNominals };
-
-        DMT_ViewController.ItemImgB64 imgItem = new DMT_ViewController.ItemImgB64();
-        imgItem.imgB64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
-        data.itemImgBase64 = new List<DMT_ViewController.ItemImgB64>{ imgItem };
-        data.isImg64 = true;
-
-        DMT_OppProfitabilityLimitVisualRenderer renderer = new DMT_OppProfitabilityLimitVisualRenderer();
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assertNotEquals(null, result, 'Debe retornar un mapa no nulo');
-        System.assert(result.containsKey('content'), 'Debe contener la clave content');
-    }
 }

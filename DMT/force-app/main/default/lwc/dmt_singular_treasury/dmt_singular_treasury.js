@@ -3,6 +3,8 @@ import TITLE_TABLE from '@salesforce/label/c.dmt_cl_OneOffTransaction_Text';
 import { loadStyle } from 'lightning/platformResourceLoader';
 import dataTableWithoutTruncate from '@salesforce/resourceUrl/DataTableTruncateCss';
 
+const BR_CO_TERM_OPTIONS = [{ label: '0D', value: '0' }, { label: '1D', value: '1' }, { label: '2D', value: '2' }, { label: '3D', value: '3' }, { label: '7D', value: '7' }, { label: '10D', value: '10' }, { label: '15D', value: '15' }, { label: '1M', value: '30' }, { label: '3M', value: '90' }, { label: '6M', value: '180' }, { label: '1Y', value: '365' }, { label: '2Y', value: '730' }, { label: '3Y', value: '1095' }, { label: '4Y', value: '1460' }, { label: '5Y', value: '1825' }, { label: '7Y', value: '2555' }, { label: '10Y', value: '3650' }, { label: '15Y', value: '5475' }, { label: '20Y', value: '7300' }, { label: '30Y', value: '10950' }];
+
 export default class Dmt_singular_treasury extends LightningElement {
 
     tableData;
@@ -20,6 +22,21 @@ export default class Dmt_singular_treasury extends LightningElement {
     //have this attribute to track data changed
     //with custom picklist or custom lookup
     @track draftValues = [];
+    _refreshCounter = 0;
+
+    @api
+    get refreshCounter() {
+      return this._refreshCounter;
+    }
+
+    set refreshCounter(value) {
+      const newValue = Number(value);
+      if (newValue !== this._refreshCounter) {
+        this._refreshCounter = newValue;
+        this.draftValues = [];
+      }
+    }
+
     dvpAmountvalue;
     @api columnstablecopypaste = [];
     @api isReadOnlyUser;
@@ -68,6 +85,12 @@ export default class Dmt_singular_treasury extends LightningElement {
       }
     }
 
+    get activeTermOptions() {
+      return ['BR', 'CO'].includes((this.bookingGeography || '').trim().toUpperCase())
+        ? BR_CO_TERM_OPTIONS
+        : this.termoptions;
+    }
+
 
     @api
     get  tableDataName() {
@@ -111,14 +134,14 @@ export default class Dmt_singular_treasury extends LightningElement {
     if (normalizedData.length > 0) {
       const newArray = normalizedData.map((item, index) => {
         const newItem = { ...item };
-        newItem.isEditableField = !newItem.isDisabled;
+        newItem.isEditableField = !this.isReadOnlyUser && !newItem.isDisabled;
         newItem.buttonDisabled = true;
         newItem.pickDisabled = true;
         newItem.deleteDisabled = true;
-        if (index === normalizedData.length - 1 && newItem.isDisabled != true) {
+        if (index === normalizedData.length - 1 && newItem.isDisabled != true && !this.isReadOnlyUser) {
           newItem.buttonDisabled = false;
           newItem.pickDisabled = false;
-          newItem.deleteDisabled = normalizedData.length === 1;
+          newItem.deleteDisabled = false;
         }
         return newItem;
       });
@@ -151,15 +174,68 @@ export default class Dmt_singular_treasury extends LightningElement {
     lastSavedData = [];
     setColumns(){
       //Due to sonar issue, the if estructure has been commented because doing the same logic in both cases
-      if (this.bookingGeography == 'AR') {
+      if (this.bookingGeography == 'PE') {
       this.columns = [
-          { label: 'TRANSACTION', fieldName: 'DMT_Singular_Operation__c', type:'text',hideDefaultActions:true ,editable: {fieldName:'isEditableField'}},
-          { label: 'DERIVATIVES AMOUNT', fieldName: 'amount', type:'currency',hideDefaultActions:true,editable: {fieldName:'isEditableField'}, cellAttributes:{style: 'text-align: center;'},
+          { label: 'TRANSACTION', fieldName: 'operationName', type:'text',hideDefaultActions:true ,editable: {fieldName:'isEditableField'}},
+            { label: 'DVP AMOUNT', fieldName: 'dvpAmount', type:'currency',hideDefaultActions:true,editable: {fieldName:'isEditableField'}, cellAttributes:{style: 'text-align: center;'},
             typeAttributes: { currencyCode: {fieldName:'currency'} }},
-            { label: 'DVP AMOUNT', fieldName: 'DMT_Singular_DvP__c', type:'currency',hideDefaultActions:true,editable: {fieldName:'isEditableField'}, cellAttributes:{style: 'text-align: center;'},
+            { label: 'FD AMOUNT', fieldName: 'fdAmount', type:'currency',hideDefaultActions:true,editable: {fieldName:'isEditableField'}, cellAttributes:{style: 'text-align: center;'},
             typeAttributes: { currencyCode: {fieldName:'currency'} }},
           { label: 'TERM', fieldName: 'endTerm', type:'picklist',hideDefaultActions:true, typeAttributes: {isDisabled : true,
-              placeholder: 'Select...', options: this.termoptions, fieldName: 'endTerm', wrapText:true, editable: false // list of all picklist options
+              placeholder: 'Select...', options: this.activeTermOptions, fieldName: 'endTerm', wrapText:true, editable: false // list of all picklist options
+              , value: { fieldName: 'endTerm' } // default value for picklist
+              , context: { fieldName: 'Id' } // binding account Id with context variable to be returned back
+          },cellAttributes:{class: {fieldName:'deriVisible'}}},
+          { label: 'MAX DATE', fieldName: 'maxDate', type:'date-local',hideDefaultActions:true ,editable:  {fieldName:'isEditableField'}, cellAttributes:{style: 'text-align: center;'},
+           typeAttributes: {
+             day: "2-digit",
+             month: "2-digit",
+             year: "2-digit"
+         }
+            },
+          { label: 'ACTIVE', fieldName: 'active', type:'boolean',hideDefaultActions:true,cellAttributes:{style: 'text-align: center;'},editable:false
+            },
+            {
+              type:  'button-icon',hideDefaultActions:true,
+              cellAttributes: { alignment: 'center' },
+              initialWidth: 90,
+              typeAttributes: 
+              {
+                iconName: 'utility:delete',
+                label: ' ', 
+                name: 'deleteRecord', 
+                title: '', 
+                disabled: {fieldName: 'deleteDisabled'},
+                iconPosition: 'center', 
+                value: 'test'
+              }
+            }
+            ,
+          {
+              type:  'button-icon',hideDefaultActions:true,
+              cellAttributes: { alignment: 'center' },
+              initialWidth: 90,
+              typeAttributes: 
+              {
+                iconName: 'utility:add',
+                label: '    ', 
+                name: 'addRecord', 
+                title: '        ', 
+                disabled: {fieldName: 'buttonDisabled'},
+                iconPosition: 'center', 
+                value: 'test'
+              }
+            }
+      ];
+    } else if (this.bookingGeography == 'AR') {
+      this.columns = [
+          { label: 'TRANSACTION', fieldName: 'operationName', type:'text',hideDefaultActions:true ,editable: {fieldName:'isEditableField'}},
+          { label: 'DERIVATIVES AMOUNT', fieldName: 'amount', type:'currency',hideDefaultActions:true,editable: {fieldName:'isEditableField'}, cellAttributes:{style: 'text-align: center;'},
+            typeAttributes: { currencyCode: {fieldName:'currency'} }},
+            { label: 'DVP AMOUNT', fieldName: 'dvpAmount', type:'currency',hideDefaultActions:true,editable: {fieldName:'isEditableField'}, cellAttributes:{style: 'text-align: center;'},
+            typeAttributes: { currencyCode: {fieldName:'currency'} }},
+          { label: 'TERM', fieldName: 'endTerm', type:'picklist',hideDefaultActions:true, typeAttributes: {isDisabled : true,
+              placeholder: 'Select...', options: this.activeTermOptions, fieldName: 'endTerm', wrapText:true, editable: false // list of all picklist options
               , value: { fieldName: 'endTerm' } // default value for picklist
               , context: { fieldName: 'Id' } // binding account Id with context variable to be returned back
           },cellAttributes:{class: {fieldName:'deriVisible'}}},
@@ -206,15 +282,15 @@ export default class Dmt_singular_treasury extends LightningElement {
       ];
     }else {
         this.columns = [
-          { label: 'TRANSACTION', fieldName: 'DMT_Singular_Operation__c', type:'text',hideDefaultActions:true ,editable: {fieldName:'isEditableField'}},
+          { label: 'TRANSACTION', fieldName: 'operationName', type:'text',hideDefaultActions:true ,editable: {fieldName:'isEditableField'}},
           { label: 'DERIVATIVES AMOUNT', fieldName: 'amount', type:'currency',hideDefaultActions:true,editable: {fieldName:'isEditableField'}, cellAttributes:{style: 'text-align: center;'},
             typeAttributes: { currencyCode: {fieldName:'currency'} }},
-            { label: 'DVP AMOUNT', fieldName: 'DMT_Singular_DvP__c', type:'currency',hideDefaultActions:true,editable: {fieldName:'isEditableField'}, cellAttributes:{style: 'text-align: center;'},
+            { label: 'DVP AMOUNT', fieldName: 'dvpAmount', type:'currency',hideDefaultActions:true,editable: {fieldName:'isEditableField'}, cellAttributes:{style: 'text-align: center;'},
             typeAttributes: { currencyCode: {fieldName:'currency'} }},
-            { label: 'FD AMOUNT', fieldName: 'DMT_Singular_FD__c', type:'currency',hideDefaultActions:true,editable: {fieldName:'isEditableField'}, cellAttributes:{style: 'text-align: center;'},
+            { label: 'FD AMOUNT', fieldName: 'fdAmount', type:'currency',hideDefaultActions:true,editable: {fieldName:'isEditableField'}, cellAttributes:{style: 'text-align: center;'},
             typeAttributes: { currencyCode: {fieldName:'currency'} }},
           { label: 'TERM', fieldName: 'endTerm', type:'picklist',hideDefaultActions:true, typeAttributes: {isDisabled : true,
-              placeholder: 'Select...', options: this.termoptions, fieldName: 'endTerm', wrapText:true, editable: false // list of all picklist options
+              placeholder: 'Select...', options: this.activeTermOptions, fieldName: 'endTerm', wrapText:true, editable: false // list of all picklist options
               , value: { fieldName: 'endTerm' } // default value for picklist
               , context: { fieldName: 'Id' } // binding account Id with context variable to be returned back
           },cellAttributes:{class: {fieldName:'deriVisible'}}},
@@ -262,36 +338,25 @@ export default class Dmt_singular_treasury extends LightningElement {
       } 
     }
     renderedCallback() {
-        
-      if(this.tableData && this.tableData[0] && this.tableData[this.tableData.length -1]['buttonDisabled'] && this.tableData[this.tableData.length -1]['endTerm'] !== ""){
-        let copyData = this.copiarLista(this.tableData);
-        copyData[copyData.length - 1]['buttonDisabled'] = false;
-        copyData[copyData.length - 1]['pickDisabled'] = false;
-        
-        //if(this.tableData.length > 1){
-          copyData[copyData.length - 1]['deleteDisabled'] = false;
-          copyData[0]['deleteDisabled'] = true;
-        //}
-        this.dispatchEvent(new CustomEvent('tableSingularConInit',  { bubbles:true, composed:true,detail:copyData} ));
-      }
+      // Row flags are derived in the tableDataName setter; nothing to do here.
     }
 
     updateDataValues(updateItem) {
-        let copyData = this.copiarLista(this.tableData);console.log('todayprev')
+        let copyData = this.copiarLista(this.tableData);
          copyData.forEach(item => {
              if (item.Id.toString() === updateItem.Id.toString()) {
                  for (let field in updateItem) {
                     item[field] = updateItem[field];
                     if (field === 'maxDate') {
-                        const today = new Date();console.log('today', today);console.log('updateItem[field] term', updateItem[field])
-                        var dateSelected = new Date(updateItem[field]);console.log('endt[field] term', dateSelected - today)
-                        item['endTerm'] = this.getNextGridValue(Math.ceil((dateSelected - today) / (3600*1000*24)).toString(),this.termoptions);console.log('endt term', item['endTerm'])
+                        const today = new Date();
+                        var dateSelected = new Date(updateItem[field]);
+                        item['endTerm'] = this.getNextGridValue(Math.ceil((dateSelected - today) / (3600*1000*24)).toString(),this.activeTermOptions);
                     }
 
                  }
              }
          });
-        this.dispatchEvent(new CustomEvent('tableSingularCon',  { bubbles:true, composed:true,detail:  copyData} ));
+        this.dispatchEvent(new CustomEvent('tablesingularcon',  { bubbles:true, composed:true,detail:  copyData} ));
     }
 
     getNextGridValue(inputValue, options) {
@@ -386,68 +451,79 @@ export default class Dmt_singular_treasury extends LightningElement {
         const action = event.detail.action;
         const row = event.detail.row;
         switch (action.name) {
-            case 'deleteRecord':
-                const tableType = this.tableData[0]['tabletype'];
-                let copyData = this.tableData.filter(function(item) {
-                    return item.Id !== row.Id
-                })
-                let sendcopyData = this.copiarLista(copyData);
-                if(sendcopyData[0]){
-                  sendcopyData[sendcopyData.length-1]['buttonDisabled'] = false;
-                  sendcopyData[sendcopyData.length-1]['pickDisabled'] = false;
-                  sendcopyData[sendcopyData.length-1]['deleteDisabled'] = false;
-                  sendcopyData[0]['buttonDisabled'] = true;
-                  
+            case 'deleteRecord': {
+                if (this.tableData.length === 1) {
+                    // Drop the record Id so the row is deleted server-side on Save.
+                    this.dispatchEvent(new CustomEvent('tablesingularcon', {
+                        bubbles: true,
+                        composed: true,
+                        detail: [this.buildEmptyRow('1')]
+                    }));
+                    break;
                 }
-                //if(sendcopyData.length == 1){
-                  sendcopyData[0]['deleteDisabled']= true;
-                //}
-                this.dispatchEvent(new CustomEvent('tableSingularCon',  { bubbles:true, composed:true,detail:sendcopyData} ));
+                let copyData = this.tableData.filter(item => item.Id !== row.Id);
+                let sendcopyData = this.copiarLista(copyData);
+                sendcopyData.forEach((item, index) => {
+                  const isLast = index === sendcopyData.length - 1;
+                  item['buttonDisabled'] = !isLast;
+                  item['pickDisabled'] = !isLast;
+                  item['deleteDisabled'] = !isLast;
+                });
+                this.dispatchEvent(new CustomEvent('tablesingularcon',  { bubbles:true, composed:true,detail:sendcopyData} ));
                 break;
-            case 'addRecord':
+            }
+            case 'addRecord': {
               const index = this.tableData.findIndex(dataRow => dataRow.Id === row.Id);
               let copyDataNew = [
                 ...this.tableData.slice(0, index+1),
-                {
-                  "initTerm": 0,
-                  "endTerm": "",
-                  "DMT_Singular__c":true,
-                  "DMT_Singular_Operation__c": "",
-                  "maxDate": "",
-                  "Id": this.tableData.length,
-                  "amount": 0,
-                  "initRead":true,
-                  "tabletype":this.tableData[index]["tabletype"],
-                  "line": this.tableData[0]["line"],
-                  "currency": this.tableData[0]["currency"],
-                  "deleteDisabled": false,
-                  'buttonDisabled':true
-                },
+                this.buildEmptyRow(String(this.tableData.length + 1)),
                 ...this.tableData.slice(index+1)
               ];
               let sendcopyDataNew = this.copiarLista(copyDataNew);
-              sendcopyDataNew[sendcopyDataNew.length-2]['buttonDisabled'] = true;
-              sendcopyDataNew[sendcopyDataNew.length-1]['buttonDisabled'] = true;
-              sendcopyDataNew[sendcopyDataNew.length-2]['pickDisabled'] = true;
-              sendcopyDataNew[sendcopyDataNew.length-1]['pickDisabled'] = false;
-              sendcopyDataNew[sendcopyDataNew.length-2]['deleteDisabled'] = true;
-              sendcopyDataNew[sendcopyDataNew.length-1]['deleteDisabled'] = false;
-            this.dispatchEvent(new CustomEvent('tableSingularCon',  { bubbles:true, composed:true,detail: sendcopyDataNew} ));
+              sendcopyDataNew.forEach((item, i) => {
+                const isLast = i === sendcopyDataNew.length - 1;
+                item['buttonDisabled'] = !isLast;
+                item['pickDisabled'] = !isLast;
+                item['deleteDisabled'] = !isLast;
+              });
+              this.dispatchEvent(new CustomEvent('tablesingularcon',  { bubbles:true, composed:true,detail: sendcopyDataNew} ));
                 break;
+            }
         }
     }
 
+    buildEmptyRow(id) {
+      const reference = (this.tableData && this.tableData[0]) || {};
+      return {
+        Id: id,
+        operationName: '',
+        amount: null,
+        dvpAmount: null,
+        fdAmount: null,
+        initTerm: '0',
+        endTerm: '',
+        maxDate: null,
+        active: false,
+        isDisabled: false,
+        isEditableField: true,
+        tabletype: 'Singular',
+        line: reference.line,
+        currency: reference.currency,
+        deleteDisabled: false,
+        pickDisabled: false,
+        buttonDisabled: false
+      };
+    }
+
     addNewProduct(){
-        let copyData = this.copiarLista(this.tableData);
-        let nextId = copyData.length + 1;
-        copyData.push({
-            "Max_Tenor_WOC__c": "",
-            "Line__c": "",
-            "Id": nextId.toString() ,
-            "Max_Tenor_WC__c": "",
-            "Product_Code__c": ""
-          });
-          this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyData} ));
+        const copyData = this.copiarLista(this.tableData);
+        copyData.forEach(item => {
+          item['buttonDisabled'] = true;
+          item['pickDisabled'] = true;
+          item['deleteDisabled'] = true;
+        });
+        copyData.push(this.buildEmptyRow(String(copyData.length + 1)));
+        this.dispatchEvent(new CustomEvent('tablesingularcon',  { bubbles:true, composed:true,detail:  copyData} ));
     }
 
     checkProductsByGeography() {

@@ -140,6 +140,15 @@
     z-index: 30;
 }
 
+.initial-loading-state {
+    min-height: 12rem;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 0.9rem;
+    padding: 1.5rem;
+}
+
 .saving-overlay {
     position: absolute;
     inset: 0;

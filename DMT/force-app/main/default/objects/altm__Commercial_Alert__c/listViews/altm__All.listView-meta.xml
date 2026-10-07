@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>altm__All</fullName>
+    <columns>NAME</columns>
+    <columns>altm__participant_id__c</columns>
+    <columns>Group_Name__c</columns>
+    <columns>altm__commercial_alert_task_type__c</columns>
+    <columns>altm__commercial_product_type__c</columns>
+    <columns>altm__alert_stage_type__c</columns>
+    <columns>altm__priority_alert_type__c</columns>
+    <columns>gf_alert_short_name__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>All</label>
+</ListView>

@@ -6,6 +6,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
           import pubsub from "omnistudio/pubsub";
           import { getRecord } from "lightning/uiRecordApi";
           
+          
           import data from "./definition";
           
           import styleDef from "./styleDefinition";
@@ -22,6 +23,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
+              
               @track Label={dmt_cl_ProfitabilityConVariables_Text:"Profitability configuration variables",
         dmt_cl_ProfitabilityMatrixVariables_Text:"Profitability matrix variables",
         dmt_cl_ProfCalculateButton_Text:"Calculate",
@@ -31,6 +33,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               customEvent = [];
               
               connectedCallback() {
+                
                 super.connectedCallback();
                 this.setThemeClass(data);
                 this.setStyleDefinition(styleDef);

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>dwp_kitv__empty_topic</fullName>
+    <active>true</active>
+    <description>It&apos;s not allowed add a visit topic empty</description>
+    <errorConditionFormula>ISBLANK(  dwp_kitv__topic_desc__c )</errorConditionFormula>
+    <errorMessage>It&apos;s not allowed add a visit topic empty</errorMessage>
+</ValidationRule>

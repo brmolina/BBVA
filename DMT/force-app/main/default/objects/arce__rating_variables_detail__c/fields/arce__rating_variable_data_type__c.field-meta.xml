@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__rating_variable_data_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>An indicator that specifies if the data is a block,or a factor within a rating model</description>
+    <label>Type of data</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>BLOCK</fullName>
+                <default>false</default>
+                <label>Block</label>
+            </value>
+            <value>
+                <fullName>RISK_FACTOR</fullName>
+                <default>false</default>
+                <label>Risk Factor</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

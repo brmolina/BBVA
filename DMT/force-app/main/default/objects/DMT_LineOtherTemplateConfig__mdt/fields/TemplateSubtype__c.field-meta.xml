@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TemplateSubtype__c</fullName>
+    <description>Optional subtype for OP template configuration, such as LIN or OPP.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Template Subtype</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>LIN</fullName>
+                <default>false</default>
+                <label>LIN</label>
+            </value>
+            <value>
+                <fullName>OPP</fullName>
+                <default>false</default>
+                <label>OPP</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

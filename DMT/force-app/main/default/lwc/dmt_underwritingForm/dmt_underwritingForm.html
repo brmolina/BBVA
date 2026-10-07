@@ -3,38 +3,54 @@
         <lightning-card>
             <div class="slds-p-around_medium">
 
-                <!-- Title and button -->
+                <!-- Title -->
                 <div class="slds-form-element slds-p-vertical_x-small">
                     <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
-                        <div class="slds-text-heading_medium slds-m-bottom_medium" style="font-weight: bold;">Global Underwriting Management System</div>
+                        <div
+                            class="slds-text-heading_medium slds-m-bottom_medium"
+                            style="font-weight: bold;">
+                            Global Underwriting Management System
+                        </div>
                     </div>
                 </div>
 
-                <!-- Row: Underwriting (left) + Deal amount (right) -->
+                <!-- Row: Underwriting + Deal Amount -->
                 <div class="slds-grid slds-gutters">
 
-                    <!-- Left column: Underwriting -->
+                    <!-- Underwriting -->
                     <div class="slds-col slds-size_1-of-2">
+
+                        <!-- Reading mode -->
                         <template if:false={isEditing}>
-                            <!-- Reading mode (Underwriting) -->
                             <div class="slds-form-element slds-border_bottom slds-p-vertical_x-small">
-                                <div class="slds-grid slds-grid_align-spread">
-                                    <div>
-                                        <label class="slds-form-element__label">Underwriting</label>
-                                        <div class="slds-form-element__static">{underwritingValue}</div>
+                                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-end">
+
+                                    <div class="slds-grow">
+                                        <label class="slds-form-element__label">
+                                            Underwriting
+                                        </label>
+
+                                        <div class="slds-form-element__static">
+                                            {underwritingValue}
+                                        </div>
                                     </div>
+
                                     <lightning-button-icon
+                                        class="inline-edit-pencil slds-shrink-none"
                                         icon-name="utility:edit"
                                         variant="bare"
-                                        alternative-text="Edit"
+                                        size="small"
+                                        title="Editar"
+                                        alternative-text="Editar"
                                         onclick={enterEditMode}>
                                     </lightning-button-icon>
+
                                 </div>
                             </div>
                         </template>
 
+                        <!-- Edit mode -->
                         <template if:true={isEditing}>
-                            <!-- Edit mode (Underwriting) -->
                             <div class="slds-p-vertical_x-small">
                                 <lightning-combobox
                                     name="underwriting_agreement_type__c"
@@ -46,80 +62,124 @@
                                 </lightning-combobox>
                             </div>
                         </template>
+
                     </div>
-                    <!-- Right column: Deal amount (only visible when showForm = true) -->
+
+                    <!-- Deal Amount -->
                     <template if:true={showForm}>
                         <div class="slds-col slds-size_1-of-2">
+
+                            <!-- Reading mode -->
                             <template if:false={isEditing}>
                                 <div class="slds-form-element slds-border_bottom slds-p-vertical_x-small">
-                                    <div class="slds-grid slds-grid_align-spread">
-                                        <div>
-                                            <label class="slds-form-element__label">Deal amount (amount in units)</label>
-                                            <div class="slds-form-element__static">{dealAmountValue}</div>
+                                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-end">
+
+                                        <div class="slds-grow">
+                                            <label class="slds-form-element__label">
+                                                {dealAmountLabel}
+                                            </label>
+
+                                            <div class="slds-form-element__static">
+                                                {dealAmountValue}
+                                            </div>
                                         </div>
-                                        <lightning-button-icon
-                                            icon-name="utility:edit"
-                                            variant="bare"
-                                            alternative-text="Edit"
-                                            onclick={enterEditMode}>
-                                        </lightning-button-icon>
+
                                     </div>
                                 </div>
                             </template>
 
+                            <!-- Edit mode -->
                             <template if:true={isEditing}>
                                 <div class="slds-p-vertical_x-small">
                                     <lightning-input
                                         type="text"
-                                        name="deal_total_amount__c"
-                                        label="Deal amount (amount in units)"
+                                        label={dealAmountLabel}
                                         value={dealAmountValue}
-                                        onchange={handleChange}>
+                                        disabled>
                                     </lightning-input>
                                 </div>
                             </template>
+
                         </div>
                     </template>
+
                 </div>
 
-                <!-- Rest of the form (dynamic grid) -->
+                <!-- Dynamic form -->
                 <template if:true={showForm}>
                     <template for:each={rows} for:item="row">
-                        <div key={row.rowKey} class="slds-grid slds-gutters">
-                            <template for:each={row.fields} for:item="field">
-                                <div key={field.apiName} class="slds-col slds-size_1-of-2">
 
-                                    <!-- Reading mode (form) -->
+                        <div
+                            key={row.rowKey}
+                            class="slds-grid slds-gutters">
+
+                            <template for:each={row.fields} for:item="field">
+
+                                <div
+                                    key={field.apiName}
+                                    class="slds-col slds-size_1-of-2">
+
+                                    <!-- Reading mode -->
                                     <template if:false={isEditing}>
                                         <div class="slds-form-element slds-border_bottom slds-p-vertical_x-small">
-                                            <div class="slds-grid slds-grid_align-spread">
-                                                <div>
-                                                    <label class="slds-form-element__label">{field.label}</label>
 
-                                                    <!-- textarea -->
+                                            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-end">
+
+                                                <div class="slds-grow">
+                                                    <label class="slds-form-element__label">
+                                                        {field.label}
+                                                    </label>
+
+                                                    <!-- Textarea value -->
                                                     <template if:true={field.isTextarea}>
-                                                        <div class="slds-form-element__static" style="white-space:pre-wrap;">
+                                                        <div
+                                                            class="slds-form-element__static"
+                                                            style="white-space: pre-wrap;">
                                                             {field.value}
                                                         </div>
                                                     </template>
+
+                                                    <!-- Non-textarea value -->
                                                     <template if:false={field.isTextarea}>
-                                                        <div class="slds-form-element__static">{field.value}</div>
+
+                                                        <!-- Percentage -->
+                                                        <template if:true={field.isPercentage}>
+                                                            <div class="slds-form-element__static">
+                                                                {field.value}%
+                                                            </div>
+                                                        </template>
+
+                                                        <!-- Normal value -->
+                                                        <template if:false={field.isPercentage}>
+                                                            <div class="slds-form-element__static">
+                                                                {field.value}
+                                                            </div>
+                                                        </template>
+
                                                     </template>
                                                 </div>
+
+                                                <!-- Edit pencil -->
                                                 <template if:false={field.readOnly}>
                                                     <lightning-button-icon
+                                                        class="inline-edit-pencil slds-shrink-none"
                                                         icon-name="utility:edit"
                                                         variant="bare"
-                                                        alternative-text="Edit"
+                                                        size="small"
+                                                        title="Editar"
+                                                        alternative-text="Editar"
                                                         onclick={enterEditMode}>
                                                     </lightning-button-icon>
                                                 </template>
+
                                             </div>
                                         </div>
                                     </template>
 
-                                    <!-- Edit mode (form) -->
+                                    <!-- Edit mode -->
                                     <template if:true={isEditing}>
+
+                                        <!-- Picklist -->
                                         <template if:true={field.isPicklist}>
                                             <lightning-combobox
                                                 name={field.apiName}
@@ -131,7 +191,7 @@
                                             </lightning-combobox>
                                         </template>
 
-                                        <!-- textarea -->
+                                        <!-- Textarea -->
                                         <template if:true={field.isTextarea}>
                                             <lightning-textarea
                                                 name={field.apiName}
@@ -144,27 +204,75 @@
 
                                         <template if:false={field.isPicklist}>
                                             <template if:false={field.isTextarea}>
-                                                <lightning-input
-                                                    type={field.type}
-                                                    name={field.apiName}
-                                                    label={field.label}
-                                                    value={field.value}
-                                                    step={field.step}
-                                                    onchange={handleChange}
-                                                    disabled={field.readOnly}>
-                                                </lightning-input>
+
+                                                <!-- Percentage input -->
+                                                <template if:true={field.isPercentage}>
+                                                    <div class="percentage-input">
+
+                                                        <lightning-input
+                                                            type="text"
+                                                            inputmode="decimal"
+                                                            name={field.apiName}
+                                                            label={field.label}
+                                                            value={field.value}
+                                                            onchange={handleChange}
+                                                            onkeydown={handlePercentageKeyDown}
+                                                            disabled={field.readOnly}>
+                                                        </lightning-input>
+
+                                                        <span class="percentage-suffix">
+                                                            %
+                                                        </span>
+
+                                                    </div>
+                                                </template>
+
+                                                <!-- Non-percentage input -->
+                                                <template if:false={field.isPercentage}>
+
+                                                    <!-- Preserve decimals -->
+                                                    <template if:true={field.preserveDecimals}>
+                                                        <lightning-input
+                                                            type="text"
+                                                            inputmode="decimal"
+                                                            name={field.apiName}
+                                                            label={field.label}
+                                                            value={field.value}
+                                                            onkeydown={handlePercentageKeyDown}
+                                                            onchange={handleChange}
+                                                            disabled={field.readOnly}>
+                                                        </lightning-input>
+                                                    </template>
+
+                                                    <!-- Normal input -->
+                                                    <template if:false={field.preserveDecimals}>
+                                                        <lightning-input
+                                                            type={field.type}
+                                                            name={field.apiName}
+                                                            label={field.label}
+                                                            value={field.value}
+                                                            step={field.step}
+                                                            onchange={handleChange}
+                                                            disabled={field.readOnly}>
+                                                        </lightning-input>
+                                                    </template>
+
+                                                </template>
                                             </template>
                                         </template>
+
                                     </template>
 
                                 </div>
                             </template>
                         </div>
+
                     </template>
                 </template>
 
                 <div class="slds-m-top_large"></div>
 
+                <!-- Sold Orders -->
                 <template if:true={showSoldOrdersTable}>
                     <lightning-accordion
                         active-section-name="soldOrders"
@@ -182,29 +290,48 @@
                                     key-field="Id"
                                     max-row-selection="0"
                                     hide-checkbox-column="true"
-                                    onpicklistchanged={picklistChanged}
-                                    onlookupchanged={picklistChanged}
-                                    oncustomtextinputchanged={textInputChanged}
-                                    oncustomdateinputchanged={textInputChanged}
-                                    onrecordpickerchange={handleRecordPickerChange}
-                                    oncellchange={handleChangeCell}
                                     onrowaction={handleRowAction}
                                     suppress-bottom-bar>
                                 </c-custom-data-table>
                             </div>
- 
+
                         </lightning-accordion-section>
                     </lightning-accordion>
                 </template>
 
-                <!-- Buttons in edit mode -->
+                <!-- Save and Cancel -->
                 <template if:true={isEditing}>
-                    <div class="slds-m-top_medium slds-align_absolute-center">
-                        <lightning-button variant="neutral" label="Cancel" onclick={handleCancel} class="slds-m-right_small"></lightning-button>
-                        <lightning-button variant="brand" label="Save" onclick={handleSave} disabled={isSaving}></lightning-button>
+                    <div
+                        class="slds-m-top_medium slds-align_absolute-center"
+                        style="position: relative;">
+
+                        <template if:true={isSaving}>
+                            <lightning-spinner
+                                alternative-text="Saving..."
+                                size="small"
+                                style="position: relative;">
+                            </lightning-spinner>
+                        </template>
+
+                        <template if:false={isSaving}>
+                            <lightning-button
+                                variant="neutral"
+                                label="Cancel"
+                                onclick={handleCancel}
+                                class="slds-m-right_small">
+                            </lightning-button>
+
+                            <lightning-button
+                                variant="brand"
+                                label="Save"
+                                onclick={handleSave}>
+                            </lightning-button>
+                        </template>
+
                     </div>
                 </template>
+
             </div>
         </lightning-card>
-    </template>    
+    </template>
 </template>

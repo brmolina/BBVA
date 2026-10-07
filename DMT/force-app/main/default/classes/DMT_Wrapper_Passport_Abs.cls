@@ -130,6 +130,8 @@ public with sharing virtual class DMT_Wrapper_Passport_Abs
         public String fitchExternalRating;
         @AuraEnabled
         public String sectorHead;
+        @AuraEnabled
+        public String guarantorNameFiscalId;
     }
 
     public virtual class Aggregation

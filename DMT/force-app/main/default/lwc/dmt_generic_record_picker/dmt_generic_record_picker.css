@@ -28,3 +28,19 @@
     cursor: pointer;
     font-weight: 500; 
 }
+
+.option-title {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #080707;
+    line-height: 1.2;
+}
+
+.option-subtitle {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.75rem;
+    color: #706e6b;
+    line-height: 1.2;
+}

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Original_Unit__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Original Unit</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>UNITS</fullName>
+                <default>true</default>
+                <label>UNITS</label>
+            </value>
+            <value>
+                <fullName>THOUS</fullName>
+                <default>false</default>
+                <label>THOUS</label>
+            </value>
+            <value>
+                <fullName>MILLI</fullName>
+                <default>false</default>
+                <label>MILLI</label>
+            </value>
+            <value>
+                <fullName>BILLI</fullName>
+                <default>false</default>
+                <label>BILLI</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

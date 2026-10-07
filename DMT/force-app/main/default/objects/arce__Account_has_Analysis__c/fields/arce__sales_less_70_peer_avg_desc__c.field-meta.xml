@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__sales_less_70_peer_avg_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Comments required to explain reasons for SALES below 70% peers</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Client sales &lt; 70% peers comments</label>
+    <length>500</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>2</visibleLines>
+</CustomField>

@@ -73,15 +73,23 @@ public with sharing class DMT_LinesBulkActionController {
         @AuraEnabled public String lineUrl { get; set; }
         @AuraEnabled public String templateType { get; set; }
         @AuraEnabled public Object derivativesAmount { get; set; }
+        @AuraEnabled public String endTerm { get; set; }
+        @AuraEnabled public Id endTermRiskTermId { get; set; }
         @AuraEnabled public Map<String, Object> values { get; set; }
         @AuraEnabled public List<ModifyCellDTO> cells { get; set; }
         @AuraEnabled public String currencyIsoCode { get; set; }
+        @AuraEnabled public String clientType { get; set; }
+        @AuraEnabled public String clientCode { get; set; }
+        @AuraEnabled public String clientAccountId { get; set; }
+        @AuraEnabled public Boolean isCustom { get; set; }
+        @AuraEnabled public List<String> customClientIds { get; set; }
         @AuraEnabled public List<ModifyRelatedSectionDTO> relatedSections { get; set; }
 
         public ModifyRowDTO() {
             values = new Map<String, Object>();
             cells = new List<ModifyCellDTO>();
             relatedSections = new List<ModifyRelatedSectionDTO>();
+            customClientIds = new List<String>();
         }
     }
 
@@ -114,6 +122,9 @@ public with sharing class DMT_LinesBulkActionController {
         @AuraEnabled public Id id { get; set; }
         @AuraEnabled public String lineId { get; set; }
         @AuraEnabled public Map<String, Object> values { get; set; }
+        @AuraEnabled public Object derivativesAmount { get; set; }
+        @AuraEnabled public Id endTermRiskTermId { get; set; }
+        @AuraEnabled public String endTerm { get; set; }
         @AuraEnabled public List<ModifySaveRelatedSectionDTO> relatedSections { get; set; }
 
         public ModifySaveRowDTO() {}
@@ -168,6 +179,7 @@ public with sharing class DMT_LinesBulkActionController {
             SELECT Id, Line_Id__c
             FROM DMT_Line__c
             WHERE Line_Id__c IN :lineIds
+            WITH SYSTEM_MODE
             FOR UPDATE
         ];
 
@@ -175,7 +187,7 @@ public with sharing class DMT_LinesBulkActionController {
             throw new AuraHandledException('No DMT_Line__c records found for provided Line_Id__c');
         }
 
-        update lines;
+        Database.update(lines, AccessLevel.SYSTEM_MODE);
     }
 
     public static void processDisconnect(List<String> lineIds) {
@@ -184,6 +196,7 @@ public with sharing class DMT_LinesBulkActionController {
             SELECT Id, Line_Id__c, G_Multioperation_Ind_Type__c
             FROM DMT_Consolidated_Line__c
             WHERE Line_Id__c IN :lineIds
+            WITH SYSTEM_MODE
             FOR UPDATE
         ];
 
@@ -195,7 +208,7 @@ public with sharing class DMT_LinesBulkActionController {
             rec.G_Multioperation_Ind_Type__c = 'x';
         }
 
-        update records;
+        Database.update(records, AccessLevel.SYSTEM_MODE);
     }
 
     public static List<String> processRenew(List<String> lineIds) {
@@ -219,12 +232,12 @@ public with sharing class DMT_LinesBulkActionController {
             }
         }
 
-        String query =
-            'SELECT ' + String.join(fieldNames, ',') +
-            ' FROM DMT_Line__c WHERE Line_Id__c IN :lineIds';
-
         List<DMT_Line__c> originalLines =
-            (List<DMT_Line__c>) Database.query(query);
+            (List<DMT_Line__c>) Database.query(
+                'SELECT ' + String.join(fieldNames, ',') +
+                ' FROM DMT_Line__c WHERE Line_Id__c IN :lineIds',
+                AccessLevel.SYSTEM_MODE
+            );
 
         if (originalLines.isEmpty()) {
             throw new AuraHandledException('No lines found');
@@ -258,7 +271,7 @@ public with sharing class DMT_LinesBulkActionController {
             newLines.add(cloneLine);
         }
 
-        insert newLines;
+        Database.insert(newLines, AccessLevel.SYSTEM_MODE);
 
         cloneRelatedRecordsDynamic(originalLines, newLines);
 
@@ -472,6 +485,7 @@ public with sharing class DMT_LinesBulkActionController {
                 gf_customer_group_id__c
             FROM Custom_Association__c
             WHERE DMT_Line__c IN :oldLineIds
+            WITH SYSTEM_MODE
         ];
 
         Map<Id, Custom_Association__c> oldAssocMap =
@@ -507,6 +521,7 @@ public with sharing class DMT_LinesBulkActionController {
             FROM Custom_Association__c
             WHERE DMT_Line__c IN :mapOldToNew.values()
               AND gf_customer_group_id__c != null
+            WITH SYSTEM_MODE
         ]) {
             String existingKey =
                 String.valueOf(existingAssoc.DMT_Line__c) +
@@ -649,7 +664,7 @@ public with sharing class DMT_LinesBulkActionController {
 
         if (!newAssociations.isEmpty()) {
 
-            insert newAssociations;
+            Database.insert(newAssociations, AccessLevel.SYSTEM_MODE);
 
             for (Integer i = 0; i < oldAssocIdsToInsert.size(); i++) {
 
@@ -686,7 +701,7 @@ public with sharing class DMT_LinesBulkActionController {
         }
 
         if (!linesToUpdate.isEmpty()) {
-            update linesToUpdate;
+            Database.update(linesToUpdate, AccessLevel.SYSTEM_MODE);
         }
 
         if (oldAssocToNewAssoc.isEmpty()) {
@@ -703,13 +718,13 @@ public with sharing class DMT_LinesBulkActionController {
             clientFieldNames.add(fieldName);
         }
 
-        String clientQuery =
-            'SELECT ' + String.join(clientFieldNames, ',') +
-            ' FROM Custom_Association_Client__c' +
-            ' WHERE Custom_Association__c IN :oldAssocIdsForClients';
-
         List<Custom_Association_Client__c> oldClients =
-            (List<Custom_Association_Client__c>) Database.query(clientQuery);
+            (List<Custom_Association_Client__c>) Database.query(
+                'SELECT ' + String.join(clientFieldNames, ',') +
+                ' FROM Custom_Association_Client__c' +
+                ' WHERE Custom_Association__c IN :oldAssocIdsForClients',
+                AccessLevel.SYSTEM_MODE
+            );
 
         List<Custom_Association_Client__c> newClients =
             new List<Custom_Association_Client__c>();
@@ -771,7 +786,7 @@ public with sharing class DMT_LinesBulkActionController {
         }
 
         if (!newClients.isEmpty()) {
-            insert newClients;
+            Database.insert(newClients, AccessLevel.SYSTEM_MODE);
         }
     }
 
@@ -790,11 +805,14 @@ public with sharing class DMT_LinesBulkActionController {
             fieldNames.add(f);
         }
 
-        String query = 'SELECT ' + String.join(fieldNames, ',') +
-                    ' FROM ' + objectName +
-                    ' WHERE ' + lookupField + ' IN :parentIds';
+        Schema.SObjectField lookupFieldToken = fieldsMap.get(lookupField);
 
-        List<SObject> records = Database.query(query);
+        List<SObject> records = Database.query(
+            'SELECT ' + String.join(fieldNames, ',') +
+            ' FROM ' + objType +
+            ' WHERE ' + lookupFieldToken + ' IN :parentIds',
+            AccessLevel.SYSTEM_MODE
+        );
 
         if (records.isEmpty()) return;
 
@@ -813,7 +831,7 @@ public with sharing class DMT_LinesBulkActionController {
             newRecords.add(cloneRec);
         }
 
-        insert newRecords;
+        Database.insert(newRecords, AccessLevel.SYSTEM_MODE);
     }
 
     public static void cloneGenericObject(
@@ -849,11 +867,14 @@ public with sharing class DMT_LinesBulkActionController {
             fieldNames.add(f);
         }
 
-        String query = 'SELECT ' + String.join(fieldNames, ',') +
-                    ' FROM ' + objectName +
-                    ' WHERE ' + lookupField + ' IN :parentIds';
+        Schema.SObjectField lookupFieldToken = fieldsMap.get(lookupField);
 
-        List<SObject> records = Database.query(query);
+        List<SObject> records = Database.query(
+            'SELECT ' + String.join(fieldNames, ',') +
+            ' FROM ' + objType +
+            ' WHERE ' + lookupFieldToken + ' IN :parentIds',
+            AccessLevel.SYSTEM_MODE
+        );
 
         Map<Id, Id> resultMap = new Map<Id, Id>();
 
@@ -875,7 +896,7 @@ public with sharing class DMT_LinesBulkActionController {
             newRecords.add(cloneRec);
         }
 
-        insert newRecords;
+        Database.insert(newRecords, AccessLevel.SYSTEM_MODE);
 
         for (Integer i = 0; i < records.size(); i++) {
             resultMap.put(
@@ -910,11 +931,14 @@ public with sharing class DMT_LinesBulkActionController {
             fieldNames.add(f);
         }
 
-        String query = 'SELECT ' + String.join(fieldNames, ',') +
-                    ' FROM ' + objectName +
-                    ' WHERE ' + lookupField + ' IN :parentIds';
+        Schema.SObjectField lookupFieldToken = fieldsMap.get(lookupField);
 
-        List<SObject> records = Database.query(query);
+        List<SObject> records = Database.query(
+            'SELECT ' + String.join(fieldNames, ',') +
+            ' FROM ' + objType +
+            ' WHERE ' + lookupFieldToken + ' IN :parentIds',
+            AccessLevel.SYSTEM_MODE
+        );
 
         if (records.isEmpty()) return resultMap;
 
@@ -942,7 +966,7 @@ public with sharing class DMT_LinesBulkActionController {
             newRecords.add(cloneRec);
         }
 
-        insert newRecords;
+        Database.insert(newRecords, AccessLevel.SYSTEM_MODE);
 
         for (Integer i = 0; i < records.size(); i++) {
             resultMap.put(
@@ -966,6 +990,7 @@ public with sharing class DMT_LinesBulkActionController {
             FROM DMT_Consolidated_Line__c
             WHERE Line_Id__c IN :lineIds
             AND GF_Group_Priority_Line_Id__c = '00'
+            WITH SYSTEM_MODE
         ];
 
         Map<String, Boolean> result = new Map<String, Boolean>();
@@ -1030,7 +1055,37 @@ public with sharing class DMT_LinesBulkActionController {
                 CurrencyIsoCode
             FROM DMT_Line__c
             WHERE Line_Id__c IN :lineIds
+            WITH SYSTEM_MODE
         ];
+
+        
+
+        Map<Id, DMT_Risk_Line_Term__c> selectedRiskTermByLineId =
+            new Map<Id, DMT_Risk_Line_Term__c>();
+
+        for (DMT_Line__c line : baseLines) {
+            List<DMT_Risk_Line_Term__c> riskTerms = [
+               SELECT Id,
+                   DMT_Line__c,
+                   DMT_End_Term__c,
+                   DMT_Amount__c,
+                   DMT_Risk_Type__c
+               FROM DMT_Risk_Line_Term__c
+               WHERE DMT_Line__c = :line.Id
+               AND DMT_Risk_Type__c = 'Derivatives'
+               AND DMT_Amount__c != null
+               WITH SYSTEM_MODE
+               ORDER BY DMT_End_Term__c DESC NULLS LAST,
+                   DMT_Init_Term__c DESC NULLS LAST,
+                   Id DESC
+               LIMIT 1
+            ];
+
+            if (!riskTerms.isEmpty()) {
+                selectedRiskTermByLineId.put(line.Id, riskTerms[0]);
+            }
+        }
+        
 
         if (baseLines.isEmpty()) {
             throw new AuraHandledException('No lines found');
@@ -1073,6 +1128,7 @@ public with sharing class DMT_LinesBulkActionController {
             WHERE Active__c = true
             AND Line_Template__c IN :templates
             AND Booking_Geography__c IN :geographies
+            WITH SYSTEM_MODE
             ORDER BY Section_Order__c ASC, Order__c ASC
         ];
 
@@ -1092,7 +1148,12 @@ public with sharing class DMT_LinesBulkActionController {
             'DMT_Line_Template_Type__c',
             'Booking_Geography__c',
             'DMT_DerivativesAmount__c',
-            'CurrencyIsoCode'
+            'CurrencyIsoCode',
+            'Client_Type__c',
+            'Client__c',
+            'Client__r.Name',
+            'Client__r.g_customer_id__c',
+            'Custom_Association__c'
         };
 
         Map<String, Schema.SObjectField> lineObjectFieldsMap =
@@ -1101,6 +1162,7 @@ public with sharing class DMT_LinesBulkActionController {
         Map<String, List<DMT_Line_Modify_Field_Config__mdt>> relatedConfigsByObject = new Map<String, List<DMT_Line_Modify_Field_Config__mdt>>();
 
         for (DMT_Line_Modify_Field_Config__mdt cfg : configs) {
+            System.debug('Processing config: ' + cfg);
             if (String.isBlank(cfg.Object_Api_Name__c)) {
                 throw new AuraHandledException('Object_Api_Name__c is required in modify metadata');
             }
@@ -1141,16 +1203,39 @@ public with sharing class DMT_LinesBulkActionController {
             }
         }
 
-        String lineQuery =
-            'SELECT ' + String.join(new List<String>(lineFieldNames), ',') +
-            ' FROM DMT_Line__c WHERE Id IN :lineRecordIds';
-
         List<DMT_Line__c> fullLines =
-            (List<DMT_Line__c>) Database.query(lineQuery);
+            (List<DMT_Line__c>) Database.query(
+                'SELECT ' + String.join(new List<String>(lineFieldNames), ',') +
+                ' FROM DMT_Line__c WHERE Id IN :lineRecordIds',
+                AccessLevel.SYSTEM_MODE
+            );
+
+        Set<Id> customLineIds = new Set<Id>();
+        for (DMT_Line__c line : fullLines) {
+            if (line.Client_Type__c == 'Custom') {
+                customLineIds.add(line.Id);
+            }
+        }
+        Map<Id, List<String>> customClientIdsByLineId = new Map<Id, List<String>>();
+        if (!customLineIds.isEmpty()) {
+            for (Custom_Association_Client__c cac : [
+                SELECT Name, g_customer_id__c, Custom_Association__r.DMT_Line__c
+                FROM Custom_Association_Client__c
+                WHERE Custom_Association__r.DMT_Line__c IN :customLineIds
+                AND Name != null
+                WITH SYSTEM_MODE
+            ]) {
+                Id lineRecId = cac.Custom_Association__r.DMT_Line__c;
+                if (!customClientIdsByLineId.containsKey(lineRecId)) {
+                    customClientIdsByLineId.put(lineRecId, new List<String>());
+                }
+                customClientIdsByLineId.get(lineRecId).add(cac.Name);
+            }
+        }
 
         Map<String, List<SObject>> relatedRecordsByObject = new Map<String, List<SObject>>();
-
         for (String objectApiName : relatedConfigsByObject.keySet()) {
+            System.debug('Processing related relatedConfigsByObject for objectApiName: ' + objectApiName + ' with configs: ' + relatedConfigsByObject.get(objectApiName).get(0).get('Line_Template__c'));
             if (!globalDescribe.containsKey(objectApiName)) {
                 throw new AuraHandledException('Invalid configured object: ' + objectApiName);
             }
@@ -1192,32 +1277,46 @@ public with sharing class DMT_LinesBulkActionController {
                 fieldsToQuery.add(cfg.Field_Api_Name__c);
             }
 
+           
             if (objectApiName == 'DMT_Risk_Line_Term__c') {
-                if (fieldsMap.containsKey('DMT_Risk_Type__c')) {
-                    fieldsToQuery.add('DMT_Risk_Type__c');
+                if (fieldsMap.containsKey('Name')) {
+                    fieldsToQuery.add('Name');
                 }
 
                 if (fieldsMap.containsKey('DMT_Init_Term__c')) {
                     fieldsToQuery.add('DMT_Init_Term__c');
                 }
 
-                if (fieldsMap.containsKey('DMT_End_Term__c')) {
-                    fieldsToQuery.add('DMT_End_Term__c');
-                }
-
                 if (fieldsMap.containsKey('DMT_Amount__c')) {
                     fieldsToQuery.add('DMT_Amount__c');
                 }
+
+                if (fieldsMap.containsKey('DMT_End_Term__c')) {
+                    fieldsToQuery.add('DMT_End_Term__c');
+                }
+                
+                if (fieldsMap.containsKey('DMT_Risk_Type__c')) {
+                    fieldsToQuery.add('DMT_Risk_Type__c');
+                }
+
             }
+
+            Schema.SObjectField lookupFieldToken = fieldsMap.get(lookupField);
 
             String relatedQuery =
                 'SELECT ' + String.join(new List<String>(fieldsToQuery), ',') +
-                ' FROM ' + objectApiName +
-                ' WHERE ' + lookupField + ' IN :lineRecordIds';
+                ' FROM ' + objType +
+                ' WHERE ' + lookupFieldToken + ' IN :lineRecordIds';
+
+            if (objectApiName == 'DMT_Risk_Line_Term__c') {
+                relatedQuery +=
+                    ' ORDER BY DMT_Init_Term__c ASC NULLS LAST,' +
+                    ' DMT_End_Term__c ASC NULLS LAST, Id ASC';
+            }
 
             relatedRecordsByObject.put(
                 objectApiName,
-                Database.query(relatedQuery)
+                Database.query(relatedQuery, AccessLevel.SYSTEM_MODE)
             );
         }
 
@@ -1230,11 +1329,29 @@ public with sharing class DMT_LinesBulkActionController {
             row.lineName = String.isNotBlank(line.Name) ? line.Name : line.Line_Id__c;
             row.lineUrl = '/' + String.valueOf(line.Id);
             row.templateType = line.DMT_Line_Template_Type__c;
-            row.derivativesAmount = line.get('DMT_DerivativesAmount__c');
+            //row.derivativesAmount = line.get('DMT_DerivativesAmount__c');
+            DMT_Risk_Line_Term__c selectedRiskTerm =
+                selectedRiskTermByLineId.get(line.Id);
+
+            row.derivativesAmount = selectedRiskTerm?.DMT_Amount__c;
+            row.endTerm = selectedRiskTerm?.DMT_End_Term__c;
+            row.endTermRiskTermId = selectedRiskTerm?.Id;
             row.currencyIsoCode = line.CurrencyIsoCode;
+            row.clientType = line.Client_Type__c;
+            row.isCustom = line.Client_Type__c == 'Custom';
+            row.clientAccountId = line.Client__c != null ? String.valueOf(line.Client__c) : null;
+            if (line.Client__c != null) {
+                Object nameVal = line.Client__r.get('Name');
+                row.clientCode = nameVal != null ? String.valueOf(nameVal) : null;
+            }
+            row.customClientIds = customClientIdsByLineId.containsKey(line.Id)
+                ? customClientIdsByLineId.get(line.Id)
+                : new List<String>();
 
             List<DMT_Line_Modify_Field_Config__mdt> lineConfigs =
                 getConfigsForLine(configs, line, 'DMT_Line__c');
+
+          
 
             Map<String, Schema.SObjectField> lineFieldsMap =
                 DMT_Line__c.SObjectType.getDescribe().fields.getMap();
@@ -1263,14 +1380,14 @@ public with sharing class DMT_LinesBulkActionController {
                     )
                 );
             }
-
             row.relatedSections =
-                buildRelatedSectionsForLine(
-                    line,
-                    configs,
-                    relatedRecordsByObject,
-                    globalDescribe
-                );
+            buildRelatedSectionsForLine(
+                line,
+                configs,
+                relatedRecordsByObject,
+                globalDescribe
+            );
+            
 
             payload.rows.add(row);
         }
@@ -1341,6 +1458,7 @@ public with sharing class DMT_LinesBulkActionController {
                 Booking_Geography__c
             FROM DMT_Line__c
             WHERE Id IN :lineIds
+            WITH SYSTEM_MODE
             FOR UPDATE
         ]);
 
@@ -1381,6 +1499,7 @@ public with sharing class DMT_LinesBulkActionController {
             WHERE Active__c = true
             AND Line_Template__c IN :templates
             AND Booking_Geography__c IN :geographies
+            WITH SYSTEM_MODE
         ];
 
         Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
@@ -1520,8 +1639,253 @@ public with sharing class DMT_LinesBulkActionController {
         }
 
         if (!updates.isEmpty()) {
-            update updates;
+            Database.update(updates, AccessLevel.SYSTEM_MODE);
         }
+
+        updateTreasuryEndTerms(rows, linesById);
+
+        // Handle Derivatives Amount updates for Treasury Lines
+        updateDerivativesAmounts(rows, lineIds);
+    }
+
+    private static void updateTreasuryEndTerms(
+        List<ModifySaveRowDTO> rows,
+        Map<Id, DMT_Line__c> linesById
+    ) {
+        Set<Id> riskTermIds = new Set<Id>();
+
+        for (ModifySaveRowDTO row : rows) {
+            if (row != null && row.endTermRiskTermId != null) {
+                riskTermIds.add(row.endTermRiskTermId);
+            }
+        }
+
+        if (riskTermIds.isEmpty()) {
+            return;
+        }
+
+        Map<Id, DMT_Risk_Line_Term__c> termsById = new Map<Id, DMT_Risk_Line_Term__c>([
+            SELECT Id,
+                DMT_Line__c,
+                DMT_Risk_Type__c,
+                DMT_Amount__c,
+                DMT_Init_Term__c,
+                DMT_End_Term__c
+            FROM DMT_Risk_Line_Term__c
+            WHERE Id IN :riskTermIds
+            WITH SYSTEM_MODE
+            FOR UPDATE
+        ]);
+
+        List<DMT_Risk_Line_Term__c> termsToUpdate =
+            new List<DMT_Risk_Line_Term__c>();
+
+        for (ModifySaveRowDTO row : rows) {
+            if (
+                row == null ||
+                row.endTermRiskTermId == null ||
+                String.isBlank(row.endTerm)
+            ) {
+                continue;
+            }
+
+            DMT_Line__c line = linesById.get(row.id);
+            DMT_Risk_Line_Term__c selectedTerm =
+                termsById.get(row.endTermRiskTermId);
+
+            if (line == null || line.DMT_Line_Template_Type__c != 'TL') {
+                throw new AuraHandledException(
+                    'End Term can only be modified for Treasury lines.'
+                );
+            }
+
+            if (
+                selectedTerm == null ||
+                selectedTerm.DMT_Line__c != row.id ||
+                selectedTerm.DMT_Risk_Type__c != 'Derivatives' ||
+                selectedTerm.DMT_Amount__c == null
+            ) {
+                throw new AuraHandledException(
+                    'Invalid Derivatives risk term for Treasury line: ' + row.lineId
+                );
+            }
+
+            termsToUpdate.add(
+                new DMT_Risk_Line_Term__c(
+                    Id = selectedTerm.Id,
+                    DMT_End_Term__c = row.endTerm
+                )
+            );
+        }
+
+        if (!termsToUpdate.isEmpty()) {
+            try {
+                Database.update(termsToUpdate, AccessLevel.SYSTEM_MODE);
+            } catch (DmlException e) {
+                String errorMsg = e.getMessage();
+                String detailMsg = errorMsg;
+                
+                // Enrich error message with Init Term and End Term values
+                for (DMT_Risk_Line_Term__c term : termsToUpdate) {
+                    if (errorMsg.contains(term.Id)) {
+                        detailMsg = 'End Term update failed for Line: ' + term.DMT_Line__c + 
+                                   '. Init Term: ' + term.DMT_Init_Term__c + 
+                                   ', End Term (new value): ' + term.DMT_End_Term__c + 
+                                   '. Error: ' + errorMsg;
+                        break;
+                    }
+                }
+                
+                // If no specific term found, provide general error with context
+                if (detailMsg == errorMsg && !termsToUpdate.isEmpty()) {
+                    DMT_Risk_Line_Term__c firstTerm = termsToUpdate[0];
+                    detailMsg = 'End Term update validation failed. Init Term: ' + firstTerm.DMT_Init_Term__c + 
+                               ', End Term (new value): ' + firstTerm.DMT_End_Term__c + 
+                               '. ' + errorMsg;
+                }
+                
+                throw new AuraHandledException(detailMsg);
+            }
+        }
+    }
+
+    private static void updateDerivativesAmounts(List<ModifySaveRowDTO> rows, Set<Id> lineIds) {
+        // Collect line IDs that have derivativesAmount to update
+        Map<Id, Decimal> lineIdToDerivativesAmount = new Map<Id, Decimal>();
+
+        for (ModifySaveRowDTO row : rows) {
+            if (row.derivativesAmount != null) {
+                Decimal amount = row.derivativesAmount instanceof Decimal
+                    ? (Decimal) row.derivativesAmount
+                    : Decimal.valueOf(String.valueOf(row.derivativesAmount));
+                lineIdToDerivativesAmount.put(row.id, amount);
+            }
+        }
+
+        if (lineIdToDerivativesAmount.isEmpty()) {
+            return;
+        }
+
+        // Query lines to get Booking_Geography__c
+        Map<Id, String> lineIdToGeography = new Map<Id, String>();
+        for (DMT_Line__c line : [SELECT Id, Booking_Geography__c FROM DMT_Line__c WHERE Id IN :lineIdToDerivativesAmount.keySet() WITH SYSTEM_MODE]) {
+            lineIdToGeography.put(line.Id, line.Booking_Geography__c);
+        }
+
+        // Query existing DMT_Risk_Line_Term__c records with DMT_Risk_Type__c = 'Derivatives'
+        List<DMT_Risk_Line_Term__c> riskLineTerms = [
+            SELECT Id, DMT_Line__c, DMT_Amount__c, DMT_Risk_Type__c, DMT_Singular__c, DMT_Init_Term__c, DMT_End_Term__c
+            FROM DMT_Risk_Line_Term__c
+            WHERE DMT_Line__c IN :lineIdToDerivativesAmount.keySet()
+            AND DMT_Risk_Type__c = 'Derivatives'
+            WITH SYSTEM_MODE
+            ORDER BY DMT_Line__c, DMT_Init_Term__c ASC
+        ];
+
+        // Group existing records by line
+        Map<Id, List<DMT_Risk_Line_Term__c>> recordsByLineId = new Map<Id, List<DMT_Risk_Line_Term__c>>();
+        for (DMT_Risk_Line_Term__c rlt : riskLineTerms) {
+            if (!recordsByLineId.containsKey(rlt.DMT_Line__c)) {
+                recordsByLineId.put(rlt.DMT_Line__c, new List<DMT_Risk_Line_Term__c>());
+            }
+            recordsByLineId.get(rlt.DMT_Line__c).add(rlt);
+        }
+
+        List<DMT_Risk_Line_Term__c> recordsToUpdate = new List<DMT_Risk_Line_Term__c>();
+        List<DMT_Risk_Line_Term__c> recordsToInsert = new List<DMT_Risk_Line_Term__c>();
+
+        for (Id lineId : lineIdToDerivativesAmount.keySet()) {
+            Decimal totalAmount = lineIdToDerivativesAmount.get(lineId);
+            String geography = lineIdToGeography.get(lineId);
+            List<DMT_Risk_Line_Term__c> existingRecords = recordsByLineId.get(lineId);
+
+            if (existingRecords != null && !existingRecords.isEmpty()) {
+                // Update existing records proportionally based on the structure
+                // Following dmt_risk_limit_table handledefaultLimit() logic
+                recordsToUpdate.addAll(updateExistingDerivativesRecords(existingRecords, totalAmount, geography));
+            } else {
+                // Create new records following dmt_risk_limit_table handledefaultLimit() structure
+                recordsToInsert.addAll(createDerivativesRecords(lineId, totalAmount, geography));
+            }
+        }
+
+        if (!recordsToUpdate.isEmpty()) {
+            Database.update(recordsToUpdate, AccessLevel.SYSTEM_MODE);
+        }
+
+        if (!recordsToInsert.isEmpty()) {
+            Database.insert(recordsToInsert, AccessLevel.SYSTEM_MODE);
+        }
+    }
+
+    private static List<DMT_Risk_Line_Term__c> updateExistingDerivativesRecords(List<DMT_Risk_Line_Term__c> existingRecords, Decimal totalAmount, String geography) {
+        List<DMT_Risk_Line_Term__c> updatedRecords = new List<DMT_Risk_Line_Term__c>();
+        
+        for (DMT_Risk_Line_Term__c record : existingRecords) { 
+            if (existingRecords.size() == existingRecords.indexOf(record) + 1) {
+                record.DMT_Amount__c = totalAmount;
+                updatedRecords.add(record);
+            }else{
+                updatedRecords.add(record);
+            }
+        }
+
+        
+        return updatedRecords;
+    }
+
+    private static List<DMT_Risk_Line_Term__c> createDerivativesRecords(Id lineId, Decimal totalAmount, String geography) {
+        List<DMT_Risk_Line_Term__c> newRecords = new List<DMT_Risk_Line_Term__c>();
+        
+        // Following dmt_risk_limit_table handledefaultLimit() structure
+        if (geography == 'CO' || geography == 'AR') {
+            // CO/AR: 4 records
+            newRecords.add(createDerivativesRecord(lineId, '0', '1095', totalAmount)); // 100%
+            newRecords.add(createDerivativesRecord(lineId, '1095', '1825', (totalAmount * 3) / 4)); // 75%
+            newRecords.add(createDerivativesRecord(lineId, '1825', '2920', totalAmount / 2)); // 50%
+            newRecords.add(createDerivativesRecord(lineId, '2920', '3650', (totalAmount * 2.5) / 10)); // 25%
+        } else {
+            // Other geographies: 5 records
+            newRecords.add(createDerivativesRecord(lineId, '0', '1095', totalAmount)); // 100%
+            newRecords.add(createDerivativesRecord(lineId, '1095', '1825', (totalAmount * 3) / 4)); // 75%
+            newRecords.add(createDerivativesRecord(lineId, '1825', '2920', totalAmount / 2)); // 50%
+            newRecords.add(createDerivativesRecord(lineId, '2920', '3650', (totalAmount * 3) / 10)); // 30%
+            newRecords.add(createDerivativesRecord(lineId, '3650', '16425', totalAmount / 5)); // 20%
+        }
+        
+        return newRecords;
+    }
+
+    private static DMT_Risk_Line_Term__c createDerivativesRecord(Id lineId, String initTerm, String endTerm, Decimal amount) {
+        return new DMT_Risk_Line_Term__c(
+            DMT_Line__c = lineId,
+            DMT_Risk_Type__c = 'Derivatives',
+            DMT_Singular__c = false,
+            DMT_Amount__c = amount,
+            DMT_Init_Term__c = initTerm,
+            DMT_End_Term__c = endTerm
+        );
+    }
+
+    private static Map<String, Decimal> getTermMultipliers(String geography) {
+        Map<String, Decimal> multipliers = new Map<String, Decimal>();
+        
+        if (geography == 'CO' || geography == 'AR') {
+            // CO/AR structure
+            multipliers.put('0-1095', 1.0); // 100%
+            multipliers.put('1095-1825', 0.75); // 75%
+            multipliers.put('1825-2920', 0.5); // 50%
+            multipliers.put('2920-3650', 0.25); // 25%
+        } else {
+            // Other geographies structure
+            multipliers.put('0-1095', 1.0); // 100%
+            multipliers.put('1095-1825', 0.75); // 75%
+            multipliers.put('1825-2920', 0.5); // 50%
+            multipliers.put('2920-3650', 0.3); // 30%
+            multipliers.put('3650-16425', 0.2); // 20%
+        }
+        
+        return multipliers;
     }
 
     public static List<DMT_Line_Modify_Field_Config__mdt> getConfigsForLine(
@@ -1630,6 +1994,9 @@ public static List<ModifyRelatedSectionDTO> buildRelatedSectionsForLine(
                 : Integer.valueOf(cfg.Section_Order__c);
 
             sectionByKey.put(compoundKey, section);
+            System.debug('MODIFY DEBUG - section added => compoundKey=' + compoundKey);
+            System.debug('MODIFY DEBUG - section added to sections list => section=' + section);
+
             sections.add(section);
 
             System.debug(
@@ -1757,16 +2124,16 @@ public static List<ModifyRelatedSectionDTO> buildRelatedSectionsForLine(
             Integer recordCounter = section.records.size() + 1;
 
             if (section.objectApiName == 'DMT_Risk_Line_Term__c') {
-                Object riskTypeValue = related.get('DMT_Risk_Type__c');
+                Object nameValue = related.get('Name');
 
                 if (
-                    riskTypeValue != null &&
-                    String.isNotBlank(String.valueOf(riskTypeValue)) &&
-                    String.valueOf(riskTypeValue) != 'null'
+                    nameValue != null &&
+                    String.isNotBlank(String.valueOf(nameValue)) &&
+                    String.valueOf(nameValue) != 'null'
                 ) {
-                    recordDto.displayName = String.valueOf(riskTypeValue);
+                    recordDto.displayName = String.valueOf(nameValue);
                 } else {
-                    recordDto.displayName = 'Risk Line Term ' + recordCounter;
+                    recordDto.displayName = section.label + ' ' + recordCounter;
                 }
             } else {
                 String nameFieldApi = resolveFieldApiName(fieldsMap, 'Name');
@@ -1790,8 +2157,8 @@ public static List<ModifyRelatedSectionDTO> buildRelatedSectionsForLine(
                     recordDto,
                     related,
                     fieldsMap,
-                    'DMT_Init_Term__c',
-                    'INIT TERM',
+                    'DMT_Amount__c',
+                    'AMOUNT',
                     false
                 );
 
@@ -1801,15 +2168,6 @@ public static List<ModifyRelatedSectionDTO> buildRelatedSectionsForLine(
                     fieldsMap,
                     'DMT_End_Term__c',
                     'END TERM',
-                    false
-                );
-
-                addRiskTermCellIfAvailable(
-                    recordDto,
-                    related,
-                    fieldsMap,
-                    'DMT_Amount__c',
-                    'AMOUNT',
                     false
                 );
 
@@ -2134,7 +2492,9 @@ public static void addRiskTermCellIfAvailable(
             fieldType == Schema.DisplayType.Double ||
             fieldType == Schema.DisplayType.Percent
         ) {
-            return Decimal.valueOf(stringValue);
+            // Normalize decimal format: replace comma with dot for locales that use comma as decimal separator
+            String normalizedValue = stringValue.replace(',', '.');
+            return Decimal.valueOf(normalizedValue);
         }
 
         if (fieldType == Schema.DisplayType.Integer) {
@@ -2196,6 +2556,8 @@ public static void addRiskTermCellIfAvailable(
                 continue;
             }
 
+            validateSafeIdentifier(objectApiName, 'related object api name');
+
             if (!globalDescribe.containsKey(objectApiName)) {
                 throw new AuraHandledException('Invalid related object: ' + objectApiName);
             }
@@ -2220,12 +2582,14 @@ public static void addRiskTermCellIfAvailable(
                 );
             }
 
-            String query =
-                'SELECT Id, ' + lookupField +
-                ' FROM ' + objectApiName +
-                ' WHERE Id IN :recordIds';
+            Schema.SObjectField lookupFieldToken = fieldsMap.get(lookupField);
 
-            List<SObject> records = Database.query(query);
+            List<SObject> records = Database.query(
+                'SELECT Id, ' + lookupFieldToken +
+                ' FROM ' + objType +
+                ' WHERE Id IN :recordIds',
+                AccessLevel.SYSTEM_MODE
+            );
 
             Map<Id, SObject> recordById = new Map<Id, SObject>();
 

@@ -3,16 +3,6 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentInstanceProperties>
-                    <name>recordId</name>
-                    <value>{recordId}</value>
-                </componentInstanceProperties>
-                <componentName>cfDMT_MarcoGeneral_V2</componentName>
-                <identifier>c_cfDMT_MarcoGeneral_V2</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
                 <componentName>dmt_HideHeaderScroll</componentName>
                 <identifier>c_dmt_HideHeaderScroll</identifier>
             </componentInstance>
@@ -21,6 +11,16 @@
             <componentInstance>
                 <componentName>dmt_HideLightningHeader</componentName>
                 <identifier>c001_dmt_HideLightningHeader</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>recordId</name>
+                    <value>{recordId}</value>
+                </componentInstanceProperties>
+                <componentName>dmtDealManagementWorkspace</componentName>
+                <identifier>c_dmtDealManagementWorkspace</identifier>
             </componentInstance>
         </itemInstances>
         <name>main</name>

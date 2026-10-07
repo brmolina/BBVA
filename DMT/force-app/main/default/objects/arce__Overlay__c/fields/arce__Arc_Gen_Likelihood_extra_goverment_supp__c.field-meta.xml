@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Arc_Gen_Likelihood_extra_goverment_supp__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Likelihood extra goverment supp</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Almost Certain</fullName>
+                <default>false</default>
+                <label>Almost Certain</label>
+            </value>
+            <value>
+                <fullName>Extremely High</fullName>
+                <default>false</default>
+                <label>Extremely High</label>
+            </value>
+            <value>
+                <fullName>Very High</fullName>
+                <default>false</default>
+                <label>Very High</label>
+            </value>
+            <value>
+                <fullName>High</fullName>
+                <default>false</default>
+                <label>High</label>
+            </value>
+            <value>
+                <fullName>Moderately High</fullName>
+                <default>false</default>
+                <label>Moderately High</label>
+            </value>
+            <value>
+                <fullName>Moderate</fullName>
+                <default>false</default>
+                <label>Moderate</label>
+            </value>
+            <value>
+                <fullName>Low</fullName>
+                <default>false</default>
+                <label>Low</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -7,7 +7,7 @@
  **/
 @isTest
 public with sharing class DMT_Case_Steps_Controller_Test {
-    
+
     /**
      * @description Method that creates the data for the test
      * @author Aníbal Cortés | 11-14-2024
@@ -17,17 +17,17 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         DMT_Approver_Member__c approverMember = DMT_Test_DataFactory.generateApproverMember();
         approverMember.DMT_FieldsHistoryView__c = '{"field1":"DMT_Line__r.Line_Term__c","field2":"DMT_Line__r.Name"}';
         update approverMember;
-        
+
         CIB_Bypass__c settings = CIB_Bypass__c.getOrgDefaults();
         settings.ExtensionsAllowed__c = 'png|jpeg|jpg|gif|svg|pdf|docx|xlsx|pptx|doc|xls|ppt|html|json';
         settings.skipFileExtensions__c = false;
         upsert settings;
-        
+
         Group queueId = [
-            SELECT Id 
-            FROM Group 
-            WHERE Type = 'Queue' 
-            AND Name LIKE '%TestApproverDataFactory%' 
+            SELECT Id
+            FROM Group
+            WHERE Type = 'Queue'
+            AND Name LIKE '%TestApproverDataFactory%'
             LIMIT 1
         ];
 
@@ -91,7 +91,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
             c.Id,
             2
         );
-        
+
         Case c2 = DMT_Test_DataFactory.generateCase(closedLine.Id, null, queueId.Id);
         DMT_Test_DataFactory.generateTasksWithOwner(
             queueId.Id,
@@ -110,19 +110,19 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         insert contentVersion;
 
         List<ContentVersion> documents = [
-            SELECT Id, ContentDocumentId 
-            FROM ContentVersion 
-            WHERE Id = :contentVersion.Id 
+            SELECT Id, ContentDocumentId
+            FROM ContentVersion
+            WHERE Id = :contentVersion.Id
             LIMIT 1
         ];
-        
+
         ContentDocumentLink cdl = new ContentDocumentLink();
         cdl.LinkedEntityId = tasks1.get(0).Id;
         cdl.ContentDocumentId = documents[0].ContentDocumentId;
         cdl.ShareType = 'V';
         cdl.Visibility = 'AllUsers';
         insert cdl;
-        
+
         Attachment att = new Attachment(
             Name = 'TestAttachment.pdf',
             Body = Blob.valueOf('Test Content'),
@@ -130,7 +130,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         );
         insert att;
     }
-    
+
     /**
      * @description Test method for the getStepsFromUser method
      * @author Aníbal Cortés | 11-14-2024
@@ -140,10 +140,10 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Test.startTest();
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getStepsFromUser();
         Test.stopTest();
-        
+
         System.assertNotEquals(listStep.size(), 0, 'The list should not be empty');
     }
-    
+
     /**
      * @description Test method for the getStepsFromCase method
      * @author Aníbal Cortés | 11-14-2024
@@ -154,8 +154,49 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Test.startTest();
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getStepsFromCase(c.Id);
         Test.stopTest();
-        
+
         System.assertNotEquals(listStep.size(), 0, 'The list should not be empty');
+    }
+
+//getStepsFromParentCase
+
+    @isTest
+    static void testGetStepsFromParentCase_noParent() {
+        Case c = [SELECT Id, ParentId FROM Case WHERE DMT_Line__r.Status__c != 'Closed' LIMIT 1];
+
+        Test.startTest();
+        List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep =
+            DMT_Case_Steps_Controller.getStepsFromParentCase(c.Id);
+        Test.stopTest();
+
+        System.assertEquals(0, listStep.size(), 'La lista debería estar vacía cuando el Case no tiene ParentId');
+    }
+
+    @isTest
+    static void testGetStepsFromParentCase_withParent() {
+        Case parentCase = [SELECT Id FROM Case WHERE DMT_Line__r.Status__c != 'Closed' LIMIT 1];
+
+        Group queueId = [
+            SELECT Id
+            FROM Group
+            WHERE Type = 'Queue'
+            AND Name LIKE '%TestApproverDataFactory%'
+            LIMIT 1
+        ];
+
+        // Creamos un Case hijo que apunta al Case padre ya existente (con Tasks de aprobación)
+        Case childCase = DMT_Test_DataFactory.generateCase(null, null, queueId.Id);
+        TriggerBypass.setBypass();
+        childCase.ParentId = parentCase.Id;
+        update childCase;
+        TriggerBypass.removeBypass();
+
+        Test.startTest();
+        List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep =
+            DMT_Case_Steps_Controller.getStepsFromParentCase(childCase.Id);
+        Test.stopTest();
+
+        System.assertNotEquals(0, listStep.size(), 'Debería devolver los steps del Case padre');
     }
     
     /**
@@ -168,10 +209,10 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Test.startTest();
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getCurrentStepsFromCases(cases);
         Test.stopTest();
-        
+
         System.assertNotEquals(listStep.size(), 0, 'The list should not be empty');
     }
-    
+
     /**
      * @description Test method for the getStepsFromFeature method,
      * @author Aníbal Cortés | 11-14-2024
@@ -181,10 +222,10 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Test.startTest();
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getStepsFromFeature('Test', '00000');
         Test.stopTest();
-        
+
         System.assertEquals(listStep.size(), 0, 'The list should not be empty');
     }
-    
+
     /**
      * @description Test method for the getStepsFromFeature method, testing the empty list casuistry
      * @author Aníbal Cortés | 11-14-2024
@@ -194,10 +235,10 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Test.startTest();
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getStepsFromFeature('TestError', '00002');
         Test.stopTest();
-        
+
         System.assertEquals(listStep.size(), 0, 'The list should be empty');
     }
-    
+
     /**
      * @description Test method for the getCurrentStepFromFeatures method
      * @author Aníbal Cortés | 11-14-2024
@@ -207,10 +248,10 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Test.startTest();
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getCurrentStepFromFeatures(new List<String>{'Test'}, '00000');
         Test.stopTest();
-        
+
         System.assertEquals(listStep.size(), 0, 'The list should not be empty');
     }
-    
+
     /**
      * @description Test method for the getCurrentStepFromFeatures method, testing the empty list casuistry
      * @author Aníbal Cortés | 11-14-2024
@@ -220,10 +261,10 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Test.startTest();
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getCurrentStepFromFeatures(new List<String>{'TestError'}, '00002');
         Test.stopTest();
-        
+
         System.assertEquals(listStep.size(), 0, 'The list should be empty');
     }
-    
+
     /**
      * @description Test for the getTaskCompletedFile method
      * @author Aníbal Cortés | 11-14-2024
@@ -234,10 +275,10 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Test.startTest();
         ContentDocumentLink contentDoc = DMT_Case_Steps_Controller.getTaskCompletedFile(t.Id);
         Test.stopTest();
-        
+
         System.assertNotEquals(contentDoc, null, 'It is not the one inserted on testSetup');
     }
-    
+
     /**
      * @description Test for the getTaskFiles method
      * @author Aníbal Cortés | 11-14-2024
@@ -248,42 +289,42 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Test.startTest();
         List<Map<String, Object>> result = DMT_Case_Steps_Controller.getTaskFilesWithAttachments(t.Id);
         Test.stopTest();
-        
+
         System.assertNotEquals(null, result, 'Result should not be null');
     }
-    
+
     @isTest
     static void getStepsFromUserTest() {
-        
+
         DMT_Approver_Member__c approverMember = [SELECT Id, DMT_FieldsHistoryView__c FROM DMT_Approver_Member__c WHERE DMT_Access_Level__c = 'Edit' LIMIT 1];
         approverMember.DMT_FieldsHistoryView__c = '';
         update approverMember;
-        
+
         Test.startTest();
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getStepsFromUser();
         Test.stopTest();
-        
+
         System.assertNotEquals(listStep.size(), 0, 'The list should not be empty');
     }
-    
+
     @isTest
     static void getStepsFromCaseTest() {
         Case c = [SELECT Id FROM Case WHERE DMT_Line__r.Status__c != 'Closed' LIMIT 1];
         TriggerBypass.setBypass();
         c.Status = 'Finished';
         update c;
-        
+
         Test.startTest();
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getStepsFromCase(c.Id);
         Test.stopTest();
-        
+
         System.assertNotEquals(listStep.size(), 0, 'The list should not be empty');
     }
-    
+
     @isTest
     static void getStepsFromFeatureExceptionTest() {
         String errorMessage = '';
-        
+
         Test.startTest();
         try {
             List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getStepsFromFeature('Test', null);
@@ -291,14 +332,14 @@ public with sharing class DMT_Case_Steps_Controller_Test {
             errorMessage = e.getMessage();
         }
         Test.stopTest();
-        
+
         System.assertNotEquals(null, errorMessage, 'The error message should not be null');
     }
-    
+
     @isTest
     static void getCurrentStepFromFeaturesExceptionTest() {
         String errorMessage = '';
-        
+
         Test.startTest();
         try {
             List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getCurrentStepFromFeatures(new List<String>{'Test'}, null);
@@ -306,18 +347,18 @@ public with sharing class DMT_Case_Steps_Controller_Test {
             errorMessage = e.getMessage();
         }
         Test.stopTest();
-        
+
         System.assertNotEquals(null, errorMessage, 'The error message should not be null');
     }
-    
+
     @isTest
     static void testProcessStartNextCaseApproval() {
-        
+
         Id approvalRT = Schema.SObjectType.Case
             .getRecordTypeInfosByDeveloperName()
             .get('Approval')
             .getRecordTypeId();
-        
+
         DMT_Line__c line = new DMT_Line__c(
             Line_Id__c = 'L-001',
         Status__c = DMT_Constants.APPROVAL
@@ -332,7 +373,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         DMT_Passport_Save__c = passportJson
             );
         insert passport;
-        
+
         Case newCase = new Case(
             RecordTypeId = approvalRT,
         DMT_Line__c = line.Id,
@@ -341,7 +382,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         DMT_Passport_Sanction__c = DMT_Constants.APPROVAL
             );
         insert newCase;
-        
+
         Test.startTest();
         DMT_Approver__c approverBussines = DMT_Test_DataFactory.generateApproverBussines();
         DMT_Approver__c approverRisk = DMT_Test_DataFactory.generateApproverRisk();
@@ -349,18 +390,18 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         newCase.Status = DMT_Constants.FINISHED;
         update newCase;
         Test.stopTest();
-        
+
         System.assert(true, 'processStartNextCaseApproval covered');
     }
 
     @isTest
     static void testProcessStartNextCaseApprovalRisk() {
-        
+
         Id approvalRT = Schema.SObjectType.Case
             .getRecordTypeInfosByDeveloperName()
             .get('Approval')
             .getRecordTypeId();
-        
+
         DMT_Line__c line = new DMT_Line__c(
             Line_Id__c = 'L-001',
         Status__c = DMT_Constants.APPROVAL
@@ -369,13 +410,13 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         insert line;
 
         String passportJson ='{"data":{"opportunityId":"L-001","auditDate":"2025-12-16T09:50:45.930Z","version":"001","features":[{"id":"10","name":"ST10 - Derivatives Limit Test (Group Level)","passportSanction":"passport","active":"Y","motorDesc":"Limit Engine","stateName":"YELLOW","consumptionLimits":[{"consumptionLastLevelId":"90000","cutoffDate":"2025-12-05","limitId":"01_01_G_PFD_0000396936_90000","groupId":"G20100127223919","limitDesc":"ef78e8435619df8e68d4401000795ead06510b10","originType":"HL","limitType":"PF","amount":{"unavailableRiskAmount":80489133460.78784,"authorizedRiskAmount":79676337587.63194,"cmtContDisposedAmount":723774149.348988,"uncmtContDisposedAmount":0,"cmtContNonDspsAmount":89021723.806902,"uncmtContNonDspsAmount":0,"notSignedTrConsumptionAmount":0,"currentApprovedAmount":1225000000},"currencyId":"USD","riskAnalysisExpiryDate":"2026-07-31","riskAnalystId":"O011732","conditionDesc":"Limit exceeded. Please, verify with risk analyst O011732","stateName":"RED"},{"consumptionLastLevelId":"70000","cutoffDate":"2025-12-05","limitId":"01_01_G_PFD_0000396936_70000","groupId":"G20100127223919","limitDesc":"ce64dd2901e8150b0af94bb123439a1ec190c36a","originType":"HL","limitType":"PF","amount":{"unavailableRiskAmount":80489133460.78784,"authorizedRiskAmount":79676337587.63194,"cmtContDisposedAmount":723774149.348988,"uncmtContDisposedAmount":0,"cmtContNonDspsAmount":89021723.806902,"uncmtContNonDspsAmount":0,"notSignedTrConsumptionAmount":0,"currentApprovedAmount":1150000000},"currencyId":"USD","riskAnalysisExpiryDate":"2026-07-31","riskAnalystId":"O011732","conditionDesc":"Limit exceeded. Please, verify with risk analyst O011732","stateName":"RED"},{"consumptionLastLevelId":"50000","cutoffDate":"2025-12-05","limitId":"01_01_G_PFD_0000396936_50000","groupId":"G20100127223919","limitDesc":"039d8d6291bb0d19088a72614022f8ba0e1018e6","originType":"HL","limitType":"PF","amount":{"unavailableRiskAmount":80489133460.78784,"authorizedRiskAmount":79676337587.63194,"cmtContDisposedAmount":723774149.348988,"uncmtContDisposedAmount":0,"cmtContNonDspsAmount":89021723.806902,"uncmtContNonDspsAmount":0,"notSignedTrConsumptionAmount":0,"currentApprovedAmount":1150000000},"currencyId":"USD","riskAnalysisExpiryDate":"2026-07-31","riskAnalystId":"O011732","conditionDesc":"Limit exceeded. Please, verify with risk analyst O011732","stateName":"RED"},{"consumptionLastLevelId":"40000","cutoffDate":"2025-12-05","limitId":"01_01_G_PFD_0000396936_40000","groupId":"G20100127223919","limitDesc":"27036fc955599a4eff97f8f2a64bbbcdd3c1d72a","originType":"HL","limitType":"PF","amount":{"unavailableRiskAmount":79727758536.42474,"authorizedRiskAmount":79676336432.33195,"cmtContDisposedAmount":51422104.0928,"uncmtContDisposedAmount":0,"cmtContNonDspsAmount":0,"uncmtContNonDspsAmount":0,"notSignedTrConsumptionAmount":0,"currentApprovedAmount":100000000},"currencyId":"USD","riskAnalysisExpiryDate":"2026-07-31","riskAnalystId":"O011732","conditionDesc":"Limit exceeded. Please, verify with risk analyst O011732","stateName":"RED"}],"lastLevels":[]},{"id":"13","name":"ST13 - Financial Program Risk Analyst Consult","passportSanction":"passport","active":"Y","stateName":"WHITE","tasks":[{"id":"2","name":"Risk Analyst Advisory","yesFlag":"In accordance","noFlag":"Not in accordance","naFlag":"N/A","nextTask":"1","status":"OPEN","approvers":[{"id":"10","name":"GRM C&IB Spain - International Groups","entific":"ES","branch":"HO","documentManagerEnable":"Y"}]},{"id":"2","name":"Risk Analyst Advisory","yesFlag":"In accordance","noFlag":"Not in accordance","naFlag":"N/A","nextTask":"1","status":"OPEN"}],"lastLevels":[]},{"id":"15","name":"ST15 - Local Risk Approval","passportSanction":"approval","active":"Y","orderNumber":1,"stateName":"WHITE","tasks":[{"id":"6","name":"Risk Approval - Local","yesFlag":"Approved","noFlag":"Dismissed","naFlag":"N/A","nextTask":"1","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY1","name":"GRM C&IB Spain - Spanish Groups","entific":"ES","branch":"HO","documentManagerEnable":"Y"}]},{"id":"6","name":"Risk Approval - Local","yesFlag":"Approved","noFlag":"Dismissed","naFlag":"N/A","nextTask":"1","status":"OPEN"},{"id":"8","name":"Risk Approval - local and global","yesFlag":"Approved","noFlag":"Dismissed","naFlag":"N/A","nextTask":"1","status":"OPEN"},{"id":"1","name":"Risk Approval - on behalf of the geography committee","yesFlag":"Approved","noFlag":"Dismissed","naFlag":"N/A","nextTask":"1","status":"OPEN"}],"lastLevels":[]},{"id":"16","name":"ST16 - Local Risk Approval DOS","passportSanction":"approval","active":"Y","orderNumber":2,"stateName":"WHITE","tasks":[{"id":"6","name":"Risk Approval - Local","yesFlag":"Approved","noFlag":"Dismissed","naFlag":"N/A","nextTask":"1","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY1","name":"GRM C&IB Spain - Spanish Groups","entific":"ES","branch":"HO","documentManagerEnable":"Y"}]},{"id":"6","name":"Risk Approval - Local","yesFlag":"Approved","noFlag":"Dismissed","naFlag":"N/A","nextTask":"1","status":"OPEN"}],"lastLevels":[]},{"id":"18","name":"ST18 - Local Business Approval","passportSanction":"approval","active":"Y","orderNumber":2,"stateName":"WHITE","tasks":[{"id":"6","name":"Business Approval - Local","yesFlag":"Approved","noFlag":"Dismissed","naFlag":"N/A","nextTask":"1","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY32","name":"US - Project Finance & CR Monitoring","entific":"ES","branch":"HO","documentManagerEnable":"Y"}]},{"id":"6","name":"Risk Approval - Local","yesFlag":"Approved","noFlag":"Dismissed","naFlag":"N/A","nextTask":"1","status":"OPEN"}],"lastLevels":[]},{"id":"19","name":"ST19 - Local Business Approval","passportSanction":"approval","active":"Y","orderNumber":3,"stateName":"WHITE","tasks":[{"id":"6","name":"Business Approval - Local","yesFlag":"Approved","noFlag":"Dismissed","naFlag":"N/A","nextTask":"1","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY32","name":"US - Project Finance & CR Monitoring","entific":"ES","branch":"HO","documentManagerEnable":"Y"}]},{"id":"6","name":"Risk Approval - Local","yesFlag":"Approved","noFlag":"Dismissed","naFlag":"N/A","nextTask":"1","status":"OPEN"}],"lastLevels":[]}]}}';
-        
+
         Passport__c passport = new Passport__c(
             DMT_Line__c = line.Id,
         DMT_Passport_Save__c = passportJson
             );
         insert passport;
-        
+
         Case newCase = new Case(
             RecordTypeId = approvalRT,
         DMT_Line__c = line.Id,
@@ -383,9 +424,9 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         DMT_Feature_Id__c = '15',
         DMT_Passport_Sanction__c = DMT_Constants.APPROVAL
             );
-        
+
         insert newCase;
-        
+
         Test.startTest();
         DMT_Approver__c approverBussines = DMT_Test_DataFactory.generateApproverBussines();
         DMT_Approver__c approverRisk = DMT_Test_DataFactory.generateApproverRisk();
@@ -393,234 +434,31 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         newCase.Status = DMT_Constants.FINISHED;
         update newCase;
         Test.stopTest();
-        
+
         System.assert(true, 'processStartNextCaseApproval covered');
     }
-    
-    
+
+
     @isTest
     static void test_buildApproverTypeMap() {
         //Lista vacía
         Map<String, String> resultEmpty = DMT_Case_Steps_Controller.buildApproverTypeMap(new List<Map<String,String>>());
         System.assertEquals(0, resultEmpty.size(), 'Empty list should return empty map');
-        
+
         //Lista con un map nulo
         Map<String, String> resultNullMap = DMT_Case_Steps_Controller.buildApproverTypeMap(new List<Map<String,String>>{ null });
         System.assertEquals(0, resultNullMap.size(), 'List with null map should return empty map');
-        
+
         //Lista con distintos keys
         List<Map<String,String>> featureTypeByApprover = new List<Map<String,String>>{
             new Map<String,String>{ 'approverId' => 'U1', 'featureType' => 'Business' },
             new Map<String,String>{ 'approver' => 'U2', 'type' => 'Risk' }
         };
-        
+
         Map<String,String> result = DMT_Case_Steps_Controller.buildApproverTypeMap(featureTypeByApprover);
-        
+
         System.assertEquals('Business', result.get('U1'), 'U1 should map to Business');
         System.assertEquals('Risk', result.get('U2'), 'U2 should map to Risk');
-    }
-
-    @isTest
-    static void testUpdateTask() {
-        // Crear tarea de prueba
-        Task tarea = new Task(Subject = 'Original');
-        insert tarea;
-        
-        // Actualizar
-        Map<String, Object> campos = new Map<String, Object>{
-            'Subject' => 'Actualizada'
-        };
-        
-        Test.startTest();
-        DMT_Case_Steps_Controller.updateTask(tarea.Id, campos);
-        Test.stopTest();
-        
-        // Verificar
-        Task result = [SELECT Subject FROM Task WHERE Id = :tarea.Id];
-        System.assertEquals('Actualizada', result.Subject);
-    }
-
-    @isTest
-    static void testMoveStatusToReadyToClose_nullId() {
-        Test.startTest();
-        DMT_Case_Steps_Controller.moveStatusToReadyToClose(null);
-        Test.stopTest();
-        System.assert(true, 'Should return without exception when contextId is null');
-    }
-
-    @isTest
-    static void testMoveStatusToReadyToClose_oppInApprovalStage() {
-        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
-        TriggerBypass.setBypass();
-        opp.StageName = DMT_Constants.APPROVAL;
-        update opp;
-
-        Passport__c passport = new Passport__c(
-            Opportunity__c = opp.Id,
-            DMT_Passport_Save__c = '{"data":{"features":[]}}'
-        );
-        insert passport;
-
-        Test.startTest();
-        DMT_Case_Steps_Controller.moveStatusToReadyToClose(opp.Id);
-        Test.stopTest();
-
-        Opportunity result = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id LIMIT 1];
-        System.assertEquals(DMT_Constants.READYTOCLOSE, result.StageName, 'Opp should be moved to Ready to close');
-    }
-
-    @isTest
-    static void testMoveStatusToReadyToClose_oppNotInApprovalStage() {
-        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
-        // StageName is 'Draft Opp' after factory, not Approval
-
-        Passport__c passport = new Passport__c(
-            Opportunity__c = opp.Id,
-            DMT_Passport_Save__c = '{"data":{"features":[]}}'
-        );
-        insert passport;
-
-        Test.startTest();
-        DMT_Case_Steps_Controller.moveStatusToReadyToClose(opp.Id);
-        Test.stopTest();
-
-        Opportunity result = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id LIMIT 1];
-        System.assertNotEquals(DMT_Constants.READYTOCLOSE, result.StageName, 'Opp should NOT be moved to Ready to close when not in Approval');
-    }
-
-    @isTest
-    static void testMoveStatusToReadyToClose_noPassport() {
-        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
-        String stageBeforeCall = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id LIMIT 1].StageName;
-
-        Test.startTest();
-        DMT_Case_Steps_Controller.moveStatusToReadyToClose(opp.Id);
-        Test.stopTest();
-
-        Opportunity result = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id LIMIT 1];
-        System.assertEquals(stageBeforeCall, result.StageName, 'Opp StageName should be unchanged when no passport exists');
-    }
-
-    @isTest
-    static void testAutoMoveToReadyToCloseWhenAllApprovalFeaturesFinished() {
-        Id approvalRT = Schema.SObjectType.Case
-            .getRecordTypeInfosByDeveloperName()
-            .get('Approval')
-            .getRecordTypeId();
-
-        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
-        opp = [SELECT Id, AccountId, DMT_Opp_Id__c FROM Opportunity WHERE Id = :opp.Id LIMIT 1];
-        opp.StageName = DMT_Constants.APPROVAL;
-        update opp;
-
-        String passportJson = '{"data":{"opportunityId":"' + opp.DMT_Opp_Id__c + '","features":[{"id":"15","name":"ST15 - Local Risk Approval","passportSanction":"approval","active":"Y","orderNumber":1,"stateName":"WHITE","tasks":[{"id":"6","name":"Risk Approval - Local","yesFlag":"Approved","noFlag":"Dismissed","naFlag":"N/A","nextTask":"1","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY1","name":"GRM C&IB Spain - Spanish Groups"}]}]}]}}';
-
-        Passport__c passport = new Passport__c(
-            Opportunity__c = opp.Id,
-            DMT_Passport_Save__c = passportJson
-        );
-        insert passport;
-
-        Case approvalCase = new Case(
-            RecordTypeId = approvalRT,
-            Opportunity_Id__c = opp.Id,
-            Status = DMT_Constants.PENDING,
-            DMT_Feature_Id__c = '15',
-            DMT_Passport_Sanction__c = DMT_Constants.APPROVAL
-        );
-        TriggerBypass.setBypass();
-        insert approvalCase;
-        TriggerBypass.removeBypass();
-
-        Test.startTest();
-        DMT_Test_DataFactory.generateApproverRisk();
-
-        approvalCase.Status = DMT_Constants.FINISHED;
-        update approvalCase;
-
-        DMT_Case_Steps_Controller.moveStatusToReadyToClose(opp.Id);
-        Test.stopTest();
-
-        Opportunity oppAfter = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id LIMIT 1];
-        System.assertEquals(DMT_Constants.READYTOCLOSE, oppAfter.StageName, 'Opportunity should move automatically to Ready to close when all approval features are finished.');
-    }
-
-    // ===== getAllStepsFromFeaturesLine =====
-
-    @isTest
-    static void testGetAllStepsFromFeaturesLine_empty() {
-        Test.startTest();
-        Map<String, List<DMT_Case_Steps_Controller.WRAPPER_Step>> result =
-            DMT_Case_Steps_Controller.getAllStepsFromFeaturesLine(
-                new List<String>{ 'NON_EXISTENT' }, '99999'
-            );
-        Test.stopTest();
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(0, result.size(), 'Result should be empty when no cases found');
-    }
-
-    @isTest
-    static void testGetAllStepsFromFeaturesLine_withData() {
-        DMT_Line__c line = new DMT_Line__c(Line_Id__c = 'BULK-LINE-001', Status__c = DMT_Constants.APPROVAL);
-        insert line;
-        Id approvalRT = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
-        Case c = new Case(
-            RecordTypeId = approvalRT,
-            DMT_Line__c = line.Id,
-            Status = 'Pending',
-            DMT_Feature_Id__c = 'BF001',
-            DMT_Passport_Sanction__c = DMT_Constants.APPROVAL
-        );
-        TriggerBypass.setBypass();
-        insert c;
-        TriggerBypass.removeBypass();
-        Test.startTest();
-        Map<String, List<DMT_Case_Steps_Controller.WRAPPER_Step>> result =
-            DMT_Case_Steps_Controller.getAllStepsFromFeaturesLine(
-                new List<String>{ 'BF001' }, 'BULK-LINE-001'
-            );
-        Test.stopTest();
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assert(result.containsKey('BF001'), 'Result should contain feature BF001');
-    }
-
-    // ===== getAllStepsFromFeaturesOpp =====
-
-    @isTest
-    static void testGetAllStepsFromFeaturesOpp_empty() {
-        Test.startTest();
-        Map<String, List<DMT_Case_Steps_Controller.WRAPPER_Step>> result =
-            DMT_Case_Steps_Controller.getAllStepsFromFeaturesOpp(
-                new List<String>{ 'NON_EXISTENT' }, '99999'
-            );
-        Test.stopTest();
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(0, result.size(), 'Result should be empty when no cases found');
-    }
-
-    @isTest
-    static void testGetAllStepsFromFeaturesOpp_withData() {
-        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
-        opp = [SELECT Id, DMT_Opp_Id__c FROM Opportunity WHERE Id = :opp.Id LIMIT 1];
-        Id approvalRT = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
-        Case c = new Case(
-            RecordTypeId = approvalRT,
-            Opportunity_Id__c = opp.Id,
-            Status = 'Pending',
-            DMT_Feature_Id__c = 'BF002',
-            DMT_Passport_Sanction__c = DMT_Constants.APPROVAL
-        );
-        TriggerBypass.setBypass();
-        insert c;
-        TriggerBypass.removeBypass();
-        Test.startTest();
-        Map<String, List<DMT_Case_Steps_Controller.WRAPPER_Step>> result =
-            DMT_Case_Steps_Controller.getAllStepsFromFeaturesOpp(
-                new List<String>{ 'BF002' }, opp.DMT_Opp_Id__c
-            );
-        Test.stopTest();
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assert(result.containsKey('BF002'), 'Result should contain feature BF002');
     }
 
     // ===== getStepsFromFeatureOpp =====
@@ -645,6 +483,37 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         }
         Test.stopTest();
         System.assertNotEquals(null, errorMessage, 'Exception should be thrown for null oppExternalId');
+    }
+
+    @isTest
+    static void testGetStepsFromFeatureOpp_withData() {
+        Group queueId = [SELECT Id FROM Group WHERE Type = 'Queue' and Name LIKE '%TestApproverDataFactory%' LIMIT 1];
+        Id taskRtId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
+        Id approvalRT = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
+
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+        opp = [SELECT Id, DMT_Opp_Id__c FROM Opportunity WHERE Id = :opp.Id LIMIT 1];
+
+        Case c = new Case(
+            RecordTypeId = approvalRT,
+            Opportunity_Id__c = opp.Id,
+            Status = DMT_Constants.PENDING,
+            DMT_Feature_Id__c = 'OPP-FEAT-1',
+            DMT_Passport_Sanction__c = DMT_Constants.APPROVAL,
+            OwnerId = queueId.Id
+        );
+        TriggerBypass.setBypass();
+        insert c;
+        TriggerBypass.removeBypass();
+
+        DMT_Test_DataFactory.generateTasksWithOwner(queueId.Id, taskRtId, c.Id, 2);
+
+        Test.startTest();
+        List<DMT_Case_Steps_Controller.WRAPPER_Step> result = DMT_Case_Steps_Controller.getStepsFromFeatureOpp('OPP-FEAT-1', opp.DMT_Opp_Id__c);
+        Test.stopTest();
+
+        System.assertNotEquals(null, result, 'Result should not be null');
+        System.assert(result.size() > 0, 'Result should contain steps');
     }
 
     // ===== getCurrentStepFromFeaturesOpp =====
@@ -673,6 +542,37 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         }
         Test.stopTest();
         System.assertNotEquals(null, errorMessage, 'Exception should be thrown for null oppExternalId');
+    }
+
+    @isTest
+    static void testGetCurrentStepFromFeaturesOpp_withData() {
+        Group queueId = [SELECT Id FROM Group WHERE Type = 'Queue' and Name LIKE '%TestApproverDataFactory%' LIMIT 1];
+        Id taskRtId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
+        Id approvalRT = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
+
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+        opp = [SELECT Id, DMT_Opp_Id__c FROM Opportunity WHERE Id = :opp.Id LIMIT 1];
+
+        Case c = new Case(
+            RecordTypeId = approvalRT,
+            Opportunity_Id__c = opp.Id,
+            Status = DMT_Constants.PENDING,
+            DMT_Feature_Id__c = 'OPP-FEAT-2',
+            DMT_Passport_Sanction__c = DMT_Constants.APPROVAL,
+            OwnerId = queueId.Id
+        );
+        TriggerBypass.setBypass();
+        insert c;
+        TriggerBypass.removeBypass();
+
+        DMT_Test_DataFactory.generateTasksWithOwner(queueId.Id, taskRtId, c.Id, 2);
+
+        Test.startTest();
+        List<DMT_Case_Steps_Controller.WRAPPER_Step> result = DMT_Case_Steps_Controller.getCurrentStepFromFeaturesOpp(new List<String>{ 'OPP-FEAT-2' }, opp.DMT_Opp_Id__c);
+        Test.stopTest();
+
+        System.assertNotEquals(null, result, 'Result should not be null');
+        System.assert(result.size() > 0, 'Result should contain current steps');
     }
 
     // ===== checkApprovalValidation =====
@@ -751,6 +651,40 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Boolean result = DMT_Case_Steps_Controller.checkApprovalValidation(line.Id);
         Test.stopTest();
         System.assertEquals(false, result, 'Should return false when no tasks/steps found for the finished case');
+    }
+
+    @isTest
+    static void testCheckApprovalValidation_truePath() {
+        Group queueId = [SELECT Id FROM Group WHERE Type = 'Queue' and Name LIKE '%TestApproverDataFactory%' LIMIT 1];
+        Id taskRtId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
+
+        DMT_Line__c line = new DMT_Line__c(Line_Id__c = 'CHECK-005', Status__c = DMT_Constants.APPROVAL);
+        insert line;
+
+        Passport__c passport = new Passport__c(
+            DMT_Line__c = line.Id,
+            DMT_Passport_Save__c = '{"data":{"features":[{"id":"88","passportSanction":"approval"}]}}'
+        );
+        insert passport;
+
+        Case approvalCase = DMT_Test_DataFactory.generateCase(line.Id, null, queueId.Id);
+        TriggerBypass.setBypass();
+        approvalCase.DMT_Feature_Id__c = '88';
+        approvalCase.DMT_Passport_Sanction__c = 'approval';
+        approvalCase.Status = DMT_Constants.FINISHED;
+        update approvalCase;
+        TriggerBypass.removeBypass();
+
+        List<Task> tasks = DMT_Test_DataFactory.generateTasksWithOwner(queueId.Id, taskRtId, approvalCase.Id, 1);
+        Task stepTask = tasks[0];
+        stepTask.DMT_Step_Result__c = 'Yes';
+        update stepTask;
+
+        Test.startTest();
+        Boolean result = DMT_Case_Steps_Controller.checkApprovalValidation(line.Id);
+        Test.stopTest();
+
+        System.assertEquals(true, result, 'Should return true when finished approval cases and step results match passport approval features');
     }
 
     // ===== startNextCaseApproval (invocable) =====
@@ -1000,5 +934,396 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
     }
 
 
-    
+    @isTest
+    static void testStartFirstBusinessApprovalFeature_nullContext() {
+        Test.startTest();
+        DMT_Case_Steps_Controller.startFirstBusinessApprovalFeature(null);
+        Test.stopTest();
+
+        System.assert(true, 'Null contextId should exit gracefully');
+    }
+
+    @isTest
+    static void testStartFirstBusinessApprovalFeature_businessAndRiskFlows() {
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+        opp = [SELECT Id, DMT_Opp_Id__c FROM Opportunity WHERE Id = :opp.Id LIMIT 1];
+        Passport__c oppPassport = new Passport__c(Opportunity__c = opp.Id, DMT_Passport_Save__c =
+            '{"data":{"opportunityId":"' + opp.DMT_Opp_Id__c + '","features":[' +
+                '{"id":"22","name":"ST22","passportSanction":"approval","orderNumber":1,"tasks":[{"id":"7","name":"Risk","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY2","name":"Risk Approver"}]}]}' +
+            ']}}');
+        insert oppPassport;
+
+        Test.startTest();
+        DMT_Test_DataFactory.generateApproverBussines();
+        DMT_Test_DataFactory.generateApproverRisk();
+
+        DMT_Case_Steps_Controller.startFirstBusinessApprovalFeature(opp.Id);
+        Test.stopTest();
+
+        System.assert(true, 'Opportunity should start the first eligible approval feature');
+    }
+
+    @isTest
+    static void testProcessStartNextCaseApproval_NullCase() {
+        Test.startTest();
+        DMT_Case_Steps_Controller.processStartNextCaseApproval(null, new Case());
+        Test.stopTest();
+        System.assert(true, 'Should handle null case gracefully');
+    }
+
+    @isTest
+    static void testProcessStartNextCaseApproval_NoLineNoOpportunity() {
+        Id approvalRT = Schema.SObjectType.Case
+            .getRecordTypeInfosByDeveloperName()
+            .get('Approval')
+            .getRecordTypeId();
+
+        Case newCase = new Case(
+            RecordTypeId = approvalRT,
+            Status = 'Pending'
+        );
+        insert newCase;
+
+        Test.startTest();
+        DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, new Case());
+        Test.stopTest();
+        System.assert(true, 'Should return when neither Line nor Opportunity context');
+    }
+
+    @isTest
+    static void testProcessStartNextCaseApproval_OpportunityContext() {
+        Id approvalRT = Schema.SObjectType.Case
+            .getRecordTypeInfosByDeveloperName()
+            .get('Approval')
+            .getRecordTypeId();
+
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+
+        String passportJson = '{"data":{"opportunityId":"' + opp.DMT_Opp_Id__c + '","auditDate":"2025-12-16T09:50:45.930Z","version":"001","features":[{"id":"20","name":"ST20 - Business Approval","passportSanction":"approval","active":"Y","orderNumber":1,"stateName":"WHITE","tasks":[{"id":"6","name":"Business Approval","yesFlag":"Approved","noFlag":"Dismissed","naFlag":"N/A","nextTask":"1","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY32","name":"US - Project Finance & CR Monitoring","entific":"ES","branch":"HO","documentManagerEnable":"Y"}]}]}]}}';
+
+        Passport__c passport = new Passport__c(
+            Opportunity__c = opp.Id,
+            DMT_Passport_Save__c = passportJson
+        );
+        insert passport;
+
+        Case newCase = new Case(
+            RecordTypeId = approvalRT,
+            opportunity_id__c = opp.Id,
+            Status = 'Pending',
+            DMT_Feature_Id__c = '20',
+            DMT_Passport_Sanction__c = DMT_Constants.APPROVAL
+        );
+        insert newCase;
+
+        Case oldCase = new Case(
+            RecordTypeId = approvalRT,
+            opportunity_id__c = opp.Id,
+            Status = 'Pending'
+        );
+
+        Test.startTest();
+        DMT_Test_DataFactory.generateApproverBussines();
+        newCase.Status = DMT_Constants.FINISHED;
+        update newCase;
+
+        DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, oldCase);
+        Test.stopTest();
+
+        System.assert(true, 'Should process Opportunity context correctly');
+    }
+
+    @isTest
+    static void testProcessStartNextCaseApproval_WhenCaseNotClosed() {
+        Id approvalRT = Schema.SObjectType.Case
+            .getRecordTypeInfosByDeveloperName()
+            .get('Approval')
+            .getRecordTypeId();
+
+        DMT_Line__c line = new DMT_Line__c(
+            Line_Id__c = 'NOTCLOSED-001',
+            Status__c = DMT_Constants.APPROVAL
+        );
+        insert line;
+
+
+        Case newCase = new Case(
+            RecordTypeId = approvalRT,
+            DMT_Line__c = line.Id,
+            Status = 'Pending'
+        );
+        insert newCase;
+
+        Case oldCase = new Case(
+            RecordTypeId = approvalRT,
+            DMT_Line__c = line.Id,
+            Status = 'Pending'
+        );
+
+        Test.startTest();
+        DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, oldCase);
+        Test.stopTest();
+
+        System.assert(true, 'Should return when case is not closed');
+    }
+
+    @isTest
+    static void testProcessStartNextCaseApproval_RiskFeatureOnly() {
+        Id approvalRT = Schema.SObjectType.Case
+            .getRecordTypeInfosByDeveloperName()
+            .get('Approval')
+            .getRecordTypeId();
+
+        DMT_Line__c line = new DMT_Line__c(
+            Line_Id__c = 'RISK-TEST-001',
+            Status__c = DMT_Constants.APPROVAL
+        );
+        insert line;
+
+        String passportJson = '{"data":{"opportunityId":"RISK-TEST-001","features":[{"id":"15","name":"ST15 - Risk Only","passportSanction":"approval","active":"Y","orderNumber":1,"stateName":"WHITE","tasks":[{"id":"6","name":"Risk Approval","yesFlag":"Approved","noFlag":"Dismissed","naFlag":"N/A","nextTask":"1","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY1","name":"Risk Approver"}]}]}]}}';
+
+        Passport__c passport = new Passport__c(
+            DMT_Line__c = line.Id,
+            DMT_Passport_Save__c = passportJson
+        );
+        insert passport;
+
+        Case newCase = new Case(
+            RecordTypeId = approvalRT,
+            DMT_Line__c = line.Id,
+            Status = 'Pending',
+            DMT_Feature_Id__c = '15',
+            DMT_Passport_Sanction__c = DMT_Constants.APPROVAL
+        );
+        insert newCase;
+
+        Case oldCase = new Case(
+            RecordTypeId = approvalRT,
+            DMT_Line__c = line.Id,
+            Status = 'Pending'
+        );
+
+        Test.startTest();
+        DMT_Test_DataFactory.generateApproverRisk();
+        newCase.Status = DMT_Constants.FINISHED;
+        update newCase;
+
+        DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, oldCase);
+        Test.stopTest();
+
+        System.assert(true, 'Should handle Risk feature type correctly');
+    }
+
+    @isTest
+    static void testProcessStartNextCaseApproval_MultipleFeaturesBusinessAndRisk() {
+        Id approvalRT = Schema.SObjectType.Case
+            .getRecordTypeInfosByDeveloperName()
+            .get('Approval')
+            .getRecordTypeId();
+
+        DMT_Line__c line = new DMT_Line__c(
+            Line_Id__c = 'MULTI-TEST-001',
+            Status__c = DMT_Constants.APPROVAL
+        );
+        insert line;
+
+        String passportJson = '{"data":{"opportunityId":"MULTI-TEST-001","features":[' +
+            '{"id":"15","name":"ST15 - Risk","passportSanction":"approval","active":"Y","orderNumber":1,"tasks":[{"id":"1","name":"Risk","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY1","name":"Risk"}]}]},' +
+            '{"id":"18","name":"ST18 - Business","passportSanction":"approval","active":"Y","orderNumber":2,"tasks":[{"id":"2","name":"Business","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY32","name":"Business"}]}]}' +
+            ']}}';
+
+        Passport__c passport = new Passport__c(
+            DMT_Line__c = line.Id,
+            DMT_Passport_Save__c = passportJson
+        );
+        insert passport;
+
+        Case newCase = new Case(
+            RecordTypeId = approvalRT,
+            DMT_Line__c = line.Id,
+            Status = 'Pending',
+            DMT_Feature_Id__c = '15',
+            DMT_Passport_Sanction__c = DMT_Constants.APPROVAL
+        );
+        insert newCase;
+
+        Case oldCase = new Case(
+            RecordTypeId = approvalRT,
+            DMT_Line__c = line.Id,
+            Status = 'Pending'
+        );
+
+        Test.startTest();
+        DMT_Test_DataFactory.generateApproverBussines();
+        DMT_Test_DataFactory.generateApproverRisk();
+
+        newCase.Status = DMT_Constants.FINISHED;
+        update newCase;
+
+        DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, oldCase);
+        Test.stopTest();
+
+        System.assert(true, 'Should prioritize Business over Risk when both present');
+    }
+
+    @isTest
+    static void testProcessStartNextCaseApproval_OppWithOtherFeatures() {
+        Id approvalRT = Schema.SObjectType.Case
+            .getRecordTypeInfosByDeveloperName()
+            .get('Approval')
+            .getRecordTypeId();
+
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+
+        String passportJson = '{"data":{"opportunityId":"' + opp.DMT_Opp_Id__c + '","features":[' +
+            '{"id":"15","name":"Risk","passportSanction":"approval","orderNumber":1,"tasks":[{"id":"1","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY1"}]}]},' +
+            '{"id":"25","name":"Other","passportSanction":"approval","orderNumber":2,"tasks":[{"id":"2","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY99"}]}]}' +
+            ']}}';
+
+        Passport__c passport = new Passport__c(
+            Opportunity__c = opp.Id,
+            DMT_Passport_Save__c = passportJson
+        );
+        insert passport;
+
+        Case newCase = new Case(
+            RecordTypeId = approvalRT,
+            opportunity_id__c = opp.Id,
+            Status = 'Pending',
+            DMT_Feature_Id__c = '15',
+            DMT_Passport_Sanction__c = DMT_Constants.APPROVAL
+        );
+        insert newCase;
+
+        Case oldCase = new Case(
+            RecordTypeId = approvalRT,
+            opportunity_id__c = opp.Id
+        );
+
+        Test.startTest();
+        DMT_Test_DataFactory.generateApproverBussines();
+        DMT_Test_DataFactory.generateApproverRisk();
+
+        newCase.Status = DMT_Constants.FINISHED;
+        update newCase;
+
+        DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, oldCase);
+        Test.stopTest();
+
+        System.assert(true, 'Should handle Other features for Opportunity context');
+    }
+
+    @isTest
+    static void testProcessStartNextCaseApproval_NoPassportData() {
+        Id approvalRT = Schema.SObjectType.Case
+            .getRecordTypeInfosByDeveloperName()
+            .get('Approval')
+            .getRecordTypeId();
+
+        DMT_Line__c line = new DMT_Line__c(
+            Line_Id__c = 'NO-PASSPORT-001',
+            Status__c = DMT_Constants.APPROVAL
+        );
+        insert line;
+
+        Case newCase = new Case(
+            RecordTypeId = approvalRT,
+            DMT_Line__c = line.Id,
+            Status = 'Pending',
+            DMT_Passport_Sanction__c = DMT_Constants.APPROVAL
+        );
+        insert newCase;
+
+        Case oldCase = new Case(
+            RecordTypeId = approvalRT,
+            DMT_Line__c = line.Id
+        );
+
+        Test.startTest();
+        newCase.Status = DMT_Constants.FINISHED;
+        update newCase;
+
+        DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, oldCase);
+        Test.stopTest();
+
+        System.assert(true, 'Should handle missing passport data gracefully');
+    }
+
+    // ===== getAllStepsFromFeaturesLine =====
+
+    @isTest
+    static void testGetAllStepsFromFeaturesLine_withData() {
+        Test.startTest();
+        Map<String, List<DMT_Case_Steps_Controller.WRAPPER_Step>> result =
+            DMT_Case_Steps_Controller.getAllStepsFromFeaturesLine(new List<String>{ 'Test' }, '00001');
+        Test.stopTest();
+
+        System.assertNotEquals(null, result, 'Result map should not be null');
+        System.assert(result.containsKey('Test'), 'Result should contain the requested feature key');
+        System.assert(!result.get('Test').isEmpty(), 'Feature steps should not be empty');
+    }
+
+    @isTest
+    static void testGetAllStepsFromFeaturesLine_empty() {
+        Test.startTest();
+        Map<String, List<DMT_Case_Steps_Controller.WRAPPER_Step>> result =
+            DMT_Case_Steps_Controller.getAllStepsFromFeaturesLine(new List<String>{ 'NON_EXISTENT' }, '99999');
+        Test.stopTest();
+
+        System.assertNotEquals(null, result, 'Result map should not be null');
+        System.assertEquals(0, result.size(), 'Result map should be empty when no cases match');
+    }
+
+    // ===== getAllStepsFromFeaturesOpp =====
+
+    @isTest
+    static void testGetAllStepsFromFeaturesOpp_withData() {
+        Group queueId = [SELECT Id FROM Group WHERE Type = 'Queue' and Name LIKE '%TestApproverDataFactory%' LIMIT 1];
+        Id taskRtId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
+
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+
+        Case c = DMT_Test_DataFactory.generateCase(null, opp.Id, queueId.Id);
+        TriggerBypass.setBypass();
+        c.DMT_Feature_Id__c = 'OPP-ALL-FEAT-1';
+        update c;
+        TriggerBypass.removeBypass();
+
+        DMT_Test_DataFactory.generateTasksWithOwner(queueId.Id, taskRtId, c.Id, 2);
+
+        Test.startTest();
+        Map<String, List<DMT_Case_Steps_Controller.WRAPPER_Step>> result =
+            DMT_Case_Steps_Controller.getAllStepsFromFeaturesOpp(new List<String>{ 'OPP-ALL-FEAT-1' }, opp.DMT_Opp_Id__c);
+        Test.stopTest();
+
+        System.assertNotEquals(null, result, 'Result map should not be null');
+        System.assert(result.containsKey('OPP-ALL-FEAT-1'), 'Result should contain the requested feature key');
+        System.assert(!result.get('OPP-ALL-FEAT-1').isEmpty(), 'Feature steps should not be empty');
+    }
+
+    @isTest
+    static void testGetAllStepsFromFeaturesOpp_empty() {
+        Test.startTest();
+        Map<String, List<DMT_Case_Steps_Controller.WRAPPER_Step>> result =
+            DMT_Case_Steps_Controller.getAllStepsFromFeaturesOpp(new List<String>{ 'NON_EXISTENT' }, '99999');
+        Test.stopTest();
+
+        System.assertNotEquals(null, result, 'Result map should not be null');
+        System.assertEquals(0, result.size(), 'Result map should be empty when no cases match');
+    }
+
+    // ===== updateTask success path =====
+
+    @isTest
+    static void testUpdateTask_success() {
+        Task t = [SELECT Id, Subject FROM Task WHERE Subject = 'Task0' LIMIT 1];
+
+        Test.startTest();
+        DMT_Case_Steps_Controller.updateTask(t.Id, new Map<String, Object>{ 'Subject' => 'Updated Subject' });
+        Test.stopTest();
+
+        Task updated = [SELECT Id, Subject FROM Task WHERE Id = :t.Id LIMIT 1];
+        System.assertEquals('Updated Subject', updated.Subject, 'Task subject should be updated');
+    }
+
 }

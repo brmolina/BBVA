@@ -202,6 +202,50 @@ public without sharing class DMT_AsyncBatchJobTest {
         Assert.isTrue(true, 'Batch with unsupported payload executed and chained to Queueable without uncaught exceptions');
     }
 
+    /**
+     * @description CIBGLOBALD-4157 follow-up: a DMT_AsyncQueueJob buffer larger than
+     * INLINE_DISPATCH_LIMIT must be handed back to DMT_AsyncOrchestrator.flush() instead of
+     * being dispatched inline (see DMT_AsyncQueueJob.execute()) - reproduces the "Too many
+     * SOQL queries" failure seen when DMT_BatchSanctionAMIWEB changes many line statuses in
+     * one chunk and each one enqueues a Passport re-evaluation payload.
+     */
+    @isTest
+    static void testQueueJobDefersLargeBufferToOrchestrator() {
+        List<DMT_AsyncPayload> manyPayloads = new List<DMT_AsyncPayload>();
+        for (Integer i = 0; i < 7; i++) {
+            manyPayloads.add(new DMT_LogExceptionPayload('Bulk Err ' + i, 'stack', i, 'Type', 'Class', 'Method', 'DMT', 'Obj'));
+        }
+
+        DMT_AsyncQueueJob.forceDeferForTest = true;
+        try {
+            Test.startTest();
+                System.enqueueJob(new DMT_AsyncQueueJob(manyPayloads));
+            Test.stopTest();
+        } finally {
+            DMT_AsyncQueueJob.forceDeferForTest = false;
+        }
+
+        Assert.isTrue(true, 'A buffer above INLINE_DISPATCH_LIMIT should be re-routed through the orchestrator without throwing');
+    }
+
+    /**
+     * @description A buffer at or below INLINE_DISPATCH_LIMIT must still be dispatched inline,
+     * exactly as before this fix - the deferral branch must not affect the common small case.
+     */
+    @isTest
+    static void testQueueJobDispatchesSmallBufferInline() {
+        List<DMT_AsyncPayload> fewPayloads = new List<DMT_AsyncPayload>{
+            new DMT_LogExceptionPayload('Small Err 1', 'stack', 1, 'Type', 'Class', 'Method', 'DMT', 'Obj'),
+            new DMT_LogExceptionPayload('Small Err 2', 'stack', 2, 'Type', 'Class', 'Method', 'DMT', 'Obj')
+        };
+
+        Test.startTest();
+            System.enqueueJob(new DMT_AsyncQueueJob(fewPayloads));
+        Test.stopTest();
+
+        Assert.isTrue(true, 'A buffer at or below INLINE_DISPATCH_LIMIT should still dispatch inline without throwing');
+    }
+
     private class SingleExceptionAsyncRunner implements Queueable {
         DMT_AsyncPayload payload;
         public SingleExceptionAsyncRunner(DMT_AsyncPayload pl) { this.payload = pl; }
@@ -273,13 +317,41 @@ public without sharing class DMT_AsyncBatchJobTest {
     static void testDispatcherConsumptionReassign_ExceptionPath() {
         // 3. Prepare an invalid payload (inputMap is null) to force a NullPointerException
         // when the code tries to do p.inputMap.get('groupId').
-        // This explicitly covers the catch (Exception e) block in handleConsumptionReassign.
+        // handleConsumptionReassign no longer swallows this - it must propagate so the
+        // caller (DMT_AsyncQueueJob/DMT_AsyncBatchJob) can log it in a fresh transaction
+        // instead of attempting a Big Object write right after a callout.
         DMT_ConsumptionReassignPayload payload = new DMT_ConsumptionReassignPayload(null, 'T049321');
 
+        Boolean threw = false;
         Test.startTest();
-        DMT_AsyncDispatcher.dispatch(payload);
+        try {
+            DMT_AsyncDispatcher.dispatch(payload);
+        } catch (Exception e) {
+            threw = true;
+        }
         Test.stopTest();
 
-        Assert.isTrue(true, 'Consumption Reassign catch block successfully captured the forced exception.');
+        Assert.isTrue(threw, 'A malformed payload must propagate the exception to the caller instead of being swallowed.');
+    }
+
+    @isTest
+    static void testDispatcherConsumptionReassign_NonSuccessStatus_Throws() {
+        // A well-formed payload but a non-204 response must also throw, not just System.debug.
+        Map<String, Object> inputMap = new Map<String, Object>{ 'groupId' => 'G00000000000200' };
+        DMT_ConsumptionReassignPayload payload = new DMT_ConsumptionReassignPayload(inputMap, 'T049321');
+
+        DMT_AsyncDispatcher.forceStatusCodeForTest = 500;
+        Boolean threw = false;
+        Test.startTest();
+        try {
+            DMT_AsyncDispatcher.dispatch(payload);
+        } catch (Exception e) {
+            threw = true;
+        } finally {
+            DMT_AsyncDispatcher.forceStatusCodeForTest = null;
+        }
+        Test.stopTest();
+
+        Assert.isTrue(threw, 'A non-204 response must throw so the caller logs the failure.');
     }
 }

@@ -5,4 +5,9 @@
     <targets>
         <target>lightning__AppPage</target>
     </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage">
+            <property name="recordId" type="String" label="Record Id"/>
+        </targetConfig>
+    </targetConfigs>
 </LightningComponentBundle>

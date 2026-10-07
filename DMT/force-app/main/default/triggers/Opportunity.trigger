@@ -59,9 +59,9 @@ trigger Opportunity on Opportunity (before insert,before update,before delete,af
      *   @AUTHOR Global Desktop
      */
     final RelatedProductsValidations handlerProdVal = RelatedProductsValidations.getInstance();
-
-    final DMT_OpportunityTriggerHandler Dmt_HandlerOpp = new DMT_OpportunityTriggerHandler();
     
+    final DMT_OpportunityTriggerHandler Dmt_HandlerOpp = new DMT_OpportunityTriggerHandler();
+   
     /*
      * KPIS Helper Class
      */
@@ -105,7 +105,9 @@ trigger Opportunity on Opportunity (before insert,before update,before delete,af
         }else{
             if(Trigger.isUpdate) {
             Dmt_HandlerOpp.calculateAndUpdateNotionalAmounts(trigger.newMap, trigger.oldMap);
-            Dmt_HandlerOpp.validateDynamicStageChange(trigger.new, trigger.oldMap);
+            //Dmt_HandlerOpp.validateDynamicStageChange(trigger.new, trigger.oldMap);
+            Dmt_HandlerOpp.blockClosedWonWithProspectInMultiholder(trigger.new, trigger.oldMap);
+            Dmt_HandlerOpp.stampDateToProposal(trigger.new, trigger.oldMap);
             }
         }
     } else if(Trigger.isAfter) {
@@ -141,8 +143,8 @@ trigger Opportunity on Opportunity (before insert,before update,before delete,af
                 handlerOpp.closeAccountCampaign(Trigger.newMap, Trigger.oldMap);
                 ComentadasCampañasAlertasParaSubidaPosterior    */
                 if(!system.isFuture() && !system.isBatch()) {
-                    DES_HandlerTerritory.shareNBC(Trigger.newMap, Trigger.oldMap);
-                    DES_HandlerTerritory.updateOppShare(Trigger.oldMap, Trigger.newMap);
+                    //DES_HandlerTerritory.shareNBC(Trigger.newMap, Trigger.oldMap);
+                    //DES_HandlerTerritory.updateOppShare(Trigger.oldMap, Trigger.newMap);
                 }
                 OpportunityTriggerHandler2.UpdateReopenOpportunity(trigger.new, trigger.old);
 
@@ -151,11 +153,18 @@ trigger Opportunity on Opportunity (before insert,before update,before delete,af
                 // handlerOpp.onAfterDelete(Trigger.old);
                 
             //}
-        } else {
-            // Logic specifically for DMT_Opportunity Record Type
-            if(Trigger.isUpdate) {
+        } else if (rtDevName == 'DMT_Opportunity'){
+            if (Trigger.isUpdate) {
                 handlerOpp.createOppVersionSnapshot(Trigger.new, Trigger.oldMap);
-                handlerOpp.updatePassport_OppStatusChanged(Trigger.new,Trigger.oldMap);
+                DMT_CloseWonNotificationService.sendCloseWonOppNotifications(Trigger.new, Trigger.oldMap);
+                DMT_CloseWonNotificationService.sendCloseLostOppNotifications(Trigger.new, Trigger.oldMap);
+                DMT_CloseWonNotificationService.sendDraftOppNotifications(Trigger.new, Trigger.oldMap);
+                dmtHandlerOpp.updatePassport_OppStatusChanged(Trigger.new,Trigger.oldMap);
+                dmtHandlerOpp.restartApprovalTasksOnOpportunityResubmission(Trigger.new, Trigger.oldMap);
+                dmtHandlerOpp.autoStartFirstBusinessApprovalFeature(Trigger.new, Trigger.oldMap);
+                System.debug('dmtHandlerOpp.checkReadyToCloseIBF: ' + Trigger.new);
+                dmtHandlerOpp.checkReadyToCloseIBF(Trigger.new, Trigger.oldMap);//CIBGLOBALD-3748
+                dmtHandlerOpp.checkOppGTB(Trigger.new, Trigger.oldMap);//CIBGLOBALD-3757
 
             } else if (Trigger.isInsert) {
                 dmtHandlerOpp.enqueueOppXSellGeneration(Trigger.new);
@@ -163,9 +172,8 @@ trigger Opportunity on Opportunity (before insert,before update,before delete,af
             
             // Single flush for the entire DMT Opportunity After context
             DMT_AsyncOrchestrator.flush();
+
+        } 
+        
         }
     }
-    
-    
-    
-}

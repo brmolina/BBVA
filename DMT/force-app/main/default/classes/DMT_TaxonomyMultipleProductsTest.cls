@@ -1,5 +1,5 @@
 @isTest
-private without sharing class DMT_TaxonomyMultipleProductsTest {
+private class DMT_TaxonomyMultipleProductsTest {
 
     @TestSetup
     static void setupData() {
@@ -21,7 +21,8 @@ private without sharing class DMT_TaxonomyMultipleProductsTest {
             DMT_External_Id__c = '7777777',
             DMT_Entific__c = 'ES',
             gf_catalog_atrb_val4_name__c = 'Product',
-            gf_catalog_atrb_val5_name__c = 'OL'
+            gf_catalog_atrb_val5_name__c = 'OL',
+            gf_catalog_atrb_val7_name__c = 'OPP'
         ));
 
         taxonomy.add(new dmt_taxonomy_values__c(
@@ -33,7 +34,8 @@ private without sharing class DMT_TaxonomyMultipleProductsTest {
             DMT_External_Id__c = '999999',
             DMT_Entific__c = 'ES',
             gf_catalog_atrb_val4_name__c = 'Product',
-            gf_catalog_atrb_val5_name__c = 'OL'
+            gf_catalog_atrb_val5_name__c = 'OL',
+            gf_catalog_atrb_val7_name__c = 'LC, LNC'
         ));
 
         taxonomy.add(new dmt_taxonomy_values__c(
@@ -46,7 +48,8 @@ private without sharing class DMT_TaxonomyMultipleProductsTest {
             DMT_Entific__c = 'ES',
             DMT_Active__c = true,
             gf_catalog_atrb_val4_name__c = 'Category',
-            gf_catalog_atrb_val5_name__c = 'OL'
+            gf_catalog_atrb_val5_name__c = 'OL',
+            gf_catalog_atrb_val7_name__c = 'LC'
         ));
 
         insert taxonomy;
@@ -64,7 +67,7 @@ private without sharing class DMT_TaxonomyMultipleProductsTest {
                 DMT_Global_Product_Id__c = '1111111111',
                 DMT_Entific__c = 'ES',
                 DMT_CatalogTaxonomy__c = 'D744',
-                DMT_Product_Template__c = 'OL',
+                DMT_Product_Template__c = 'OL;TO;OP',
                 DMT_Taxonomy_Value__c = taxonomy[i].Id
             ));
         }
@@ -78,11 +81,26 @@ private without sharing class DMT_TaxonomyMultipleProductsTest {
     static void testGetAllProducts() {
         Test.startTest();
         DMT_Line__c line = [SELECT Id,DMT_line_template_type__c , Booking_Geography__c FROM DMT_Line__c WHERE Booking_Geography__c = 'ES' AND DMT_line_template_type__c = 'OL' LIMIT 1];
-        List<Product2> result = DMT_TaxonomyMultipleProducts.getProductsDMT(line.Id, null);
+        List<Product2> result = DMT_TaxonomyMultipleProducts.getProductsDMTByContext(line.Id, null);
         Test.stopTest();
 
         System.assertNotEquals(0, result.size(), 'Debe devolver productos');
         System.assertEquals('DMT Lines', result[0].Family, 'La familia debe coincidir');
+    }
+
+    @isTest
+    static void testGetProductsFiltersByAddProductContext() {
+        DMT_Line__c line = [SELECT Id FROM DMT_Line__c WHERE Booking_Geography__c = 'ES' AND DMT_line_template_type__c = 'OL' LIMIT 1];
+
+        Test.startTest();
+        List<Product2> oneOffProducts = DMT_TaxonomyMultipleProducts.getProductsDMTByContext(line.Id, 'OPP');
+        List<Product2> lineProducts = DMT_TaxonomyMultipleProducts.getProductsDMTByContext(line.Id, 'L');
+        Test.stopTest();
+
+        System.assertEquals(1, oneOffProducts.size(), 'One-off debe devolver solo productos con OPP.');
+        System.assertEquals('P000', oneOffProducts[0].ProductCode, 'El producto OPP esperado debe ser P000.');
+        System.assertEquals(1, lineProducts.size(), 'Line debe devolver productos con LC o LNC.');
+        System.assertEquals('P001', lineProducts[0].ProductCode, 'El producto LC/LNC esperado debe ser P001.');
     }
 
     @isTest
@@ -262,6 +280,144 @@ private without sharing class DMT_TaxonomyMultipleProductsTest {
         
         // No debe lanzar excepción
         System.assert(true);
+    }
+
+    @isTest
+    static void testGetProductsByContext_MultiCodeParents_IncludeLeafChildren() {
+        DMT_Line__c line = [
+            SELECT Id
+            FROM DMT_Line__c
+            WHERE Booking_Geography__c = 'ES' AND DMT_line_template_type__c = 'OL'
+            LIMIT 1
+        ];
+
+        List<dmt_taxonomy_values__c> extraTaxonomy = new List<dmt_taxonomy_values__c>{
+            new dmt_taxonomy_values__c(
+                DMT_Catalog__c = 'D744',
+                dmt_value__c = 'T901',
+                dmt_name__c = 'Parent OPP',
+                DMT_Name_EN__c = 'Parent OPP EN',
+                gf_catalog_atrb_val1_name_c__c = 'X001, X002',
+                DMT_External_Id__c = 'TAX901',
+                DMT_Entific__c = 'ES',
+                gf_catalog_atrb_val4_name__c = 'Product',
+                gf_catalog_atrb_val7_name__c = 'OPP'
+            ),
+            new dmt_taxonomy_values__c(
+                DMT_Catalog__c = 'D744',
+                dmt_value__c = 'T902',
+                dmt_name__c = 'Parent LINE',
+                DMT_Name_EN__c = 'Parent LINE EN',
+                gf_catalog_atrb_val1_name_c__c = 'X001, X002',
+                DMT_External_Id__c = 'TAX902',
+                DMT_Entific__c = 'ES',
+                gf_catalog_atrb_val4_name__c = 'Product',
+                gf_catalog_atrb_val7_name__c = 'LC, LNC'
+            ),
+            new dmt_taxonomy_values__c(
+                DMT_Catalog__c = 'D744',
+                dmt_value__c = 'T903',
+                dmt_name__c = 'Leaf 1',
+                DMT_Name_EN__c = 'Leaf 1 EN',
+                gf_catalog_atrb_val1_name_c__c = 'X001',
+                DMT_External_Id__c = 'TAX903',
+                DMT_Entific__c = 'ES',
+                gf_catalog_atrb_val2_name__c = '99',
+                gf_catalog_atrb_val3_name__c = 'XX',
+                gf_catalog_atrb_val4_name__c = 'Product'
+            ),
+            new dmt_taxonomy_values__c(
+                DMT_Catalog__c = 'D744',
+                dmt_value__c = 'T904',
+                dmt_name__c = 'Leaf 2',
+                DMT_Name_EN__c = 'Leaf 2 EN',
+                gf_catalog_atrb_val1_name_c__c = 'X002',
+                DMT_External_Id__c = 'TAX904',
+                DMT_Entific__c = 'ES',
+                gf_catalog_atrb_val2_name__c = '99',
+                gf_catalog_atrb_val3_name__c = 'XX',
+                gf_catalog_atrb_val4_name__c = 'Product'
+            )
+        };
+        insert extraTaxonomy;
+
+        Product2 oppParent = new Product2(
+            Name = 'Parent OPP Product',
+            ProductCode = 'X001, X002',
+            Family = 'DMT Lines',
+            IsActive = true,
+            DMT_Product_family__c = '1100000000',
+            DMT_Product_Subfamily__c = '1111000000',
+            DMT_Product_category__c = '1111110000',
+            DMT_Product_Subcategory__c = '1111111100',
+            DMT_Global_Product_Id__c = '1111111111',
+            DMT_Entific__c = 'ES',
+            DMT_CatalogTaxonomy__c = 'D744',
+            DMT_Product_Template__c = 'OL;TO;OP',
+            DMT_Taxonomy_Value__c = extraTaxonomy[0].Id
+        );
+        Product2 lineParent = new Product2(
+            Name = 'Parent LINE Product',
+            ProductCode = 'X001, X002',
+            Family = 'DMT Lines',
+            IsActive = true,
+            DMT_Product_family__c = '1100000000',
+            DMT_Product_Subfamily__c = '1111000000',
+            DMT_Product_category__c = '1111110000',
+            DMT_Product_Subcategory__c = '1111111100',
+            DMT_Global_Product_Id__c = '1111111111',
+            DMT_Entific__c = 'ES',
+            DMT_CatalogTaxonomy__c = 'D744',
+            DMT_Product_Template__c = 'OL;TO;OP',
+            DMT_Taxonomy_Value__c = extraTaxonomy[1].Id
+        );
+        Product2 leafOne = new Product2(
+            Name = 'Leaf Product One',
+            ProductCode = 'X001',
+            Family = 'DMT Lines',
+            IsActive = true,
+            DMT_Product_family__c = '1100000000',
+            DMT_Product_Subfamily__c = '1111000000',
+            DMT_Product_category__c = '1111110000',
+            DMT_Product_Subcategory__c = '1111111100',
+            DMT_Global_Product_Id__c = '1111111111',
+            DMT_Entific__c = 'ES',
+            DMT_CatalogTaxonomy__c = 'D744',
+            DMT_Product_Template__c = 'TO',
+            DMT_Taxonomy_Value__c = extraTaxonomy[2].Id
+        );
+        Product2 leafTwo = new Product2(
+            Name = 'Leaf Product Two',
+            ProductCode = 'X002',
+            Family = 'DMT Lines',
+            IsActive = true,
+            DMT_Product_family__c = '1100000000',
+            DMT_Product_Subfamily__c = '1111000000',
+            DMT_Product_category__c = '1111110000',
+            DMT_Product_Subcategory__c = '1111111100',
+            DMT_Global_Product_Id__c = '1111111111',
+            DMT_Entific__c = 'ES',
+            DMT_CatalogTaxonomy__c = 'D744',
+            DMT_Product_Template__c = 'TO',
+            DMT_Taxonomy_Value__c = extraTaxonomy[3].Id
+        );
+        insert new List<Product2>{ oppParent, lineParent, leafOne, leafTwo };
+
+        Test.startTest();
+        List<Product2> oneOffProducts = DMT_TaxonomyMultipleProducts.getProductsDMTByContext(line.Id, 'OPP');
+        List<Product2> lineProducts = DMT_TaxonomyMultipleProducts.getProductsDMTByContext(line.Id, 'L');
+        Test.stopTest();
+
+        Set<Id> oneOffIds = new Map<Id, Product2>(oneOffProducts).keySet();
+        Set<Id> lineIds = new Map<Id, Product2>(lineProducts).keySet();
+
+        System.assert(oneOffIds.contains(oppParent.Id), 'One-off debe incluir el padre con contexto OPP.');
+        System.assert(oneOffIds.contains(leafOne.Id), 'One-off debe incluir hijos hoja referenciados en val1.');
+        System.assert(oneOffIds.contains(leafTwo.Id), 'One-off debe incluir hijos hoja referenciados en val1.');
+
+        System.assert(lineIds.contains(lineParent.Id), 'Line debe incluir el padre con contexto LINE.');
+        System.assert(lineIds.contains(leafOne.Id), 'Line debe incluir hijos hoja referenciados en val1.');
+        System.assert(lineIds.contains(leafTwo.Id), 'Line debe incluir hijos hoja referenciados en val1.');
     }
 
 }

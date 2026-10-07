@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__rating_short_value_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Final Rating of a client expressed in BBVA&apos;s master short scale (Final Rating post overlay and override processes)</description>
+    <label>FinalRating expressed in short scale</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetName>arce__Arc_Gen_short_rating_values</valueSetName>
+    </valueSet>
+</CustomField>

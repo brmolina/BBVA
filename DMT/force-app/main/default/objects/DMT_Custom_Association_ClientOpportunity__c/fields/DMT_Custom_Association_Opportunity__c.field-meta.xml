@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Custom_Association_Opportunity__c</fullName>
+    <description>Relación padre</description>
+    <label>Custom Association Opportunity</label>
+    <referenceTo>Custom_Association_Opportunity__c</referenceTo>
+    <relationshipLabel>Client Associations Opportunities</relationshipLabel>
+    <relationshipName>DMT_Client_Associations_Opportunities</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

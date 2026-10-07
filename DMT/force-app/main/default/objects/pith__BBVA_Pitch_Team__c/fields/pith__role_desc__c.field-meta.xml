@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>pith__role_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Team Role</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Account Manager FI</fullName>
+                <default>false</default>
+                <label>Account Manager FI</label>
+            </value>
+            <value>
+                <fullName>Account Manager FX</fullName>
+                <default>false</default>
+                <label>Account Manager FX</label>
+            </value>
+            <value>
+                <fullName>Account Manager EQ</fullName>
+                <default>false</default>
+                <label>Account Manager EQ</label>
+            </value>
+            <value>
+                <fullName>Sales FI</fullName>
+                <default>false</default>
+                <label>Sales FI</label>
+            </value>
+            <value>
+                <fullName>Sales FX</fullName>
+                <default>false</default>
+                <label>Sales FX</label>
+            </value>
+            <value>
+                <fullName>Sales EQ</fullName>
+                <default>false</default>
+                <label>Sales EQ</label>
+            </value>
+            <value>
+                <fullName>Analyst FI</fullName>
+                <default>false</default>
+                <label>Analyst FI</label>
+            </value>
+            <value>
+                <fullName>Analyst FX</fullName>
+                <default>false</default>
+                <label>Analyst FX</label>
+            </value>
+            <value>
+                <fullName>Analyst EQ</fullName>
+                <default>false</default>
+                <label>Analyst EQ</label>
+            </value>
+            <value>
+                <fullName>Sales HY</fullName>
+                <default>false</default>
+                <label>Sales HY</label>
+            </value>
+            <value>
+                <fullName>Sales Govies</fullName>
+                <default>false</default>
+                <label>Sales Govies</label>
+            </value>
+            <value>
+                <fullName>Sales Credit</fullName>
+                <default>false</default>
+                <label>Sales Credit</label>
+            </value>
+            <value>
+                <fullName>Sales Emergents</fullName>
+                <default>false</default>
+                <label>Sales Emergents</label>
+            </value>
+            <value>
+                <fullName>Global Banker Team</fullName>
+                <default>false</default>
+                <label>Global Banker Team</label>
+            </value>
+            <value>
+                <fullName>CIB Banker</fullName>
+                <default>false</default>
+                <label>CIB Banker</label>
+            </value>
+            <value>
+                <fullName>Industry Head</fullName>
+                <default>false</default>
+                <label>Industry Head</label>
+            </value>
+            <value>
+                <fullName>Local Banker</fullName>
+                <default>false</default>
+                <label>Local Banker</label>
+            </value>
+            <value>
+                <fullName>Regional Banker</fullName>
+                <default>false</default>
+                <label>Regional Banker</label>
+            </value>
+            <value>
+                <fullName>Product Specialist</fullName>
+                <default>false</default>
+                <label>Product Specialist</label>
+            </value>
+            <value>
+                <fullName>Risk Analyst</fullName>
+                <default>false</default>
+                <label>Risk Analyst</label>
+            </value>
+            <value>
+                <fullName>Global Banker</fullName>
+                <default>false</default>
+                <label>Global Banker</label>
+            </value>
+            <value>
+                <fullName>GCC pool</fullName>
+                <default>false</default>
+                <label>GCC pool</label>
+            </value>
+            <value>
+                <fullName>Transaction Banker</fullName>
+                <default>false</default>
+                <label>Transaction Banker</label>
+            </value>
+            <value>
+                <fullName>Cash Management - Global</fullName>
+                <default>false</default>
+                <label>Cash Management - Global</label>
+            </value>
+            <value>
+                <fullName>Cash Management - Local</fullName>
+                <default>false</default>
+                <label>Cash Management - Local</label>
+            </value>
+            <value>
+                <fullName>Credit Cash</fullName>
+                <default>false</default>
+                <label>Credit Cash</label>
+            </value>
+            <value>
+                <fullName>Rates Flow</fullName>
+                <default>false</default>
+                <label>Rates Flow</label>
+            </value>
+            <value>
+                <fullName>Rates Derivatives</fullName>
+                <default>false</default>
+                <label>Rates Derivatives</label>
+            </value>
+            <value>
+                <fullName>Fx Spot</fullName>
+                <default>false</default>
+                <label>Fx Spot</label>
+            </value>
+            <value>
+                <fullName>Fx Derivatives</fullName>
+                <default>false</default>
+                <label>Fx Derivatives</label>
+            </value>
+            <value>
+                <fullName>Equity Cash</fullName>
+                <default>false</default>
+                <label>Equity Cash</label>
+            </value>
+            <value>
+                <fullName>Equity Derivatives</fullName>
+                <default>false</default>
+                <label>Equity Derivatives</label>
+            </value>
+            <value>
+                <fullName>Credit Derivatives</fullName>
+                <default>false</default>
+                <label>Credit Derivatives</label>
+            </value>
+            <value>
+                <fullName>DCM</fullName>
+                <default>false</default>
+                <label>DCM</label>
+            </value>
+            <value>
+                <fullName>Rating Analyst</fullName>
+                <default>false</default>
+                <label>Rating Analyst</label>
+            </value>
+            <value>
+                <fullName>coverage team</fullName>
+                <default>false</default>
+                <label>coverage team</label>
+            </value>
+            <value>
+                <fullName>approver</fullName>
+                <default>false</default>
+                <label>approver</label>
+            </value>
+            <value>
+                <fullName>validator</fullName>
+                <default>false</default>
+                <label>validator</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

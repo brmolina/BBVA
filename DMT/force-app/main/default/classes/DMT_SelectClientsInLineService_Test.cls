@@ -214,4 +214,131 @@ public with sharing class DMT_SelectClientsInLineService_Test {
         System.assertEquals(false, (Boolean) result.get('success'));
         System.assert(((String) result.get('error')).contains('cannot be edited'));
     }
+
+    @isTest
+    static void loadProductDatasource_nullLine_returnsEmptyMap() {
+        Test.startTest();
+        Map<String, Object> response = DMT_SelectClientsInLineService.loadProductDatasource(null, '01', null);
+        Test.stopTest();
+
+        System.assertEquals(0, response.size());
+    }
+
+    @isTest
+    static void loadProductDatasource_withLine_returnsProductContext() {
+        DMT_Line__c line = [
+            SELECT Id, Client__c, Line_Id__c, Status__c, Custom_Association__c
+            FROM DMT_Line__c
+            WHERE Status__c = :DMT_Constants.DRAFT
+            AND Custom_Association__c != null
+            LIMIT 1
+        ];
+
+        Custom_Association__c productAssociation = new Custom_Association__c(
+            DMT_Line__c = line.Id,
+            Group__c = line.Client__c,
+            gf_customer_group_id__c = line.Line_Id__c + '_01',
+            g_customer_id__c = 'ES0182000170441',
+            CurrencyIsoCode = 'EUR'
+        );
+        insert productAssociation;
+
+        insert new Custom_Association_Client__c(
+            Custom_Association__c = productAssociation.Id,
+            Alpha_Code_Client__c = 'ES0182000170441',
+            g_customer_id__c = 'ES0182000170441',
+            gf_customer_group_id__c = productAssociation.gf_customer_group_id__c,
+            Name = 'GRIFOLS S.A.',
+            CurrencyIsoCode = 'EUR'
+        );
+
+        Test.setMock(HttpCalloutMock.class, new DMT_Integration_MockGenerator());
+
+        Test.startTest();
+        Map<String, Object> response = DMT_SelectClientsInLineService.loadProductDatasource(line.Id, '01', null);
+        Test.stopTest();
+
+        System.assertEquals(line.Id, (Id) response.get('lineId'));
+        System.assertEquals(line.Line_Id__c + '_01', (String) response.get('productAssociationExternalId'));
+        System.assertNotEquals(null, response.get('selectedRows'));
+        System.assertNotEquals(null, response.get('availableClients'));
+    }
+
+    @isTest
+    static void saveProductSelection_createsAndDeletesProductAssociation() {
+        DMT_Line__c line = [
+            SELECT Id, Client__c, Line_Id__c, CurrencyIsoCode
+            FROM DMT_Line__c
+            WHERE Status__c = :DMT_Constants.DRAFT
+            AND Custom_Association__c != null
+            LIMIT 1
+        ];
+
+        List<Object> selectedRows = new List<Object>{
+            new Map<String, Object>{
+                'customerId' => 'ES0182000170441',
+                'customerName' => 'GRIFOLS S.A.',
+                'countryIfoId' => 'ES',
+                'updSmsclInternalRatgType' => 'A',
+                'customerCounterpartiesCodesDesc' => 'CP',
+                'operationMitigantDesc' => 'ISDA',
+                'currentRatingToolDate' => String.valueOf(Date.today()),
+                'term' => '6M'
+            }
+        };
+
+        Test.startTest();
+        Map<String, Object> createResult = DMT_SelectClientsInLineService.saveProductSelection(
+            line.Id,
+            '02',
+            'ES0182000170441',
+            line.CurrencyIsoCode,
+            'G20180109100427',
+            line.Client__c,
+            selectedRows
+        );
+        Map<String, Object> deleteResult = DMT_SelectClientsInLineService.saveProductSelection(
+            line.Id,
+            '02',
+            'ES0182000170441',
+            line.CurrencyIsoCode,
+            'G20180109100427',
+            line.Client__c,
+            new List<Object>()
+        );
+        Test.stopTest();
+
+        System.assertEquals(true, (Boolean) createResult.get('success'));
+        System.assertEquals(true, (Boolean) deleteResult.get('success'));
+        System.assertEquals(
+            0,
+            [SELECT COUNT() FROM Custom_Association__c WHERE gf_customer_group_id__c = :line.Line_Id__c + '_02']
+        );
+    }
+
+    @isTest
+    static void saveProductSelection_missingPriority_returnsError() {
+        DMT_Line__c line = [
+            SELECT Id, Client__c, CurrencyIsoCode
+            FROM DMT_Line__c
+            WHERE Status__c = :DMT_Constants.DRAFT
+            AND Custom_Association__c != null
+            LIMIT 1
+        ];
+
+        Test.startTest();
+        Map<String, Object> result = DMT_SelectClientsInLineService.saveProductSelection(
+            line.Id,
+            null,
+            'ES0182000170441',
+            line.CurrencyIsoCode,
+            'G20180109100427',
+            line.Client__c,
+            new List<Object>{ new Map<String, Object>{ 'customerId' => 'ES0182000170441' } }
+        );
+        Test.stopTest();
+
+        System.assertEquals(false, (Boolean) result.get('success'));
+        System.assertNotEquals(null, result.get('error'));
+    }
 }

@@ -35,16 +35,17 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
 
   @wire(getCurrencyValues)
   wiredCurrencies({ error, data }) {
-      if (data) {
-          this.CurrencyIsoCode = data.map(item => ({
-              label: item,
-              value: item
-          }));
-          this.error = null;
-      } else if (error) {
-          this.error = error;
-          this.CurrencyIsoCode = [];
-      }
+      if (!data) {
+        this.error = error;
+        this.CurrencyIsoCode = [];
+        return;
+    }
+    const uniqueCurrencies = [...new Set(data)];
+    this.CurrencyIsoCode = uniqueCurrencies.map(item => ({
+        label: item,
+        value: item
+    }));
+    this.error = null;
     }
   @api
   get table() {
@@ -803,7 +804,7 @@ export default class Dmt_table_unfunded_mitigants extends LightningElement {
       case 'edit':
         const ind = this.tableData.findIndex(dataRow => dataRow.Id === row.Id);
         this.dispatchEvent(new CustomEvent('openModalEdit', {
-          detail: { rowId: row.Id, tabletype: row.tabletype, mitigantId : this.tableData[ind]["Id"], mitigantName : this.tableData[ind]["Name"], localClientId : this.tableData[ind]["DMT_Local_Client__c"], DMT_Currency__c: this.tableData[ind]["DMT_Currency__c"]},
+          detail: { rowId: row.Id, tabletype: row.tabletype, mitigantId : this.tableData[ind]["Id"], mitigantName : this.tableData[ind]["Name"], DMT_Currency__c: this.tableData[ind]["DMT_Currency__c"]},
           bubbles: true,
           composed: true
         }));

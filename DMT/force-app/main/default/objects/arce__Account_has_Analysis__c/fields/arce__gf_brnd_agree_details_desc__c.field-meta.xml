@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_brnd_agree_details_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Comments with the details of the agreement with the brand</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Comments of the agreement with the brand</label>
+    <length>1000</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

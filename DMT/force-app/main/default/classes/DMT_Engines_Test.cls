@@ -42,14 +42,6 @@ public without sharing class DMT_Engines_Test {
         accountSubsidiary.DES_Main_Parent__c = accountSubGroup.Id;
         insert accountSubsidiary;
 
-        Local_Client__c accountLocalClient = new Local_Client__c();
-        accountLocalClient.Name = 'IBERDROLA Local';
-        accountLocalClient.RecordTypeId = Schema.SObjectType.Local_Client__c.getRecordTypeInfosByName().get('Client').getRecordTypeId();
-        accountLocalClient.Cib_Client__c = accountSubsidiary.Id;
-        insert accountLocalClient;
-
-
-
         // Configuración de visibilidad geográfica
         hpgr__Geography_Visibility_Configuration__c geographyVisibilityConfig = new hpgr__Geography_Visibility_Configuration__c();
         geographyVisibilityConfig.Name = DMT_Constants.SPAIN;

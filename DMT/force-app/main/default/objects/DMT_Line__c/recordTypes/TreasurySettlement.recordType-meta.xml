@@ -1077,6 +1077,21 @@
         </values>
     </picklistValues>
     <picklistValues>
+        <picklist>DMT_Destination_Light__c</picklist>
+        <values>
+            <fullName>green</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>red</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>yellow</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
         <picklist>DvP_Currency__c</picklist>
         <values>
             <fullName>AED</fullName>

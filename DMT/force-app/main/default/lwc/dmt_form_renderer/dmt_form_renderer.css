@@ -1,5 +1,3 @@
-* { }
-
 /* ===================================================================
    TEXTAREA — truncado horizontal con "View More / View Less"
    =================================================================== */
@@ -13,9 +11,14 @@
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
-    vertical-align: top;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
     line-height: 1.1;
+}
+
+.read-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
 .textarea-text.is-expanded {
@@ -46,6 +49,15 @@
 
 .textarea-toggle:hover {
     text-decoration: underline;
+}
+
+.textarea-counter {
+    margin-top: 0.25rem;
+    text-align: right;
+}
+
+.textarea-counter--limit {
+    color: #ba0517;
 }
 
 /* ===================================================================
@@ -117,4 +129,20 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+.buttonBoxClass{
+    position: absolute;
+    right: 70px;
+
+}
+
+.isHighlighted-read {
+    background: linear-gradient(to bottom, #ff000000 17%, #f9e3b6 0%);
+}
+.isHighlighted-edit {
+    background: linear-gradient(to bottom, #ff000000 11%, #f9e3b6 0%);
+}
+
+.nbc-mark {
+    font-weight: 700;
 }

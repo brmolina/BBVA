@@ -1,4 +1,4 @@
-public with sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRenderer {
 
     /**
      * Renders HTML for the Opportunity Profitability feature.
@@ -20,8 +20,8 @@ public with sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRender
         List<Object> results = (List<Object>)profitability.get('results');
         Map<String, Object> audit = profitability.containsKey('audit') && profitability.get('audit') != null ? (Map<String, Object>) profitability.get('audit') : new Map<String, Object>();
 
-        String rorcThresholdText = formatThresholdPercent(audit.get('rorcThreshold'));
-        String raroecThresholdText = formatThresholdPercent(audit.get('raroecThreshold'));
+        Object rorcThreshold = audit.get('rorcThreshold');
+        Object raroecThreshold = audit.get('raroecThreshold');
         if (results == null || results.isEmpty()) {
             return '<div class="error-message">no Profitability results found.</div>';
         }
@@ -112,8 +112,8 @@ public with sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRender
 
             List<Object> orderedResults = orderProfitabilityResults(results);
 
-            String rorcDisplay = DMT_FormattingUtils.formatPercent(summary.get('rorc')) + ' &lt; ' + rorcThresholdText;
-            String raroecDisplay = DMT_FormattingUtils.formatPercent(summary.get('raroec')) + ' &lt; ' + raroecThresholdText;
+            String rorcDisplay = formatProfitabilityMetric(summary.get('rorc'), rorcThreshold);
+            String raroecDisplay = formatProfitabilityMetric(summary.get('raroec'), raroecThreshold);
 
             html += '<div class="slds-m-vertical_medium">'
                 + '<div class="slds-grid slds-wrap slds-m-top_small" style="font-size: 14px;">'
@@ -339,386 +339,6 @@ public with sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRender
         } catch (Exception e){
             System.debug('Error in DMT_OppProfitabilityLimitVisualRenderer renderHtml, '+ e.getMessage() + ' ' + e.getLineNumber());
             return '<div>Error: '+e.getMessage()+' - '+e.getLineNumber()+'</div>';
-        }
-    }
-
-    /**
-     * Generates PDF JSON for the Opportunity Profitability feature.
-     * @param data The LineDataWrapper containing featuresList.
-     * @return PDF JSON string.
-     */
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        
-        Map<String, Object> componentLimitDetailVisual = new Map<String, Object>();
-
-        if (data == null || data.featuresList == null || data.featuresList.isEmpty()) {
-            return componentLimitDetailVisual;
-        }
-        if (data.opportunity.getPopulatedFieldsAsMap().isEmpty() || data.opportunity.OpportunityLineItems.isEmpty()) {
-            return componentLimitDetailVisual;
-        }
-        
-        Map<String, Object> feature = getProfitabilityFeature(data.featuresList);
-        if (feature.isEmpty() || !feature.containsKey('profitability')) {
-            return componentLimitDetailVisual;
-        }
-        Map<String, Object> profitability = (Map<String, Object>)feature.get('profitability');
-        List<Object> results = (List<Object>)profitability.get('results');
-        Map<String, Object> audit = profitability.containsKey('audit') && profitability.get('audit') != null ? (Map<String, Object>) profitability.get('audit') : new Map<String, Object>();
-
-        String rorcThresholdText = formatThresholdPercent(audit.get('rorcThreshold'));
-        String raroecThresholdText = formatThresholdPercent(audit.get('raroecThreshold'));
-
-        if (results == null || results.isEmpty()) {
-            return componentLimitDetailVisual;
-        }
-        
-        try {
-
-            String currencyIsoCode = !String.isBlank(data.opportunity.DMT_CurrencyText__c) ? data.opportunity.DMT_CurrencyText__c : data.currencyIsoCode;
-
-            List<Map<String, Object>> productDetailsList = data.profitabilityProductDetailsList;
-            Map<String, Map<String, Object>> nominalAmountsMap = data.profitabilityNominalAmountsMap;
-            Map<String, Map<String, Object>> nominalAmountsConvertedMap = data.profitabilityNominalAmountsConvertedMap;
-
-            Map<String, Map<String, Object>> prodDetailsMap = new Map<String, Map<String, Object>>();
-
-            String oppInitialDate = formatDateIso(data.opportunity.DMT_DATE_Initial_Date__c);
-            String oppMaturityDate = formatDateIso(data.opportunity.DMT_DATE_Maturity_Date__c);
-
-            String opportunityCurrency = currencyIsoCode;
-            Decimal opportunityNominalDb = 0;
-            Decimal opportunityNominalFb = 0;
-
-            for (Map<String, Object> productDetail : productDetailsList) {
-                String productKey = String.valueOf(productDetail.get('gf_group_priority_opportunity_id__c'));
-
-                if (String.isBlank(productKey)) {
-                    continue;
-                }
-
-                Map<String, Object> rawNominals = nominalAmountsMap.get(productKey);
-                Map<String, Object> convertedNominals = nominalAmountsConvertedMap.get(productKey);
-
-                Decimal rawNominalDb = 0;
-                Decimal rawNominalFb = 0;
-
-                if (rawNominals != null) {
-                    Decimal rawDbValue = toDecimal(rawNominals.get('nominalDb'));
-                    Decimal rawFbValue = toDecimal(rawNominals.get('nominalFb'));
-
-                    rawNominalDb = rawDbValue != null ? rawDbValue : 0;
-                    rawNominalFb = rawFbValue != null ? rawFbValue : 0;
-                }
-
-                if (convertedNominals != null) {
-                    Decimal convertedDbValue = toDecimal(convertedNominals.get('nominalDb'));
-                    Decimal convertedFbValue = toDecimal(convertedNominals.get('nominalFb'));
-
-                    Decimal rawDbValue = toDecimal(rawNominals != null ? rawNominals.get('nominalDb') : null);
-                    Decimal rawFbValue = toDecimal(rawNominals != null ? rawNominals.get('nominalFb') : null);
-
-                    if (rawFbValue != null && rawFbValue > 0) {
-                        opportunityNominalFb += convertedFbValue != null ? convertedFbValue : 0;
-                    } else {
-                        opportunityNominalDb += convertedDbValue != null ? convertedDbValue : 0;
-                    }
-                }
-
-                Map<String, Object> details = new Map<String, Object>();
-                details.put('Id', productKey);
-                details.put('Name', productDetail.get('Name'));
-                details.put('InitialDate', productDetail.get('InitialDate'));
-                details.put('MaturityDate', productDetail.get('MaturityDate'));
-                details.put('Currency', productDetail.get('Currency'));
-                details.put('NominalDb', rawNominalDb);
-                details.put('NominalFb', rawNominalFb);
-
-                prodDetailsMap.put(productKey, details);
-
-                if (productDetail.containsKey('Id') && productDetail.get('Id') != null) {
-                    prodDetailsMap.put(String.valueOf(productDetail.get('Id')), details);
-                }
-
-                if (productDetail.containsKey('OppCurrency') && productDetail.get('OppCurrency') != null) {
-                    opportunityCurrency = String.valueOf(productDetail.get('OppCurrency'));
-                }
-            }
-
-            Map<String, Object> summary;
-            for (Object rec : results) {
-                Map<String, Object> mapRec = (Map<String, Object>)rec;
-                if (!mapRec.containsKey('productId') || mapRec.get('productId') == null) {
-                    summary = mapRec;
-                    break;
-                }
-            }
-            if (summary == null) {
-                summary = new Map<String, Object>();
-            }
-
-            List<Object> orderedResults = orderProfitabilityResults(results);
-            List<Object> contentListLimitDetailVisual = new List<Object>();
-
-        // Main Title: Profitability Engine
-            Map<String, Object> pageBreak = new Map<String, Object>{
-                'type' => 'pageBreak',
-                'threshold' => 0
-            };
-            contentListLimitDetailVisual.add(pageBreak);
-            contentListLimitDetailVisual.add(DMT_Create_Pdf_Controller.createTitle('Profitability Engine'));
-
-        // --- 2. SUMMARIES in 2 COLUMNS ---
-        Map<String, Object> textComponent = new Map<String, Object>();
-                List<String> name = new List<String>();
-                List<String> value = new List<String>();
-                name.add('Deal RORC lifetime:');
-                value.add(DMT_FormattingUtils.formatPercent(summary.get('rorc')) + ' < ' + rorcThresholdText);
-
-                name.add('RORC Prospective CDD:');
-                value.add(DMT_FormattingUtils.formatPercent(summary.get('rorcProspected')));
-
-                name.add('Global Expected RORC:');
-                value.add(DMT_FormattingUtils.formatPercent(summary.get('clientRorc')));
-
-                name.add('Deal RAROEC lifetime:');
-                value.add(DMT_FormattingUtils.formatPercent(summary.get('raroec')) + ' < ' + raroecThresholdText);
-
-                //Table than create the text content
-                textComponent = DMT_Create_Pdf_Controller.createListText(name, value, '');
-                contentListLimitDetailVisual.add(textComponent);
-            
-            // SUMMARY TABLE
-            // SUMMARY TABLE - MAIN METRICS
-            List<List<String>> headersSummaryMain = new List<List<String>>();
-            List<String> summaryMainHeader = new List<String>{
-                'ID',
-                'Initial Date',
-                'Maturity Date',
-                'Average Life',
-                'Tenor',
-                'Allin Drawn',
-                'Allin Undrawn',
-                'Spread Drawn',
-                'Spread Undrawn'
-            };
-            headersSummaryMain.add(summaryMainHeader);
-
-            List<List<String>> summaryMainBody = new List<List<String>>();
-
-            // SUMMARY TABLE - ECONOMICS
-            List<List<String>> headersSummaryEconomics = new List<List<String>>();
-            List<String> summaryEconomicsHeader = new List<String>{
-                'ID',
-                'Fees Drawn',
-                'Fees Undrawn',
-                'FC Drawn',
-                'FC Undrawn',
-                'Country Risk Drawn',
-                'Country Risk Undrawn',
-                'Expected Loss',
-                'Tax Rate',
-                'FD',
-                'Net Income'
-            };
-            headersSummaryEconomics.add(summaryEconomicsHeader);
-
-            List<List<String>> summaryEconomicsBody = new List<List<String>>();
-
-            for (Object result : orderedResults) {
-                Map<String, Object> row = (Map<String, Object>) result;
-
-                String prodIdStr = String.valueOf(row.get('productId'));
-                Map<String, Object> prodDetailsVals = prodDetailsMap.containsKey(prodIdStr)
-                    ? prodDetailsMap.get(prodIdStr)
-                    : new Map<String, Object>();
-
-                String oppId = getRowName(row, prodDetailsMap, data.opportunity);
-
-                String initialDate = String.isBlank(String.valueOf(prodDetailsVals.get('InitialDate')))
-                    ? oppInitialDate
-                    : DMT_FormattingUtils.changeDateFormat(prodDetailsVals.get('InitialDate'));
-
-                String maturityDate = String.isBlank(String.valueOf(prodDetailsVals.get('MaturityDate')))
-                    ? oppMaturityDate
-                    : DMT_FormattingUtils.changeDateFormat(prodDetailsVals.get('MaturityDate'));
-
-                String rowCurrency = getRowCurrency(row, prodDetailsMap, currencyIsoCode);
-
-                List<String> rowSummaryMain = new List<String>();
-                rowSummaryMain.add(DMT_FormattingUtils.checkNull(oppId));
-                rowSummaryMain.add(DMT_FormattingUtils.checkNull(initialDate));
-                rowSummaryMain.add(DMT_FormattingUtils.checkNull(maturityDate));
-                rowSummaryMain.add(formatDecimalLikeModal(row.get('averageLife')));
-                rowSummaryMain.add(formatDecimalLikeModal(row.get('tenor')));
-                rowSummaryMain.add(formatBpsLikeModal(row.get('allInDb')));
-                rowSummaryMain.add(formatBpsLikeModal(row.get('allInFb')));
-                rowSummaryMain.add(formatBpsLikeModal(row.get('spreadDbPbs')));
-                rowSummaryMain.add(formatBpsLikeModal(row.get('spreadFbPbs')));
-                summaryMainBody.add(rowSummaryMain);
-
-                List<String> rowSummaryEconomics = new List<String>();
-                rowSummaryEconomics.add(DMT_FormattingUtils.checkNull(oppId));
-                rowSummaryEconomics.add(formatBpsLikeModal(row.get('feesDbPbs')));
-                rowSummaryEconomics.add(formatBpsLikeModal(row.get('feesFbPbs')));
-                rowSummaryEconomics.add(formatBpsLikeModal(row.get('fundingDbPbs')));
-                rowSummaryEconomics.add(formatBpsLikeModal(row.get('fundingFbPbs')));
-                rowSummaryEconomics.add(formatBpsLikeModal(row.get('countryRiskProvisionDbPbs')));
-                rowSummaryEconomics.add(formatBpsLikeModal(row.get('countryRiskProvisionFbPbs')));
-                rowSummaryEconomics.add(formatBpsLikeModal(row.get('expectedLossPbs')));
-                rowSummaryEconomics.add(formatPercentFromWhole(row.get('taxRate')));
-                rowSummaryEconomics.add(formatCurrencyAmountLikeModal(row.containsKey('franchiseDeal') ? row.get('franchiseDeal') : 0, rowCurrency));
-                rowSummaryEconomics.add(formatCurrencyAmountLikeModal(row.get('bdi'), rowCurrency));
-                summaryEconomicsBody.add(rowSummaryEconomics);
-            }
-
-            Map<String, Object> summaryTitle = DMT_Create_Pdf_Controller.createTitle('Summary');
-            summaryTitle.put('type', 'text');
-            Map<String, Object> style = (Map<String, Object>) summaryTitle.get('style');
-            style.put('fontSize', 14);
-            style.put('textColor', '#004481');
-            contentListLimitDetailVisual.add(summaryTitle);
-
-            Map<String, Object> summaryMainTable = DMT_Create_Pdf_Controller.createTable(headersSummaryMain, summaryMainBody);
-            contentListLimitDetailVisual.add(summaryMainTable);
-
-            Map<String, Object> summaryEconomicsTitle = DMT_Create_Pdf_Controller.createTitle('Summary - Economics');
-            summaryEconomicsTitle.put('type', 'text');
-            Map<String, Object> summaryEconomicsStyle = (Map<String, Object>) summaryEconomicsTitle.get('style');
-            summaryEconomicsStyle.put('fontSize', 12);
-            summaryEconomicsStyle.put('textColor', '#004481');
-            contentListLimitDetailVisual.add(summaryEconomicsTitle);
-
-            Map<String, Object> summaryEconomicsTable = DMT_Create_Pdf_Controller.createTable(headersSummaryEconomics, summaryEconomicsBody);
-            contentListLimitDetailVisual.add(summaryEconomicsTable);
-
-        // REGULATORY CAPITAL TABLE
-        List<List<String>> headersReg = new List<List<String>>();
-        List<String> regHeader = new List<String>{
-            'ID',
-            'Notional Drawn',
-            'Notional Undrawn',
-            'EAD reg',
-            'CCF reg',
-            'LGD reg',
-            'RWA reg',
-            'Regulatory Capital',
-            'RORC CDD',
-            'RORC'
-        };
-        headersReg.add(regHeader);
-
-        List<List<String>> regBody = new List<List<String>>();
-        for (Object resultObj : orderedResults) {
-            Map<String, Object> row = (Map<String, Object>) resultObj;
-
-            Decimal rowNominalDb = getRowNominalDb(row, prodDetailsMap, opportunityNominalDb);
-            Decimal rowNominalFb = getRowNominalFb(row, prodDetailsMap, opportunityNominalFb);
-
-            String oppId = getRowName(row, prodDetailsMap, data.opportunity);
-            String rowCurrency = getRowCurrency(row, prodDetailsMap, currencyIsoCode);
-
-            List<String> regRow = new List<String>();
-            regRow.add(DMT_FormattingUtils.checkNull(oppId));
-            regRow.add(formatCurrencyAmountLikeModal(rowNominalDb, rowCurrency));
-            regRow.add(formatCurrencyAmountLikeModal(rowNominalFb, rowCurrency));
-            regRow.add(formatCurrencyAmountLikeModal(row.get('regulatoryEad'), rowCurrency));
-            regRow.add(formatPercentFromWhole(row.get('regulatoryCcf')));
-            regRow.add(formatPercentFromWhole(row.get('regulatoryLgd')));
-            regRow.add(formatPercentFromWhole(row.get('regulatoryApr')));
-            regRow.add(formatDecimalLikeModal(row.get('regulatoryCapital')));
-            regRow.add(DMT_FormattingUtils.formatPercent(row.get('rorcProspected')));
-            regRow.add(DMT_FormattingUtils.formatPercent(row.get('rorc')));
-
-            regBody.add(regRow);
-        }
-        contentListLimitDetailVisual.add(pageBreak);
-
-        Map<String, Object> regTitle = DMT_Create_Pdf_Controller.createTitle('Regulatory Capital');
-        regTitle.put('type', 'text');
-        Map<String, Object> regStyle = (Map<String, Object>) regTitle.get('style');
-        regStyle.put('fontSize', 14);
-        regStyle.put('textColor', '#004481');
-        contentListLimitDetailVisual.add(regTitle);
-
-        Map<String, Object> regTable = DMT_Create_Pdf_Controller.createTable(headersReg, regBody);
-        contentListLimitDetailVisual.add(regTable);
-
-        // ECONOMIC CAPITAL TABLE
-        List<List<String>> headersEco = new List<List<String>>();
-        List<String> ecoHeader = new List<String>{
-            'ID',
-            'Notional Drawn',
-            'Notional Undrawn',
-            'EAD eco',
-            'CCF eco',
-            'LGD eco',
-            'RWA eco',
-            'Economic Capital',
-            'RAROEC CDD',
-            'RAROEC'
-        };
-        headersEco.add(ecoHeader);
-
-        List<List<String>> ecoBody = new List<List<String>>();
-        for (Object resultObj : orderedResults) {
-            Map<String, Object> row = (Map<String, Object>) resultObj;
-
-            Decimal rowNominalDb = getRowNominalDb(row, prodDetailsMap, opportunityNominalDb);
-            Decimal rowNominalFb = getRowNominalFb(row, prodDetailsMap, opportunityNominalFb);
-
-            String oppId = getRowName(row, prodDetailsMap, data.opportunity);
-
-            String rowCurrency = getRowCurrency(row, prodDetailsMap, currencyIsoCode);
-
-            List<String> ecoRow = new List<String>();
-            ecoRow.add(DMT_FormattingUtils.checkNull(oppId));
-            ecoRow.add(formatCurrencyAmountLikeModal(rowNominalDb, rowCurrency));
-            ecoRow.add(formatCurrencyAmountLikeModal(rowNominalFb, rowCurrency));
-            ecoRow.add(formatCurrencyAmountLikeModal(row.get('economicEad'), rowCurrency));
-            ecoRow.add(formatPercentFromWhole(row.get('economicCcf')));
-            ecoRow.add(formatPercentFromWhole(row.get('economicLgd')));
-            ecoRow.add(formatPercentFromWhole(row.get('economicApr')));
-            ecoRow.add(formatDecimalLikeModal(row.get('economicCapital')));
-            ecoRow.add(DMT_FormattingUtils.formatPercent(row.get('raroecProspected')));
-            ecoRow.add(DMT_FormattingUtils.formatPercent(row.get('raroec')));
-
-            ecoBody.add(ecoRow);
-        }
-        contentListLimitDetailVisual.add(pageBreak);
-
-        Map<String, Object> ecoTitle = DMT_Create_Pdf_Controller.createTitle('Economic Capital');
-        ecoTitle.put('type', 'text');
-        Map<String, Object> ecoStyle = (Map<String, Object>) ecoTitle.get('style');
-        ecoStyle.put('fontSize', 14);
-        ecoStyle.put('textColor', '#004481');
-        contentListLimitDetailVisual.add(ecoTitle);
-
-        Map<String, Object> ecoTable = DMT_Create_Pdf_Controller.createTable(headersEco, ecoBody);
-        contentListLimitDetailVisual.add(ecoTable);
-
-        // --- 1. IMAGE ---
-        if (data.isImg64 && !data.itemImgBase64.isEmpty()) {
-            Map<String, Object> img = new Map<String, Object>{
-                'type' => 'image',
-                'src'  => data.itemImgBase64[0]?.imgB64,
-                'width' => 170,
-                'aspectRatio' => 0.40,
-                'format' => 'JPEG',
-                'margin' => new Map<String, Object>{
-                    'top' => 5, 'bottom' => 5, 'left' => 5, 'right' => 5
-                }
-            };
-            
-            contentListLimitDetailVisual.add(img);
-        }
-        componentLimitDetailVisual.put('content', contentListLimitDetailVisual);
-            return componentLimitDetailVisual;
-
-        } catch (Exception e) {
-            System.debug('Error in DMT_OppProfitabilityLimitVisualRenderer renderPdfJson: ' + e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),'DMT_OppProfitabilityLimitVisualRenderer','renderPdfJson','DMT',''));
-            return componentLimitDetailVisual;
         }
     }
 
@@ -992,14 +612,19 @@ public with sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRender
         return removeGroupingSeparatorForSmallAmount(formattedValue, roundedValue);
     }
 
-    private static String formatThresholdPercent(Object value) {
-        Decimal decValue = toDecimal(value);
-
-        if (decValue == null) {
-            return '';
+    private static String formatProfitabilityMetric(Object value, Object thresholdValue) {
+        Decimal thresholdDecimal = toDecimal(thresholdValue);
+        String formattedValue = DMT_FormattingUtils.formatPercent(value);
+        if (thresholdDecimal == null) {
+            return formattedValue;
         }
 
-        return DMT_FormattingUtils.formatPercent(decValue);
+        Decimal valueDecimal = toDecimal(value);
+        String comparisonSign = valueDecimal == null ? '&lt;'
+            : valueDecimal > thresholdDecimal ? '&gt;'
+            : valueDecimal < thresholdDecimal ? '&lt;'
+            : '=';
+        return formattedValue + ' ' + comparisonSign + ' ' + DMT_FormattingUtils.formatPercent(thresholdDecimal);
     }
 
     // Helper to extract the profitability feature from featuresList

@@ -49,14 +49,25 @@
                                 <lightning-spinner alternative-text="Loading..." size="medium" variant="brand"></lightning-spinner>
                             </template>
 
-                            <c-dmt_opp_product_details
-                                lwc:ref="oppProductDetails"
-                                current-stage={stageRecord}
-                                can-edit={canEdit}
-                                record-id={activeProduct.Id}
-                                field-options={productFieldOptions}
-                                onrecordsaved={handleRecordSaved}>
-                            </c-dmt_opp_product_details>
+                            <template if:true={showOneOffDealDetails}>
+                                <c-dmt_opp_product_details
+                                    lwc:ref="oppProductDetails"
+                                    current-stage={stageRecord}
+                                    can-edit={canEdit}
+                                    record-id={activeProduct.Id}
+                                    field-options={productFieldOptions}
+                                    onrecordsaved={handleRecordSaved}>
+                                </c-dmt_opp_product_details>
+                            </template>
+                            <template if:true={showLineDetails}>
+                                <c-dmt_opp_product_details_line
+                                    lwc:ref="oppProductDetailsLine"
+                                    can-edit={canEdit}
+                                    record-id={activeProduct.Id}
+                                    field-options={productFieldOptions}
+                                    onrecordsaved={handleRecordSaved}>
+                                </c-dmt_opp_product_details_line>
+                            </template>
                         </div>
                     </template>
 

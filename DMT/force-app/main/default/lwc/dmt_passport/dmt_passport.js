@@ -71,6 +71,7 @@ export default class Dmt_passport extends LightningElement {
   _hasInitialized = false;
   _isStale = false;
   _showSpinner = true;
+  _pendingSync = null;     
   @track messageError;
   userPermission = false;
   lastDate;
@@ -210,11 +211,24 @@ export default class Dmt_passport extends LightningElement {
     });
   }
 
+  relatedRiksList;
+
   @wire(getRelatedListRecords, {
       parentRecordId: "$lineId",
       relatedListId: 'Risk_Line_Terms__r',
       fields: ['DMT_Risk_Line_Term__c.Id']
-    }) relatedRiksList;
+  })
+  wiredRelatedRisks(result) {
+      this.relatedRiksList = result;
+      const { data, error } = result;
+      if (!data && !error) return;
+
+      if (this._pendingSync) {
+          const origin = this._pendingSync;
+          this._pendingSync = null;
+          this.executeSafeSync(origin);
+      }
+  }
 
   @wire(getRecord, { recordId: "$passportId", fields: [OBSOLETED_FIELD, JSON_FIELD] })
   wiredRecordPassport(result) {
@@ -322,6 +336,15 @@ export default class Dmt_passport extends LightningElement {
   // Add a parameter to decide if we show the toast or stay silent
   validateIntegrity(isSilent = true) {
       if (this.recordType === 'OtherProducts') {
+          const risksNotResolved = (this.relatedRiksList?.data === undefined && !this.relatedRiksList?.error);
+          const lineNotResolved  = (this.amountLine === undefined && this.lastLvlLine === undefined);
+
+          if (risksNotResolved || lineNotResolved) {
+              this._pendingSync = this._lastOrigin;
+              this._showSpinner = false;
+              return false;   // abortamos SIN tocar wrapper ni showfeaturesTable
+          }
+
           const hasNoAmount = (this.amountLine === null || this.amountLine === undefined);
           const hasNoRisk = (this.lastLvlLine === null || this.lastLvlLine === undefined);
           const hasNoProducts = !this.relatedRiksList?.data?.records?.length;
@@ -369,11 +392,10 @@ export default class Dmt_passport extends LightningElement {
           console.log('[ORCHESTRATOR] Aborted: Data Integrity check failed..');
           return;
       }
-      if (origin === 'PASSPORT_UPDATED') {
+      if (origin === 'PASSPORT_UPDATED' || origin === 'TASK_UPDATED') {
+          console.log('[DEBUG-REFRESH] executeSafeSync(' + origin + ') - calling proccessPayload to rebuild feature buffer / traffic lights.');
           await this.proccessPayload(this.rawPayload);
-          return;
-      }
-      if (origin === 'TASK_UPDATED') {
+          console.log('[DEBUG-REFRESH] executeSafeSync(' + origin + ') - proccessPayload finished. this.wrapper feature count:', this.wrapper?.length);
           return;
       }
 
@@ -1019,9 +1041,11 @@ export default class Dmt_passport extends LightningElement {
     // Sets up subscription and callback for change events
     subscribe(this.channelNamePassport, -1, changeEventPassportCallback).then(subscription => {
       this.subscriptionPassport = subscription;
+      console.log('[DEBUG-REFRESH] Subscribed to Passport channel:', this.channelNamePassport, subscription);
     });
     subscribe(this.channelNameTask, -1, changeEventTaskCallback).then(subscription => {
       this.subscriptionTask = subscription;
+      console.log('[DEBUG-REFRESH] Subscribed to Task channel:', this.channelNameTask, subscription);
     });
 
     getRecordNotifyChange([{ recordId: this.passportId }]);
@@ -1031,7 +1055,9 @@ export default class Dmt_passport extends LightningElement {
   processChangePassportEvent(changeEvent) {
     try {
       const recordIds = changeEvent.data.payload.ChangeEventHeader.recordIds; // avoid deconstruction
+      console.log('[DEBUG-REFRESH] processChangePassportEvent received. recordIds:', recordIds, 'this.passportId:', this.passportId);
       if(recordIds.includes(this.passportId)){
+          console.log('[DEBUG-REFRESH] Passport event MATCHES this.passportId - refreshing.');
           getRecordNotifyChange([{ recordId: this.passportId }]); // Refresh all components
           console.warn('[CDC] Passport changed. Forcing Wire Refresh.');
 
@@ -1043,6 +1069,8 @@ export default class Dmt_passport extends LightningElement {
           } else if (this.lineId) {
             getRecordNotifyChange([{ recordId: this.lineId }]);
           }
+      } else {
+          console.log('[DEBUG-REFRESH] Passport event did NOT match this.passportId - ignored.');
       }
     } catch (err) {
       this.handleError(error);
@@ -1053,9 +1081,32 @@ export default class Dmt_passport extends LightningElement {
     try {
       const recordIds = changeEvent.data.payload.records__c.split(',');
       const operation = changeEvent.data.payload.Operation__c;
+      console.log('[DEBUG-REFRESH] processChangeTaskEvent received. recordIds:', recordIds, 'operation:', operation, 'current this.tasksId:', this.tasksId);
+
+      // CIBGLOBALD-4117: DMT_ApprovalChangeStep_Helper.restartTasksForRecord publishes this operation with the
+      // Line/Opportunity Id itself, not a Task Id - this.lineId/this.opportunityId are already
+      // known from load, unlike a brand-new replacement Task's Id (see the isRelatedTask gap
+      // below), so this is a reliable way to detect "this passport's approval state changed"
+      // regardless of which specific Tasks were cancelled/created underneath it.
+      if (operation === 'CASE_UPDATE') {
+          const isRelatedRecord = recordIds.includes(this.lineId) || recordIds.includes(this.opportunityId);
+          console.log('[DEBUG-REFRESH] CASE_UPDATE event. this.lineId:', this.lineId, 'this.opportunityId:', this.opportunityId, 'isRelatedRecord:', isRelatedRecord);
+          if (isRelatedRecord) {
+              refreshApex(this.wiredInformationPassportResult).then(() => {
+                  if (this.rawPayload) {
+                      console.info('[DEBUG-REFRESH] CASE_UPDATE matched - calling executeSafeSync(TASK_UPDATED).');
+                      this.executeSafeSync('TASK_UPDATED');
+                  } else {
+                      console.info('[DEBUG-REFRESH] CASE_UPDATE matched but this.rawPayload is falsy - executeSafeSync NOT called.');
+                  }
+              });
+          }
+          return;
+      }
 
    //   if(operation === 'CREATE'){
         refreshApex(this.wiredInformationPassportResult).then(result => {
+          console.log('[DEBUG-REFRESH] wiredInformationPassportResult refreshed after task event. New this.tasksId:', this.tasksId);
           this.searchTask(recordIds);
         });
    //   }
@@ -1069,15 +1120,21 @@ export default class Dmt_passport extends LightningElement {
   searchTask(recordIds) {
       // 1. Check if any of the updated tasks belong to this passport
       const isRelatedTask = this.tasksId.some(t => recordIds.includes(t));
-      
+      console.log('[DEBUG-REFRESH] searchTask called. recordIds:', recordIds, 'this.tasksId:', this.tasksId, 'isRelatedTask:', isRelatedTask);
+
       if (isRelatedTask) {
           // 2. Refresh the wire to get latest IDs, then run the Orchestrator
+          console.log('[DEBUG-REFRESH] isRelatedTask TRUE - refreshing wiredInformationPassportResult and calling executeSafeSync(TASK_UPDATED).');
           refreshApex(this.wiredInformationPassportResult).then(() => {
               if (this.rawPayload) {
                   // This safely rebuilds the buffer, checks the server, and renders the UI
                   this.executeSafeSync('TASK_UPDATED');
+              } else {
+                  console.log('[DEBUG-REFRESH] isRelatedTask TRUE but this.rawPayload is falsy - executeSafeSync NOT called.');
               }
           });
+      } else {
+          console.log('[DEBUG-REFRESH] isRelatedTask FALSE - no refresh triggered for this event. This is the gap: a brand-new task Id would not yet be in this.tasksId.');
       }
   }
 
@@ -1115,6 +1172,7 @@ export default class Dmt_passport extends LightningElement {
           }).then(async (response) => {
               let result = JSON.parse(response);
               if (result.result && result.payload) {
+                  this.messageError = '';
                   refreshApex(this.wiredPassportResult);
                   refreshApex(this.wiredLineResult);
 
@@ -1124,6 +1182,7 @@ export default class Dmt_passport extends LightningElement {
                   await this.proccessPayload(result.payload);
 
               } else if (result.result) {
+                  this.messageError = '';
                   // Fallback if for some reason payload wasn't returned
                   this._isStale = false;
                   await this.proccessPayload(this.rawPayload);

@@ -44,10 +44,10 @@ private class DMT_SendEmailServiceAndTeamMember_Test {
         DMT_Line__c line = [SELECT Id, Name FROM DMT_Line__c WHERE Status__c = 'Draft' LIMIT 1];
 
         Test.startTest();
-        DMT_SendEmailService.sendEmailAsync('dGVzdA==', null, 'Line Name');
-        DMT_SendEmailService.sendEmailAsync('dGVzdA==', '', 'Line Name');
-        DMT_SendEmailService.sendEmailAsync('dGVzdA==', 'NOT_AN_ID', 'Line Name');
-        DMT_SendEmailService.sendEmailAsync('%%%INVALID_BASE64%%%', line.Id, line.Name);
+        DMT_SendEmailService.sendEmailAsync('dGVzdA==', null, 'Line Name', null);
+        DMT_SendEmailService.sendEmailAsync('dGVzdA==', '', 'Line Name', null);
+        DMT_SendEmailService.sendEmailAsync('dGVzdA==', 'NOT_AN_ID', 'Line Name', null);
+        DMT_SendEmailService.sendEmailAsync('%%%INVALID_BASE64%%%', line.Id, line.Name, null);
         Test.stopTest();
 
         System.assert(true, 'Execution should complete without unhandled exceptions');
@@ -60,11 +60,24 @@ private class DMT_SendEmailServiceAndTeamMember_Test {
         String pdfBase64 = EncodingUtil.base64Encode(Blob.valueOf('dummy pdf body'));
 
         Test.startTest();
-        DMT_SendEmailService.sendEmailAsync(pdfBase64, line.Id, 'Line:Name<Test>.pdf');
-        DMT_SendEmailService.sendEmailAsync(pdfBase64, opp.Id, null);
+        DMT_SendEmailService.sendEmailAsync(pdfBase64, line.Id, 'Line:Name<Test>.pdf', null);
+        DMT_SendEmailService.sendEmailAsync(pdfBase64, opp.Id, null, null);
         Test.stopTest();
 
         System.assert(true, 'Both line and opportunity flows should execute');
+    }
+
+    @IsTest
+    static void testSendEmailAsyncClosedWonFlagDelegates() {
+        DMT_Line__c line = [SELECT Id, Name FROM DMT_Line__c WHERE Status__c = 'Draft' LIMIT 1];
+        String pdfBase64 = EncodingUtil.base64Encode(Blob.valueOf('dummy pdf body'));
+
+        Test.startTest();
+        DMT_SendEmailService.sendEmailAsync(pdfBase64, line.Id, line.Name, null, true);
+        DMT_SendEmailService.sendEmailAsync(pdfBase64, line.Id, line.Name, null, false);
+        Test.stopTest();
+
+        System.assert(true, 'isClosedWon flag variations should execute without exceptions');
     }
 
     @IsTest
@@ -97,6 +110,38 @@ private class DMT_SendEmailServiceAndTeamMember_Test {
         Test.stopTest();
 
         System.assert(true, 'processMapAndSendEmail should cover eligibility and invalid-id branches');
+    }
+
+    @IsTest
+    static void testGetRecipientEmailsClosedWonPath() {
+        Opportunity opp = [SELECT Id FROM Opportunity WHERE Id != null LIMIT 1];
+        User teamUser = [SELECT Id, Email FROM User WHERE Email = 'useremail@test.comm' LIMIT 1];
+
+        Case c = new Case(opportunity_id__c = opp.Id);
+        insert c;
+
+        Task t = new Task(WhatId = c.Id, Status = 'Completed', Subject = 'Approval Task');
+        insert t;
+        t = [SELECT LastModifiedById FROM Task WHERE Id = :t.Id LIMIT 1];
+
+        Test.startTest();
+        Map<Id, String> recipients = DMT_SendEmailSelectTeamMember.getRecipientEmails(opp.Id, Opportunity.SObjectType, true);
+        Test.stopTest();
+
+        System.assert(recipients != null, 'Recipients map should not be null');
+        System.assert(recipients.containsKey(t.LastModifiedById) || recipients.containsKey(opp.OwnerId),
+            'Recipients should include at least the task executor or opportunity owner');
+    }
+
+    @IsTest
+    static void testGetRecipientEmailsNonClosedWonUsesTeamMemberPath() {
+        DMT_Line__c line = [SELECT Id FROM DMT_Line__c WHERE Status__c = 'Draft' LIMIT 1];
+
+        Test.startTest();
+        Map<Id, String> recipients = DMT_SendEmailSelectTeamMember.getRecipientEmails(line.Id, DMT_Line__c.SObjectType, false);
+        Test.stopTest();
+
+        System.assert(recipients != null, 'Recipients map should not be null for non-Closed Won path');
     }
 
     @IsTest

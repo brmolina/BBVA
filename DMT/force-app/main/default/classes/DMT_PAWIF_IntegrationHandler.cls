@@ -21,9 +21,7 @@ public class DMT_PAWIF_IntegrationHandler {
      * @param payload DMT_DynamicMapperPayload con opportunityId, metadataName y stageName
      */
     public static void handleClosingIntegration(DMT_DynamicMapperPayload payload) {
-        Map<String, Object> additionalParams = new Map<String, Object>{
-            'stageName' => payload.stageName
-        };
+        Map<String, Object> additionalParams = new Map<String, Object>();
 
         DMT_DynamicIntegrationServices.sendRequest(
             payload.metadataName,

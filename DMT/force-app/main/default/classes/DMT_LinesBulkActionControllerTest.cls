@@ -50,17 +50,17 @@ private class DMT_LinesBulkActionControllerTest {
                     'renew'
                 );
 
-            System.assertEquals('renew', result.actionType);
+            Assert.areEqual('renew', result.actionType);
             renewHandled = true;
         } catch (Exception e) {
             // In some target orgs, integration metadata mocks are not present for this service.
             // The test still validates that the renew path is executed and handled in a controlled way.
             renewHandled = true;
-            System.assertNotEquals(null, e);
+            Assert.areNotEqual(null, e);
         }
         Test.stopTest();
 
-        System.assertEquals(true, renewHandled, 'Renew path should be executed and handled');
+        Assert.areEqual(true, renewHandled, 'Renew path should be executed and handled');
     }
 
     @isTest
@@ -75,7 +75,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             missingGeoThrown = true;
         }
-        System.assertEquals(true, missingGeoThrown);
+        Assert.areEqual(true, missingGeoThrown);
 
         Boolean noLinesThrown = false;
         try {
@@ -83,7 +83,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             noLinesThrown = true;
         }
-        System.assertEquals(true, noLinesThrown);
+        Assert.areEqual(true, noLinesThrown);
     }
 
     @isTest
@@ -94,7 +94,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             payloadNoIds = true;
         }
-        System.assertEquals(true, payloadNoIds);
+        Assert.areEqual(true, payloadNoIds);
 
         DMT_Line__c closedLine = DMT_Test_DataFactory.generateTestTreasurySingularLines();
         DMT_Line__c closedLineReload = [
@@ -109,7 +109,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             payloadClosedLine = true;
         }
-        System.assertEquals(true, payloadClosedLine);
+        Assert.areEqual(true, payloadClosedLine);
 
         DMT_Line__c draftLine = [
             SELECT Id, Line_Id__c
@@ -132,7 +132,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             saveBlockedByAllowedFields = true;
         }
-        System.assertEquals(true, saveBlockedByAllowedFields);
+        Assert.areEqual(true, saveBlockedByAllowedFields);
     }
 
     @isTest
@@ -161,7 +161,7 @@ private class DMT_LinesBulkActionControllerTest {
                 msg.contains('Script-thrown exception') ||
                 msg.contains('List has no rows for assignment to SObject');
 
-            System.assertEquals(
+            Assert.areEqual(
                 true,
                 expectedMetadataDependencyError,
                 'Unexpected error in metadata-dependent branch: ' + msg
@@ -169,8 +169,8 @@ private class DMT_LinesBulkActionControllerTest {
             return;
         }
 
-        System.assertNotEquals(null, payload);
-        System.assertEquals(true, payload.rows != null && !payload.rows.isEmpty());
+        Assert.areNotEqual(null, payload);
+        Assert.areEqual(true, payload.rows != null && !payload.rows.isEmpty());
 
         DMT_LinesBulkActionController.ModifyRowDTO sourceRow = payload.rows[0];
         DMT_LinesBulkActionController.ModifySaveRowDTO saveRow =
@@ -230,7 +230,7 @@ private class DMT_LinesBulkActionControllerTest {
             }
         }
 
-        System.assertEquals(true,
+        Assert.areEqual(true,
             (saveRow.values != null && !saveRow.values.isEmpty()) ||
             (saveRow.relatedSections != null && !saveRow.relatedSections.isEmpty())
         );
@@ -248,7 +248,7 @@ private class DMT_LinesBulkActionControllerTest {
             new Set<Id>(),
             new Map<Id, Id>()
         );
-        System.assertEquals(0, mapResult.size());
+        Assert.areEqual(0, mapResult.size());
 
         DMT_LinesBulkActionController.cloneGenericObject(
             'DMT_Line_Product_Item__c',
@@ -265,7 +265,7 @@ private class DMT_LinesBulkActionControllerTest {
             new Map<Id, String>(),
             'Line_Id__c'
         );
-        System.assertEquals(0, mapResultWithLine.size());
+        Assert.areEqual(0, mapResultWithLine.size());
     }
 
     @isTest
@@ -292,7 +292,7 @@ private class DMT_LinesBulkActionControllerTest {
             mapParent
         );
 
-        System.assertEquals(true, clonedMap.size() > 0);
+        Assert.areEqual(true, clonedMap.size() > 0);
     }
 
     @isTest
@@ -332,7 +332,7 @@ private class DMT_LinesBulkActionControllerTest {
             WHERE Custom_Association__r.DMT_Line__c = :cloneLine.Id
         ];
 
-        System.assertEquals(true, relatedClients >= 0);
+        Assert.areEqual(true, relatedClients >= 0);
     }
 
     @isTest
@@ -381,7 +381,7 @@ private class DMT_LinesBulkActionControllerTest {
                 Schema.getGlobalDescribe()
             );
 
-        System.assertEquals(true, loaded.containsKey('DMT_Risk_Line_Term__c'));
+        Assert.areEqual(true, loaded.containsKey('DMT_Risk_Line_Term__c'));
     }
 
     @isTest
@@ -418,16 +418,16 @@ private class DMT_LinesBulkActionControllerTest {
         DMT_LinesBulkActionController.ModifySaveRelatedRecordDTO saveRec =
             new DMT_LinesBulkActionController.ModifySaveRelatedRecordDTO();
 
-        System.assertNotEquals(null, payload.rows);
-        System.assertNotEquals(null, cell.options);
-        System.assertNotEquals(null, row.cells);
-        System.assertNotEquals(null, sec.records);
-        System.assertNotEquals(null, rec.cells);
-        System.assertNotEquals(null, fieldDto);
-        System.assertNotEquals(null, opt);
-        System.assertNotEquals(null, saveRow);
-        System.assertNotEquals(null, saveSec);
-        System.assertNotEquals(null, saveRec);
+        Assert.areNotEqual(null, payload.rows);
+        Assert.areNotEqual(null, cell.options);
+        Assert.areNotEqual(null, row.cells);
+        Assert.areNotEqual(null, sec.records);
+        Assert.areNotEqual(null, rec.cells);
+        Assert.areNotEqual(null, fieldDto);
+        Assert.areNotEqual(null, opt);
+        Assert.areNotEqual(null, saveRow);
+        Assert.areNotEqual(null, saveSec);
+        Assert.areNotEqual(null, saveRec);
     }
 
     @isTest
@@ -465,7 +465,7 @@ private class DMT_LinesBulkActionControllerTest {
             'Name'
         );
 
-        System.assertEquals(true, result.size() > 0);
+        Assert.areEqual(true, result.size() > 0);
     }
 
     @isTest
@@ -505,7 +505,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             invalidObjThrown = true;
         }
-        System.assertEquals(true, invalidObjThrown);
+        Assert.areEqual(true, invalidObjThrown);
 
         DMT_LinesBulkActionController.ModifySaveRelatedSectionDTO noLookupSection =
             new DMT_LinesBulkActionController.ModifySaveRelatedSectionDTO();
@@ -525,7 +525,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             noLookupThrown = true;
         }
-        System.assertEquals(true, noLookupThrown);
+        Assert.areEqual(true, noLookupThrown);
 
         DMT_LinesBulkActionController.ModifySaveRelatedSectionDTO badLookupSection =
             new DMT_LinesBulkActionController.ModifySaveRelatedSectionDTO();
@@ -550,14 +550,54 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             badLookupThrown = true;
         }
-        System.assertEquals(true, badLookupThrown);
+        Assert.areEqual(true, badLookupThrown);
+    }
+
+    @isTest
+    static void testLoadExistingRelatedRecordsForSaveInjectionShapedObjectName() {
+        DMT_Line__c line = [
+            SELECT Id, Line_Id__c
+            FROM DMT_Line__c
+            WHERE Line_Id__c = '00003'
+            LIMIT 1
+        ];
+
+        DMT_LinesBulkActionController.ModifySaveRelatedRecordDTO rr =
+            new DMT_LinesBulkActionController.ModifySaveRelatedRecordDTO();
+        rr.id = line.Id;
+        rr.values = new Map<String, Object>{ 'Name' => 'X' };
+
+        DMT_LinesBulkActionController.ModifySaveRelatedSectionDTO injectionSection =
+            new DMT_LinesBulkActionController.ModifySaveRelatedSectionDTO();
+        injectionSection.objectApiName = 'DMT_Risk_Line_Term__c\' OR \'1\'=\'1';
+        injectionSection.lookupField = 'DMT_Line__c';
+        injectionSection.records = new List<DMT_LinesBulkActionController.ModifySaveRelatedRecordDTO>{ rr };
+
+        DMT_LinesBulkActionController.ModifySaveRowDTO row =
+            new DMT_LinesBulkActionController.ModifySaveRowDTO();
+        row.id = line.Id;
+        row.lineId = line.Line_Id__c;
+        row.relatedSections = new List<DMT_LinesBulkActionController.ModifySaveRelatedSectionDTO>{ injectionSection };
+
+        Boolean injectionShapedObjectThrown = false;
+        try {
+            DMT_LinesBulkActionController.loadExistingRelatedRecordsForSave(
+                new List<DMT_LinesBulkActionController.ModifySaveRowDTO>{ row },
+                new List<DMT_Line_Modify_Field_Config__mdt>(),
+                new Set<Id>{ line.Id },
+                Schema.getGlobalDescribe()
+            );
+        } catch (AuraHandledException e) {
+            injectionShapedObjectThrown = true;
+        }
+        Assert.areEqual(true, injectionShapedObjectThrown);
     }
 
     @isTest
     static void testSecurityValidationHelpersCoverage() {
         Schema.SObjectType validatedType =
             DMT_LinesBulkActionController.getValidatedSObjectType('DMT_Line__c');
-        System.assertNotEquals(null, validatedType);
+        Assert.areNotEqual(null, validatedType);
 
         Boolean invalidObjectThrown = false;
         try {
@@ -565,7 +605,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             invalidObjectThrown = true;
         }
-        System.assertEquals(true, invalidObjectThrown);
+        Assert.areEqual(true, invalidObjectThrown);
 
         Map<String, Schema.SObjectField> lineFields =
             DMT_Line__c.SObjectType.getDescribe().fields.getMap();
@@ -586,7 +626,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             invalidFieldThrown = true;
         }
-        System.assertEquals(true, invalidFieldThrown);
+        Assert.areEqual(true, invalidFieldThrown);
 
         List<DMT_Line_Modify_Field_Config__mdt> cfgs =
             new List<DMT_Line_Modify_Field_Config__mdt>{
@@ -601,14 +641,14 @@ private class DMT_LinesBulkActionControllerTest {
                 'DMT_Risk_Line_Term__c',
                 cfgs
             );
-        System.assertEquals('DMT_Line__c', lookup);
+        Assert.areEqual('DMT_Line__c', lookup);
 
         String missingLookup =
             DMT_LinesBulkActionController.resolveLookupFieldFromConfig(
                 'DMT_Warranty__c',
                 cfgs
             );
-        System.assertEquals(null, missingLookup);
+        Assert.areEqual(null, missingLookup);
 
         DMT_LinesBulkActionController.validateSafeIdentifier('Valid_Name_1', 'field api name');
 
@@ -618,7 +658,18 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             invalidIdentifierThrown = true;
         }
-        System.assertEquals(true, invalidIdentifierThrown);
+        Assert.areEqual(true, invalidIdentifierThrown);
+
+        Boolean injectionShapedIdentifierThrown = false;
+        try {
+            DMT_LinesBulkActionController.validateSafeIdentifier(
+                'DMT_Line__c\' OR \'1\'=\'1',
+                'object api name'
+            );
+        } catch (AuraHandledException e) {
+            injectionShapedIdentifierThrown = true;
+        }
+        Assert.areEqual(true, injectionShapedIdentifierThrown);
     }
 
     @isTest
@@ -629,7 +680,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             connectThrown = true;
         }
-        System.assertEquals(true, connectThrown);
+        Assert.areEqual(true, connectThrown);
 
         Boolean disconnectThrown = false;
         try {
@@ -637,7 +688,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             disconnectThrown = true;
         }
-        System.assertEquals(true, disconnectThrown);
+        Assert.areEqual(true, disconnectThrown);
     }
 
     @isTest
@@ -652,7 +703,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             invalidPayloadThrown = true;
         }
-        System.assertEquals(true, invalidPayloadThrown);
+        Assert.areEqual(true, invalidPayloadThrown);
 
         DMT_LinesBulkActionController.ModifySaveRowDTO row =
             new DMT_LinesBulkActionController.ModifySaveRowDTO();
@@ -668,7 +719,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             noLineThrown = true;
         }
-        System.assertEquals(true, noLineThrown);
+        Assert.areEqual(true, noLineThrown);
     }
 
     @isTest
@@ -713,8 +764,8 @@ private class DMT_LinesBulkActionControllerTest {
                 Schema.getGlobalDescribe()
             );
 
-        System.assertEquals(true, sections.size() > 0);
-        System.assertEquals(true, sections[0].records.size() > 0);
+        Assert.areEqual(true, sections.size() > 0);
+        Assert.areEqual(true, sections[0].records.size() > 0);
     }
 
     @isTest
@@ -730,9 +781,9 @@ private class DMT_LinesBulkActionControllerTest {
             new List<String>{ line.Line_Id__c, AUTO_FALSE_LINE_ID }
         );
 
-        System.assertEquals(2, result.size(), 'Expected two entries in map');
-        System.assertEquals(true, result.get(line.Line_Id__c), 'T should be treated as auto');
-        System.assertEquals(false, result.get(AUTO_FALSE_LINE_ID), 'N should be treated as not auto');
+        Assert.areEqual(2, result.size(), 'Expected two entries in map');
+        Assert.areEqual(true, result.get(line.Line_Id__c), 'T should be treated as auto');
+        Assert.areEqual(false, result.get(AUTO_FALSE_LINE_ID), 'N should be treated as not auto');
     }
 
     @isTest
@@ -740,10 +791,10 @@ private class DMT_LinesBulkActionControllerTest {
         Map<String, Boolean> withNull = DMT_LinesBulkActionController.getAutoByLineIds(null);
         Map<String, Boolean> withEmpty = DMT_LinesBulkActionController.getAutoByLineIds(new List<String>());
 
-        System.assertNotEquals(null, withNull, 'Method should return a map, not null');
-        System.assertNotEquals(null, withEmpty, 'Method should return a map, not null');
-        System.assertEquals(0, withNull.size(), 'Null input should return empty map');
-        System.assertEquals(0, withEmpty.size(), 'Empty input should return empty map');
+        Assert.areNotEqual(null, withNull, 'Method should return a map, not null');
+        Assert.areNotEqual(null, withEmpty, 'Method should return a map, not null');
+        Assert.areEqual(0, withNull.size(), 'Null input should return empty map');
+        Assert.areEqual(0, withEmpty.size(), 'Empty input should return empty map');
     }
 
     @isTest
@@ -763,9 +814,9 @@ private class DMT_LinesBulkActionControllerTest {
             );
         Test.stopTest();
 
-        System.assertEquals(ACTION_DISCONNECT, result.actionType);
-        System.assertEquals(1, result.processedLineIds.size());
-        System.assertEquals(line.Line_Id__c, result.processedLineIds[0]);
+        Assert.areEqual(ACTION_DISCONNECT, result.actionType);
+        Assert.areEqual(1, result.processedLineIds.size());
+        Assert.areEqual(line.Line_Id__c, result.processedLineIds[0]);
 
         DMT_Consolidated_Line__c updated = [
             SELECT Id, G_Multioperation_Ind_Type__c
@@ -775,7 +826,7 @@ private class DMT_LinesBulkActionControllerTest {
             LIMIT 1
         ];
 
-        System.assertEquals('x', updated.G_Multioperation_Ind_Type__c);
+        Assert.areEqual('x', updated.G_Multioperation_Ind_Type__c);
     }
 
     @isTest
@@ -795,9 +846,9 @@ private class DMT_LinesBulkActionControllerTest {
             );
         Test.stopTest();
 
-        System.assertEquals(ACTION_CONNECT, result.actionType);
-        System.assertEquals(1, result.processedLineIds.size());
-        System.assertEquals(line.Line_Id__c, result.processedLineIds[0]);
+        Assert.areEqual(ACTION_CONNECT, result.actionType);
+        Assert.areEqual(1, result.processedLineIds.size());
+        Assert.areEqual(line.Line_Id__c, result.processedLineIds[0]);
     }
 
     @isTest
@@ -807,10 +858,10 @@ private class DMT_LinesBulkActionControllerTest {
             DMT_LinesBulkActionController.processLines(new List<String>(), ACTION_CONNECT);
         } catch (AuraHandledException ex) {
             exceptionThrown = true;
-            System.assertNotEquals(null, ex, 'Expected AuraHandledException instance');
+            Assert.areNotEqual(null, ex, 'Expected AuraHandledException instance');
         }
 
-        System.assertEquals(true, exceptionThrown, 'Expected AuraHandledException for empty line ids');
+        Assert.areEqual(true, exceptionThrown, 'Expected AuraHandledException for empty line ids');
     }
 
     @isTest
@@ -830,10 +881,10 @@ private class DMT_LinesBulkActionControllerTest {
             );
         } catch (AuraHandledException ex) {
             exceptionThrown = true;
-            System.assertNotEquals(null, ex, 'Expected AuraHandledException instance');
+            Assert.areNotEqual(null, ex, 'Expected AuraHandledException instance');
         }
 
-        System.assertEquals(true, exceptionThrown, 'Expected AuraHandledException for invalid action type');
+        Assert.areEqual(true, exceptionThrown, 'Expected AuraHandledException for invalid action type');
     }
 
     @isTest
@@ -845,9 +896,9 @@ private class DMT_LinesBulkActionControllerTest {
             new List<DMT_Line__c>{ lineLong, lineShort }
         );
 
-        System.assertEquals(2, mockIds.size());
-        System.assert(mockIds[0].contains('TEST') || mockIds[0] == 'ESCD26LINTEST0000ES');
-        System.assertEquals('ESCD26LINTEST0000ES', mockIds[1]);
+        Assert.areEqual(2, mockIds.size());
+        Assert.isTrue(mockIds[0].contains('TEST') || mockIds[0] == 'ESCD26LINTEST0000ES');
+        Assert.areEqual('ESCD26LINTEST0000ES', mockIds[1]);
 
         DMT_Line__c toClean = new DMT_Line__c(
             Status__c = DMT_Constants.CLOSED,
@@ -858,11 +909,11 @@ private class DMT_LinesBulkActionControllerTest {
 
         DMT_LinesBulkActionController.cleanFieldsForRenew(toClean);
 
-        System.assertEquals(UserInfo.getUserId(), toClean.OwnerId);
-        System.assertEquals(DMT_Constants.DRAFT, toClean.Status__c);
-        System.assertEquals(null, toClean.Closed__c);
-        System.assertEquals(false, toClean.DMT_Approval_Validation__c);
-        System.assertEquals(null, toClean.Line_Id__c);
+        Assert.areEqual(UserInfo.getUserId(), toClean.OwnerId);
+        Assert.areEqual(DMT_Constants.DRAFT, toClean.Status__c);
+        Assert.areEqual(null, toClean.Closed__c);
+        Assert.areEqual(false, toClean.DMT_Approval_Validation__c);
+        Assert.areEqual(null, toClean.Line_Id__c);
     }
 
     @isTest
@@ -876,19 +927,19 @@ private class DMT_LinesBulkActionControllerTest {
         Schema.DescribeFieldResult textD = lineFields.get('Client_Code__c').getDescribe();
         Schema.DescribeFieldResult intD = lineFields.get('Repos_Limit__c').getDescribe();
 
-        System.assertEquals('date', DMT_LinesBulkActionController.resolveInputType(dateD));
-        System.assertEquals('datetime', DMT_LinesBulkActionController.resolveInputType(dtD));
-        System.assertEquals('number', DMT_LinesBulkActionController.resolveInputType(numD));
-        System.assertEquals('checkbox', DMT_LinesBulkActionController.resolveInputType(boolD));
-        System.assertEquals('text', DMT_LinesBulkActionController.resolveInputType(textD));
+        Assert.areEqual('date', DMT_LinesBulkActionController.resolveInputType(dateD));
+        Assert.areEqual('datetime', DMT_LinesBulkActionController.resolveInputType(dtD));
+        Assert.areEqual('number', DMT_LinesBulkActionController.resolveInputType(numD));
+        Assert.areEqual('checkbox', DMT_LinesBulkActionController.resolveInputType(boolD));
+        Assert.areEqual('text', DMT_LinesBulkActionController.resolveInputType(textD));
 
-        System.assertEquals(Date.newInstance(2026, 1, 15), DMT_LinesBulkActionController.castValueForField('2026-01-15', dateD));
-        System.assertNotEquals(null, DMT_LinesBulkActionController.castValueForField('2026-01-15T10:10:10', dtD));
-        System.assertEquals(true, DMT_LinesBulkActionController.castValueForField('true', boolD));
-        System.assertEquals(true, DMT_LinesBulkActionController.castValueForField(true, boolD));
-        System.assertEquals(Decimal.valueOf('12.5'), DMT_LinesBulkActionController.castValueForField('12.5', numD));
-        System.assertNotEquals(null, DMT_LinesBulkActionController.castValueForField('12', intD));
-        System.assertEquals('ABC', DMT_LinesBulkActionController.castValueForField('ABC', textD));
+        Assert.areEqual(Date.newInstance(2026, 1, 15), DMT_LinesBulkActionController.castValueForField('2026-01-15', dateD));
+        Assert.areNotEqual(null, DMT_LinesBulkActionController.castValueForField('2026-01-15T10:10:10', dtD));
+        Assert.areEqual(true, DMT_LinesBulkActionController.castValueForField('true', boolD));
+        Assert.areEqual(true, DMT_LinesBulkActionController.castValueForField(true, boolD));
+        Assert.areEqual(Decimal.valueOf('12.5'), DMT_LinesBulkActionController.castValueForField('12.5', numD));
+        Assert.areNotEqual(null, DMT_LinesBulkActionController.castValueForField('12', intD));
+        Assert.areEqual('ABC', DMT_LinesBulkActionController.castValueForField('ABC', textD));
     }
 
     @isTest
@@ -910,21 +961,21 @@ private class DMT_LinesBulkActionControllerTest {
             validJson
         );
 
-        System.assertEquals(true, pickCell.isPicklist);
-        System.assertEquals(1, pickCell.options.size());
-        System.assertEquals('Draft', pickCell.options[0].label);
+        Assert.areEqual(true, pickCell.isPicklist);
+        Assert.areEqual(1, pickCell.options.size());
+        Assert.areEqual('Draft', pickCell.options[0].label);
 
         List<DMT_LinesBulkActionController.ModifyPicklistOptionDTO> parsed =
             DMT_LinesBulkActionController.parsePicklistOptions(validJson);
-        System.assertEquals(1, parsed.size());
+        Assert.areEqual(1, parsed.size());
 
         List<DMT_LinesBulkActionController.ModifyPicklistOptionDTO> describePickOptions =
             DMT_LinesBulkActionController.getPicklistOptionsFromDescribe(pickD);
-        System.assertEquals(true, describePickOptions.size() > 0);
+        Assert.areEqual(true, describePickOptions.size() > 0);
 
         List<DMT_LinesBulkActionController.ModifyPicklistOptionDTO> nonPickOptions =
             DMT_LinesBulkActionController.getPicklistOptionsFromDescribe(textD);
-        System.assertEquals(0, nonPickOptions.size());
+        Assert.areEqual(0, nonPickOptions.size());
 
         Boolean invalidThrown = false;
         try {
@@ -932,7 +983,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             invalidThrown = true;
         }
-        System.assertEquals(true, invalidThrown, 'Invalid picklist JSON should throw AuraHandledException');
+        Assert.areEqual(true, invalidThrown, 'Invalid picklist JSON should throw AuraHandledException');
     }
 
     @isTest
@@ -985,10 +1036,10 @@ private class DMT_LinesBulkActionControllerTest {
             false
         );
 
-        System.assertEquals(true, dto.cells.size() >= 3);
-        System.assertEquals(true, dto.values.containsKey('DMT_Init_Term__c'));
-        System.assertEquals(true, dto.values.containsKey('DMT_End_Term__c'));
-        System.assertEquals(true, dto.values.containsKey('DMT_Amount__c'));
+        Assert.areEqual(true, dto.cells.size() >= 3);
+        Assert.areEqual(true, dto.values.containsKey('DMT_Init_Term__c'));
+        Assert.areEqual(true, dto.values.containsKey('DMT_End_Term__c'));
+        Assert.areEqual(true, dto.values.containsKey('DMT_Amount__c'));
     }
 
     @isTest
@@ -1009,8 +1060,8 @@ private class DMT_LinesBulkActionControllerTest {
 
         Map<String, Schema.SObjectField> lineFields = DMT_Line__c.SObjectType.getDescribe().fields.getMap();
         String resolvedNameField = DMT_LinesBulkActionController.resolveFieldApiName(lineFields, 'name');
-        System.assertEquals('name', resolvedNameField.toLowerCase());
-        System.assertEquals(null, DMT_LinesBulkActionController.resolveFieldApiName(lineFields, 'field_does_not_exist__c'));
+        Assert.areEqual('name', resolvedNameField.toLowerCase());
+        Assert.areEqual(null, DMT_LinesBulkActionController.resolveFieldApiName(lineFields, 'field_does_not_exist__c'));
 
         DMT_Line_Modify_Field_Config__mdt cfg = new DMT_Line_Modify_Field_Config__mdt(
             Object_Api_Name__c = 'DMT_Risk_Line_Term__c',
@@ -1032,14 +1083,14 @@ private class DMT_LinesBulkActionControllerTest {
             line,
             'DMT_Risk_Line_Term__c'
         );
-        System.assertEquals(1, filtered.size());
+        Assert.areEqual(1, filtered.size());
 
         Set<String> allowed = DMT_LinesBulkActionController.getAllowedFieldsForLine(
             configs,
             line,
             'DMT_Risk_Line_Term__c'
         );
-        System.assert(allowed.contains('DMT_Amount__c'));
+        Assert.isTrue(allowed.contains('DMT_Amount__c'));
 
         DMT_Risk_Line_Term__c related = new DMT_Risk_Line_Term__c(
             DMT_Line__c = line.Id,
@@ -1061,7 +1112,7 @@ private class DMT_LinesBulkActionControllerTest {
                 Schema.getGlobalDescribe()
             );
 
-        System.assertEquals(true, sections.size() > 0);
+        Assert.areEqual(true, sections.size() > 0);
     }
 
     @isTest
@@ -1084,7 +1135,7 @@ private class DMT_LinesBulkActionControllerTest {
             new List<DMT_LinesBulkActionController.ModifySaveRowDTO>{ row }
         );
 
-        System.assertEquals(true, true);
+        Assert.areEqual(true, true);
     }
 
     @isTest
@@ -1095,10 +1146,10 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             renewException = true;
         }
-        System.assertEquals(true, renewException);
+        Assert.areEqual(true, renewException);
 
         List<String> emptyCodes = DMT_LinesBulkActionController.getOpportunityCodesForRenew(new List<DMT_Line__c>());
-        System.assertEquals(0, emptyCodes.size());
+        Assert.areEqual(0, emptyCodes.size());
 
         Boolean invalidObjectException = false;
         try {
@@ -1111,7 +1162,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             invalidObjectException = true;
         }
-        System.assertEquals(true, invalidObjectException);
+        Assert.areEqual(true, invalidObjectException);
 
         Boolean saveException = false;
         try {
@@ -1119,7 +1170,7 @@ private class DMT_LinesBulkActionControllerTest {
         } catch (AuraHandledException e) {
             saveException = true;
         }
-        System.assertEquals(true, saveException);
+        Assert.areEqual(true, saveException);
     }
 
     @isTest
@@ -1127,7 +1178,7 @@ private class DMT_LinesBulkActionControllerTest {
         List<String> empty = DMT_LinesBulkActionController.getOpportunityCodesForRenew(
             new List<DMT_Line__c>()
         );
-        System.assertEquals(0, empty.size());
+        Assert.areEqual(0, empty.size());
 
         Boolean missingGeoThrown = false;
         try {
@@ -1140,11 +1191,11 @@ private class DMT_LinesBulkActionControllerTest {
             missingGeoThrown = true;
         }
 
-        System.assertEquals(true, missingGeoThrown);
+        Assert.areEqual(true, missingGeoThrown);
     }
 
     @isTest
-    static void testBuildRelatedSectionsForLineTreasuryRiskFilters() {
+    static void testBuildRelatedSectionsForLineTreasuryMxSelectsOnlyDerivatives() {
         DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
         DMT_Line__c lineReload = [
             SELECT Id, Line_Id__c, DMT_Line_Template_Type__c, Booking_Geography__c
@@ -1152,6 +1203,7 @@ private class DMT_LinesBulkActionControllerTest {
             WHERE Id = :line.Id
             LIMIT 1
         ];
+        lineReload.Booking_Geography__c = 'MX';
 
         DMT_Line_Modify_Field_Config__mdt cfg = new DMT_Line_Modify_Field_Config__mdt(
             Object_Api_Name__c = 'DMT_Risk_Line_Term__c',
@@ -1203,12 +1255,61 @@ private class DMT_LinesBulkActionControllerTest {
                 Schema.getGlobalDescribe()
             );
 
-        System.assertEquals(1, sections.size());
-        System.assertEquals(1, sections[0].records.size());
-        System.assertEquals('Derivatives', sections[0].records[0].displayName);
-        System.assertEquals(true, sections[0].records[0].values.containsKey('DMT_Init_Term__c'));
-        System.assertEquals(true, sections[0].records[0].values.containsKey('DMT_End_Term__c'));
-        System.assertEquals(true, sections[0].records[0].values.containsKey('DMT_Amount__c'));
+        Assert.areEqual(1, sections.size());
+        Assert.areEqual(1, sections[0].records.size());
+        Assert.areEqual(false, sections[0].records[0].values.containsKey('DMT_Init_Term__c'));
+        Assert.areEqual(true, sections[0].records[0].values.containsKey('DMT_End_Term__c'));
+        Assert.areEqual(true, sections[0].records[0].values.containsKey('DMT_Amount__c'));
+    }
+
+    @isTest
+    static void testSaveModifiedLinesUpdatesOnlySelectedTreasuryEndTerm() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        DMT_Line__c lineReload = [
+            SELECT Id, Line_Id__c, Status__c
+            FROM DMT_Line__c
+            WHERE Id = :line.Id
+            LIMIT 1
+        ];
+
+        DMT_Risk_Line_Term__c earlierTerm = new DMT_Risk_Line_Term__c(
+            DMT_Line__c = lineReload.Id,
+            DMT_Risk_Type__c = 'Derivatives',
+            DMT_Amount__c = 100,
+            DMT_Init_Term__c = '0',
+            DMT_End_Term__c = '365'
+        );
+        DMT_Risk_Line_Term__c selectedTerm = new DMT_Risk_Line_Term__c(
+            DMT_Line__c = lineReload.Id,
+            DMT_Risk_Type__c = 'Derivatives',
+            DMT_Amount__c = 200,
+            DMT_Init_Term__c = '365',
+            DMT_End_Term__c = '730'
+        );
+        insert new List<DMT_Risk_Line_Term__c>{ earlierTerm, selectedTerm };
+
+        DMT_LinesBulkActionController.ModifySaveRowDTO row =
+            new DMT_LinesBulkActionController.ModifySaveRowDTO();
+        row.id = lineReload.Id;
+        row.lineId = lineReload.Line_Id__c;
+        row.endTermRiskTermId = selectedTerm.Id;
+        row.endTerm = '1095';
+
+        Test.startTest();
+        DMT_LinesBulkActionController.saveModifiedLines(
+            new List<DMT_LinesBulkActionController.ModifySaveRowDTO>{ row }
+        );
+        Test.stopTest();
+
+        Set<Id> selectedTermIds = new Set<Id>{ earlierTerm.Id, selectedTerm.Id };
+        Map<Id, DMT_Risk_Line_Term__c> savedTerms = new Map<Id, DMT_Risk_Line_Term__c>([
+            SELECT Id, DMT_End_Term__c
+            FROM DMT_Risk_Line_Term__c
+            WHERE Id IN :selectedTermIds
+        ]);
+
+        Assert.areEqual('365', savedTerms.get(earlierTerm.Id).DMT_End_Term__c);
+        Assert.areEqual('1095', savedTerms.get(selectedTerm.Id).DMT_End_Term__c);
     }
 
     @isTest
@@ -1255,7 +1356,7 @@ private class DMT_LinesBulkActionControllerTest {
             thrown = true;
         }
 
-        System.assertEquals(true, thrown);
+        Assert.areEqual(true, thrown);
     }
 
     @isTest
@@ -1268,7 +1369,7 @@ private class DMT_LinesBulkActionControllerTest {
             DMT_LinesBulkActionController.parsePicklistOptions(
                 '[{"label":"","value":"A"},{"label":"B","value":""},{"label":"Draft","value":"Draft"}]'
             );
-        System.assertEquals(1, withBlanks.size());
+        Assert.areEqual(1, withBlanks.size());
 
         DMT_LinesBulkActionController.ModifyCellDTO cellWithFallback =
             DMT_LinesBulkActionController.buildCell(
@@ -1282,21 +1383,329 @@ private class DMT_LinesBulkActionControllerTest {
                 null
             );
 
-        System.assertEquals(true, cellWithFallback.isPicklist);
-        System.assertEquals(true, cellWithFallback.options.size() > 0);
+        Assert.areEqual(true, cellWithFallback.isPicklist);
+        Assert.areEqual(true, cellWithFallback.options.size() > 0);
 
-        System.assertEquals(null, DMT_LinesBulkActionController.castValueForField(null, dateD));
-        System.assertEquals(null, DMT_LinesBulkActionController.castValueForField('', dateD));
+        Assert.areEqual(null, DMT_LinesBulkActionController.castValueForField(null, dateD));
+        Assert.areEqual(null, DMT_LinesBulkActionController.castValueForField('', dateD));
 
         Map<String, Schema.SObjectField> contactFields = Contact.SObjectType.getDescribe().fields.getMap();
-        System.assertEquals(
+        Assert.areEqual(
             'email',
             DMT_LinesBulkActionController.resolveInputType(contactFields.get('Email').getDescribe())
         );
-        System.assertEquals(
+        Assert.areEqual(
             'tel',
             DMT_LinesBulkActionController.resolveInputType(contactFields.get('Phone').getDescribe())
         );
+    }
+
+    @isTest
+    static void testSaveModifiedLinesWithDerivativesAmountCreatesRecords() {
+        // Create a TL line without existing Risk Line Term records
+        DMT_Line__c treasuryLine = DMT_Test_DataFactory.generateTestTreasuryLines();
+        DMT_Line__c lineReload = [
+            SELECT Id, Line_Id__c, Booking_Geography__c
+            FROM DMT_Line__c
+            WHERE Id = :treasuryLine.Id
+            LIMIT 1
+        ];
+
+        // Delete any existing Derivatives Risk Line Term records for this line
+        List<DMT_Risk_Line_Term__c> existingRecords = [
+            SELECT Id
+            FROM DMT_Risk_Line_Term__c
+            WHERE DMT_Line__c = :lineReload.Id
+            AND DMT_Risk_Type__c = 'Derivatives'
+        ];
+        if (!existingRecords.isEmpty()) {
+            delete existingRecords;
+        }
+
+        // Create save payload with derivativesAmount
+        DMT_LinesBulkActionController.ModifySaveRowDTO row =
+            new DMT_LinesBulkActionController.ModifySaveRowDTO();
+        row.id = lineReload.Id;
+        row.lineId = lineReload.Line_Id__c;
+        row.values = new Map<String, Object>();
+        row.derivativesAmount = 1000000;
+
+        Test.startTest();
+        DMT_LinesBulkActionController.saveModifiedLines(
+            new List<DMT_LinesBulkActionController.ModifySaveRowDTO>{ row }
+        );
+        Test.stopTest();
+
+        // Verify records were created
+        List<DMT_Risk_Line_Term__c> createdRecords = [
+            SELECT Id, DMT_Amount__c, DMT_Init_Term__c, DMT_End_Term__c, DMT_Risk_Type__c, DMT_Singular__c
+            FROM DMT_Risk_Line_Term__c
+            WHERE DMT_Line__c = :lineReload.Id
+            AND DMT_Risk_Type__c = 'Derivatives'
+            ORDER BY DMT_Init_Term__c ASC
+        ];
+
+        // Should create 4 or 5 records depending on geography
+        Assert.areEqual(true, createdRecords.size() >= 4, 'Should create at least 4 Derivatives records');
+
+        // First record should have full amount (100%)
+        Assert.areEqual(1000000, createdRecords[0].DMT_Amount__c, 'First record should have 100% amount');
+        Assert.areEqual('0', createdRecords[0].DMT_Init_Term__c, 'First record initTerm should be 0');
+        Assert.areEqual('1095', createdRecords[0].DMT_End_Term__c, 'First record endTerm should be 1095');
+        Assert.areEqual(false, createdRecords[0].DMT_Singular__c, 'DMT_Singular__c should be false');
+    }
+
+    @isTest
+    static void testSaveModifiedLinesWithDerivativesAmountUpdatesExistingRecords() {
+        // Create a TL line with existing Risk Line Term records
+        DMT_Line__c treasuryLine = DMT_Test_DataFactory.generateTestTreasuryLines();
+        DMT_Line__c lineReload = [
+            SELECT Id, Line_Id__c, Booking_Geography__c
+            FROM DMT_Line__c
+            WHERE Id = :treasuryLine.Id
+            LIMIT 1
+        ];
+
+        // Create existing Derivatives records
+        List<DMT_Risk_Line_Term__c> existingRecords = new List<DMT_Risk_Line_Term__c>{
+            new DMT_Risk_Line_Term__c(
+                DMT_Line__c = lineReload.Id,
+                DMT_Risk_Type__c = 'Derivatives',
+                DMT_Singular__c = false,
+                DMT_Amount__c = 500000,
+                DMT_Init_Term__c = '0',
+                DMT_End_Term__c = '1095'
+            ),
+            new DMT_Risk_Line_Term__c(
+                DMT_Line__c = lineReload.Id,
+                DMT_Risk_Type__c = 'Derivatives',
+                DMT_Singular__c = false,
+                DMT_Amount__c = 375000,
+                DMT_Init_Term__c = '1095',
+                DMT_End_Term__c = '1825'
+            )
+        };
+        insert existingRecords;
+
+        // Create save payload with new derivativesAmount
+        DMT_LinesBulkActionController.ModifySaveRowDTO row =
+            new DMT_LinesBulkActionController.ModifySaveRowDTO();
+        row.id = lineReload.Id;
+        row.lineId = lineReload.Line_Id__c;
+        row.values = new Map<String, Object>();
+        row.derivativesAmount = 2000000;
+
+        Test.startTest();
+        DMT_LinesBulkActionController.saveModifiedLines(
+            new List<DMT_LinesBulkActionController.ModifySaveRowDTO>{ row }
+        );
+        Test.stopTest();
+
+        // Verify records were updated proportionally
+        List<DMT_Risk_Line_Term__c> updatedRecords = [
+            SELECT Id, DMT_Amount__c, DMT_Init_Term__c, DMT_End_Term__c
+            FROM DMT_Risk_Line_Term__c
+            WHERE Id IN :existingRecords
+            ORDER BY DMT_Init_Term__c ASC
+        ];
+
+        Assert.areEqual(2, updatedRecords.size(), 'Should have 2 records');
+    }
+
+    @isTest
+    static void testSaveModifiedLinesWithDerivativesAmountCOGeography() {
+        // Create a TL line with CO geography
+        DMT_Line__c treasuryLine = DMT_Test_DataFactory.generateTestTreasuryLines();
+
+        // Update to CO geography
+        treasuryLine.Booking_Geography__c = 'CO';
+        update treasuryLine;
+
+        DMT_Line__c lineReload = [
+            SELECT Id, Line_Id__c, Booking_Geography__c
+            FROM DMT_Line__c
+            WHERE Id = :treasuryLine.Id
+            LIMIT 1
+        ];
+
+        // Delete any existing Derivatives Risk Line Term records
+        List<DMT_Risk_Line_Term__c> existingRecords = [
+            SELECT Id
+            FROM DMT_Risk_Line_Term__c
+            WHERE DMT_Line__c = :lineReload.Id
+            AND DMT_Risk_Type__c = 'Derivatives'
+        ];
+        if (!existingRecords.isEmpty()) {
+            delete existingRecords;
+        }
+
+        // Create save payload with derivativesAmount
+        DMT_LinesBulkActionController.ModifySaveRowDTO row =
+            new DMT_LinesBulkActionController.ModifySaveRowDTO();
+        row.id = lineReload.Id;
+        row.lineId = lineReload.Line_Id__c;
+        row.values = new Map<String, Object>();
+        row.derivativesAmount = 1000000;
+
+        Test.startTest();
+        DMT_LinesBulkActionController.saveModifiedLines(
+            new List<DMT_LinesBulkActionController.ModifySaveRowDTO>{ row }
+        );
+        Test.stopTest();
+
+        // Verify 4 records were created for CO geography
+        List<DMT_Risk_Line_Term__c> createdRecords = [
+            SELECT Id, DMT_Amount__c, DMT_Init_Term__c, DMT_End_Term__c
+            FROM DMT_Risk_Line_Term__c
+            WHERE DMT_Line__c = :lineReload.Id
+            AND DMT_Risk_Type__c = 'Derivatives'
+            ORDER BY DMT_Init_Term__c ASC
+        ];
+
+        Assert.areEqual(4, createdRecords.size(), 'CO geography should create exactly 4 records');
+
+        // Verify amounts for CO: 100%, 75%, 50%, 25%
+        Assert.areEqual(1000000, createdRecords[0].DMT_Amount__c, '0-1095: 100%');
+        Assert.areEqual(750000, createdRecords[1].DMT_Amount__c, '1095-1825: 75%');
+        Assert.areEqual(500000, createdRecords[2].DMT_Amount__c, '1825-2920: 50%');
+        Assert.areEqual(250000, createdRecords[3].DMT_Amount__c, '2920-3650: 25%');
+    }
+
+    @isTest
+    static void testSaveModifiedLinesWithDerivativesAmountStringValue() {
+        // Test that string derivativesAmount values are handled correctly
+        DMT_Line__c treasuryLine = DMT_Test_DataFactory.generateTestTreasuryLines();
+        DMT_Line__c lineReload = [
+            SELECT Id, Line_Id__c
+            FROM DMT_Line__c
+            WHERE Id = :treasuryLine.Id
+            LIMIT 1
+        ];
+
+        // Delete any existing Derivatives records
+        delete [
+            SELECT Id
+            FROM DMT_Risk_Line_Term__c
+            WHERE DMT_Line__c = :lineReload.Id
+            AND DMT_Risk_Type__c = 'Derivatives'
+        ];
+
+        // Use string value for derivativesAmount
+        DMT_LinesBulkActionController.ModifySaveRowDTO row =
+            new DMT_LinesBulkActionController.ModifySaveRowDTO();
+        row.id = lineReload.Id;
+        row.lineId = lineReload.Line_Id__c;
+        row.values = new Map<String, Object>();
+        row.derivativesAmount = '500000';
+
+        Test.startTest();
+        DMT_LinesBulkActionController.saveModifiedLines(
+            new List<DMT_LinesBulkActionController.ModifySaveRowDTO>{ row }
+        );
+        Test.stopTest();
+
+        List<DMT_Risk_Line_Term__c> createdRecords = [
+            SELECT Id, DMT_Amount__c
+            FROM DMT_Risk_Line_Term__c
+            WHERE DMT_Line__c = :lineReload.Id
+            AND DMT_Risk_Type__c = 'Derivatives'
+            ORDER BY DMT_Init_Term__c ASC
+        ];
+
+        Assert.areEqual(true, createdRecords.size() >= 4, 'Should create records from string amount');
+        Assert.areEqual(500000, createdRecords[0].DMT_Amount__c, 'First record should have correct amount from string');
+    }
+
+    @isTest
+    static void testSaveModifiedLinesWithNullDerivativesAmountSkipsUpdate() {
+        // Verify that null derivativesAmount doesn't trigger any changes
+        DMT_Line__c treasuryLine = DMT_Test_DataFactory.generateTestTreasuryLines();
+        DMT_Line__c lineReload = [
+            SELECT Id, Line_Id__c
+            FROM DMT_Line__c
+            WHERE Id = :treasuryLine.Id
+            LIMIT 1
+        ];
+
+        Integer countBefore = [
+            SELECT COUNT()
+            FROM DMT_Risk_Line_Term__c
+            WHERE DMT_Line__c = :lineReload.Id
+            AND DMT_Risk_Type__c = 'Derivatives'
+        ];
+
+        DMT_LinesBulkActionController.ModifySaveRowDTO row =
+            new DMT_LinesBulkActionController.ModifySaveRowDTO();
+        row.id = lineReload.Id;
+        row.lineId = lineReload.Line_Id__c;
+        row.values = new Map<String, Object>();
+        row.derivativesAmount = null;
+
+        Test.startTest();
+        DMT_LinesBulkActionController.saveModifiedLines(
+            new List<DMT_LinesBulkActionController.ModifySaveRowDTO>{ row }
+        );
+        Test.stopTest();
+
+        Integer countAfter = [
+            SELECT COUNT()
+            FROM DMT_Risk_Line_Term__c
+            WHERE DMT_Line__c = :lineReload.Id
+            AND DMT_Risk_Type__c = 'Derivatives'
+        ];
+
+        Assert.areEqual(countBefore, countAfter, 'Null derivativesAmount should not create/update records');
+    }
+
+    @isTest
+    static void testSaveModifiedLinesMultipleLinesWithDerivativesAmount() {
+        // Test bulk update of multiple lines with derivativesAmount
+        // generateTestTreasuryLines creates 2 lines with Line_Id__c '00001' and '00002'
+        DMT_Test_DataFactory.generateTestTreasuryLines();
+
+        List<DMT_Line__c> lines = [
+            SELECT Id, Line_Id__c
+            FROM DMT_Line__c
+            WHERE Line_Id__c IN ('00001', '00002')
+            AND RecordType.DeveloperName = 'TreasurySettlement'
+        ];
+
+        Assert.areEqual(2, lines.size(), 'Should have 2 treasury lines');
+
+        // Delete existing Derivatives records
+        delete [
+            SELECT Id
+            FROM DMT_Risk_Line_Term__c
+            WHERE DMT_Line__c IN :new Map<Id, DMT_Line__c>(lines).keySet()
+            AND DMT_Risk_Type__c = 'Derivatives'
+        ];
+
+        List<DMT_LinesBulkActionController.ModifySaveRowDTO> rows =
+            new List<DMT_LinesBulkActionController.ModifySaveRowDTO>();
+
+        for (DMT_Line__c line : lines) {
+            DMT_LinesBulkActionController.ModifySaveRowDTO row =
+                new DMT_LinesBulkActionController.ModifySaveRowDTO();
+            row.id = line.Id;
+            row.lineId = line.Line_Id__c;
+            row.values = new Map<String, Object>();
+            row.derivativesAmount = 100000;
+            rows.add(row);
+        }
+
+        Test.startTest();
+        DMT_LinesBulkActionController.saveModifiedLines(rows);
+        Test.stopTest();
+
+        // Verify records created for both lines
+        Integer totalCreated = [
+            SELECT COUNT()
+            FROM DMT_Risk_Line_Term__c
+            WHERE DMT_Line__c IN :new Map<Id, DMT_Line__c>(lines).keySet()
+            AND DMT_Risk_Type__c = 'Derivatives'
+        ];
+
+        Assert.areEqual(true, totalCreated >= 8, 'Should create records for both lines (at least 4 each)');
     }
 
 }

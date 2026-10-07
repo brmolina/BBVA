@@ -278,7 +278,7 @@ global with sharing class DMT_Passport_Handler implements Callable {
 
             }
 
-            if(taskType[0].DMT_ApprovalEdit__c && !approvalEditTasks.isEmpty() && line.DMT_Status_Completed__c == DMT_Constants.APPROVAL){
+            if(taskType[0].DMT_ApprovalEdit__c && !approvalEditTasks.isEmpty() && line != null && line.DMT_Status_Completed__c == DMT_Constants.APPROVAL){
                 errorMessage='The approver ' + approvalEditTasks[0].Owner.Name +' with the task ' + approvalEditTasks[0].DMT_Task_Type__r.Name + ' is blocking the approval editing of the line';
                 result.put(SUCCESS, false);
                 result.put(MESSAGE, errorMessage);

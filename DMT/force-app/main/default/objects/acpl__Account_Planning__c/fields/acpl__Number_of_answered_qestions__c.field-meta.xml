@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>acpl__Number_of_answered_qestions__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Number of answered qestions</description>
+    <label>Number of answered qestions</label>
+    <summaryFilterItems>
+        <field>acpl__AP_Question__c.acpl__Answered__c</field>
+        <operation>equals</operation>
+        <value>True</value>
+    </summaryFilterItems>
+    <summaryForeignKey>acpl__AP_Question__c.acpl__gf_account_planning_id__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

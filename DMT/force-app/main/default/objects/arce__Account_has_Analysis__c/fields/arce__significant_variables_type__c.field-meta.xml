@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__significant_variables_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Question: extraordinary items</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Extraordinary items</label>
+    <length>500</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>2</visibleLines>
+</CustomField>

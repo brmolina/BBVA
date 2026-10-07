@@ -24,15 +24,15 @@ export const columsLine = [
             label: {
                 fieldName: "Name"
             },
-            disabled: {
-                fieldName: "isDisabled"
+            hasAccess: {
+                fieldName: "hasAccessLine"
             },
             tooltip: {
                 fieldName: "Name"
             },
             variant: "base"
         },
-        type: "url",
+        type: "conditionalLink",
         label: "Name",
         sortable: "true",
         cellAttributes: {
@@ -77,7 +77,8 @@ export const columsLine = [
         type: "customIconText",
         sortable: "true",
         label: "Status",
-        hideDefaultActions: "true"
+        hideDefaultActions: "true",
+        fieldName: "Status__c"
     },
     {
         // typeAttributes: {

@@ -3,134 +3,8 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentInstanceProperties>
-                    <name>actionNames</name>
-                    <valueList>
-                        <valueListItems>
-                            <value>DMT_Line__c.Help_LM</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>DMT_Line__c.ChatterFeed</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>DMT_Line__c.Deal_Management_Line</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>DMT_Line__c.DMT_RefreshSanction</value>
-                            <visibilityRule>
-                                <criteria>
-                                    <leftValue>{!Record.DMT_RecordTypeName__c}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>Risk Approval</rightValue>
-                                </criteria>
-                            </visibilityRule>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>DMT_Line__c.Send_to_closed_lost</value>
-                            <visibilityRule>
-                                <booleanFilter>1 AND 5 AND (2 OR 3 OR 4) AND 6</booleanFilter>
-                                <criteria>
-                                    <leftValue>{!Record.DMT_Cancel__c}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>false</rightValue>
-                                </criteria>
-                                <criteria>
-                                    <leftValue>{!Record.Status__c}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>Draft</rightValue>
-                                </criteria>
-                                <criteria>
-                                    <leftValue>{!Record.Status__c}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>Proposal</rightValue>
-                                </criteria>
-                                <criteria>
-                                    <leftValue>{!Record.Status__c}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>Approval</rightValue>
-                                </criteria>
-                                <criteria>
-                                    <leftValue>{!Record.DMT_IsErasable__c}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>false</rightValue>
-                                </criteria>
-                                <criteria>
-                                    <leftValue>{!Record.DMT_Deleted__c}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>false</rightValue>
-                                </criteria>
-                            </visibilityRule>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>DMT_Line__c.Clone_Line</value>
-                            <visibilityRule>
-                                <criteria>
-                                    <leftValue>{!Record.DMT_Deleted__c}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>false</rightValue>
-                                </criteria>
-                            </visibilityRule>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>DMT_Line__c.DMT_DeleteLines</value>
-                            <visibilityRule>
-                                <booleanFilter>1 AND 2</booleanFilter>
-                                <criteria>
-                                    <leftValue>{!Record.DMT_IsErasable__c}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>true</rightValue>
-                                </criteria>
-                                <criteria>
-                                    <leftValue>{!Record.DMT_Deleted__c}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>false</rightValue>
-                                </criteria>
-                            </visibilityRule>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>DMT_Line__c.DMT_True_Delete</value>
-                            <visibilityRule>
-                                <booleanFilter>1 AND 2</booleanFilter>
-                                <criteria>
-                                    <leftValue>{!$Permission.CustomPermission.DMT_Line_God}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>true</rightValue>
-                                </criteria>
-                                <criteria>
-                                    <leftValue>{!Record.DMT_Deleted__c}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>false</rightValue>
-                                </criteria>
-                            </visibilityRule>
-                        </valueListItems>
-                    </valueList>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>collapsed</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>enableActionsConfiguration</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>enableActionsInNative</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>hideChatterActions</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>hideSlackAction</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>numVisibleActions</name>
-                    <value>4</value>
-                </componentInstanceProperties>
-                <componentName>force:highlightsPanel</componentName>
-                <identifier>force_highlightsPanel</identifier>
+                <componentName>dmt_highlight_panel</componentName>
+                <identifier>c_dmt_highlight_panel</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
@@ -145,11 +19,8 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentInstanceProperties>
-                    <name>recordId</name>
-                </componentInstanceProperties>
-                <componentName>cfSummaryTreasury_Flexcard</componentName>
-                <identifier>c_cfSummaryTreasury_Flexcard</identifier>
+                <componentName>dmt_lineInfo</componentName>
+                <identifier>c_dmt_lineInfo</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
@@ -170,6 +41,64 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.Client__c</fieldItem>
                 <identifier>RecordClient_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Golden_Code__c</fieldItem>
+                <identifier>RecordGolden_Code__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.DMT_Destination_Label__c</fieldItem>
+                <identifier>RecordDMT_Destination_Label__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.DMT_Destination_Id__c</fieldItem>
+                <identifier>RecordDMT_Destination_Id__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.DMT_Destination_Status__c</fieldItem>
+                <identifier>RecordDMT_Destination_Status__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldItem>Record.DMT_Destination_Light__c</fieldItem>
+                <identifier>RecordDMT_Destination_Light_c__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldItem>Record.DMT_Destination_Error__c</fieldItem>
+                <identifier>RecordDMT_Destination_Error_c__cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldItem>Record.DMT_Destination_Date__c</fieldItem>
+                <identifier>RecordDMT_Destination_Date_c__cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-d7d3b4f6-8e89-449d-beb0-5dacd0a45b6e</name>
@@ -244,14 +173,11 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentInstanceProperties>
-                    <name>recordId</name>
-                </componentInstanceProperties>
-                <componentName>cfProductSanctionTemplate</componentName>
-                <identifier>c_cfProductSanctionTemplate</identifier>
+                <componentName>dmtProductSanctionMigration</componentName>
+                <identifier>c_dmtProductSanctionMigration</identifier>
             </componentInstance>
         </itemInstances>
-        <name>Facet-e45098d8-d277-4d77-b443-9a2e79d5481f</name>
+        <name>Facet-c406d98a-419e-4d3b-8a26-2a9c01a40f6d</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -307,14 +233,14 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>Facet-e45098d8-d277-4d77-b443-9a2e79d5481f</value>
+                    <value>Facet-c406d98a-419e-4d3b-8a26-2a9c01a40f6d</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>title</name>
                     <value>PRODUCTS</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:tab</componentName>
-                <identifier>flexipage_tab2</identifier>
+                <identifier>flexipage_tab5</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>

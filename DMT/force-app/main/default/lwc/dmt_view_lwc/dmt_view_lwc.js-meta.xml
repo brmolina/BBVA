@@ -13,6 +13,11 @@
                 label="Record Id"
                 description="Automatically bind the page's record id to the component variable"
                 default="{!recordId}" />
+                
+                <supportedFormFactors>
+                    <supportedFormFactor type="Small" />
+                    <supportedFormFactor type="Large" />
+                </supportedFormFactors>
         </targetConfig>
     </targetConfigs> 
 </LightningComponentBundle>

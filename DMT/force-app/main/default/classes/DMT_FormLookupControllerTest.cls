@@ -2,52 +2,80 @@
 private class DMT_FormLookupControllerTest {
 
     // ═══════════════════════════════════════════════════════════════════════
-    // Setup — 3 Local_Client__c con datos variados.
-    // Local_Client__c es un objeto custom simple, sin las validaciones
+    // Setup — 3 Account con datos variados.
+    // Se reutiliza generateAccount() para satisfacer los campos requeridos.
     // pesadas de Account/Opportunity. Es además el objeto que el JS usa
     // realmente para el lookup.
     // ═══════════════════════════════════════════════════════════════════════
     @TestSetup
     static void setupTestData() {
-        // generateAccount() ya inserta 1 Account + 1 Local_Client__c (con
-        // Alpha_code__c = 'TEST123'). Lo recuperamos y lo actualizamos.
         Account acc = DMT_Test_DataFactory.generateAccount();
+        acc.Name = 'LKTest LC Alpha';
+        acc.g_customer_id__c = 'ALPHA001';
+        acc.BillingCity = 'ALPHA001';
+        update acc;
 
-        Local_Client__c lc1 = [SELECT Id, Name, Alpha_code__c, Cib_Client__c
-                                FROM Local_Client__c
-                                WHERE Cib_Client__c = :acc.Id
-                                LIMIT 1];
-        lc1.Name = 'LKTest LC Alpha';
-        lc1.Alpha_code__c = 'ALPHA001';
-        update lc1;
-
-        // Otros 2 Local_Client__c apuntando al mismo Account
-        Local_Client__c lc2 = new Local_Client__c(
+         Account acc2 = new Account(
             Name = 'LKTest LC Beta',
-            Alpha_code__c = 'BETA002',
-            Cib_Client__c = acc.Id
+            account_client__c = 'N',
+            Advising__c = false,
+            BBVA_Entity__c = 'BBVA SA',
+            BillingCity = 'BETA002',
+            BillingCountry = 'ES',
+            BillingPostalCode = '28033',
+            BillingState = 'MADRID',
+            BillingStreet = 'AV GRAN Test DE HORTALEZA 0321',
+            CurrencyIsoCode = 'EUR',
+            DES_Activity__c = 'NDA',
+            g_customer_id__c = 'BETA002'
         );
-        Local_Client__c lc3 = new Local_Client__c(
+        Account acc3 = new Account(
             Name = 'LKTest LC Gamma',
-            Alpha_code__c = 'GAMMA003',
-            Cib_Client__c = acc.Id
+            account_client__c = 'N',
+            Advising__c = false,
+            BBVA_Entity__c = 'BBVA SA',
+            BillingCity = 'GAMMA003',
+            BillingCountry = 'ES',
+            BillingPostalCode = '28033',
+            BillingState = 'MADRID',
+            BillingStreet = 'AV GRAN Test DE HORTALEZA 0321',
+            CurrencyIsoCode = 'EUR',
+            DES_Activity__c = 'NDA',
+            g_customer_id__c = 'GAMMA003'
         );
-        insert new List<Local_Client__c>{ lc2, lc3 };
+        insert new List<Account>{ acc2, acc3 };
     }
 
     // ─────────────────────────────────────────────────────────────────────
     // Helpers
     // ─────────────────────────────────────────────────────────────────────
-    private static Local_Client__c getLc(String name) {
-        return [SELECT Id, Name, Alpha_code__c
-                FROM Local_Client__c WHERE Name = :name LIMIT 1];
+    private static Account getAcc(String name) {
+        return [SELECT Id, Name, g_customer_id__c
+                FROM Account WHERE Name = :name LIMIT 1];
+    }
+
+    private static void setAccountSearchResults() {
+        List<Account> accounts = [
+            SELECT Id
+            FROM Account
+            WHERE Name = 'LKTest LC Alpha'
+                OR Name = 'LKTest LC Beta'
+                OR Name = 'LKTest LC Gamma'
+        ];
+        List<Id> accountIds = new List<Id>();
+        for (Account account : accounts) {
+            accountIds.add(account.Id);
+        }
+        Test.setFixedSearchResults(accountIds);
     }
 
     private static List<Map<String, Object>> runSearch(
         String term, String filtersJson, List<String> returnFields
     ) {
+        setAccountSearchResults();
+
         return DMT_FormLookupController.searchRecords(
-            'Local_Client__c',
+            'Account',
             term,
             new List<String>{'Name'},
             filtersJson,
@@ -108,13 +136,13 @@ private class DMT_FormLookupControllerTest {
     static void testFlatArrayFilters() {
         String filtersJson = JSON.serialize(new List<Map<String,Object>>{
             new Map<String,Object>{
-                'field'=>'Alpha_code__c','operator'=>'=','value'=>'BETA002'
+                'field'=>'BillingCity','operator'=>'=','value'=>'BETA002'
             }
         });
 
         Test.startTest();
         List<Map<String, Object>> r = runSearch(
-            'LKTest', filtersJson, new List<String>{'Id','Name','Alpha_code__c'}
+            'LKTest', filtersJson, new List<String>{'Id','Name','g_customer_id__c'}
         );
         Test.stopTest();
 
@@ -130,15 +158,15 @@ private class DMT_FormLookupControllerTest {
         Map<String,Object> filtersMap = new Map<String,Object>{
             'AND' => new List<Object>{
                 new Map<String,Object>{
-                    'field'=>'Name','operator'=>'LIKE','value'=>'LKTest%'
+                    'field'=>'BillingCity','operator'=>'LIKE','value'=>'%A%'
                 },
                 new Map<String,Object>{
                     'OR' => new List<Object>{
                         new Map<String,Object>{
-                            'field'=>'Alpha_code__c','operator'=>'=','value'=>'BETA002'
+                            'field'=>'BillingCity','operator'=>'=','value'=>'BETA002'
                         },
                         new Map<String,Object>{
-                            'field'=>'Alpha_code__c','operator'=>'=','value'=>'GAMMA003'
+                            'field'=>'BillingCity','operator'=>'=','value'=>'GAMMA003'
                         }
                     }
                 }
@@ -149,7 +177,7 @@ private class DMT_FormLookupControllerTest {
         List<Map<String, Object>> r = runSearch(
             'LKTest',
             JSON.serialize(filtersMap),
-            new List<String>{'Id','Name','Alpha_code__c'}
+            new List<String>{'Id','Name','g_customer_id__c'}
         );
         Test.stopTest();
 
@@ -158,13 +186,13 @@ private class DMT_FormLookupControllerTest {
     }
 
     // ═══════════════════════════════════════════════════════════════════════
-    // searchRecords — operadores < <= > >= sobre el Name (orden alfabético)
+    // searchRecords — operadores < <= > >= sobre un campo no cifrado
     // ═══════════════════════════════════════════════════════════════════════
     @IsTest
     static void testGreaterThanOperator() {
         String filtersJson = JSON.serialize(new List<Map<String,Object>>{
             new Map<String,Object>{
-                'field'=>'Alpha_code__c','operator'=>'>','value'=>'BETA999'
+                'field'=>'BillingCity','operator'=>'>','value'=>'BETA999'
             }
         });
 
@@ -182,7 +210,7 @@ private class DMT_FormLookupControllerTest {
     static void testGreaterOrEqualOperator() {
         String filtersJson = JSON.serialize(new List<Map<String,Object>>{
             new Map<String,Object>{
-                'field'=>'Alpha_code__c','operator'=>'>=','value'=>'ALPHA001'
+                'field'=>'BillingCity','operator'=>'>=','value'=>'ALPHA001'
             }
         });
 
@@ -199,7 +227,7 @@ private class DMT_FormLookupControllerTest {
     static void testLessThanOperator() {
         String filtersJson = JSON.serialize(new List<Map<String,Object>>{
             new Map<String,Object>{
-                'field'=>'Alpha_code__c','operator'=>'<','value'=>'BETA999'
+                'field'=>'BillingCity','operator'=>'<','value'=>'BETA999'
             }
         });
 
@@ -217,7 +245,7 @@ private class DMT_FormLookupControllerTest {
     static void testLessOrEqualOperator() {
         String filtersJson = JSON.serialize(new List<Map<String,Object>>{
             new Map<String,Object>{
-                'field'=>'Alpha_code__c','operator'=>'<=','value'=>'BETA002'
+                'field'=>'BillingCity','operator'=>'<=','value'=>'BETA002'
             }
         });
 
@@ -238,7 +266,7 @@ private class DMT_FormLookupControllerTest {
     static void testInOperator() {
         String filtersJson = JSON.serialize(new List<Map<String,Object>>{
             new Map<String,Object>{
-                'field' => 'Alpha_code__c',
+                'field' => 'BillingCity',
                 'operator' => 'IN',
                 'value' => new List<String>{'ALPHA001','BETA002','GAMMA003'}
             }
@@ -246,7 +274,7 @@ private class DMT_FormLookupControllerTest {
 
         Test.startTest();
         List<Map<String, Object>> r = runSearch(
-            'LKTest', filtersJson, new List<String>{'Id','Name','Alpha_code__c'}
+            'LKTest', filtersJson, new List<String>{'Id','Name','g_customer_id__c'}
         );
         Test.stopTest();
 
@@ -260,13 +288,13 @@ private class DMT_FormLookupControllerTest {
     static void testLikeOperatorDefault() {
         String filtersJson = JSON.serialize(new List<Map<String,Object>>{
             new Map<String,Object>{
-                'field'=>'Alpha_code__c','value'=>'GAMMA%'
+                'field'=>'BillingCity','value'=>'GAMMA%'
             }
         });
 
         Test.startTest();
         List<Map<String, Object>> r = runSearch(
-            'LKTest', filtersJson, new List<String>{'Id','Name','Alpha_code__c'}
+            'LKTest', filtersJson, new List<String>{'Id','Name','g_customer_id__c'}
         );
         Test.stopTest();
 
@@ -281,7 +309,7 @@ private class DMT_FormLookupControllerTest {
     static void testLimitCappedAt20() {
         Test.startTest();
         List<Map<String, Object>> r = DMT_FormLookupController.searchRecords(
-            'Local_Client__c', '', new List<String>{'Name'}, null,
+            'Account', '', new List<String>{'Name'}, null,
             new List<String>{'Id','Name'}, 'Name', 99
         );
         Test.stopTest();
@@ -293,7 +321,7 @@ private class DMT_FormLookupControllerTest {
     static void testNullLimitUsesDefault() {
         Test.startTest();
         List<Map<String, Object>> r = DMT_FormLookupController.searchRecords(
-            'Local_Client__c', 'LKTest', new List<String>{'Name'}, null,
+            'Account', 'LKTest', new List<String>{'Name'}, null,
             new List<String>{'Id','Name'}, 'Name', null
         );
         Test.stopTest();
@@ -305,7 +333,7 @@ private class DMT_FormLookupControllerTest {
     static void testZeroLimitUsesDefault() {
         Test.startTest();
         List<Map<String, Object>> r = DMT_FormLookupController.searchRecords(
-            'Local_Client__c', 'LKTest', new List<String>{'Name'}, null,
+            'Account', 'LKTest', new List<String>{'Name'}, null,
             new List<String>{'Id','Name'}, 'Name', 0
         );
         Test.stopTest();
@@ -317,7 +345,7 @@ private class DMT_FormLookupControllerTest {
     static void testNegativeLimitUsesDefault() {
         Test.startTest();
         List<Map<String, Object>> r = DMT_FormLookupController.searchRecords(
-            'Local_Client__c', 'LKTest', new List<String>{'Name'}, null,
+            'Account', 'LKTest', new List<String>{'Name'}, null,
             new List<String>{'Id','Name'}, 'Name', -5
         );
         Test.stopTest();
@@ -329,7 +357,7 @@ private class DMT_FormLookupControllerTest {
     static void testCustomLimitUnderMax() {
         Test.startTest();
         List<Map<String, Object>> r = DMT_FormLookupController.searchRecords(
-            'Local_Client__c', 'LKTest', new List<String>{'Name'}, null,
+            'Account', 'LKTest', new List<String>{'Name'}, null,
             new List<String>{'Id','Name'}, 'Name', 2
         );
         Test.stopTest();
@@ -344,13 +372,13 @@ private class DMT_FormLookupControllerTest {
     static void testNotEqualsOperator() {
         String filtersJson = JSON.serialize(new List<Map<String,Object>>{
             new Map<String,Object>{
-                'field'=>'Alpha_code__c','operator'=>'!=','value'=>'BETA002'
+                'field'=>'BillingCity','operator'=>'!=','value'=>'BETA002'
             }
         });
 
         Test.startTest();
         List<Map<String, Object>> r = runSearch(
-            'LKTest', filtersJson, new List<String>{'Id','Name','Alpha_code__c'}
+            'LKTest', filtersJson, new List<String>{'Id','Name','g_customer_id__c'}
         );
         Test.stopTest();
 
@@ -365,7 +393,7 @@ private class DMT_FormLookupControllerTest {
     static void testEmptyLikeFilterSkipped() {
         String filtersJson = JSON.serialize(new List<Map<String,Object>>{
             new Map<String,Object>{
-                'field'=>'Alpha_code__c','operator'=>'LIKE','value'=>'%%'
+                'field'=>'BillingCity','operator'=>'LIKE','value'=>'%%'
             }
         });
 
@@ -382,7 +410,7 @@ private class DMT_FormLookupControllerTest {
     static void testLikeFilterOnlyUnderscoresSkipped() {
         String filtersJson = JSON.serialize(new List<Map<String,Object>>{
             new Map<String,Object>{
-                'field'=>'Alpha_code__c','operator'=>'LIKE','value'=>'___'
+                'field'=>'BillingCity','operator'=>'LIKE','value'=>'___'
             }
         });
 
@@ -399,7 +427,7 @@ private class DMT_FormLookupControllerTest {
     static void testLikeFilterWithValueAndWildcards() {
         String filtersJson = JSON.serialize(new List<Map<String,Object>>{
             new Map<String,Object>{
-                'field'=>'Alpha_code__c','operator'=>'LIKE','value'=>'BETA%'
+                'field'=>'BillingCity','operator'=>'LIKE','value'=>'BETA%'
             }
         });
 
@@ -455,7 +483,7 @@ private class DMT_FormLookupControllerTest {
         Map<String,Object> filtersMap = new Map<String,Object>{
             'AND' => new List<Object>{
                 new Map<String,Object>{
-                    'field'=>'Alpha_code__c','operator'=>'=','value'=>'ALPHA001'
+                    'field'=>'BillingCity','operator'=>'=','value'=>'ALPHA001'
                 }
             }
         };
@@ -464,7 +492,7 @@ private class DMT_FormLookupControllerTest {
         List<Map<String, Object>> r = runSearch(
             'LKTest',
             JSON.serialize(filtersMap),
-            new List<String>{'Id','Name','Alpha_code__c'}
+            new List<String>{'Id','Name','g_customer_id__c'}
         );
         Test.stopTest();
 
@@ -477,10 +505,10 @@ private class DMT_FormLookupControllerTest {
         Map<String,Object> filtersMap = new Map<String,Object>{
             'OR' => new List<Object>{
                 new Map<String,Object>{
-                    'field'=>'Alpha_code__c','operator'=>'=','value'=>'ALPHA001'
+                    'field'=>'BillingCity','operator'=>'=','value'=>'ALPHA001'
                 },
                 new Map<String,Object>{
-                    'field'=>'Alpha_code__c','operator'=>'=','value'=>'GAMMA003'
+                    'field'=>'BillingCity','operator'=>'=','value'=>'GAMMA003'
                 }
             }
         };
@@ -499,7 +527,7 @@ private class DMT_FormLookupControllerTest {
 
     @IsTest
     static void testLeafWithNullValueSkipped() {
-        String filtersJson = '[{"field":"Alpha_code__c","operator":"=","value":null}]';
+        String filtersJson = '[{"field":"g_customer_id__c","operator":"=","value":null}]';
 
         Test.startTest();
         List<Map<String, Object>> r = runSearch(
@@ -555,13 +583,15 @@ private class DMT_FormLookupControllerTest {
     // ═══════════════════════════════════════════════════════════════════════
     @IsTest
     static void testCrossObjectReturnField() {
+        setAccountSearchResults();
+
         Test.startTest();
         List<Map<String, Object>> r = DMT_FormLookupController.searchRecords(
-            'Local_Client__c',
+            'Account',
             'LKTest LC Alpha',
             new List<String>{'Name'},
             null,
-            new List<String>{'Id','Name','Cib_Client__r.Name','Cib_Client__r.Id'},
+           new List<String>{'Id','Name','Owner.Name','Owner.Id'},
             'Name',
             20
         );
@@ -569,8 +599,8 @@ private class DMT_FormLookupControllerTest {
 
         System.assert(r.size() >= 1);
         // El campo cross-object debe estar presente en el row (puede ser null
-        // si el Account no se resuelve, pero la key tiene que existir)
-        System.assert(r[0].containsKey('Cib_Client__r.Name'),
+        // si el Owner no se resuelve, pero la key tiene que existir)
+        System.assert(r[0].containsKey('Owner.Name'),
             'Cross-object key should be present in row');
     }
 
@@ -628,7 +658,7 @@ private class DMT_FormLookupControllerTest {
         Boolean threw = false;
         try {
             DMT_FormLookupController.searchRecords(
-                'Local_Client__c', 'test', null, null,
+                'Account', 'test', null, null,
                 new List<String>{'Name'}, 'Name', 20
             );
         } catch (AuraHandledException e) { threw = true; }
@@ -640,7 +670,7 @@ private class DMT_FormLookupControllerTest {
         Boolean threw = false;
         try {
             DMT_FormLookupController.searchRecords(
-                'Local_Client__c', 'test', new List<String>(), null,
+                'Account', 'test', new List<String>(), null,
                 new List<String>{'Name'}, 'Name', 20
             );
         } catch (AuraHandledException e) { threw = true; }
@@ -652,7 +682,7 @@ private class DMT_FormLookupControllerTest {
         Boolean threw = false;
         try {
             DMT_FormLookupController.searchRecords(
-                'Local_Client__c', 'test', new List<String>{'Name'}, null,
+                'Account', 'test', new List<String>{'Name'}, null,
                 null, 'Name', 20
             );
         } catch (AuraHandledException e) { threw = true; }
@@ -664,7 +694,7 @@ private class DMT_FormLookupControllerTest {
         Boolean threw = false;
         try {
             DMT_FormLookupController.searchRecords(
-                'Local_Client__c', 'test', new List<String>{'Name'}, null,
+                'Account', 'test', new List<String>{'Name'}, null,
                 new List<String>(), 'Name', 20
             );
         } catch (AuraHandledException e) { threw = true; }
@@ -676,7 +706,7 @@ private class DMT_FormLookupControllerTest {
         Boolean threw = false;
         try {
             DMT_FormLookupController.searchRecords(
-                'Local_Client__c', 'test', new List<String>{'Name'}, null,
+                'Account', 'test', new List<String>{'Name'}, null,
                 new List<String>{'Name'}, null, 20
             );
         } catch (AuraHandledException e) { threw = true; }
@@ -688,7 +718,7 @@ private class DMT_FormLookupControllerTest {
         Boolean threw = false;
         try {
             DMT_FormLookupController.searchRecords(
-                'Local_Client__c', 'test', new List<String>{'Name'}, null,
+                'Account', 'test', new List<String>{'Name'}, null,
                 new List<String>{'Name'}, '  ', 20
             );
         } catch (AuraHandledException e) { threw = true; }
@@ -715,7 +745,7 @@ private class DMT_FormLookupControllerTest {
         Boolean threw = false;
         try {
             DMT_FormLookupController.searchRecords(
-                'Local_Client__c', 'test', new List<String>{'Name; DROP TABLE'},
+                'Account', 'test', new List<String>{'Name; DROP TABLE'},
                 null, new List<String>{'Name'}, 'Name', 20
             );
         } catch (AuraHandledException e) { threw = true; }
@@ -727,7 +757,7 @@ private class DMT_FormLookupControllerTest {
         Boolean threw = false;
         try {
             DMT_FormLookupController.searchRecords(
-                'Local_Client__c', 'test', new List<String>{'Name'}, null,
+                'Account', 'test', new List<String>{'Name'}, null,
                 new List<String>{'Name; DROP'}, 'Name', 20
             );
         } catch (AuraHandledException e) { threw = true; }
@@ -739,7 +769,7 @@ private class DMT_FormLookupControllerTest {
         Boolean threw = false;
         try {
             DMT_FormLookupController.searchRecords(
-                'Local_Client__c', 'test', new List<String>{'Name'}, null,
+                'Account', 'test', new List<String>{'Name'}, null,
                 new List<String>{'Name'}, 'Name; DROP', 20
             );
         } catch (AuraHandledException e) { threw = true; }
@@ -751,7 +781,7 @@ private class DMT_FormLookupControllerTest {
         Boolean threw = false;
         try {
             DMT_FormLookupController.searchRecords(
-                'Local_Client__c', 'test', new List<String>{'1Field'},
+                'Account', 'test', new List<String>{'1Field'},
                 null, new List<String>{'Name'}, 'Name', 20
             );
         } catch (AuraHandledException e) { threw = true; }
@@ -766,7 +796,7 @@ private class DMT_FormLookupControllerTest {
         });
         try {
             DMT_FormLookupController.searchRecords(
-                'Local_Client__c', '', new List<String>{'Name'}, filtersJson,
+                'Account', '', new List<String>{'Name'}, filtersJson,
                 new List<String>{'Id','Name'}, 'Name', 20
             );
         } catch (AuraHandledException e) { threw = true; }
@@ -781,7 +811,7 @@ private class DMT_FormLookupControllerTest {
         });
         try {
             DMT_FormLookupController.searchRecords(
-                'Local_Client__c', '', new List<String>{'Name'}, filtersJson,
+                'Account', '', new List<String>{'Name'}, filtersJson,
                 new List<String>{'Id','Name'}, 'Name', 20
             );
         } catch (AuraHandledException e) { threw = true; }
@@ -841,13 +871,13 @@ private class DMT_FormLookupControllerTest {
     // ═══════════════════════════════════════════════════════════════════════
     // getRecordLabel — éxito
     // ═══════════════════════════════════════════════════════════════════════
-    @IsTest
+     @IsTest
     static void testGetRecordLabel_Success() {
-        Local_Client__c lc = getLc('LKTest LC Alpha');
+        Account acc = getAcc('LKTest LC Alpha');
 
         Test.startTest();
         String label = DMT_FormLookupController.getRecordLabel(
-            'Local_Client__c', lc.Id, 'Name'
+            'Account', acc.Id, 'Name'
         );
         Test.stopTest();
 
@@ -856,11 +886,11 @@ private class DMT_FormLookupControllerTest {
 
     @IsTest
     static void testGetRecordLabel_OtherField() {
-        Local_Client__c lc = getLc('LKTest LC Alpha');
+        Account acc = getAcc('LKTest LC Alpha');
 
         Test.startTest();
         String label = DMT_FormLookupController.getRecordLabel(
-            'Local_Client__c', lc.Id, 'Alpha_code__c'
+            'Account', acc.Id, 'g_customer_id__c'
         );
         Test.stopTest();
 
@@ -872,17 +902,18 @@ private class DMT_FormLookupControllerTest {
     // ═══════════════════════════════════════════════════════════════════════
     @IsTest
     static void testGetRecordLabel_RecordNotFound() {
-        Local_Client__c lc = getLc('LKTest LC Alpha');
+        Account acc = getAcc('LKTest LC Alpha');
 
-        // Buscamos el Id de Local_Client__c en Account → no existe
+        // Buscamos el Id del Account en Opportunity → no existe
         Test.startTest();
         String label = DMT_FormLookupController.getRecordLabel(
-            'Account', lc.Id, 'Id'
+            'Opportunity', acc.Id, 'Id'
         );
         Test.stopTest();
 
         System.assertEquals(null, label, 'Should return null when record not found');
     }
+
 
     // ═══════════════════════════════════════════════════════════════════════
     // getRecordLabel — errores de validación
@@ -909,7 +940,7 @@ private class DMT_FormLookupControllerTest {
     static void testGetRecordLabel_NullRecordIdThrows() {
         Boolean threw = false;
         try {
-            DMT_FormLookupController.getRecordLabel('Local_Client__c', null, 'Name');
+            DMT_FormLookupController.getRecordLabel('Account', null, 'Name');
         } catch (AuraHandledException e) { threw = true; }
         System.assert(threw);
     }
@@ -918,7 +949,7 @@ private class DMT_FormLookupControllerTest {
     static void testGetRecordLabel_BlankRecordIdThrows() {
         Boolean threw = false;
         try {
-            DMT_FormLookupController.getRecordLabel('Local_Client__c', '  ', 'Name');
+            DMT_FormLookupController.getRecordLabel('Account', '  ', 'Name');
         } catch (AuraHandledException e) { threw = true; }
         System.assert(threw);
     }
@@ -927,7 +958,7 @@ private class DMT_FormLookupControllerTest {
     static void testGetRecordLabel_NullLabelFieldThrows() {
         Boolean threw = false;
         try {
-            DMT_FormLookupController.getRecordLabel('Local_Client__c', 'someId', null);
+            DMT_FormLookupController.getRecordLabel('Account', 'someId', null);
         } catch (AuraHandledException e) { threw = true; }
         System.assert(threw);
     }
@@ -936,18 +967,18 @@ private class DMT_FormLookupControllerTest {
     static void testGetRecordLabel_BlankLabelFieldThrows() {
         Boolean threw = false;
         try {
-            DMT_FormLookupController.getRecordLabel('Local_Client__c', 'someId', '  ');
+            DMT_FormLookupController.getRecordLabel('Account', 'someId', '  ');
         } catch (AuraHandledException e) { threw = true; }
         System.assert(threw);
     }
 
-    @IsTest
+     @IsTest
     static void testGetRecordLabel_InvalidObjectThrows() {
         Boolean threw = false;
-        Local_Client__c lc = getLc('LKTest LC Alpha');
+        Account acc = getAcc('LKTest LC Alpha');
         try {
             DMT_FormLookupController.getRecordLabel(
-                'DROP--TABLE', lc.Id, 'Name'
+                'DROP--TABLE', acc.Id, 'Name'
             );
         } catch (AuraHandledException e) { threw = true; }
         System.assert(threw);
@@ -956,10 +987,10 @@ private class DMT_FormLookupControllerTest {
     @IsTest
     static void testGetRecordLabel_InvalidFieldThrows() {
         Boolean threw = false;
-        Local_Client__c lc = getLc('LKTest LC Alpha');
+        Account acc = getAcc('LKTest LC Alpha');
         try {
             DMT_FormLookupController.getRecordLabel(
-                'Local_Client__c', lc.Id, 'DROP--TABLE'
+                'Account', acc.Id, 'DROP--TABLE'
             );
         } catch (AuraHandledException e) { threw = true; }
         System.assert(threw);
@@ -968,10 +999,10 @@ private class DMT_FormLookupControllerTest {
     @IsTest
     static void testGetRecordLabel_QueryErrorThrows() {
         Boolean threw = false;
-        Local_Client__c lc = getLc('LKTest LC Alpha');
+        Account acc = getAcc('LKTest LC Alpha');
         try {
             DMT_FormLookupController.getRecordLabel(
-                'NonExistentObject__c', lc.Id, 'Name'
+                'NonExistentObject__c', acc.Id, 'Name'
             );
         } catch (AuraHandledException e) { threw = true; }
         System.assert(threw, 'Should throw when SOQL fails in getRecordLabel');

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Maturity_Date_Criteria</name>
+        <label>Maturity Date Criteria</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>FALSE Maturity Date Criteria</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_Maturity_Date_Criteria</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.DES_Maturity_Date__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.DES_Maturity_Date__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <elementReference>Formula_Today</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Alert_Status_Update_Without_Opportunities</targetReference>
+            </connector>
+            <label>TRUE Maturity Date Criteria</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <description>This formula compares the value of the {!$Record.DES_Maturity_Date__c} field with te current system date (TODAY()).</description>
+        <name>Formula_Today</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()</expression>
+    </formulas>
+    <interviewLabel>DES_flw_procesosDeAlertas {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>DES_flw_procesosDeAlertas</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Maturity_Date_Criteria</targetReference>
+        </connector>
+        <object>DES_Alert__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <subflows>
+        <name>Alert_Status_Update_Without_Opportunities</name>
+        <label>Alert Status Update Without Opportunities</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <flowName>Alert_Status_Update_Without_Opportunities</flowName>
+        <inputAssignments>
+            <name>CurrentAlert</name>
+            <value>
+                <elementReference>$Record</elementReference>
+            </value>
+        </inputAssignments>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </subflows>
+</Flow>

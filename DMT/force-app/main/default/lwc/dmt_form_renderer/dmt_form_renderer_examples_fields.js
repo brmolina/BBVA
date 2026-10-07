@@ -11,7 +11,8 @@
  *   - textarea
  *   - number
  *   - currency
- *   - numberWithCurrency
+ *   - numberWithSuffix
+ *   - textWithSuffix
  *   - date
  *   - datetime
  *   - email
@@ -35,16 +36,19 @@
  *   - helpText      (string) -> tooltip "?" al lado de la label
  *   - placeholder   (string)
  *   - maxLength     (number, sólo text/textarea)
- *   - step, min, max (number, sólo number/currency/numberWithCurrency)
- *   - currencyCode  (string, sólo currency/numberWithCurrency)
+ *   - step, min, max (number, sólo number/currency/numberWithSuffix)
+ *   - currencyCode  (string, sólo currency)
+ *   - extraText     (string, sólo numberWithSuffix/textWithSuffix) -> texto/unidad que se muestra junto al campo
  *   - options       (array, sólo picklist)
- *   - overridable   (boolean) -> activa la capacidad de "valor original"
- *   - originalValue (cualquier tipo) -> valor original para comparar
+ *   - overridable   (boolean) -> activa el botón revert (↶) para restaurar originalValue
+ *   - originalValue (cualquier tipo) -> valor original para comparar (independiente de overridable)
+ *   - warningText   (string) -> muestra icono warning ⚠️ con el texto como tooltip (null/"" no muestra nada)
  *
- * Notas sobre `overridable`:
- *   - Funciona en CUALQUIER tipo de campo.
- *   - Si `value !== originalValue` -> aparece icono warning + botón revert.
- *   - El tooltip muestra `originalValue` tal cual lo envíes (sin formatear).
+ * Notas sobre `originalValue` y `overridable`:
+ *   - `originalValue` funciona en CUALQUIER tipo de campo.
+ *   - Si `value !== originalValue` -> aparece icono warning ⚠️ con tooltip "Original value: X".
+ *   - El icono warning aparece SIEMPRE que exista originalValue y difiera, SIN necesitar overridable.
+ *   - `overridable: true` solo controla la visibilidad del botón revert (↶).
  *   - El comparador es String(value) !== String(originalValue).
  * ============================================================================= */
 
@@ -123,21 +127,38 @@ const exampleAllTypes = [
         isHighlighted: false
     },
 
-    // ===== NUMBER WITH CURRENCY =====
+    // ===== NUMBER WITH SUFFIX =====
     {
         id: 'Commission_Amount_EUR__c',
         label: 'Commission Amount (EUR)',
         apiName: 'Commission_Amount_EUR__c',
         value: 2500.50,
         size: '1-of-2',
-        type: 'numberWithCurrency',
+        type: 'numberWithSuffix',
         isReadOnly: false,
         isHidden: false,
         isRequired: false,
         helpText: 'Comisión en euros.',
-        currencyCode: 'EUR',
+        extraText: 'EUR',
         step: 0.01,
         min: 0,
+        isHighlighted: false
+    },
+
+    // ===== TEXT WITH SUFFIX =====
+    {
+        id: 'Reference_Code__c',
+        label: 'Reference Code',
+        apiName: 'Reference_Code__c',
+        value: 'ABC-001',
+        size: '1-of-2',
+        type: 'textWithSuffix',
+        isReadOnly: false,
+        isHidden: false,
+        isRequired: false,
+        helpText: 'Código de referencia con sufijo.',
+        extraText: '-BBVA',
+        maxLength: 50,
         isHighlighted: false
     },
 
@@ -559,6 +580,118 @@ const exampleOverridableFields = [
 
 
 // =============================================================================
+// EJEMPLO 6b: WARNING TEXT - aviso informativo en cualquier tipo de campo
+// =============================================================================
+// warningText muestra un icono ⚠️ al lado de la label con el texto como tooltip.
+// Aparece en modo READ y modo EDIT.
+// Se muestra SOLO cuando warningText es un string no vacío (null y "" no muestran nada).
+// Es independiente de overridable/originalValue: ambos pueden coexistir.
+// =============================================================================
+const exampleWarningText = [
+
+    // TEXT con warningText básico
+    {
+        id: 'WarnText',
+        label: 'Account Name',
+        value: 'Empresa ABC',
+        size: '1-of-2',
+        type: 'text',
+        warningText: 'Este campo fue modificado manualmente fuera del proceso estándar.'
+    },
+
+    // NUMBER con warningText
+    {
+        id: 'WarnNumber',
+        label: 'Credit Limit',
+        value: 50000,
+        size: '1-of-2',
+        type: 'number',
+        warningText: 'El límite supera el umbral aprobado automáticamente. Requiere revisión.'
+    },
+
+    // CURRENCY con warningText
+    {
+        id: 'WarnCurrency',
+        label: 'Loan Amount',
+        value: 200000,
+        size: '1-of-2',
+        type: 'currency',
+        currencyCode: 'USD',
+        warningText: 'Monto ajustado por excepción comercial.'
+    },
+
+    // DATE con warningText
+    {
+        id: 'WarnDate',
+        label: 'Expiration Date',
+        value: '2025-12-31',
+        size: '1-of-2',
+        type: 'date',
+        warningText: 'La fecha está próxima a vencer.'
+    },
+
+    // PICKLIST con warningText
+    {
+        id: 'WarnPicklist',
+        label: 'Risk Level',
+        value: 'High',
+        size: '1-of-2',
+        type: 'picklist',
+        options: [
+            { label: 'Low',    value: 'Low' },
+            { label: 'Medium', value: 'Medium' },
+            { label: 'High',   value: 'High' }
+        ],
+        warningText: 'Nivel de riesgo elevado. Se requiere aprobación adicional.'
+    },
+
+    // CHECKBOX con warningText
+    {
+        id: 'WarnCheckbox',
+        label: 'Approved by Committee',
+        value: false,
+        size: '1-of-2',
+        type: 'checkbox',
+        warningText: 'Pendiente de aprobación por el comité de riesgos.'
+    },
+
+    // TEXTO SIN warningText (null) — no debe mostrar nada
+    {
+        id: 'NoWarnNull',
+        label: 'Notes (sin warning, null)',
+        value: 'Sin advertencia',
+        size: '1-of-2',
+        type: 'text',
+        warningText: null
+    },
+
+    // TEXTO SIN warningText (string vacío) — no debe mostrar nada
+    {
+        id: 'NoWarnEmpty',
+        label: 'Notes (sin warning, vacío)',
+        value: 'Sin advertencia',
+        size: '1-of-2',
+        type: 'text',
+        warningText: ''
+    },
+
+    // warningText + overridable a la vez (ambos iconos coexisten)
+    {
+        id: 'WarnAndOverride',
+        label: 'Negotiated Rate (%)',
+        value: 7.5,
+        originalValue: 5.0,
+        size: '1-of-2',
+        type: 'number',
+        overridable: true,
+        step: 0.01,
+        warningText: 'Tasa fuera del rango estándar aprobado.'
+    }
+
+];
+
+
+// =============================================================================
 // EJEMPLO 7: SIZES - diferentes anchos para probar el layout
 // =============================================================================
 const exampleSizes = [
@@ -954,11 +1087,11 @@ export const exampleCustomLookups = [
         helpText: 'Busca por nombre, código alpha o NIF fiscal.',
         placeholder: 'Search local client...',
         iconName: 'standard:account',
-        objectApiName: 'Local_Client__c',
+        objectApiName: 'Account',
         primaryField: 'Name',
-        secondaryFields: ['Alpha_code__c', 'Cib_Client__r.DES_ID_Fiscal__c'],
-        searchFields: ['Name', 'Alpha_code__c', 'Cib_Client__r.DES_ID_Fiscal__c'],
-        returnFields: ['Alpha_code__c', 'Cib_Client__r.DES_ID_Fiscal__c'],
+        secondaryFields: ['g_customer_id__c', 'DES_Tax_Identification_Number__c'],
+        searchFields: ['Name', 'g_customer_id__c', 'DES_Tax_Identification_Number__c'],
+        returnFields: ['g_customer_id__c', 'DES_Tax_Identification_Number__c'],
         filters: null,
     },
 
@@ -976,11 +1109,11 @@ export const exampleCustomLookups = [
         isRequired: true,
         placeholder: 'Search local client...',
         iconName: 'standard:account',
-        objectApiName: 'Local_Client__c',
+        objectApiName: 'Account',
         primaryField: 'Name',
-        secondaryFields: ['Alpha_code__c', 'Cib_Client__r.DES_ID_Fiscal__c'],
-        searchFields: ['Name', 'Alpha_code__c', 'Cib_Client__r.DES_ID_Fiscal__c'],
-        returnFields: ['Alpha_code__c', 'Cib_Client__r.DES_ID_Fiscal__c'],
+        secondaryFields: ['g_customer_id__c', 'DES_Tax_Identification_Number__c'],
+        searchFields: ['Name', 'g_customer_id__c', 'DES_Tax_Identification_Number__c'],
+        returnFields: ['g_customer_id__c', 'DES_Tax_Identification_Number__c'],
         filters: null,
     },
 
@@ -999,13 +1132,13 @@ export const exampleCustomLookups = [
         helpText: 'Solo clientes con código alpha ES.',
         placeholder: 'Search Spanish client...',
         iconName: 'standard:account',
-        objectApiName: 'Local_Client__c',
+        objectApiName: 'Account',
         primaryField: 'Name',
-        secondaryFields: ['Alpha_code__c', 'Cib_Client__r.DES_ID_Fiscal__c'],
-        searchFields: ['Name', 'Alpha_code__c', 'Cib_Client__r.DES_ID_Fiscal__c'],
-        returnFields: ['Alpha_code__c', 'Cib_Client__r.DES_ID_Fiscal__c'],
+        secondaryFields: ['g_customer_id__c', 'DES_Tax_Identification_Number__c'],
+        searchFields: ['Name', 'g_customer_id__c', 'DES_Tax_Identification_Number__c'],
+        returnFields: ['g_customer_id__c', 'DES_Tax_Identification_Number__c'],
         filters: [
-            { field: 'Alpha_code__c',operator: 'LIKE', value: '%ES%' },
+            { field: 'g_customer_id__c',operator: 'LIKE', value: '%ES%' },
         ],
     },
 
@@ -1296,6 +1429,7 @@ export {
     exampleHiddenFields,
     exampleHighlightedFields,
     exampleOverridableFields,
+    exampleWarningText,
     exampleSizes,
     exampleBlankLayout,
     exampleFullForm,

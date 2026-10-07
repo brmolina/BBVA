@@ -104,12 +104,40 @@
                 <identifier>flexipage_tab3</identifier>
             </componentInstance>
         </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-e2f3a4b5-c6d7-4e8f-9a0b-c1d2e3f4a5b6</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Bulk Import</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>flexipage_tab4</identifier>
+            </componentInstance>
+        </itemInstances>
         <name>Facet-7fa0cdca-48cd-4f84-a0e2-c009cb2de524</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
+                <componentName>dmt_bulk_import</componentName>
+                <identifier>c_dmt_bulk_import</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-e2f3a4b5-c6d7-4e8f-9a0b-c1d2e3f4a5b6</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Tabs</value>
+                </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>tabs</name>
                     <value>Facet-7fa0cdca-48cd-4f84-a0e2-c009cb2de524</value>

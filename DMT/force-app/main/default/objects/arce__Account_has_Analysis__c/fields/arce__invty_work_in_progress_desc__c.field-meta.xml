@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__invty_work_in_progress_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>An explanation on inventories and work in progress.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Inventories and work in progress explana</label>
+    <length>500</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>2</visibleLines>
+</CustomField>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__matrixOverlay__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <deprecated>false</deprecated>
+    <description>Overlay lookup of the matrix (only in subsidiaries)</description>
+    <label>Matrix overlay</label>
+    <referenceTo>arce__Overlay__c</referenceTo>
+    <relationshipLabel>overlay_relShip_relList</relationshipLabel>
+    <relationshipName>overlayRelShip</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

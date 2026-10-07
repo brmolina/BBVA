@@ -1,0 +1,126 @@
+<template>
+    <lightning-card>
+        <div class="slds-is-relative">
+            <template lwc:if={showSpinner}>
+                <lightning-spinner alternative-text="Updating..." size="medium" variant="brand"></lightning-spinner>
+            </template>
+            <c-dynamic_path
+                steps={prospectStatusOptions}
+                current-step={prospectStatusValue}
+                selected-step={selectedStepForPath}
+                use-lightning-path={useCustomPath}
+                display-button
+                button-label={buttonLabel}
+                disable-mark-complete={disableMarkComplete}
+                onstepselect={handleStepSelect}
+                onmarkcomplete={handleMarkComplete}
+                has-guidance={hasGuidance}>
+                <span slot="guidance">
+                    <template lwc:if={isCurrentDiscarded}>
+                        <div class="slds-grid slds-wrap slds-gutters_x-small">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                <lightning-combobox
+                                    name="dormancyReason"
+                                    label="Discarded Reason"
+                                    value={selectedDormancyReason}
+                                    placeholder="Select a reason"
+                                    options={prospectDormancyReasonOptions}
+                                    onchange={handleDormancyReasonChange}>
+                                </lightning-combobox>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                <lightning-combobox
+                                    name="possibilityReengage"
+                                    label="Possibility to reengage in the future"
+                                    value={selectedPossibilityReengage}
+                                    placeholder="Select an option"
+                                    options={prospectPossibilityReengageOptions}
+                                    onchange={handlePossibilityReengageChange}>
+                                </lightning-combobox>
+                            </div>
+                        </div>
+                    </template>
+                    <template lwc:elseif={isClosedSelected}>
+                        <div class="slds-grid">
+                            <div class="slds-col">
+                                <span class="slds-text-title_bold">Select how to close this prospect</span>
+                            </div>
+                        </div>
+                    </template>
+                    <template lwc:else>
+                        <div class="slds-grid">
+                            <div class="slds-col">
+                                <span class="slds-text-title_bold">Prospect status: {selectedStep}</span>
+                            </div>
+                        </div>
+                    </template>
+                </span>
+            </c-dynamic_path>
+
+            <template lwc:if={showCloseDecisionModal}>
+                <section role="dialog" tabindex="-1" aria-modal="true" aria-label="Close Prospect" class="slds-modal slds-fade-in-open slds-modal_small">
+                    <div class="slds-modal__container" style="max-width: 42rem; width: 92%;">
+                        <header class="slds-modal__header">
+                            <lightning-button-icon
+                                class="slds-modal__close"
+                                icon-name="utility:close"
+                                alternative-text="Close"
+                                title="Close"
+                                onclick={handleCloseDecisionModal}>
+                            </lightning-button-icon>
+                            <h2 class="slds-text-heading_medium">Close Prospect</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_large" id="close-decision-modal-content">
+                            <p class="slds-text-body_regular slds-text-align_center slds-m-bottom_large">How do you want to close this prospect?</p>
+                            <div class="slds-grid slds-wrap slds-grid_align-center slds-gutters slds-gutters_small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_5-of-12 slds-p-bottom_small">
+                                    <lightning-button
+                                        label="Merge with client"
+                                        title="Proceed with merge process"
+                                        variant="brand"
+                                        stretch
+                                        onclick={handleChooseMerge}>
+                                    </lightning-button>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_5-of-12 slds-p-bottom_small">
+                                    <lightning-button
+                                        label="Discard prospect"
+                                        title="Proceed with discard process"
+                                        variant="brand"
+                                        stretch
+                                        onclick={handleChooseDiscard}>
+                                    </lightning-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+            </template>
+            <template lwc:if={showMergeFlow}>
+                <section role="dialog" tabindex="-1" aria-modal="true" aria-label="Merge Prospect" class="slds-modal slds-fade-in-open slds-modal_small">
+                    <div class="slds-modal__container" style="max-width: 42rem; width: 92%;">
+                        <header class="slds-modal__header">
+                            <lightning-button-icon
+                                class="slds-modal__close"
+                                icon-name="utility:close"
+                                alternative-text="Close"
+                                title="Close"
+                                onclick={handleCloseMergeModal}>
+                            </lightning-button-icon>
+                            <h2 class="slds-text-heading_medium">Merge Prospect</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_none" id="merge-modal-content">
+                            <p class="slds-text-body_regular slds-text-align_left slds-m-top_medium slds-m-bottom_medium slds-p-horizontal_small">Please select the client subsidiary with which you would like to merge this prospect.</p>
+                            <lightning-flow
+                                data-id="mergeFlow"
+                                onstatuschange={handleMergeFlowStatusChange}>
+                            </lightning-flow>
+                        </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

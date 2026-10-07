@@ -33,8 +33,8 @@ export const MOCK_DATA_A = {
             { type: "table", head: [["INIT TERM", "END TERM", "AMOUNT"]], body: [
                 ["0D", "3Y", "900.000,00 EUR"], ["3Y", "5Y", "675.000,00 EUR"], ["5Y", "8Y", "450.000,00 EUR"]
             ]},
-            { type: "title", text: "OPERATIONAL RESTRICTIONS" },
-            { type: "table", head: [["PRODUCT GROUP", "DERIVATIVES LINE", "MATURITY TERM", "FD LINE: (0 EUR)", "DVP LINE: (0 EUR)"]], body: [
+            { type: "title", text: "AVAILABLE PRODUCTS" },
+            { type: "table", head: [["PRODUCT GROUP", "DERIVATIVES LINE", "MATURITY TERM", "FD LINE: (800.000,00 EUR)", "DVP LINE: (900.000,00 EUR)"]], body: [
                 ["IRS", "3", "2Y", "", ""], ["FX", "", " ", "", ""]
             ]}
         ]},
@@ -123,8 +123,8 @@ export const MOCK_DATA_B = {
                 // ADDED: New Row
                 ["8Y", "10Y", "100.000,00 EUR"]
             ]},
-            { type: "title", text: "OPERATIONAL RESTRICTIONS" },
-            { type: "table", head: [["PRODUCT GROUP", "DERIVATIVES LINE", "MATURITY TERM", "FD LINE: (0 EUR)", "DVP LINE: (0 EUR)"]], body: [
+            { type: "title", text: "AVAILABLE PRODUCTS" },
+            { type: "table", head: [["PRODUCT GROUP", "DERIVATIVES LINE", "MATURITY TERM", "FD LINE: (800.000,00 EUR)", "DVP LINE: (950.000,00 EUR)"]], body: [
                 ["IRS", "3", "2Y", "", ""], 
                 // CHANGED: Added restrictions to FX
                 ["FX", "3", "2D", "3", "3"]

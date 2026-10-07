@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Do_not_remove_group_or_orphan_customer</fullName>
+    <active>true</active>
+    <description>Do not remove group or orphan customer</description>
+    <errorConditionFormula>IF(ISCHANGED(arce__InReview__c),ISPICKVAL(arce__group_asset_header_type__c, &apos;1&apos;),false)</errorConditionFormula>
+    <errorMessage>It is not allowed to remove from the analysis.</errorMessage>
+</ValidationRule>

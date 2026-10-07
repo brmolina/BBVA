@@ -1,0 +1,79 @@
+.dmt-close-task-modal {
+    --dmt-close-task-width: 100%;
+    --dmt-close-task-footer-height: 7vh;
+    width: var(--dmt-close-task-width);
+    max-width: var(--dmt-close-task-width);
+    min-height: 302px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+.dmt-close-task-header {
+    flex-shrink: 0;
+    width: 100%;
+}
+
+.dmt-close-task-subtitle {
+    margin-top: 0.25rem;
+}
+
+.dmt-close-task-content {
+    flex: 1;
+    width: 100%;
+    overflow: visible !important;
+    position: relative;
+    z-index: 2;
+}
+
+.dmt-close-task-grid {
+    margin-top: 2.5vh;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    position: relative;
+}
+
+.dmt-close-task-grid lightning-combobox {
+    --slds-c-input-spacing-block-start: 2.5vh;
+    --slds-c-input-spacing-block-end: 1vh;
+    --slds-c-listbox-max-height: 7rem;
+}
+
+.dmt-close-task-combobox-wrapper,
+.dmt-close-task-approver-wrapper {
+    position: relative;
+    z-index: 3;
+    overflow: visible;
+}
+
+.dmt-close-task-grid lightning-combobox {
+    --slds-c-input-spacing-block-start: 2.5vh;
+    --slds-c-input-spacing-block-end: 1vh;
+    --slds-c-listbox-max-height: 7rem;
+}
+
+/* .dmt-close-task-meta {
+    border-top: 1px solid #dddbda;
+    padding-top: 0.75rem;
+} */
+
+.dmt-close-task-footer {
+    background-color: #ecebea;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.75rem;
+    border-top: 1px solid #dddbda;
+    flex-shrink: 0;
+    height: var(--dmt-close-task-footer-height);
+    width: 100%;
+    padding-right: 2.5vh;
+    position: relative;
+    z-index: 1;
+}
+
+.dmt-close-task-button {
+    min-width: 96px;
+}

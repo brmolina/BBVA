@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DES_NotChange_CloseOpportunityTranche</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(OR(TEXT(opportunity_stage_type__c) == $Label.DES_Closed_Won,TEXT(opportunity_stage_type__c) == $Label.DES_Closed_Lose),
+				NOT(ISCHANGED(opportunity_stage_type__c)))</errorConditionFormula>
+    <errorMessage>You cannot modify a tranche in a closed opportunity.</errorMessage>
+</ValidationRule>

@@ -66,6 +66,7 @@
                 </div>
 
                 <div class="toolbar-right">
+                    <template lwc:if={showToolbarFilters}>
                     <lightning-combobox
                         class="filter-combobox"
                         name="filterClients"
@@ -86,6 +87,7 @@
                             oninput={handleSearchChange}
                         ></lightning-input>
                     </div>
+                    </template>
                 </div>
             </div>
 
@@ -113,6 +115,19 @@
                         </div>
                     </template>
 
+                    <template lwc:if={showInitialLoadingState}>
+                        <div class="initial-loading-state" role="status" aria-live="polite">
+                            <div class="spinner-wrap" aria-hidden="true">
+                                <div class="slds-spinner slds-spinner_medium slds-spinner_brand" role="status">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                            <p class="loading-text">{loadingMessage}</p>
+                        </div>
+                    </template>
+
                     <template lwc:if={hasLoadedOnce}>
                         <table class={tableClass} role="grid" aria-label="select clients table">
                         <thead>
@@ -124,11 +139,19 @@
                                 <template lwc:if={showMitigantContracts}>
                                     <th scope="col">Mitigant Contracts</th>
                                 </template>
+                                <template lwc:if={showOlOpServiceColumns}>
+                                    <th scope="col">SCORING</th>
+                                    <th scope="col">LEVERAGED LENDING</th>
+                                    <th scope="col">ASSET ALLOCATION SECTOR</th>
+                                </template>
                                 <template lwc:if={showInternalRating}>
                                     <th scope="col">Internal Rating (short)</th>
                                 </template>
                                 <template lwc:if={showCurrentRatingDate}>
                                     <th scope="col">Current Rating Tool Date</th>
+                                </template>
+                                <template lwc:if={showCurrentRatingDate}>
+                                    <th scope="col">Financial Statements Date</th>
                                 </template>
                                 <template lwc:if={showExpirationRatingDate}>
                                     <th scope="col">Expiration Rating Date</th>
@@ -190,11 +213,19 @@
                                         <template lwc:if={showMitigantContracts}>
                                             <td>{client.operationMitigantDesc}</td>
                                         </template>
+                                        <template lwc:if={showOlOpServiceColumns}>
+                                            <td>{client.totalRatingScoreNumber}</td>
+                                            <td>{client.leveragedLendingIndType}</td>
+                                            <td>{client.assetAllocationSectorType}</td>
+                                        </template>
                                         <template lwc:if={showInternalRating}>
                                             <td>{client.updSmsclInternalRatgType}</td>
                                         </template>
                                         <template lwc:if={showCurrentRatingDate}>
                                             <td>{client.currentRatingToolDate}</td>
+                                        </template>
+                                        <template lwc:if={showCurrentRatingDate}>
+                                            <td>{client.ffssRegulatoryRatingDate}</td>
                                         </template>
                                         <template lwc:if={showExpirationRatingDate}>
                                             <td>{client.expirationRatingDate}</td>
@@ -213,6 +244,7 @@
                                                     data-field="amount"
                                                     onchange={handleRowFieldChange}
                                                     disabled={client.disabled}
+                                                    min="0"
                                                 ></lightning-input>
                                             </td>
                                             <td>
@@ -224,6 +256,7 @@
                                                     data-field="amountFD"
                                                     onchange={handleRowFieldChange}
                                                     disabled={client.disabled}
+                                                    min="0"
                                                 ></lightning-input>
                                             </td>
                                             <td>
@@ -235,6 +268,7 @@
                                                     data-field="amountDVP"
                                                     onchange={handleRowFieldChange}
                                                     disabled={client.disabled}
+                                                    min="0"
                                                 ></lightning-input>
                                             </td>
                                             <td>{client.displayCurrency}</td>

@@ -1,0 +1,191 @@
+<template>
+    <div class="scenarios-main-container">
+        <!-- ===== TITLE ===== -->
+        <div class="slds-text-align_left slds-p-bottom_small scenarios-title">
+            <div class="scenarios-title-wrapper">
+                <img src="/resource/DMT_ProfScenarios" alt="Scenarios icon" class="scenarios-icon" />
+                <h2 class="scenarios-title__heading">Scenarios</h2>
+            </div>
+        </div>
+    <div class="slds-scrollable_y">
+        <!-- ===== OPPORTUNITY TYPE TOGGLE ===== -->
+        <div class="slds-form-element slds-m-bottom_small">
+            <label class="slds-form-element__label opp-type-label">Selec Oportunity type</label>
+            <div class="slds-form-element__control">
+                <lightning-button-group>
+                    <lightning-button
+                        label="Current opportunities"
+                        data-value="current"
+                        variant={variantCurrent}
+                        onclick={handleOpportunityTypeChange}
+                    ></lightning-button>
+                    <lightning-button
+                        label="Basic opportunities"
+                        data-value="basic"
+                        variant={variantBasic}
+                        onclick={handleOpportunityTypeChange}
+                    ></lightning-button>
+                </lightning-button-group>
+            </div>
+        </div>
+
+        <!-- ===== OBSOLETE PASSPORT ALERT (TOP) ===== -->
+        <template if:true={showObsoletePassport}>
+            <c-dmt_alert-obsolete-passport
+                message={obsoletePassportMessage}
+                link-message={obsoletePassportLinkMessage}
+                id-opp={oppSelected}
+            ></c-dmt_alert-obsolete-passport>
+        </template>
+
+        <!-- ===== OPPORTUNITY / PRODUCT SELECTORS ===== -->
+        <template if:true={hasOpportunities}>
+            <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox
+                        name="oppSelector"
+                        label="Opportunity"
+                        placeholder="Select an Opportunity"
+                        value={oppSelected}
+                        options={opportunitiesOptions}
+                        disabled={isLoadingOpportunities}
+                        onchange={handleOppChange}
+                    ></lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning-combobox
+                        name="productSelector"
+                        label="Product"
+                        placeholder="Select a Product"
+                        value={productSelected}
+                        options={productsOptions}
+                        disabled={isProductSelectorDisabled}
+                        onchange={handleProductChange}
+                    ></lightning-combobox>
+                </div>
+            </div>
+        </template>
+        <template if:false={hasOpportunities}>
+            <div class="slds-text-color_weak slds-p-vertical_small">There arent opportunities for this client.</div>
+        </template>
+
+        <!-- ===== LINE PRODUCT WARNING (calculation unavailable) ===== -->
+        <template if:true={showLineProductWarning}>
+            <c-dmt_alert-obsolete-passport message={lineProductWarningMessage}></c-dmt_alert-obsolete-passport>
+        </template>
+
+        <!-- ===== TABS WITH DYNAMIC FIELDS ===== -->
+        <lightning-tabset class="scenarios-tabs">
+            <lightning-tab label="Opportunity fields">
+                <c-dmt_form_renderer
+                    lwc:ref="oppFieldsRenderer"
+                    fields={opportunityFields}
+                    is-edit-mode="true"
+                    onfieldchange={handleOpportunityFieldChange}
+                ></c-dmt_form_renderer>
+            </lightning-tab>
+
+            <lightning-tab label="Product fields">
+                <c-dmt_form_renderer
+                    lwc:ref="productFieldsRenderer"
+                    fields={productFields}
+                    is-edit-mode="true"
+                    onfieldchange={handleProductFieldChange}
+                ></c-dmt_form_renderer>
+            </lightning-tab>
+
+            <lightning-tab label="Amortization">
+                <template if:true={isAmortizationUserDefined}>
+                    <div class="slds-text-color_weak slds-p-vertical_small">{amortizationMessage}</div>
+                </template>
+                <template if:false={isAmortizationUserDefined}>
+                    <c-dmt_form_renderer
+                        lwc:ref="amortFieldsRenderer"
+                        fields={amortizationFields}
+                        is-edit-mode="true"
+                        onfieldchange={handleAmortizationFieldChange}
+                    ></c-dmt_form_renderer>
+                </template>
+            </lightning-tab>
+
+            <lightning-tab label="Tenor & amounts">
+                <template if:true={isAmortizationUserDefined}>
+                    <div class="slds-text-color_weak slds-p-vertical_small">{tenorMessage}</div>
+                </template>
+                <template if:false={isAmortizationUserDefined}>
+                    <c-dmt_form_renderer
+                        lwc:ref="tenorFieldsRenderer"
+                        fields={tenorFields}
+                        is-edit-mode="true"
+                        onfieldchange={handleTenorFieldChange}
+                    ></c-dmt_form_renderer>
+                </template>
+            </lightning-tab>
+        </lightning-tabset>
+
+        <!-- ===== PROFITABILITY MATRIX VARIABLES ===== -->
+        <div class="slds-text-align_left slds-p-vertical_small scenarios-title">
+            <h2 class="scenarios-title__heading">Profitability matrix variables</h2>
+        </div>
+
+        <c-dmt_-profitability-axis-selector
+            lwc:ref="axisSelector"
+            obsolete-passport={obsoletePassport}
+            opp-selected={oppSelected}
+            opp-selected-data={mergedOppSelectedData}
+            product-selected={productSelected}
+            nominal-amount-new={currentNominalAmountNew}
+            nominal-fb-new={currentNominalFbNew}
+            catalog-rating={catalogRatingOptions}
+            catalog-internal-rating={catalogInternalRatingOptions}
+            onchangedvaluesaxis={handleAxisChange}
+        ></c-dmt_-profitability-axis-selector>
+
+        <!-- ===== CALCULATE BUTTON ===== -->
+        <div class="calc-footer">
+            <template if:true={isCalculating}>
+                <lightning-spinner
+                    alternative-text="Calculating profitability matrix"
+                    size="small"
+                    variant="brand"
+                ></lightning-spinner>
+            </template>
+            <lightning-button
+                variant="neutral"
+                label="Calculate"
+                disabled={isCalculateDisabled}
+                onclick={handleCalculate}
+            ></lightning-button>
+        </div>
+
+        <!-- ===== OBSOLETE PASSPORT ALERT (BOTTOM) ===== -->
+        <template if:true={showObsoletePassport}>
+            <c-dmt_alert-obsolete-passport
+                message={obsoletePassportMessage}
+                link-message={obsoletePassportLinkMessage}
+                id-opp={oppSelected}
+            ></c-dmt_alert-obsolete-passport>
+        </template>
+
+        <!-- ===== PROFITABILITY MATRIX ===== -->
+        <c-dmt_profitabilitymatrix
+            lwc:ref="matrix"
+            received-data={matrixReceivedData}
+            override-fields={matrixOverrideFields}
+            opp-data-original={matrixOppDataOriginal}
+        ></c-dmt_profitabilitymatrix>
+
+        <!-- ===== ERROR / WARNING POPOVER ===== -->
+        <div class="popover-center-wrapper">
+            <c-dmt_show-popover
+                lwc:ref="popover"
+                header={popoverHeader}
+                message={popoverMessage}
+                message-title={popoverMessageTitle}
+                variant={popoverVariant}
+                show-popover={popoverTrigger}
+            ></c-dmt_show-popover>
+        </div>
+    </div>
+    </div>
+</template>

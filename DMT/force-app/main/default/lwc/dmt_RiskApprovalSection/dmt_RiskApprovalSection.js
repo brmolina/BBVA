@@ -122,9 +122,6 @@ export default class DmtRiskApproval extends LightningElement {
         console.log('Línea desasociada internamente, link permanece visible');
     }
     handleLineLinkClick() {
-        this.selectedOption = 'Line'; // marca el radio
-        this.variantLimit = 'neutral';
-        this.variantLine = 'brand';
         this.openModal();
     }
 }

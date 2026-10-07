@@ -58,10 +58,6 @@ public with sharing class  DMT_Test_DataFactory {
 
         insert accTest1;
 
-        Local_Client__c lc = new Local_Client__c(Cib_Client__c = accTest1.Id);
-
-        insert lc;
-
         List<DMT_Line__c> linesInsert = new List<DMT_Line__c>();
 
         DMT_Line__c lineTest = new DMT_Line__c();
@@ -256,10 +252,6 @@ public with sharing class  DMT_Test_DataFactory {
 
         Account accTest1Update = [SELECT Id FROM Account LIMIT 1];
 
-        Local_Client__c lc = new Local_Client__c(Cib_Client__c = accTest1.Id);
-
-        insert lc;
-
         DMT_Line__c lineTest = new DMT_Line__c();
         lineTest.Allowed__c =false ;
         lineTest.Booking_Geography__c   ='ES' ;
@@ -381,10 +373,6 @@ public with sharing class  DMT_Test_DataFactory {
 
         insert accTest1;
         Account accTest1Update = [SELECT Id FROM Account WHERE Id =: accTest1.Id LIMIT 1 FOR UPDATE];
-
-        Local_Client__c lc = new Local_Client__c(Cib_Client__c = accTest1Update.Id);
-
-        insert lc;
 
         DMT_Line__c lineTest = new DMT_Line__c();
         lineTest.Allowed__c =false ;
@@ -598,16 +586,13 @@ public with sharing class  DMT_Test_DataFactory {
         accTest1.cust_first_income_country_name__c='ESPAÑA (2222815.0 EUR)';
         accTest1.DES_Activity__c='NDA';
         accTest1.Name='Test company 1';
-        accTest1.Past2_FY_Corp_Synd_Lending_amount__c = 13;
+        //accTest1.Past2_FY_Corp_Synd_Lending_amount__c = 13;
         accTest1.Revenues_Last_Year_number__c = 13;
         accTest1.DES_Group_Code__c = 'G20180109100427';
 
         insert accTest1;
         Account accTest1Update = [SELECT Id FROM Account WHERE Id =: accTest1.Id LIMIT 1 FOR UPDATE];
 
-        Local_Client__c lc = new Local_Client__c(Cib_Client__c = accTest1Update.Id,
-                                                Alpha_code__c ='TEST123');
-        insert lc;
         return accTest1Update;
     }
 
@@ -632,7 +617,7 @@ public with sharing class  DMT_Test_DataFactory {
 
 
         insert testOpportunity;
-        Opportunity testOpportunityUpdate = [SELECT Id,AccountId FROM Opportunity WHERE Id =: testOpportunity.Id LIMIT 1 FOR UPDATE];
+        Opportunity testOpportunityUpdate = [SELECT Id,AccountId,DMT_Opp_Id__c FROM Opportunity WHERE Id =: testOpportunity.Id LIMIT 1 FOR UPDATE];
         return testOpportunityUpdate;
     }
 
@@ -640,7 +625,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         DMT_Opportunity_Client__c oppCl = new DMT_Opportunity_Client__c();
         oppCl.DMT_MDE_Opportunity__c = oppId;
-        oppCl.Past2_FY_Corp_Synd_Lending_amount__c = 14;
+        //oppCl.Past2_FY_Corp_Synd_Lending_amount__c = 14;
         oppCl.Revenues_Last_Year_number__c = 14;
         oppCl.Counterpart__c='Corporates';
         oppCl.DMT_Sector__c='N';
@@ -1646,5 +1631,34 @@ public with sharing class  DMT_Test_DataFactory {
         }
         insert exRateList;
     }
+    public static DMT_Underlying__c generateUnderlyingRestriction(OpportunityLineItem opportunityLineItem) {
+        DMT_Underlying__c underlying = new DMT_Underlying__c(
+            DMT_Opportunity_Product__c = opportunityLineItem.Id,
+            Name = 'Test Underlying Restriction',
+            DMT_Underlying_Type__c = 'Restriction',
+            DMT_Max_Amount__c = 50000,
+            DMT_Currency__c = 'EUR',
+            DMT_Max_Term__c = '366'
+        );
+        insert underlying;
+        return underlying;
+    }
 
+    public static DMT_Opportunity_Mitigant__c generateOpportunityGuarantor(OpportunityLineItem opportunityLineItem) {
+        DMT_Opportunity_Mitigant__c oppMitigant = new DMT_Opportunity_Mitigant__c(
+            DMT_Opportunity_Product__c = opportunityLineItem.Id,
+            Mitigant_Type__c = 'Guarantee',
+            Garantor_European_ECA__c = true,
+            Commercial_Percentage__c = 80,
+            Political_Percentage__c = 20,
+            End_Date__c = Date.today().addYears(1),
+            Internal_Rating__c = 'A1',
+            External_Rating__c = 'AA',
+            DMT_Scoring__c = 95,
+            SCRA__c = 'A+',
+            AVC_Check__c = true
+        );
+        insert oppMitigant;
+        return oppMitigant;
+    }
 }

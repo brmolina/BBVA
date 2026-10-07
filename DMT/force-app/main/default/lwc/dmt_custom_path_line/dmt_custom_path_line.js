@@ -14,12 +14,12 @@ import GEOGRAPHY_FIELD from '@salesforce/schema/DMT_Line__c.Booking_Geography__c
 import DATETOPROPOSAL_FIELD from '@salesforce/schema/DMT_Line__c.DMT_DateToProposal__c'
 import LINE_TEMPLATE from '@salesforce/schema/DMT_Line__c.DMT_line_template_type__c'
 import DMT_Not_Approval_Required_Permission from '@salesforce/customPermission/DMT_Not_Approval_Required'
-import compareTaskFromCaseLWC from '@salesforce/apex/DMT_ApprovalChangeStep_Handler.compareTasksFromCaseLWC'
 import getRelatedTRSRLinesByLineId from '@salesforce/apex/DMT_View_Selector.getRelatedTRSRLinesByLineId'
 import getCustomAssociationClientByLineId from '@salesforce/apex/DMT_View_Selector.getCustomAssociationClientByLineId'
 import previewCompareTasksFromCase from '@salesforce/apex/DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase'
 import fetchClientDataFromServiceLine from '@salesforce/apex/DMT_HPG_MainTableCustomController.fetchClientDataFromServiceLine';
 import lastDate from '@salesforce/apex/DMT_HPG_Utils.lastDate';
+import checkProspectInLine from '@salesforce/apex/DMT_Line_Helper.checkProspectInLine';
 
 const ERROR_INVALID_UPDATING = 'Error updating status:'
 const ERROR_TITLE =
@@ -33,6 +33,7 @@ const STAGES_DISABLED_FOR_APPROVAL = ['Draft', 'Proposal'];
 const STAGE_APPROVAL = 'Approval';
 export default class Dmt_custom_path_line extends LightningElement {
   @api recordId
+  @api editingtab
   status
   clientType
   clientId
@@ -117,18 +118,41 @@ export default class Dmt_custom_path_line extends LightningElement {
       this.isReadOnly = data.recordTypeInfo.name == STAGE_APPROVAL;
 
       if(this.status && this.status == 'Ready to close' && this.geography !== 'PE' && this.lineTemplate != 'OP') {
-        this.status = 'Closed'
-        this.wonLostValue = 'Won'
-        this.selectedStage = this.status
+        this.checkProspectAndAutoClose();
+      } else {
+        this.calculateStages();
       }
-
-      this.calculateStages();
     } else if (error) {
       console.error(error)
     }
   }
 
+  async checkProspectAndAutoClose() {
+    try {
+      const result = await checkProspectInLine({ lineIds: [this.recordId] });
+      const hasProspect = result && result.length > 0 ? result[0] : false;
+      console.log('auto-change Close Won:', !hasProspect);
+
+      if (!hasProspect) {
+        this.status = 'Closed';
+        this.wonLostValue = 'Won';
+        this.selectedStage = this.status;
+      }
+      // Si hasProspect=true, mantener "Ready to close"
+    } catch (error) {
+      console.error('Error checking Prospect - blocking auto-change to Close Won for safety:', error);
+      // SEGURIDAD: Si falla validación, NO auto-change
+      // Mantener "Ready to close" para revisión manual
+      // Esto evita cerrar líneas con Prospect por errores técnicos
+    } finally {
+      this.calculateStages();
+    }
+  }
+
   handleStageClick (event) {
+    if (this.editingtab) {
+      return;
+    }
     this.selectedStage = event.detail.selectedStage;
 
     if(this.selectedStage &&
@@ -204,6 +228,16 @@ export default class Dmt_custom_path_line extends LightningElement {
   }
 
   handleMarkComplete (event) {
+    
+    if (this.editingtab) {
+      const childComponent = this.template.querySelector('.childCustomPath')
+      if (childComponent) {
+        childComponent.setLoading(false)
+        childComponent.setIsDisabled(false)
+        }
+
+      return;
+    }
     let nextStage = event.detail.nextStage
     console.log('nextStage: '+nextStage);
     const childComponent = this.template.querySelector('.childCustomPath')
@@ -227,8 +261,10 @@ export default class Dmt_custom_path_line extends LightningElement {
     }
 
     if (this.status == 'Draft' && nextStage != 'Draft' && this.dateToProposal) {
-      compareTaskFromCaseLWC({ lineId: this.recordId});
-      previewCompareTasksFromCase({ lineId: this.recordId}).then(result => {
+      // CIBGLOBALD-4117 - the actual restart (cancel/recreate the Task) runs from
+      // DMT_Line_TriggerHandler on save. previewCompareTasksFromCase is read-only, only feeds
+      // the toast message below.
+      previewCompareTasksFromCase({ recordId: this.recordId}).then(result => {
         console.log('result JACG: '+JSON.stringify(result));
         if (result && result.length === 0) {
           this.draftProposalMessage = 'There is no task or case created, so the draft-proposal logic won\'t be operating';
@@ -244,7 +280,7 @@ export default class Dmt_custom_path_line extends LightningElement {
               result[i].taskToRecreate.Owner.Name
                 ? result[i].taskToRecreate.Owner.Name
                 : 'N/A'
-            this.draftProposalMessage += 'The feature  ' + result[i].featureName + ' has been reopened with Owner: <b>' + ownerName + '</b> due to changes in the following fields: <ul class="slds-list_dotted">';
+            this.draftProposalMessage += 'The feature  ' + result[i].featureName + ' should be reopened with Owner: <b>' + ownerName + '</b> due to changes in the following fields: <ul class="slds-list_dotted">';
             for (let key in result[i].changedFields) {
               this.draftProposalMessage += '<li>' + key + '</li>'
             }
@@ -254,16 +290,19 @@ export default class Dmt_custom_path_line extends LightningElement {
 
            /*this.dispatchEvent(
           new ShowToastEvent({
-            title: 'Reopened Features',
+            title: 'Features to Be Reopened',
             message: this.draftProposalMessage,
             variant: 'info',
             mode: 'sticky'
           }));*/
           const toastComponent = this.template.querySelector('c-dmt_customtoast');
           if (toastComponent) {
-              toastComponent.showToast('Reopened Features', this.draftProposalMessage, 'info', false);
+              // CIBGLOBALD-4117 - previewCompareTasksFromCase is read-only; the actual
+              // cancel/recreate runs later from DMT_Line_TriggerHandler on save, so the title must
+              // not read as already done.
+              toastComponent.showToast('Features to Be Reopened', this.draftProposalMessage, 'info', false);
           } else {
-              console.error('No se encontró el componente dmt_customtoast en el DOM');
+              console.error('dmt_customtoast component not found in the DOM');
           }
         }
       })

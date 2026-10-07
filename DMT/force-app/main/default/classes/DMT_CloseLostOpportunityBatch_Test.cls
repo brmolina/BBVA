@@ -21,8 +21,6 @@ private without sharing class DMT_CloseLostOpportunityBatch_Test {
         DMT_Test_DataFactory.generateOpportunityClient(opp.Id);
         DMT_TeamMember__c participants = new DMT_TeamMember__c(Opportunity__c = opp.Id, User__c = UserInfo.getUserId(), AccessLevel__c = 'Read');
         insert participants;
-        Local_Client__c localClient = new Local_Client__c(Name = 'test local client', RecordTypeId = Schema.SObjectType.Local_Client__c.getRecordTypeInfosByName().get('Client').getRecordTypeId(), Cib_Client__c = opp.AccountId);
-        insert localClient;
         opp.CloseDate = Date.today().addDays(-31);
         opp.StageName = 'Draft';
         update opp;

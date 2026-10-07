@@ -1,5 +1,4 @@
 import { LightningElement, api } from 'lwc';
-import pubsub from 'omnistudio/pubsub';
 
 // Error messages
 const TXT_MUSTBENUMBER_ERROR = 'The value must be a number';
@@ -12,8 +11,7 @@ const TXT_CSVALIDATION_ERROR_CLEARING = 'Error clearing validity: ';
 const TXT_REQUIRED_ERROR = 'This field is required';
 const TXT_NO_RATING_OPTIONS = 'No rating options available';
 
-// PubSub
-const EVT_CHANNEL_NAME = 'DMT_ProfitabilityTest_Child';
+// Custom event name dispatched to the parent (dmt_ProfitabilityAxisSelector)
 const EVT_NAME = 'axisinputchange';
 
 // Field type constants
@@ -256,7 +254,13 @@ export default class Dmt_profitabilityTestInput extends LightningElement {
       disabledWithErrors: this.errors.length > 0,
       errors: this.errors.slice()
     };
-    pubsub.fire(EVT_CHANNEL_NAME, EVT_NAME, { detail: payload });
+    this.dispatchEvent(
+      new CustomEvent(EVT_NAME, {
+        detail: payload,
+        bubbles: true,
+        composed: true
+      })
+    );
   }
 
   _applyAllErrors() {

@@ -110,250 +110,151 @@ public with sharing class DMT_FeaturesController_test {
         Assert.areEqual('GREEN', features[1].get('stateName'), 'Second feature stateName should match.');
     }
 
-    @isTest
-    static void testGetObligatoryFeaturesClosedWon_WithRequiredFeatures() {
-        DMT_Line__c testLine = new DMT_Line__c(Name = 'Test Line Closed Won');
-        insert testLine;
+    // --- Helpers reutilizables: Para nueva lógica de semáforos en passport ---
 
-        String jsonData = '{"data":{"features":[' +
-            '{"id":"F1","name":"Feature Obligatorio Passport","stateName":"RED","requiredType":"Y","passportSanction":"passport"},' +
-            '{"id":"F2","name":"Feature No Obligatorio","stateName":"GREEN","requiredType":"N","passportSanction":"passport"},' +
-            '{"id":"F3","name":"Feature Obligatorio No Passport","stateName":"RED","requiredType":"Y","passportSanction":"other"}' +
-            ']}}';
-
-        List<Passport__c> existingPassports = [SELECT Id FROM Passport__c WHERE DMT_Line__c = :testLine.Id];
-        delete existingPassports;
-
-        Passport__c testPassport = new Passport__c(
-            DMT_Line__c = testLine.Id,
-            DMT_Passport_Save__c = jsonData
-        );
-        insert testPassport;
-
-        Test.startTest();
-        List<Map<String, Object>> features = DMT_FeaturesController.getObligatoryFeaturesClosedWon(testLine.Id);
-        Test.stopTest();
-
-        Assert.isNotNull(features, 'Features list should not be null.');
-        Assert.areEqual(2, features.size(), 'Should return all features with requiredType Y.');
-        Assert.areEqual('Y', features[0].get('requiredType'), 'First feature should have requiredType Y.');
-        Assert.areEqual('Y', features[1].get('requiredType'), 'Second feature should have requiredType Y.');
+    private static Map<String, Object> buildFeature(String id, String name, String stateName, String requiredType,
+                                                      String reqColorCap, String reqColorWF, String operatorType,
+                                                      String requiredStatus, List<Object> tasks) {
+        Map<String, Object> f = new Map<String, Object>();
+        f.put('id', id);
+        f.put('name', name);
+        f.put('stateName', stateName);
+        f.put('requiredType', requiredType);
+        f.put('requiredColorCapability', reqColorCap);
+        f.put('requiredColorWorkflow', reqColorWF);
+        f.put('colorLogicalOperatorType', operatorType);
+        f.put('requiredStatus', requiredStatus);
+        if (tasks != null) {
+            f.put('tasks', tasks);
+        }
+        return f;
     }
 
-    @isTest
-    static void testGetObligatoryFeaturesClosedWon_NoFeatures() {
-        DMT_Line__c testLine = new DMT_Line__c(Name = 'Test Line No Features');
-        insert testLine;
-
-        String jsonData = '{"data":{"features":[]}}';
-
-        List<Passport__c> existingPassports = [SELECT Id FROM Passport__c WHERE DMT_Line__c = :testLine.Id];
-        delete existingPassports;
-
-        Passport__c testPassport = new Passport__c(
-            DMT_Line__c = testLine.Id,
-            DMT_Passport_Save__c = jsonData
-        );
-        insert testPassport;
-
-        Test.startTest();
-        List<Map<String, Object>> features = DMT_FeaturesController.getObligatoryFeaturesClosedWon(testLine.Id);
-        Test.stopTest();
-
-        Assert.isNotNull(features, 'Features list should not be null.');
-        Assert.areEqual(0, features.size(), 'Should return empty list when no features.');
+    private static String buildPassportJson(List<Map<String, Object>> features) {
+        Map<String, Object> dataMap = new Map<String, Object>{ 'features' => features };
+        Map<String, Object> root = new Map<String, Object>{ 'data' => dataMap };
+        return JSON.serialize(root);
     }
 
-    @isTest
-    static void testGetObligatoryFeaturesClosedWon_NullPassportSave() {
-        DMT_Line__c testLine = new DMT_Line__c(Name = 'Test Line Null Save');
-        insert testLine;
-
-        List<Passport__c> existingPassports = [SELECT Id FROM Passport__c WHERE DMT_Line__c = :testLine.Id];
-        delete existingPassports;
-
-        Passport__c testPassport = new Passport__c(
-            DMT_Line__c = testLine.Id,
-            DMT_Passport_Save__c = null
-        );
-        insert testPassport;
-
-        Test.startTest();
-        List<Map<String, Object>> features = DMT_FeaturesController.getObligatoryFeaturesClosedWon(testLine.Id);
-        Test.stopTest();
-
-        Assert.isNotNull(features, 'Features list should not be null.');
-        Assert.areEqual(0, features.size(), 'Should return empty list when DMT_Passport_Save__c is null.');
-    }
-
-    @isTest
-    static void testValidateFeaturesForClosedWon_Valid() {
-        // Recupera el Account del @TestSetup
-        Account testAccount = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
-
+    private static Opportunity createTestOpportunity(String name, String extId) {
+        Account acc = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
         Opportunity opp = new Opportunity(
-            Name = 'Test Opp Valid',
+            Name = name,
             StageName = 'Prospecting',
             CloseDate = Date.today().addDays(30),
-            DMT_Opp_Id__c = 'EXT-VALID-001',
-            AccountId = testAccount.Id 
+            DMT_Opp_Id__c = extId,
+            AccountId = acc.Id
         );
         insert opp;
-
-        String jsonData = '{"data":{"features":[' +
-            '{"id":"F1","name":"Feature 1","stateName":"GREEN","requiredType":"Y","passportSanction":"passport"}' +
-            ']}}';
-
-        Passport__c testPassport = new Passport__c(
-            Opportunity__c = opp.Id,
-            DMT_Passport_Save__c = jsonData
-        );
-        insert testPassport;
-
-        Test.startTest();
-        Map<String, Object> result = DMT_FeaturesController.validateFeaturesForClosedWon(opp.Id);
-        Test.stopTest();
-
-        Assert.isNotNull(result, 'Result should not be null.');
-        Assert.isTrue((Boolean) result.get('isValid'), 'Should be valid when no incomplete features exist.');
-        Assert.areEqual(0, ((List<Map<String, String>>) result.get('incompleteFeatures')).size(), 'Should have no incomplete features.');
+        return opp;
     }
 
-    @isTest
-    static void testValidateFeaturesForClosedWon_InvalidCapabilityRed() {
-        // Recupera el Account del @TestSetup
-        Account testAccount = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
-
-        Opportunity opp = new Opportunity(
-            Name = 'Test Opp Capability Red',
-            StageName = 'Prospecting',
-            CloseDate = Date.today().addDays(30),
-            DMT_Opp_Id__c = 'EXT-CAP-RED-001',
-            AccountId = testAccount.Id 
+    private static Passport__c createTestPassport(Id opportunityId, List<Map<String, Object>> features) {
+        Passport__c passport = new Passport__c(
+            Opportunity__c = opportunityId,
+            DMT_Passport_Save__c = buildPassportJson(features)
         );
-        insert opp;
-
-        String jsonData = '{"data":{"features":[' +
-            '{"id":"F1","name":"Critical Feature","stateName":"RED","requiredType":"Y","passportSanction":"passport"}' +
-            ']}}';
-
-        Passport__c testPassport = new Passport__c(
-            Opportunity__c = opp.Id,
-            DMT_Passport_Save__c = jsonData
-        );
-        insert testPassport;
-
-        Test.startTest();
-        Map<String, Object> result = DMT_FeaturesController.validateFeaturesForClosedWon(opp.Id);
-        Test.stopTest();
-
-        Assert.isNotNull(result, 'Result should not be null.');
-        Assert.isFalse((Boolean) result.get('isValid'), 'Should be invalid when capability is RED.');
-        List<Map<String, String>> incompleteFeatures = (List<Map<String, String>>) result.get('incompleteFeatures');
-        Assert.areEqual(1, incompleteFeatures.size(), 'Should have 1 incomplete feature.');
-        Assert.areEqual('Critical Feature', incompleteFeatures[0].get('name'), 'Feature name should match.');
-        Assert.areEqual('RED', incompleteFeatures[0].get('stateName'), 'State should be RED.');
+        insert passport;
+        return passport;
     }
 
-    @isTest
-    static void testValidateFeaturesForClosedWon_InvalidWorkflowRed() {
-        // Recupera el Account del @TestSetup
-        Account testAccount = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
-
-        Opportunity opp = new Opportunity(
-            Name = 'Test Opp Workflow Red',
-            StageName = 'Prospecting',
-            CloseDate = Date.today().addDays(30),
-            DMT_Opp_Id__c = 'EXT-WF-RED-001',
-            AccountId = testAccount.Id  
-        );
-        insert opp;
-
-        String jsonData = '{"data":{"features":[' +
-            '{"id":"WF1","name":"Workflow Feature","stateName":"GREEN","requiredType":"Y","passportSanction":"passport","tasks":[{"id":"T1"}]}' +
-            ']}}';
-
-        Passport__c testPassport = new Passport__c(
-            Opportunity__c = opp.Id,
-            DMT_Passport_Save__c = jsonData
-        );
-        insert testPassport;
-
+    // Reutiliza el mismo patrón que ya usaban los tests DEPRECATED (Case + Task con RecordType DMT_Step_Approval)
+    private static Task createWorkflowCaseAndTask(Id opportunityId, String featureId, String caseStatus, String stepResult) {
         Case workflowCase = new Case(
-            Subject = 'Workflow Test Case',
-            Status = 'Finished'
+            Subject = 'Workflow Case ' + featureId,
+            Status = caseStatus
         );
-        workflowCase.put('Opportunity_Id__c', opp.Id);
-        workflowCase.put('DMT_Feature_Id__c', 'WF1');
+        workflowCase.put('Opportunity_Id__c', opportunityId);
+        workflowCase.put('DMT_Feature_Id__c', featureId);
         insert workflowCase;
 
         RecordType stepApprovalRt = [
-            SELECT Id
-            FROM RecordType
+            SELECT Id FROM RecordType
             WHERE SObjectType = 'Task' AND DeveloperName = 'DMT_Step_Approval'
             LIMIT 1
         ];
 
         Task workflowTask = new Task(
             WhatId = workflowCase.Id,
-            Subject = 'Workflow Approval Task',
+            Subject = 'Workflow Task ' + featureId,
             Status = 'Completed',
             RecordTypeId = stepApprovalRt.Id
         );
-        workflowTask.put('DMT_Step_Result__c', 'No');
+        workflowTask.put('DMT_Step_Result__c', stepResult);
         insert workflowTask;
-
-        Test.startTest();
-        Map<String, Object> result = DMT_FeaturesController.validateFeaturesForClosedWon(opp.Id);
-        Test.stopTest();
-
-        Assert.isNotNull(result, 'Result should not be null.');
-        Assert.isFalse((Boolean) result.get('isValid'), 'Should be invalid when workflow is finished with No result.');
-        List<Map<String, String>> incompleteFeatures = (List<Map<String, String>>) result.get('incompleteFeatures');
-        Assert.areEqual(1, incompleteFeatures.size(), 'Should have 1 incomplete feature by workflow condition.');
-        Assert.areEqual('Workflow Feature', incompleteFeatures[0].get('name'), 'Feature name should match.');
+        return workflowTask;
     }
 
     @isTest
-    static void testValidateFeaturesForClosedWon_NoRequiredFeatures() {
-        // Recupera el Account del @TestSetup
-        Account testAccount = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
-
-        Opportunity opp = new Opportunity(
-            Name = 'Test Opp No Required',
-            StageName = 'Prospecting',
-            CloseDate = Date.today().addDays(30),
-            DMT_Opp_Id__c = 'EXT-NOREQ-001',
-            AccountId = testAccount.Id  
-        );
-        insert opp;
-
-        String jsonData = '{"data":{"features":[' +
-            '{"id":"F1","name":"Optional Feature","stateName":"RED","requiredType":"N","passportSanction":"passport"}' +
-            ']}}';
-
-        Passport__c testPassport = new Passport__c(
-            Opportunity__c = opp.Id,
-            DMT_Passport_Save__c = jsonData
-        );
-        insert testPassport;
-
+    static void testValidateSemaphore_ClosedLost_EarlyReturn() {
         Test.startTest();
-        Map<String, Object> result = DMT_FeaturesController.validateFeaturesForClosedWon(opp.Id);
+        Map<String, Object> result = DMT_FeaturesController.validateSemaphoreRulesForStageChange('irrelevantId', 'Closed Lost');
         Test.stopTest();
 
-        Assert.isNotNull(result, 'Result should not be null.');
-        Assert.isTrue((Boolean) result.get('isValid'), 'Should be valid when there are no required features.');
-        Assert.areEqual(0, ((List<Map<String, String>>) result.get('incompleteFeatures')).size(), 'Should have no incomplete features.');
+        Assert.isTrue((Boolean) result.get('isValid'), 'Closed Lost debe devolver siempre isValid = true');
+        Assert.isTrue(((List<Object>) result.get('incompleteFeatures')).isEmpty());
     }
 
     @isTest
-    static void testValidateFeaturesForClosedWon_ExceptionPath() {
+    static void testValidateSemaphore_ClosedWonOverride_ANDBlocking() {
+        Opportunity opp = createTestOpportunity('Opp ClosedOverride', 'EXT-CLOSEDOVERRIDE-001');
+        createTestPassport(opp.Id, new List<Map<String, Object>>{
+            buildFeature('F1', 'Capability Blocking Feature', 'RED', 'Y', 'GRE', 'GRE', 'AND', 'Closed', null)
+        });
+
         Test.startTest();
-        Map<String, Object> result = DMT_FeaturesController.validateFeaturesForClosedWon('INVALID_ID');
+        Map<String, Object> result = DMT_FeaturesController.validateSemaphoreRulesForStageChange(opp.Id, 'Closed Won');
         Test.stopTest();
 
-        Assert.isNotNull(result, 'Result should not be null.');
-        Assert.isTrue((Boolean) result.get('isValid'), 'Should return valid true when exception is handled.');
+        Assert.isFalse((Boolean) result.get('isValid'), 'Capability RED no cumple GRE requerido, debe bloquear con AND');
+        List<Object> blocking = (List<Object>) result.get('incompleteFeatures');
+        Assert.areEqual(1, blocking.size());
+        Assert.areEqual('Capability Blocking Feature', (String) blocking[0]);
+    }
+
+    @isTest
+    static void testValidateSemaphore_CaseFinishedNo_WorkflowRed() {
+        Opportunity opp = createTestOpportunity('Opp CaseRed', 'EXT-CASERED-001');
+        List<Object> tasks = new List<Object>{ new Map<String, Object>{ 'id' => 'T1' } };
+        createTestPassport(opp.Id, new List<Map<String, Object>>{
+            buildFeature('F1', 'Feature Case Red', 'YEL', 'Y', 'GRE', 'RED', 'OR', 'Closed Won', tasks)
+        });
+        createWorkflowCaseAndTask(opp.Id, 'F1', 'Finished', 'No'); // <- crea el Case + Task real
+
+        Test.startTest();
+        Map<String, Object> result = DMT_FeaturesController.validateSemaphoreRulesForStageChange(opp.Id, 'Closed Won');
+        Test.stopTest();
+
+        Assert.isTrue((Boolean) result.get('isValid'), 'Case finished with No result and workflow RED should be valid');
+    }
+
+    @isTest
+    static void testResolveWorkflowColor_FinishedYes_ReturnsGre() {
+        Assert.areEqual('GRE', DMT_FeaturesController.resolveWorkflowColor('Finished', 'Yes'));
+    }
+
+    @isTest
+    static void testResolveWorkflowColor_PendingOrInProgress_ReturnsYellow() {
+        Assert.areEqual('YEL', DMT_FeaturesController.resolveWorkflowColor('Pending', null));
+        Assert.areEqual('YEL', DMT_FeaturesController.resolveWorkflowColor('In Progress', null));
+    }
+
+    @isTest
+    static void testNormalizeToShortColor_Gray() {
+        Assert.areEqual('GRA', DMT_Semaphore_Logic.normalizeToShortColor('GRAY'));
+        Assert.areEqual('GRA', DMT_Semaphore_Logic.normalizeToShortColor('GRA'));
+    }
+
+    @isTest
+    static void testEvaluate_NoOperator_AllBranches() {
+        DMT_Semaphore_Logic.SemaphoreRule r = new DMT_Semaphore_Logic.SemaphoreRule();
+        r.requiredColorCapability = 'GRE'; r.requiredColorWorkflow = null;
+        Assert.isTrue(DMT_Semaphore_Logic.evaluate(r, 'GRE', null));   // solo capability
+
+        r.requiredColorCapability = null; r.requiredColorWorkflow = 'GRE';
+        Assert.isTrue(DMT_Semaphore_Logic.evaluate(r, null, 'GRE'));   // solo workflow
+
+        r.requiredColorCapability = null; r.requiredColorWorkflow = null;
+        Assert.isFalse(DMT_Semaphore_Logic.evaluate(r, 'GRE', 'GRE')); // ninguno configurado
     }
 }

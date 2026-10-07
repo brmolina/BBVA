@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>almd__commercial_alert_task_type__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>backup</fullName>
+                <default>false</default>
+                <label>Backup</label>
+            </value>
+            <value>
+                <fullName>commercial-operation-date-reached</fullName>
+                <default>false</default>
+                <label>Commercial operation date reached</label>
+            </value>
+            <value>
+                <fullName>debt-service-coverage-ratio</fullName>
+                <default>false</default>
+                <label>Debt service coverage ratio</label>
+            </value>
+            <value>
+                <fullName>debt-to-ebitda-ceriticates-ratio</fullName>
+                <default>false</default>
+                <label>Debt to ebitda certificates ratio</label>
+            </value>
+            <value>
+                <fullName>formalized-lbo</fullName>
+                <default>false</default>
+                <label>LBO</label>
+            </value>
+            <value>
+                <fullName>future-commercial-operation-date</fullName>
+                <default>false</default>
+                <label>Future commercial operation date</label>
+            </value>
+            <value>
+                <fullName>repayments</fullName>
+                <default>false</default>
+                <label>Repayments</label>
+            </value>
+            <value>
+                <fullName>tail</fullName>
+                <default>false</default>
+                <label>Tail</label>
+            </value>
+            <value>
+                <fullName>to-be-due</fullName>
+                <default>false</default>
+                <label>To Be Due</label>
+            </value>
+            <value>
+                <fullName>debt-to-equity-ratio</fullName>
+                <default>false</default>
+                <label>Debt to equity ratio</label>
+            </value>
+            <value>
+                <fullName>out-of-range operations</fullName>
+                <default>false</default>
+                <label>Out of range operations</label>
+            </value>
+            <value>
+                <fullName>business_leakage_to_competitors</fullName>
+                <default>false</default>
+                <label>Business leakage to competitors</label>
+            </value>
+            <value>
+                <fullName>anticipated-cancelation</fullName>
+                <default>false</default>
+                <label>Anticipated cancelation</label>
+            </value>
+            <value>
+                <fullName>loan-to-value-ratio</fullName>
+                <default>false</default>
+                <label>Loan to value ratio</label>
+            </value>
+            <value>
+                <fullName>llcr-to-dscr-ratio</fullName>
+                <default>false</default>
+                <label>Llcr to dscr ratio</label>
+            </value>
+            <value>
+                <fullName>plcr-to-llcr-ratio</fullName>
+                <default>false</default>
+                <label>Plcr to llcr ratio</label>
+            </value>
+            <value>
+                <fullName>avg-residual-life</fullName>
+                <default>false</default>
+                <label>Avg residual life</label>
+            </value>
+            <value>
+                <fullName>syndicates</fullName>
+                <default>false</default>
+                <label>Syndicates</label>
+            </value>
+            <value>
+                <fullName>waivers</fullName>
+                <default>false</default>
+                <label>Waivers</label>
+            </value>
+            <value>
+                <fullName>rating</fullName>
+                <default>false</default>
+                <label>Rating</label>
+            </value>
+            <value>
+                <fullName>covenants</fullName>
+                <default>false</default>
+                <label>Covenants</label>
+            </value>
+            <value>
+                <fullName>news</fullName>
+                <default>false</default>
+                <label>News</label>
+            </value>
+            <value>
+                <fullName>operations</fullName>
+                <default>false</default>
+                <label>Operations</label>
+            </value>
+            <value>
+                <fullName>derivative</fullName>
+                <default>false</default>
+                <label>Derivative</label>
+            </value>
+            <value>
+                <fullName>pricing-market-to-real</fullName>
+                <default>false</default>
+                <label>Pricing market to real</label>
+            </value>
+            <value>
+                <fullName>pricing-trend</fullName>
+                <default>false</default>
+                <label>Pricing-trend</label>
+            </value>
+            <value>
+                <fullName>loanevent</fullName>
+                <default>false</default>
+                <label>Loanevent</label>
+            </value>
+            <value>
+                <fullName>expiry</fullName>
+                <default>false</default>
+                <label>Expiry</label>
+            </value>
+            <value>
+                <fullName>attrition</fullName>
+                <default>false</default>
+                <label>Attrition</label>
+            </value>
+            <value>
+                <fullName>local_curr_transfer_to_non_local_curr_country</fullName>
+                <default>false</default>
+                <label>Local curr transfer to non local curr country</label>
+            </value>
+            <value>
+                <fullName>potential-business</fullName>
+                <default>false</default>
+                <label>Potential business</label>
+            </value>
+            <value>
+                <fullName>product-gaps</fullName>
+                <default>false</default>
+                <label>Product gaps</label>
+            </value>
+            <value>
+                <fullName>Expiry_FX</fullName>
+                <default>false</default>
+                <label>Expiry FX</label>
+            </value>
+            <value>
+                <fullName>lost_and_decreased_clients</fullName>
+                <default>false</default>
+                <label>Lost and decreased clients</label>
+            </value>
+            <value>
+                <fullName>stationarity_prediction</fullName>
+                <default>false</default>
+                <label>Stationarity prediction</label>
+            </value>
+            <value>
+                <fullName>Franchises</fullName>
+                <default>false</default>
+                <label>Franchises</label>
+            </value>
+            <value>
+                <fullName>eur_transfer_to_non_eurozone_country</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Eur transfer to non eurozone country</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

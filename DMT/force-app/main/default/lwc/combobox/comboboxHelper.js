@@ -25,7 +25,9 @@ export const openAndCloseDropdown = (opr = 'close',compObj)=>{
     let template = compObj.template;
     // check if the dropdown has any options or not
     const options =  template.querySelectorAll('div[role="option"]');
-    if (!compObj.comboboxObj.lazySearch && !(options && options.length > 0)) {
+    // Only skip when OPENING with nothing to show - a CLOSE must always run so state
+    // (search term, dropdown-visible flag) gets reset even when a typed filter matched nothing.
+    if (opr === 'open' && !compObj.comboboxObj.lazySearch && !(options && options.length > 0)) {
         return;
     }
     let element =  template.querySelector('div[role="dropdown-trigger"');
@@ -218,6 +220,24 @@ function resetDropdownOptions(template){
     }
 }
 
+// When autocomplete filtering has narrowed the dropdown to exactly one option, typing the
+// match and pressing Enter or moving focus away (blur) commits that option automatically -
+// without this, the input can visually show the typed text while the underlying value/
+// selectedComponentItem never actually gets set, since selection otherwise requires an
+// explicit click or arrow-key highlight before Enter.
+export function commitSingleMatchIfAny(compObj){
+    const comboboxObj = compObj.comboboxObj;
+    // Multiselect is excluded: a single-option commit there TOGGLES the option (see the
+    // multiselect branch of the value setter) - auto-firing that on blur could silently
+    // remove an option the user had already selected, if they retyped its name to find it
+    // again without intending to deselect it.
+    if (!comboboxObj.multiselect && comboboxObj.autocomplete && comboboxObj._searchTerm && comboboxObj.options && comboboxObj.options.length === 1) {
+        populateValueOnInput(comboboxObj.options[0].value, comboboxObj);
+        return true;
+    }
+    return false;
+}
+
 function populateValueOnInput(value, comboboxObj){
     // if(comboboxObj.value === value &&comboboxObj.multiselect){ // if multiselect and same value sent
     //     value = '';
@@ -307,6 +327,11 @@ function handleEnterKey(event,compObj){
             // get the value out of the hover
             let value = template.querySelectorAll('div[role="option"]')[currentIndex].dataset.value;
             populateValueOnInput(value,compObj.comboboxObj);
+            if(!compObj.comboboxObj.multiselect){
+                openAndCloseDropdown('close',compObj);
+            }
+        }
+        else if(commitSingleMatchIfAny(compObj)){
             if(!compObj.comboboxObj.multiselect){
                 openAndCloseDropdown('close',compObj);
             }

@@ -1,0 +1,96 @@
+<template>
+    <div class="approval-modal slds-p-around_medium">
+        <!-- Header -->
+        <div class="slds-modal__header approval-header">
+            <h2 class="slds-text-heading_medium">Close Task and Send to Approver</h2>
+        </div>
+
+        <!-- Loading spinner -->
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading..." size="medium" variant="brand"></lightning-spinner>
+        </template>
+
+        <!-- Main content -->
+        <template if:false={isLoading}>
+            <div class="slds-modal__content approval-content">
+                <div class="slds-grid slds-gutters slds-wrap approval-form-grid">
+                    <!-- Step selection (always visible) -->
+                    <div class="slds-col slds-size_1-of-2 slds-p-bottom_medium">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="stepSelect">
+                                Select the following task to perform:
+                            </label>
+                            <div class="slds-form-element__control">
+                                <lightning-combobox
+                                    id="stepSelect"
+                                    name="step"
+                                    label=""
+                                    value={stepSelected}
+                                    placeholder="Choose a step"
+                                    options={getValidations}
+                                    onchange={handleStepChange}
+                                    disabled={isButtonDisabled}
+                                ></lightning-combobox>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Approver selection (always visible) -->
+                    <div class="slds-col slds-size_1-of-2 slds-p-bottom_medium">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="approverSelect">
+                                Select the approver to assign this task to:
+                            </label>
+                            <div class="slds-form-element__control">
+                                <lightning-combobox
+                                    id="approverSelect"
+                                    name="approver"
+                                    label=""
+                                    value={nextApprover}
+                                    placeholder="Choose an approver"
+                                    options={nextApprovers}
+                                    onchange={handleApproverChange}
+                                    disabled={isButtonDisabled}
+                                ></lightning-combobox>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error message (if any) -->
+                <template if:true={showError}>
+                    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error slds-m-bottom_medium" role="alert">
+                        <span class="slds-assistive-text">Error:</span>
+                        <span class="slds-icon_container slds-m-right_small" title="Error">
+                            <lightning-icon icon-name="utility:error" alternative-text="Error" size="small"></lightning-icon>
+                        </span>
+                        <div class="slds-notify__content">
+                            <h2 class="slds-text-heading_small slds-m-bottom_xx-small">We hit a snag.</h2>
+                            <p>{errorMessage}</p>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Footer with actions -->
+            <div class="approval-footer slds-modal__footer slds-p-around_medium">
+                <button 
+                    type="button"
+                    class="slds-button slds-button_neutral approval-footer-button" 
+                    onclick={handleCancel}
+                    disabled={isButtonDisabled}
+                >
+                    Cancel
+                </button>
+                <button 
+                    type="button"
+                    class="slds-button slds-button_brand approval-footer-button" 
+                    onclick={handleSave}
+                    disabled={isSaveDisabled}
+                >
+                    Close Task
+                </button>
+            </div>
+        </template>
+    </div>
+</template>

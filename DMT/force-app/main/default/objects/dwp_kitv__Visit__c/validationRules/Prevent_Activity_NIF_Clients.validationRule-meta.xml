@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prevent_Activity_NIF_Clients</fullName>
+    <active>true</active>
+    <description>Prevent commercial activities with specific clients.</description>
+    <errorConditionFormula>dwp_kitv__account_id__r.RecordType.DeveloperName = &apos;NIF_Client&apos;</errorConditionFormula>
+    <errorMessage>This account is only for Conditions Notebook purposes. Commercial Activities are not allowed.</errorMessage>
+</ValidationRule>

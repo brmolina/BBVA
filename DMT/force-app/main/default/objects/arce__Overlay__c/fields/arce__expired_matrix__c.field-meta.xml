@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__expired_matrix__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Check if the matrix is expired. 1 - Yes, 0 - No</description>
+    <externalId>false</externalId>
+    <formula>IF(
+  OR(arce__matrixOverlay__r.arce__Account_has_AnalysisId__r.arce__Analysis__r.arce__end_date__c &lt; ADDMONTHS(TODAY(), VALUE($CustomMetadata.arce__Arce_Config__mdt.arce__Expired_Matrix_Months_ARCE.arce__Value1__c) ),
+  arce__matrixOverlay__r.arce__Account_has_AnalysisId__r.arce__ffss_for_rating_id__r.arce__financial_statement_end_date__c &lt; ADDMONTHS(TODAY(), VALUE($CustomMetadata.arce__Arce_Config__mdt.arce__Expired_Matrix_Months_FFSS.arce__Value1__c)))
+,&apos;1&apos;, &apos;0&apos;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Expired Matrix</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

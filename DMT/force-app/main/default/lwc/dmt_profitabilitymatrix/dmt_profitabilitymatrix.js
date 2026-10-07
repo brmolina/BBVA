@@ -114,6 +114,7 @@ export default class dmt_profitabilitymatrix extends LightningElement {
     showPercentageCentral = false;
     errorMatrix = false;
     messageError=this.label.unknownErrorText;
+    _processingVersion = 0;
     
     
     
@@ -129,10 +130,14 @@ export default class dmt_profitabilitymatrix extends LightningElement {
     
     @api
     set receivedData(value) {
-      if (value && this.isValidOmniValue(value)) {
+      // FlexCard retirado (ver isValidOmniValue/parseJson comentados más abajo): Main
+      // (dmt_profitabilityTestMain) pasa aquí un objeto nativo { data: { assumption, assumptionResult } },
+      // ya no un JSON string, así que no hace falta validar/parsear.
+      if (value) {
         this._processReceivedData(value);
+      } else {
+        this.reset();
       }
-     
     }
 
     get receivedData() {
@@ -141,13 +146,16 @@ export default class dmt_profitabilitymatrix extends LightningElement {
 
     @api
     set overrideFields(value) {
-      if (value && this.isValidOmniValue(value)) {
+      // FlexCard retirado: value ya es un objeto plano nativo.
+      if (value) {
         this.overrideTitle = Object.entries(value)
           .filter(([key, val]) => val !== undefined && val !== null && val !== '')
           .map(([key, val]) => ({
             field: this.labelsOverrideFields.get(key),
             value: val
           }));
+      } else {
+        this.overrideTitle = [];
       }
     }
 
@@ -157,7 +165,8 @@ export default class dmt_profitabilitymatrix extends LightningElement {
 
     @api
     set oppDataOriginal(value) {
-      if (value && this.isValidOmniValue(value) && value !== 'null') {
+      // FlexCard retirado: value ya es un objeto plano nativo.
+      if (value) {
         const allowedFields = this.fieldOrder.map(key => this.labelsOppDataFields.get(key));
         this.overrideOriginalTitle = Object.entries(value)
           .filter(([key, val]) => val !== undefined && val !== null && val !== '' &&
@@ -168,11 +177,29 @@ export default class dmt_profitabilitymatrix extends LightningElement {
             field: this.labelsOppDataFields.get(key),
             value: val
           }));
+      } else {
+        this.overrideOriginalTitle = [];
       }
     }
 
      get oppDataOriginal() {
       return this.overrideOriginalTitle;
+    }
+
+    @api
+    reset() {
+      this._processingVersion += 1;
+      this.formattedData = undefined;
+      this.receivedDataFormated = [];
+      this.matrixGeneralInfo = [];
+      this.dataLoaded = false;
+      this.overrideTitle = [];
+      this.overrideOriginalTitle = [];
+      this.showPercentageX = false;
+      this.showPercentageY = false;
+      this.showPercentageCentral = false;
+      this.errorMatrix = false;
+      this.messageError = this.label.unknownErrorText;
     }
     
     //Nombre que se pinta en el eje X, recuperado del servicio
@@ -232,7 +259,9 @@ export default class dmt_profitabilitymatrix extends LightningElement {
   }
 
       _processReceivedData(value) {
-            const parsedValue = this.parseJson(value);
+        const processingVersion = ++this._processingVersion;
+            // FlexCard retirado: value ya llega como objeto nativo (ver parseJson comentado más abajo).
+            const parsedValue = value;
             if (!parsedValue || !parsedValue.data) {
                 this.handleError(this.label.invalidOrEmptyDataReceivedText);
                 return;
@@ -263,6 +292,9 @@ export default class dmt_profitabilitymatrix extends LightningElement {
               axisCentral: this.matrixGeneralInfo.axisCentral
             })
             .then(flags => {
+              if (processingVersion !== this._processingVersion) {
+                return;
+              }
                 this.showPercentageX = !!flags.x;
                 this.showPercentageY = !!flags.y;
                 this.showPercentageCentral = !!flags.c;
@@ -284,6 +316,9 @@ export default class dmt_profitabilitymatrix extends LightningElement {
                 }
             })
             .catch(error => {
+              if (processingVersion !== this._processingVersion) {
+                return;
+              }
                 this.handleError(error);
                 this.errorMatrix = true;
                 this.dataLoaded = false;
@@ -300,14 +335,16 @@ export default class dmt_profitabilitymatrix extends LightningElement {
         return true;
     }
 
-    parseJson(value) {
-      try {
-          return JSON.parse(value);
-      } catch (error) {
-        this.handleError(error);
-          return null;
-      }
-    }
+    // FlexCard retirado (ya no se reciben JSON strings desde OmniStudio) — se deja comentado por
+    // trazabilidad histórica en vez de eliminarlo directamente.
+    // parseJson(value) {
+    //   try {
+    //       return JSON.parse(value);
+    //   } catch (error) {
+    //     this.handleError(error);
+    //       return null;
+    //   }
+    // }
 
     handleError(error,showToast = false){
       let message = this.label.unknownErrorText;
@@ -463,30 +500,33 @@ export default class dmt_profitabilitymatrix extends LightningElement {
     this.fieldOrder.forEach(key => {
       const original = this.overrideOriginalTitle.find(item => item.field === this.labelsOppDataFields.get(key));
       const modified = this.overrideTitle.find(item => item.field === this.labelsOppDataFields.get(key));
-      result += `${original ? original.field : ''}\t${original ? original.value : ''}`;
+      const fieldLabel = original?.field || modified?.field || '';
+      result += `${fieldLabel}\t${original ? original.value : ''}`;
       result += `\t${modified ? modified.value : ''}\n`;
     });
 
     return result;
   }
 
-  isValidOmniValue(value) {
-    if (value === null || value === undefined) return false;
-
-    if (typeof value === 'string') {
-      const v = value.trim();
-      if (v === '' || v.toLowerCase() === 'null') return false;
-
-      // placeholder simple como {overridefields} o {oppData} -> devolver false
-      const placeholderRegex = /^\{\s*[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*\s*\}$/;
-      if (placeholderRegex.test(v)) return false;
-
-      return true;
-    }else if(typeof value === 'object'){
-      return true;
-    }
-    return false;
-  }
+  // FlexCard retirado (era el filtro de valores Omni sin resolver, p.ej. '{overridefields}') —
+  // se deja comentado por trazabilidad histórica en vez de eliminarlo directamente.
+  // isValidOmniValue(value) {
+  //   if (value === null || value === undefined) return false;
+  //
+  //   if (typeof value === 'string') {
+  //     const v = value.trim();
+  //     if (v === '' || v.toLowerCase() === 'null') return false;
+  //
+  //     // placeholder simple como {overridefields} o {oppData} -> devolver false
+  //     const placeholderRegex = /^\{\s*[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*\s*\}$/;
+  //     if (placeholderRegex.test(v)) return false;
+  //
+  //     return true;
+  //   }else if(typeof value === 'object'){
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   formatNumber(value, isPercent) {
       if (value === null || value === undefined) return '-';

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>pith__solution_name_path_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Guarda el producto con el que está relacionado el pitch</description>
+    <label>Product</label>
+    <required>true</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>pith__solution_category_name__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Cash Management</fullName>
+                <default>false</default>
+                <label>Cash Management</label>
+            </value>
+            <value>
+                <fullName>Client Resources</fullName>
+                <default>false</default>
+                <label>Client Resources</label>
+            </value>
+            <value>
+                <fullName>Corporate Loans</fullName>
+                <default>false</default>
+                <label>Corporate Loans</label>
+            </value>
+            <value>
+                <fullName>Credit</fullName>
+                <default>false</default>
+                <label>Credit</label>
+            </value>
+            <value>
+                <fullName>Debt Capital Markets</fullName>
+                <default>false</default>
+                <label>Debt Capital Markets</label>
+            </value>
+            <value>
+                <fullName>Equity</fullName>
+                <default>false</default>
+                <label>Equity</label>
+            </value>
+            <value>
+                <fullName>Equity Capital Markets</fullName>
+                <default>false</default>
+                <label>Equity Capital Markets</label>
+            </value>
+            <value>
+                <fullName>FX</fullName>
+                <default>false</default>
+                <label>FX</label>
+            </value>
+            <value>
+                <fullName>Leverage Buyout (LBOs)</fullName>
+                <default>false</default>
+                <label>Leverage Buyout (LBOs)</label>
+            </value>
+            <value>
+                <fullName>Mergers &amp; Acquisitions</fullName>
+                <default>false</default>
+                <label>Mergers &amp; Acquisitions</label>
+            </value>
+            <value>
+                <fullName>Project Finance - Advisory</fullName>
+                <default>false</default>
+                <label>Project Finance - Advisory</label>
+            </value>
+            <value>
+                <fullName>Project Finance - Lending</fullName>
+                <default>false</default>
+                <label>Project Finance - Lending</label>
+            </value>
+            <value>
+                <fullName>Rates</fullName>
+                <default>false</default>
+                <label>Rates</label>
+            </value>
+            <value>
+                <fullName>Securities Services</fullName>
+                <default>false</default>
+                <label>Securities Services</label>
+            </value>
+            <value>
+                <fullName>Structured Trade Finance</fullName>
+                <default>false</default>
+                <label>Structured Trade Finance</label>
+            </value>
+            <value>
+                <fullName>Transaction Trade Finance</fullName>
+                <default>false</default>
+                <label>Transaction Trade Finance</label>
+            </value>
+            <value>
+                <fullName>Working Capital</fullName>
+                <default>false</default>
+                <label>Working Capital</label>
+            </value>
+            <value>
+                <fullName>FI capital Solutions</fullName>
+                <default>false</default>
+                <label>FI capital Solutions</label>
+            </value>
+            <value>
+                <fullName>Liability Management</fullName>
+                <default>false</default>
+                <label>Liability Management</label>
+            </value>
+            <value>
+                <fullName>Rating Advisory</fullName>
+                <default>false</default>
+                <label>Rating Advisory</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>GTB</controllingFieldValue>
+            <valueName>Cash Management</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GTB</controllingFieldValue>
+            <valueName>Client Resources</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GTB</controllingFieldValue>
+            <valueName>Securities Services</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GTB</controllingFieldValue>
+            <valueName>Transaction Trade Finance</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GTB</controllingFieldValue>
+            <valueName>Working Capital</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GM</controllingFieldValue>
+            <valueName>Credit</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GM</controllingFieldValue>
+            <valueName>Debt Capital Markets</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GM</controllingFieldValue>
+            <valueName>Equity</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GM</controllingFieldValue>
+            <valueName>FX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GM</controllingFieldValue>
+            <valueName>Rates</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>Corporate Loans</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>Equity Capital Markets</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>Leverage Buyout (LBOs)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>Mergers &amp; Acquisitions</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>Project Finance - Advisory</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>Project Finance - Lending</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>Structured Trade Finance</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>FI capital Solutions</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>Liability Management</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>Rating Advisory</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

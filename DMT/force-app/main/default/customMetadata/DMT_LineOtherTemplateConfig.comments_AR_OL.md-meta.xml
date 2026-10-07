@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>comments_AR_OL</label>
+    <protected>false</protected>
+    <values>
+        <field>DataType__c</field>
+        <value xsi:type="xsd:string">TEXTAREA</value>
+    </values>
+    <values>
+        <field>DependsOnField__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>DisplayLabel__c</field>
+        <value xsi:type="xsd:string">Additional Information</value>
+    </values>
+    <values>
+        <field>Entific__c</field>
+        <value xsi:type="xsd:string">AR</value>
+    </values>
+    <values>
+        <field>FieldOrder__c</field>
+        <value xsi:type="xsd:double">14.0</value>
+    </values>
+    <values>
+        <field>Field_Edit_Is_Disabled__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Field_View_Is_Disabled__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>FilterText__c</field>
+        <value xsi:type="xsd:string">DMT_Comments__c</value>
+    </values>
+    <values>
+        <field>HelpText__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>IsRequired__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>LineType__c</field>
+        <value xsi:type="xsd:string">OL</value>
+    </values>
+    <values>
+        <field>OptionsJson__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>SectionOrder__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>Section__c</field>
+        <value xsi:type="xsd:string">Details</value>
+    </values>
+    <values>
+        <field>TaxonomyCatalog__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>TaxonomyFilterRule__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>TemplateSubtype__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>VisibilityRule__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>isActive__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

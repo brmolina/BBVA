@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>dwp_kitv__Days_to_create_account</fullName>
+    <active>true</active>
+    <description>Visit from account can not be created before the days allowed. Check your configuration.</description>
+    <errorConditionFormula>AND((dwp_kitv__visit_start_date__c &lt; NOW() -   $Setup.dwp_kitv__Visit_validations_acc_cs__c.dwp_kitv__days_to_create__c), $Setup.dwp_kitv__Visit_validations_acc_cs__c.dwp_kitv__bypass__c = False,
+RecordType.Name = &quot;AccountVisit&quot;)</errorConditionFormula>
+    <errorDisplayField>dwp_kitv__visit_start_date__c</errorDisplayField>
+    <errorMessage>Visit from account can not be created before the days allowed. Check your configuration.</errorMessage>
+</ValidationRule>

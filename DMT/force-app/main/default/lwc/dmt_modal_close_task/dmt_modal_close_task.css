@@ -1,54 +1,46 @@
-.slds-modal__container {
-    position: relative !important;
-    width: auto;
-    max-width: 45rem !important;
-    min-width: 35rem !important;
-}
-.modal-close-btn, .slds-modal__close{
-    position: absolute !important;
-    z-index: 1000;
-    top: 1rem !important;
-    right: 1rem !important;
-}
-.spinnerClass{
-    background: none;
-}
-
-.modal-error {
+:host {
     display: block;
-    margin: 0 1rem 1rem;
-    padding: 0.5rem 0.75rem;
-    white-space: normal;
-    border-left: 4px solid #ba0517;
-    border-radius: 0.125rem;
-    background-color: #fef1ee;
-    color: #ba0517;
-    font-weight: 600;
 }
 
-.toggle-group {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+.boton-circular-limpio {
+    /* 1. Esto elimina el cuadrado blanco rebelde cortando las esquinas del contenedor principal */
+    background-color: transparent !important;
+    border-radius: 50% !important; 
+    
+    /* 2. Hace el botón interno perfectamente redondo */
+    --sds-c-icon-button-radius-border: 50%;
+    
+    /* 3. Aplica el fondo blanco al círculo */
+    --sds-c-icon-button-color-background: #ffffff;
+    --sds-c-icon-button-color-background-hover: #f3f3f3; /* Un gris muy clarito al pasar el ratón */
+    
+    /* 4. Le pone el borde gris sólido que buscas */
+    --sds-c-icon-button-color-border: #747474; 
+    
+    /* 5. Color de la "X" (azul como en tu foto) */
+    --sds-c-icon-button-text-color: #0176d3; 
+}
+/* ============================================================
+   HACK PARA SALESFORCE MOBILE: BLOQUEO DE SCROLL Y FONDO MODAL
+   ============================================================ */
+
+/* 1. Bloquear que el usuario pueda deslizar la pantalla de fondo */
+.slds-modal, .slds-backdrop {
+    touch-action: none !important; 
 }
 
-.toggle-row {
-    display: grid;
-    grid-template-columns: 35rem auto; /* ancho fijo para labels */
-    align-items: center;
-    column-gap: 1rem;
-    padding-bottom: 10px;
+/* 2. Permitir deslizar solo el interior del modal (por si tiene mucho texto) */
+.slds-modal__content {
+    touch-action: pan-y !important; 
 }
 
-.toggle-label {
-    white-space: normal;
-    word-break: break-word;
-    line-height: 1.25rem;
-    padding-left: 24px;
-    text-align: left;
-}
-
-.toggle-input {
-    display: flex;
-    align-items: center;
+/* 3. Forzar que el fondo oscuro sea gigante para que NUNCA se vea un corte 
+      incluso si el contenedor nativo de Salesforce hace un salto */
+.slds-backdrop, .slds-backdrop_open {
+    position: fixed !important;
+    top: -100vh !important;
+    left: -100vw !important;
+    width: 300vw !important;
+    height: 300vh !important;
+    transform: translateZ(0); /* Aceleración por hardware para fijarlo mejor */
 }

@@ -29,6 +29,10 @@ global with sharing class DMT_Utils implements Callable {
             }else  if (methodName == 'BaseURL') {
                 String URL = BaseURL();
                 result = new Map<String, Object>{ 'result' => URL };
+            }else  if (methodName == 'hasEditAccess') {
+                List<Object> recordIds = (List<Object>) inputMap.get('arguments');
+                Boolean access = DMT_AttachmentController.hasEditAccess((String) recordIds[0]);
+                result = new Map<String, Object>{ 'result' => access };
             }else if (methodName == 'extractFieldCustomValidationMessage') {
                 System.debug('inputMap in extractFieldCustomValidationMessage: ' + JSON.serialize(inputMap));
                 String errorMessage = (String) inputMap.get('errorMessage');

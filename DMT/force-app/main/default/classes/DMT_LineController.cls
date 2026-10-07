@@ -1,7 +1,119 @@
-public with sharing class DMT_LineController {
+public without sharing class DMT_LineController {
 
     private static final String ACCESS_LEVEL_EDIT = 'accessLevel_edit';
     private static final String IS_ADMIN = 'isAdmin';
+    // CIBGLOBALD-3779: catalog Id the old cfSummaryTreasury_Flexcard used for its "Type of risk"
+    // combobox (DmSummaryTreasuryFlexCard_1 DataRaptor, filter DMT_Catalog__c = 'B444') — matched
+    // exactly so dmt_lineInfo's Type of risk field offers the same options.
+    private static final String TYPE_OF_RISK_CATALOG = 'B444';
+    // CIBGLOBALD-3779: catalog Id backing the old cfSummaryTreasury_Flexcard's "Entific" display
+    // value (Booking_Geography__c's country code expanded to "code - country name", e.g. "ES -
+    // Spain"). Sourced from LINE_SummaryTreasury_Procedure_6, which maps Booking_Geography__c as
+    // the DataRaptor's input and concatenates its DMT_Value__c/DMT_Name_EN__c output.
+    private static final String COUNTRY_CATALOG = 'C245';
+    // CIBGLOBALD-3779: catalog Id backing the old cfSummaryTreasury_Flexcard's "Committed /
+    // Uncommitted" combobox (DmSummaryTreasuryFlexCard_1 DataRaptor, filter DMT_Catalog__c =
+    // 'H405') — matched exactly so dmt_lineInfo's Committed/Uncommitted field offers the same
+    // options.
+    private static final String COMMITMENT_CATALOG = 'H405';
+
+    public class TypeOfRiskOption {
+        @AuraEnabled public String label;
+        @AuraEnabled public String value;
+    }
+
+    public class CommitmentOption {
+        @AuraEnabled public String label;
+        @AuraEnabled public String value;
+    }
+
+    public class CurrencyOption {
+        @AuraEnabled public String label;
+        @AuraEnabled public String value;
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<TypeOfRiskOption> getTypeOfRiskOptions() {
+        // Deduped by DMT_Value__c: this catalog has duplicate value/label rows (same underlying
+        // taxonomy-catalog data-quality issue as the Products catalog elsewhere in DMT), which
+        // would otherwise show the same option twice in the combobox.
+        Map<String, TypeOfRiskOption> optionsByValue = new Map<String, TypeOfRiskOption>();
+        for (DMT_Taxonomy_Values__c taxonomyValue : [
+            SELECT DMT_Value__c, DMT_Name_EN__c
+            FROM DMT_Taxonomy_Values__c
+            WHERE DMT_Catalog__c = :TYPE_OF_RISK_CATALOG
+            WITH SYSTEM_MODE
+            ORDER BY DMT_Name_EN__c ASC
+        ]) {
+            if (optionsByValue.containsKey(taxonomyValue.DMT_Value__c)) {
+                continue;
+            }
+            TypeOfRiskOption option = new TypeOfRiskOption();
+            option.value = taxonomyValue.DMT_Value__c;
+            option.label = taxonomyValue.DMT_Name_EN__c;
+            optionsByValue.put(taxonomyValue.DMT_Value__c, option);
+        }
+        return optionsByValue.values();
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<CommitmentOption> getCommitmentOptions() {
+        // Deduped by DMT_Value__c — same taxonomy-catalog data-quality issue as
+        // getTypeOfRiskOptions above.
+        Map<String, CommitmentOption> optionsByValue = new Map<String, CommitmentOption>();
+        for (DMT_Taxonomy_Values__c taxonomyValue : [
+            SELECT DMT_Value__c, DMT_Name_EN__c
+            FROM DMT_Taxonomy_Values__c
+            WHERE DMT_Catalog__c = :COMMITMENT_CATALOG
+            WITH SYSTEM_MODE
+            ORDER BY DMT_Name_EN__c ASC
+        ]) {
+            if (optionsByValue.containsKey(taxonomyValue.DMT_Value__c)) {
+                continue;
+            }
+            CommitmentOption option = new CommitmentOption();
+            option.value = taxonomyValue.DMT_Value__c;
+            option.label = taxonomyValue.DMT_Name_EN__c;
+            optionsByValue.put(taxonomyValue.DMT_Value__c, option);
+        }
+        return optionsByValue.values();
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<CurrencyOption> getCurrencyOptions() {
+        List<CurrencyOption> options = new List<CurrencyOption>();
+        for (CurrencyType currencyType : [
+            SELECT IsoCode
+            FROM CurrencyType
+            WHERE IsActive = true
+            WITH SYSTEM_MODE
+            ORDER BY IsoCode ASC
+        ]) {
+            CurrencyOption option = new CurrencyOption();
+            option.value = currencyType.IsoCode;
+            option.label = currencyType.IsoCode;
+            options.add(option);
+        }
+        return options;
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static String getEntificDisplayValue(String geographyCode) {
+        if (String.isBlank(geographyCode)) {
+            return null;
+        }
+        List<DMT_Taxonomy_Values__c> matches = [
+            SELECT DMT_Name_EN__c
+            FROM DMT_Taxonomy_Values__c
+            WHERE DMT_Catalog__c = :COUNTRY_CATALOG AND DMT_Value__c = :geographyCode
+            WITH SYSTEM_MODE
+            LIMIT 1
+        ];
+        if (matches.isEmpty() || String.isBlank(matches[0].DMT_Name_EN__c)) {
+            return geographyCode;
+        }
+        return geographyCode + ' - ' + matches[0].DMT_Name_EN__c;
+    }
 
     @AuraEnabled(cacheable=true)
     public static List<Map<String, String>> searchRecords(String objectApiName, String recordTypeApiName, String searchTerm) {
@@ -26,7 +138,7 @@ public with sharing class DMT_LineController {
             ' AND RecordType.DeveloperName = :recordTypeApiName' +
             ' LIMIT 50';
 
-        List<SObject> records = Database.query(String.escapeSingleQuotes(soql));
+        List<SObject> records = Database.query(String.escapeSingleQuotes(soql), AccessLevel.SYSTEM_MODE);
 
         List<Map<String, String>> results = new List<Map<String, String>>();
         for (SObject rec : records) {
@@ -39,49 +151,6 @@ public with sharing class DMT_LineController {
         System.debug('searchRecords results, '+ JSON.serialize(results));
         return results;
     }
-
-    /* @AuraEnabled(cacheable=true)
-    public static List<Map<String, String>> searchLines(String searchTerm) {
-        // Hacer la búsqueda de las líneas que coincidan con el término de búsqueda
-        List<DMT_Line__c> lines = [
-            SELECT Id, Line_Id__c FROM DMT_Line__c
-            WHERE Line_Id__c LIKE :('%' + searchTerm + '%')
-            WITH SECURITY_ENFORCED
-            LIMIT 50
-        ];
-
-        // Convertir la lista de líneas en un formato adecuado para el LWC
-        List<Map<String, String>> lineResults = new List<Map<String, String>>();
-        for (DMT_Line__c line : lines) {
-            Map<String, String> lineMap = new Map<String, String>();
-            lineMap.put('id', line.Id);
-            lineMap.put('label', line.Line_Id__c);
-            lineResults.add(lineMap);
-        }
-
-        return lineResults;
-    } */
-
-    /* @AuraEnabled(cacheable=true)
-    public static List<Map<String, String>> searchOpportunies(String searchTerm) {
-        // Hacer la búsqueda de las oportunidades que coincidan con el término de búsqueda
-        List<Opportunity> oppList = [
-            SELECT Id, DMT_Opp_Id__c FROM Opportunity
-            WHERE DMT_Opp_Id__c LIKE :('%' + searchTerm + '%')
-            WITH SECURITY_ENFORCED
-            LIMIT 50
-        ];
-
-        // Convertir la lista de oportunidades en un formato adecuado para el LWC
-        List<Map<String, String>> oppResults = new List<Map<String, String>>();
-        for (Opportunity opp : oppList) {
-            Map<String, String> oppMap = new Map<String, String>();
-            oppMap.put('id', opp.Id);
-            oppMap.put('label', opp.DMT_Opp_Id__c);
-            oppResults.add(oppMap);
-        }
-        return oppResults;
-    } */
 
     @AuraEnabled
     public static Map<String, Boolean> checkEditPermission(String recordId) {
@@ -98,7 +167,7 @@ public with sharing class DMT_LineController {
             return result;
         }
         // Get the current logged-in user
-        User currentUser = [SELECT Profile.Name FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1];
+        User currentUser = [SELECT Profile.Name FROM User WHERE Id = :UserInfo.getUserId() WITH SYSTEM_MODE LIMIT 1];
 
         // Check if the user is a System Administrator
         Boolean isAdmin = currentUser.Profile.Name == 'System Administrator';
@@ -109,12 +178,19 @@ public with sharing class DMT_LineController {
             return result;
         }
 
-        DMT_Line__c line = [SELECT Id, OwnerId FROM DMT_Line__c WHERE Id = :recordId LIMIT 1];
-        if (line.OwnerId == UserInfo.getUserId()) {
+        List<DMT_Line__c> lineRecords = [SELECT Id, OwnerId FROM DMT_Line__c WHERE Id = :recordId WITH SYSTEM_MODE LIMIT 1];
+        if (!lineRecords.isEmpty() && lineRecords[0].OwnerId == UserInfo.getUserId()) {
             hasAccessOwner = true;
         }
 
-        if(hasAccessOwner){
+        if (!hasAccessOwner) {
+            List<Opportunity> oppRecords = [SELECT Id, OwnerId FROM Opportunity WHERE Id = :recordId WITH SYSTEM_MODE LIMIT 1];
+            if (!oppRecords.isEmpty() && oppRecords[0].OwnerId == UserInfo.getUserId()) {
+                hasAccessOwner = true;
+            }
+        }
+
+        if (hasAccessOwner) {
             result.put('accessLevel_edit', true);
             return result;
         }
@@ -124,7 +200,18 @@ public with sharing class DMT_LineController {
             SELECT AccessLevel__c
             FROM DMT_TeamMember__c
             WHERE Line__r.Id = :recordId AND User__c = :UserInfo.getUserId()
+            WITH SYSTEM_MODE
         ];
+
+        if (teamMembers.isEmpty()) {
+            teamMembers = [
+                SELECT AccessLevel__c
+                FROM DMT_TeamMember__c
+                WHERE Opportunity__c = :recordId AND User__c = :UserInfo.getUserId()
+                WITH SYSTEM_MODE
+                LIMIT 1
+            ];
+        }
 
         if (teamMembers.isEmpty()) {
             result.put('accessLevel_edit', false);
@@ -150,7 +237,7 @@ public with sharing class DMT_LineController {
         //     return result;
         // }
         // Get the current logged-in user
-        User currentUser = [SELECT Profile.Name, DMT_User_Role__c FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1];
+        User currentUser = [SELECT Profile.Name, DMT_User_Role__c FROM User WHERE Id = :UserInfo.getUserId() WITH SYSTEM_MODE LIMIT 1];
 
         // Check if the user is a System Administrator
         Boolean isAdmin = currentUser.Profile.Name == 'System Administrator';
@@ -161,12 +248,19 @@ public with sharing class DMT_LineController {
             return result;
         }
 
-        DMT_Line__c line = [SELECT Id, OwnerId FROM DMT_Line__c WHERE Id = :recordId LIMIT 1];
-        if (line.OwnerId == UserInfo.getUserId()) {
+        List<DMT_Line__c> lineRecords = [SELECT Id, OwnerId FROM DMT_Line__c WHERE Id = :recordId WITH SYSTEM_MODE LIMIT 1];
+        if (!lineRecords.isEmpty() && lineRecords[0].OwnerId == UserInfo.getUserId()) {
             hasAccessOwner = true;
         }
 
-        if(hasAccessOwner){
+        if (!hasAccessOwner) {
+            List<Opportunity> oppRecords = [SELECT Id, OwnerId FROM Opportunity WHERE Id = :recordId WITH SYSTEM_MODE LIMIT 1];
+            if (!oppRecords.isEmpty() && oppRecords[0].OwnerId == UserInfo.getUserId()) {
+                hasAccessOwner = true;
+            }
+        }
+
+        if (hasAccessOwner) {
             result.put('accessLevel_read', true);
             return result;
         }
@@ -176,7 +270,18 @@ public with sharing class DMT_LineController {
             SELECT AccessLevel__c
             FROM DMT_TeamMember__c
             WHERE Line__r.Id = :recordId AND User__c = :UserInfo.getUserId()
+            WITH SYSTEM_MODE
         ];
+
+        if (teamMembers.isEmpty()) {
+            teamMembers = [
+                SELECT AccessLevel__c
+                FROM DMT_TeamMember__c
+                WHERE Opportunity__c = :recordId AND User__c = :UserInfo.getUserId()
+                WITH SYSTEM_MODE
+                LIMIT 1
+            ];
+        }
 
         String userRole = currentUser.DMT_User_Role__c == null ? '' : currentUser.DMT_User_Role__c;
         if (teamMembers.isEmpty() && !userRole.contains('DMT_Read Only')) {
@@ -202,6 +307,8 @@ public with sharing class DMT_LineController {
         result.put('isTeamMemberApprovalEdit', false);
 
         Boolean userPermissionRole = DMT_Utils.hasWriteAccess();
+        result.put('isReadOnlyRole', !userPermissionRole);
+
 
         // 1. Admin
         Boolean isAdmin = DMT_PermissionSelector.isCurrentUserAdmin();
@@ -218,7 +325,6 @@ public with sharing class DMT_LineController {
         if (isGod) {
             result.put('accessLevel_read', true);
             result.put(ACCESS_LEVEL_EDIT, userPermissionRole);
-            return result;
         }
 
         // 3. Owner
@@ -227,7 +333,6 @@ public with sharing class DMT_LineController {
             result.put(ACCESS_LEVEL_EDIT, userPermissionRole);
             result.put('accessLevel_read', true);
             result.put('isOwner', true);
-            return result;
         }
 
         // 4. Team member
@@ -235,6 +340,7 @@ public with sharing class DMT_LineController {
             SELECT AccessLevel__c, DMT_ApprovalEdit__c
             FROM DMT_TeamMember__c
             WHERE Opportunity__c = :oppId AND User__c = :UserInfo.getUserId()
+            WITH SYSTEM_MODE
             LIMIT 1
         ];
 

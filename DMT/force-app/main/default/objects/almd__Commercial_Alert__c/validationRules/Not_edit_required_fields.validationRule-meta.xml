@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Not_edit_required_fields</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+AND(
+NOT($Profile.Name = &quot;System Administrator&quot;),
+NOT($Profile.Name = &quot;Desktop Integration&quot;)
+),
+OR(
+ISCHANGED(Name),
+ISCHANGED(almd__commercial_alert_id__c),
+ISCHANGED(almd__commercial_alert_start_date__c),
+ISCHANGED(almd__commercial_alert_end_date__c),
+ISCHANGED(almd__participant_id__c),
+ISCHANGED(almd__commercial_alert_desc__c)
+)
+)</errorConditionFormula>
+    <errorMessage>Insufficient privileges to edit Alert Name, Alert ID, Client Name, Alert Description, Start Date and End Date.</errorMessage>
+</ValidationRule>

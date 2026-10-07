@@ -1,5 +1,5 @@
 import { LightningElement, track, api } from 'lwc';
-import {uniqueStrGenerator,deepClone,compareArrayObject,evaluateExpression,syncComboboxAttributes,handleSelectionRemovalAction,clearSelectionOnAutocomplete,handleKeyUpOnInput,handleOptionClickAction,handleOptionHoverAction,handleDropdownOnInputClick,handleKeyDownOnInput,openAndCloseDropdown,preventAndStopEvent} from './comboboxHelper';
+import {uniqueStrGenerator,deepClone,compareArrayObject,evaluateExpression,syncComboboxAttributes,handleSelectionRemovalAction,clearSelectionOnAutocomplete,handleKeyUpOnInput,handleOptionClickAction,handleOptionHoverAction,handleDropdownOnInputClick,handleKeyDownOnInput,openAndCloseDropdown,preventAndStopEvent,commitSingleMatchIfAny} from './comboboxHelper';
 const SEPERATOR = ';',
     MAX_OPTION_DISPLAY = 3,
     DEFAULT_SEARCH_TEXT = "Start typing to search.",
@@ -358,6 +358,13 @@ set value(value){
         this.setCustomErrorMessage(message, condition);
     }
 
+    @api focus(options) {
+        const inputEl = this.template.querySelector('input');
+        if (inputEl) {
+            inputEl.focus(options);
+        }
+    }
+
     @api processSearchResult(data) {
         this.comboboxObj.options = this.prepareDropdownOptionList(deepClone(data));
         this.comboboxObj.dropdownList = this.prepareDropdownOptionList(deepClone(data));
@@ -439,6 +446,9 @@ set value(value){
             return;
         }
         this.comboboxObj._hasFocus = false;
+        if(this.comboboxObj.autocomplete){
+            commitSingleMatchIfAny(this);
+        }
         this.runValidationRules();
         openAndCloseDropdown('close',this);
     }

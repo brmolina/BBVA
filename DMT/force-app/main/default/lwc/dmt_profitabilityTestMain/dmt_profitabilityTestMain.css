@@ -1,0 +1,66 @@
+.scenarios-main-container{
+    max-height: 58vh;
+}
+
+.scenarios-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--slds-g-spacing-2, 0.5rem);
+}
+
+.scenarios-title__heading {
+    font-size: var(--slds-g-font-scale-3, 1.25rem);
+    font-weight: var(--slds-g-font-weight-7, 700);
+    margin: 0;
+}
+
+.scenarios-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+}
+
+.opp-type-label {
+    font-weight: var(--slds-g-font-weight-6, 600);
+    margin-bottom: var(--slds-g-spacing-2, 0.5rem);
+}
+
+.scenarios-tabs {
+    margin-top: var(--slds-g-spacing-2, 0.5rem);
+}
+
+.calc-footer {
+    margin-top: 0.75rem;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--slds-g-spacing-3, 0.75rem);
+    border: 1px solid #cccccc;
+    border-radius: var(--slds-g-radius-border-2, 0.25rem);
+    border-color: #cccccc; 
+    opacity: 0.95; 
+    background: var(--slds-g-color-neutral-base-95, var(--lwc-colorBackground, rgb(243, 243, 243))); 
+    box-shadow: 0 -2px 2px 0 rgba(0, 0, 0, 0.16);
+}
+
+.calc-footer lightning-spinner {
+    position: absolute;
+    inset: 0;
+}
+
+c-dmt_profitabilitymatrix {
+    display: block;
+    margin-top: 1rem;
+}
+
+.popover-center-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.popover-center-wrapper c-dmt_show-popover {
+    display: inline-block;
+    width: fit-content;
+}

@@ -30,9 +30,11 @@ import APPROVER_NAME from '@salesforce/schema/DMT_Line__c.DMT_Approver__r.Name';
 
 import APPROVER_GB_ID from "@salesforce/schema/DMT_Line__c.DMT_ApproverGlobalBanker__c";
 import APPROVER_GB_NAME from '@salesforce/schema/DMT_Line__c.DMT_ApproverGlobalBanker__r.Name';
+import CLIENT_USE_FIELD from '@salesforce/schema/DMT_Line__c.DMT_Client_Use__c';
 
 
 export default class Dmt_approval_process_data extends LightningElement {
+    CLIENT_USE_MAX_LENGTH = 500;
     @api recordId; // Asumimos que este viene de la página de registro
     @track lineType;
     @track isEditing = false;
@@ -50,7 +52,23 @@ export default class Dmt_approval_process_data extends LightningElement {
     @track approverName;
     @track approverGBId;
     @track approverGBName;
+    @track clientUseOriginalValue = '';
+    @track clientUseValue = '';
     currentUserId = USER_ID;
+
+    get clientUseCharCount() {
+        return (this.clientUseValue || '').length;
+    }
+
+    get clientUseCounterLabel() {
+        return `${this.clientUseCharCount}/${this.CLIENT_USE_MAX_LENGTH}`;
+    }
+
+    get clientUseCounterClass() {
+        return this.clientUseCharCount >= this.CLIENT_USE_MAX_LENGTH
+            ? 'client-use-counter client-use-counter--limit slds-text-body_small'
+            : 'client-use-counter slds-text-body_small';
+    }
 
     get bookingRiskValueId() {
         return this.draftValues.DMT_Booking_Unit_Risk_Analyst__c ?? this.bookingRiskId;
@@ -81,7 +99,8 @@ export default class Dmt_approval_process_data extends LightningElement {
         fields: [LINE_TYPE, LINE_STATUS, LINE_LOCK,
                 BOOKING_RISK_ID, BOOKING_RISK_NAME,
                 APPROVER_ID, APPROVER_NAME,
-                APPROVER_GB_ID, APPROVER_GB_NAME]
+            APPROVER_GB_ID, APPROVER_GB_NAME,
+            CLIENT_USE_FIELD]
     })
     wiredRecordLine(result) {
         this.wiredLineResult = result;
@@ -104,6 +123,8 @@ export default class Dmt_approval_process_data extends LightningElement {
 
             this.approverGBId = getFieldValue(data, APPROVER_GB_ID);
             this.approverGBName = getFieldValue(data, APPROVER_GB_NAME);
+            this.clientUseOriginalValue = getFieldValue(data, CLIENT_USE_FIELD) || '';
+            this.clientUseValue = this.clientUseOriginalValue;
             console.log('JACG estado ' + this.lineStatus);
             console.log('JACG lock ' + this.lineLock);
 
@@ -237,12 +258,25 @@ export default class Dmt_approval_process_data extends LightningElement {
         this.isEditing = false;
         this.draftValues = {};
         this.draftLookupNames = {};
+        this.clientUseValue = this.clientUseOriginalValue || '';
         // This event is used to tell the parent that you are not editing the tab anymore
         this.dispatchEvent(new CustomEvent('editingtab', {
             bubbles: true,
             composed: true,
-            detail: {}
+            detail: { tab: null }
         }));
+    }
+
+    handleClientUseInput(event) {
+        const value = event.target.value || '';
+        this.clientUseValue = value;
+        this.draftValues = { ...this.draftValues, DMT_Client_Use__c: value };
+    }
+
+    handleClientUseChange(event) {
+        const value = event.target.value || '';
+        this.clientUseValue = value;
+        this.draftValues = { ...this.draftValues, DMT_Client_Use__c: value };
     }
 
     handleCustomFieldChange(event) {
@@ -281,6 +315,11 @@ export default class Dmt_approval_process_data extends LightningElement {
         if (Object.keys(this.draftValues).length === 0) {
             this.isEditing = false;
             this.isLoading = false;
+            this.dispatchEvent(new CustomEvent('editingtab', {
+                bubbles: true,
+                composed: true,
+                detail: { tab: null }
+            }));
             return;
         }
 
@@ -310,7 +349,7 @@ export default class Dmt_approval_process_data extends LightningElement {
             this.dispatchEvent(new CustomEvent('editingtab', {
                 bubbles: true,
                 composed: true,
-                detail: {}
+                detail: { tab: null }
             }));
         } catch (error) {
             console.log('JACG error ' + JSON.stringify(error))

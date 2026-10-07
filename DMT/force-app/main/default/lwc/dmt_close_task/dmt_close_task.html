@@ -1,0 +1,71 @@
+<template>
+    <div class="dmt-close-task-modal slds-p-around_medium">
+        <div class="slds-modal__header dmt-close-task-header">
+            <h2 class="slds-text-heading_medium">Close task and send to approver</h2>
+        </div>
+
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading..." size="medium" variant="brand"></lightning-spinner>
+        </template>
+
+        <template if:false={isLoading}>
+            <div class="dmt-close-task-content">
+                <template if:true={showError}>
+                    <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error slds-m-bottom_medium" role="alert">
+                        <span class="slds-assistive-text">Error:</span>
+                        <span class="slds-icon_container slds-m-right_small" title="Error">
+                            <lightning-icon icon-name="utility:error" alternative-text="Error" size="small"></lightning-icon>
+                        </span>
+                        <div class="slds-notify__content">
+                            <h2 class="slds-text-heading_small slds-m-bottom_xx-small">We hit a snag.</h2>
+                            <p>{errorMessage}</p>
+                        </div>
+                    </div>
+                </template>
+
+                <div class="slds-grid slds-gutters slds-wrap dmt-close-task-grid">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_medium dmt-close-task-combobox-wrapper">
+                        <lightning-combobox
+                            label="Select the following task to perform:"
+                            value={stepSelected}
+                            options={taskOptions}
+                            onchange={handleTaskChange}
+                            disabled={isLoading}
+                            dropdown-alignment="auto"
+                        ></lightning-combobox>
+                    </div>
+
+                    <div class={approverSectionClass}>
+                        <lightning-combobox
+                            label="Select the approver to assign this task to:"
+                            value={approverSelected}
+                            options={approverOptions}
+                            onchange={handleApproverChange}
+                            disabled={isLoading}
+                            dropdown-alignment="auto"
+                        ></lightning-combobox>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dmt-close-task-footer slds-modal__footer slds-p-around_medium">
+                <button
+                    type="button"
+                    class="slds-button slds-button_neutral dmt-close-task-button"
+                    onclick={handleCancel}
+                    disabled={isLoading}
+                >
+                    Cancel
+                </button>
+                <button
+                    type="button"
+                    class="slds-button slds-button_brand dmt-close-task-button"
+                    onclick={handleCloseTask}
+                    disabled={isCloseDisabled}
+                >
+                    Close Task
+                </button>
+            </div>
+        </template>
+    </div>
+</template>

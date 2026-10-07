@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>myRule_1_A1</name>
+        <label>New Task to FUCIB</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <actionName>Task.SER_TaskAssingToFUCIB</actionName>
+        <actionType>emailAlert</actionType>
+        <connector>
+            <targetReference>myRule_3</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Task.SER_TaskAssingToFUCIB</nameSegment>
+    </actionCalls>
+    <actionCalls>
+        <name>myRule_3_A1</name>
+        <label>Notification to FUCIB</label>
+        <locationX>50</locationX>
+        <locationY>731</locationY>
+        <actionName>Task.SER_NotificationFUCIB</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Task.SER_NotificationFUCIB</nameSegment>
+    </actionCalls>
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>myRule_1</name>
+        <label>Create and Upd Task Assing to FUCIB</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>myRule_3</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Create and Upd Task Assing to FUCIB</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_1</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_TRUE_myRule_1</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_1_A1</targetReference>
+            </connector>
+            <label>TRUE_Create and Upd Task Assing to FUCIB</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_3</name>
+        <label>Create and Upd Task Notification to FUCIB</label>
+        <locationX>182</locationX>
+        <locationY>623</locationY>
+        <defaultConnectorLabel>FALSE_Create and Upd Task Notification to FUCIB</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_3</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_TRUE_myRule_3</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_3_A1</targetReference>
+            </connector>
+            <label>TRUE_Create and Upd Task Notification to FUCIB</label>
+        </rules>
+    </decisions>
+    <description>Migrated from the Task Management process using multiple criteria.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>formula_TRUE_myRule_1</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+	!$Setup.CIB_Bypass__c.CIB_skip_ProcessBuilder__c, 
+	$Setup.CIB_User_Org__c.CIB_Is_Service__c,
+	OR	(	
+		AND(
+			ISNEW(),
+			TEXT({!$Record.gf_task_execution_team_name__c}) == $Label.SER_EGS_TeamResFUCIB_lbl
+		),
+
+		AND(
+			!ISNEW(),
+			ISCHANGED({!$Record.gf_task_execution_team_name__c}),
+			TEXT({!$Record.gf_task_execution_team_name__c}) == $Label.SER_EGS_TeamResFUCIB_lbl
+		)
+	)
+)</expression>
+    </formulas>
+    <formulas>
+        <name>formula_TRUE_myRule_3</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+	!$Setup.CIB_Bypass__c.CIB_skip_ProcessBuilder__c, 
+	$Setup.CIB_User_Org__c.CIB_Is_Service__c,
+	OR	(	
+		AND(
+			ISNEW(),
+			Not(TEXT({!$Record.gf_task_execution_team_name__c}) == $Label.SER_EGS_TeamResFUCIB_lbl),
+			{!$Record.gf_task_notif_fucib_ind_type__c}  = true
+		),
+
+		AND(
+			!ISNEW(),
+			Not(TEXT({!$Record.gf_task_execution_team_name__c}) == $Label.SER_EGS_TeamResFUCIB_lbl),
+			ISCHANGED({!$Record.gf_task_notif_fucib_ind_type__c} ),
+			{!$Record.gf_task_notif_fucib_ind_type__c}  = true
+		)
+	)
+)</expression>
+    </formulas>
+    <interviewLabel>DES_flw_taskManagement {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>DES_flw_taskManagement</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_1</targetReference>
+        </connector>
+        <object>Task</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

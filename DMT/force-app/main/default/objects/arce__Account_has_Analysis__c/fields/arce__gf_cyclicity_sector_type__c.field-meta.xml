@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_cyclicity_sector_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Sector cyclicity used in the rating process that allows the use of different scales due to the cyclicity of the sector</description>
+    <label>Cyclicity axis  used in the rating</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>CONSTRUCCION</fullName>
+                <default>false</default>
+                <label>construction</label>
+            </value>
+            <value>
+                <fullName>MUY CICLICO</fullName>
+                <default>false</default>
+                <label>very cyclic</label>
+            </value>
+            <value>
+                <fullName>CICLICO</fullName>
+                <default>false</default>
+                <label>cyclic</label>
+            </value>
+            <value>
+                <fullName>POCO CICLICO</fullName>
+                <default>false</default>
+                <label>low cycllic</label>
+            </value>
+            <value>
+                <fullName>SIN CICLICIDAD</fullName>
+                <default>false</default>
+                <label>without cyclic</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
