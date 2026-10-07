@@ -9,6 +9,7 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git merge:*)",
+      "Bash(git push:*)",
       "Bash(sf org list:*)",
       "Bash(sf data query:*)",
       "Bash(sf project retrieve start:*)"
