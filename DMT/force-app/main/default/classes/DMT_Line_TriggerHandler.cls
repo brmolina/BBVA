@@ -45,7 +45,8 @@ public without sharing class DMT_Line_TriggerHandler extends DMT_TriggerHandler 
         lineHelper.handleCancelChange(lstNew, mapOld);
         lineHelper.updatePassport_LineStatusChanged(lstNew, mapOld);
         lineHelper.enqueueRecalculateApprovals(lstNew, mapOld);
-
+        lineHelper.restartApprovalTasksOnLineResubmission(lstNew, mapOld);
+        lineHelper.enqueueAutoWorkflowOnStatusChange(lstNew, mapOld);
 
         DMT_CloseWonNotificationService.sendCloseWonLineNotifications(lstNew, mapOld);
         DMT_CloseWonNotificationService.sendDraftLineNotifications(lstNew, mapOld);
@@ -62,8 +63,8 @@ public without sharing class DMT_Line_TriggerHandler extends DMT_TriggerHandler 
         lineHelper.fillFields(lstNew, mapOld);
         lineHelper.updateLastModifiedByHuman(lstNew);
         lineHelper.updateStartDateOnClosedWon(lstNew, mapOld);
+        lineHelper.setDestinationSystemOnClosedWon(lstNew, mapOld);   
         lineHelper.validateRiskLineTermContinuity(lstNew, mapOld);
-        lineHelper.setDestinationSystemOnClosedWon(lstNew, mapOld);
         lineHelper.syncApprovalTermAndEndDate(lstNew, mapOld);
     }
 

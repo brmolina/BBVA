@@ -1244,6 +1244,43 @@ public with sharing class DMT_Line_Helper{
     }
 
     /**
+     * CIBGLOBALD-4477 - Single-record overload of enqueueAutoWorkflowOnStatusChange, for callers that only have one Line.
+     */
+    public void enqueueAutoWorkflowOnStatusChange(DMT_Line__c newLine, DMT_Line__c oldLine) {
+        if (newLine == null || oldLine == null) {
+            return;
+        }
+        enqueueAutoWorkflowOnStatusChange(new List<DMT_Line__c>{ newLine }, new Map<Id, DMT_Line__c>{ newLine.Id => oldLine });
+    }
+
+    /**
+     * CIBGLOBALD-4477 - AFTER UPDATE. When a Line moves into Proposal, Approval or Ready to close, starts the approval Case of the
+     * Passport feature flagged for automatic start (see DMT_Case_Steps_Controller.enqueueAutoWorkflowCases).
+     *
+     * Collects every qualifying Line and hands them over in ONE call, so the Passport and Case lookups are
+     * done once for the whole save. The Case creation is deferred to DMT_AsyncOrchestrator (one payload per
+     * Line, each in its own transaction), so DMT_AsyncOrchestrator.flush() must run at the end of the trigger.
+     *
+     * Independent from restartApprovalTasksOnLineResubmission: that one reopens tasks of Cases that already
+     * exist, this one only starts Cases for features that have none yet.
+     */
+    public void enqueueAutoWorkflowOnStatusChange(List<DMT_Line__c> newLines, Map<Id, DMT_Line__c> oldMapLines) {
+        Map<Id, String> stageByLineId = new Map<Id, String>();
+        for (DMT_Line__c line : newLines) {
+            DMT_Line__c oldLine = oldMapLines.get(line.Id);
+            Boolean isSupportedStage = line.Status__c == DMT_Constants.PROPOSAL
+                || line.Status__c == DMT_Constants.APPROVAL
+                || line.Status__c == DMT_Constants.READYTOCLOSE;
+            if (oldLine != null && line.Status__c != oldLine.Status__c && isSupportedStage) {
+                stageByLineId.put(line.Id, line.Status__c);
+            }
+        }
+        if (!stageByLineId.isEmpty()) {
+            DMT_Case_Steps_Controller.enqueueAutoWorkflowCases(stageByLineId, false);
+        }
+    }
+
+    /**
      * CIBGLOBALD-4117: AFTER UPDATE. Restarts a Line's open approval Tasks when a watched field changed since the
      * Task was last frozen, so the approver reviews the new value.
      *

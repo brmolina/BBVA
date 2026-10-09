@@ -50,7 +50,19 @@ public class DMT_AsyncQueueJob implements Queueable, Database.AllowsCallouts {
         // for the trailing flush() below instead, so each gets its own fresh transaction.
         List<DMT_AsyncPayload> toDispatchNow = new List<DMT_AsyncPayload>();
         Boolean calloutTrackableCheckAlreadyClaimed = false;
+        // CIBGLOBALD-4477 - same idea for DMT_StartApprovalCasePayload: each one runs DMT_Passport_Handler.startCase
+        // (a couple of dozen queries plus Case/Task/snapshot DML), so only one is dispatched
+        // inline per transaction; the rest are re-buffered and flush() gives each its own
+        // Batch chunk.
+        Boolean startApprovalCaseAlreadyClaimed = false;
         for (DMT_AsyncPayload p : payloads) {
+            if (p instanceof DMT_StartApprovalCasePayload) {
+                if (startApprovalCaseAlreadyClaimed) {
+                    DMT_AsyncOrchestrator.enqueue(p);
+                    continue;
+                }
+                startApprovalCaseAlreadyClaimed = true;
+            }
             if (p instanceof DMT_CalloutTrackableCheckPayload) {
                 if (calloutTrackableCheckAlreadyClaimed) {
                     DMT_AsyncOrchestrator.enqueue(p);

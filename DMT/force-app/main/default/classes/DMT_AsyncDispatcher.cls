@@ -35,6 +35,8 @@ public with sharing class DMT_AsyncDispatcher {
             handleWutSurveyPublish((DMT_WutSurveyPayload) payload);
         } else if (payload instanceof DMT_CalloutTrackableCheckPayload) {
             DMT_ApprovalChangeStep_Helper.checkCalloutTrackableComponent((DMT_CalloutTrackableCheckPayload) payload);
+        } else if (payload instanceof DMT_StartApprovalCasePayload) {
+            DMT_Case_Steps_Controller.startApprovalCaseFromPayload((DMT_StartApprovalCasePayload) payload);
         } else if (payload instanceof DMT_CalloutTrackableFreezePayload) {
             DMT_ApprovalChangeStep_Helper.freezeCalloutTrackableBaseline((DMT_CalloutTrackableFreezePayload) payload);
         } else {

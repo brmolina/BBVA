@@ -307,9 +307,13 @@ global with sharing class DMT_Passport_Handler implements Callable {
             return result;
 
         } catch (Exception e) {
-            List<DMT_AsyncPayload> batchPayloads = new List<DMT_AsyncPayload>();
-            batchPayloads.add(new DMT_LogExceptionPayload(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(), 'DMT_Passport_Handler', 'startCase', 'DMT', ''));
-            Database.executeBatch(new DMT_AsyncBatchJob(batchPayloads));
+            // CIBGLOBALD-4477 - goes through the orchestrator rather than Database.executeBatch: executeBatch is illegal
+            // when startCase is reached from a Batch execute (DMT_AsyncBatchJob) and would replace the
+            // real error with an AsyncException. The orchestrator picks a legal context (Batch,
+            // Queueable) on its own. Flushed here because startCase is also an @AuraEnabled entry
+            // point, where nothing downstream is guaranteed to flush the buffer.
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(), 'DMT_Passport_Handler', 'startCase', 'DMT', ''));
+            DMT_AsyncOrchestrator.flush();
 
             result.put(SUCCESS, false);
             result.put(MESSAGE, String.isBlank(errorMessage) ? e.getMessage() : errorMessage);

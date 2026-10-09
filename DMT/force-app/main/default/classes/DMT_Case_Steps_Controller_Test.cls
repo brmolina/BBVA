@@ -141,7 +141,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getStepsFromUser();
         Test.stopTest();
 
-        System.assertNotEquals(listStep.size(), 0, 'The list should not be empty');
+        Assert.areNotEqual(listStep.size(), 0, 'The list should not be empty');
     }
 
     /**
@@ -155,7 +155,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getStepsFromCase(c.Id);
         Test.stopTest();
 
-        System.assertNotEquals(listStep.size(), 0, 'The list should not be empty');
+        Assert.areNotEqual(listStep.size(), 0, 'The list should not be empty');
     }
 
 //getStepsFromParentCase
@@ -169,7 +169,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
             DMT_Case_Steps_Controller.getStepsFromParentCase(c.Id);
         Test.stopTest();
 
-        System.assertEquals(0, listStep.size(), 'La lista debería estar vacía cuando el Case no tiene ParentId');
+        Assert.areEqual(0, listStep.size(), 'La lista debería estar vacía cuando el Case no tiene ParentId');
     }
 
     @isTest
@@ -196,7 +196,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
             DMT_Case_Steps_Controller.getStepsFromParentCase(childCase.Id);
         Test.stopTest();
 
-        System.assertNotEquals(0, listStep.size(), 'Debería devolver los steps del Case padre');
+        Assert.areNotEqual(0, listStep.size(), 'Debería devolver los steps del Case padre');
     }
     
     /**
@@ -210,7 +210,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getCurrentStepsFromCases(cases);
         Test.stopTest();
 
-        System.assertNotEquals(listStep.size(), 0, 'The list should not be empty');
+        Assert.areNotEqual(listStep.size(), 0, 'The list should not be empty');
     }
 
     /**
@@ -223,7 +223,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getStepsFromFeature('Test', '00000');
         Test.stopTest();
 
-        System.assertEquals(listStep.size(), 0, 'The list should not be empty');
+        Assert.areEqual(listStep.size(), 0, 'The list should not be empty');
     }
 
     /**
@@ -236,7 +236,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getStepsFromFeature('TestError', '00002');
         Test.stopTest();
 
-        System.assertEquals(listStep.size(), 0, 'The list should be empty');
+        Assert.areEqual(listStep.size(), 0, 'The list should be empty');
     }
 
     /**
@@ -249,7 +249,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getCurrentStepFromFeatures(new List<String>{'Test'}, '00000');
         Test.stopTest();
 
-        System.assertEquals(listStep.size(), 0, 'The list should not be empty');
+        Assert.areEqual(listStep.size(), 0, 'The list should not be empty');
     }
 
     /**
@@ -262,7 +262,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getCurrentStepFromFeatures(new List<String>{'TestError'}, '00002');
         Test.stopTest();
 
-        System.assertEquals(listStep.size(), 0, 'The list should be empty');
+        Assert.areEqual(listStep.size(), 0, 'The list should be empty');
     }
 
     /**
@@ -276,7 +276,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         ContentDocumentLink contentDoc = DMT_Case_Steps_Controller.getTaskCompletedFile(t.Id);
         Test.stopTest();
 
-        System.assertNotEquals(contentDoc, null, 'It is not the one inserted on testSetup');
+        Assert.areNotEqual(contentDoc, null, 'It is not the one inserted on testSetup');
     }
 
     /**
@@ -290,7 +290,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         List<Map<String, Object>> result = DMT_Case_Steps_Controller.getTaskFilesWithAttachments(t.Id);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
+        Assert.areNotEqual(null, result, 'Result should not be null');
     }
 
     @isTest
@@ -304,7 +304,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getStepsFromUser();
         Test.stopTest();
 
-        System.assertNotEquals(listStep.size(), 0, 'The list should not be empty');
+        Assert.areNotEqual(listStep.size(), 0, 'The list should not be empty');
     }
 
     @isTest
@@ -318,7 +318,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> listStep = DMT_Case_Steps_Controller.getStepsFromCase(c.Id);
         Test.stopTest();
 
-        System.assertNotEquals(listStep.size(), 0, 'The list should not be empty');
+        Assert.areNotEqual(listStep.size(), 0, 'The list should not be empty');
     }
 
     @isTest
@@ -333,7 +333,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         }
         Test.stopTest();
 
-        System.assertNotEquals(null, errorMessage, 'The error message should not be null');
+        Assert.areNotEqual(null, errorMessage, 'The error message should not be null');
     }
 
     @isTest
@@ -348,7 +348,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         }
         Test.stopTest();
 
-        System.assertNotEquals(null, errorMessage, 'The error message should not be null');
+        Assert.areNotEqual(null, errorMessage, 'The error message should not be null');
     }
 
     @isTest
@@ -391,7 +391,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         update newCase;
         Test.stopTest();
 
-        System.assert(true, 'processStartNextCaseApproval covered');
+        Assert.isTrue(true, 'processStartNextCaseApproval covered');
     }
 
     @isTest
@@ -435,7 +435,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         update newCase;
         Test.stopTest();
 
-        System.assert(true, 'processStartNextCaseApproval covered');
+        Assert.isTrue(true, 'processStartNextCaseApproval covered');
     }
 
 
@@ -443,11 +443,11 @@ public with sharing class DMT_Case_Steps_Controller_Test {
     static void test_buildApproverTypeMap() {
         //Lista vacía
         Map<String, String> resultEmpty = DMT_Case_Steps_Controller.buildApproverTypeMap(new List<Map<String,String>>());
-        System.assertEquals(0, resultEmpty.size(), 'Empty list should return empty map');
+        Assert.areEqual(0, resultEmpty.size(), 'Empty list should return empty map');
 
         //Lista con un map nulo
         Map<String, String> resultNullMap = DMT_Case_Steps_Controller.buildApproverTypeMap(new List<Map<String,String>>{ null });
-        System.assertEquals(0, resultNullMap.size(), 'List with null map should return empty map');
+        Assert.areEqual(0, resultNullMap.size(), 'List with null map should return empty map');
 
         //Lista con distintos keys
         List<Map<String,String>> featureTypeByApprover = new List<Map<String,String>>{
@@ -457,8 +457,8 @@ public with sharing class DMT_Case_Steps_Controller_Test {
 
         Map<String,String> result = DMT_Case_Steps_Controller.buildApproverTypeMap(featureTypeByApprover);
 
-        System.assertEquals('Business', result.get('U1'), 'U1 should map to Business');
-        System.assertEquals('Risk', result.get('U2'), 'U2 should map to Risk');
+        Assert.areEqual('Business', result.get('U1'), 'U1 should map to Business');
+        Assert.areEqual('Risk', result.get('U2'), 'U2 should map to Risk');
     }
 
     // ===== getStepsFromFeatureOpp =====
@@ -469,7 +469,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> result =
             DMT_Case_Steps_Controller.getStepsFromFeatureOpp('NON_EXISTENT', '99999');
         Test.stopTest();
-        System.assertEquals(0, result.size(), 'Result should be empty');
+        Assert.areEqual(0, result.size(), 'Result should be empty');
     }
 
     @isTest
@@ -482,7 +482,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
             errorMessage = e.getMessage();
         }
         Test.stopTest();
-        System.assertNotEquals(null, errorMessage, 'Exception should be thrown for null oppExternalId');
+        Assert.areNotEqual(null, errorMessage, 'Exception should be thrown for null oppExternalId');
     }
 
     @isTest
@@ -512,8 +512,8 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> result = DMT_Case_Steps_Controller.getStepsFromFeatureOpp('OPP-FEAT-1', opp.DMT_Opp_Id__c);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assert(result.size() > 0, 'Result should contain steps');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.isTrue(result.size() > 0, 'Result should contain steps');
     }
 
     // ===== getCurrentStepFromFeaturesOpp =====
@@ -526,7 +526,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
                 new List<String>{ 'NON_EXISTENT' }, '99999'
             );
         Test.stopTest();
-        System.assertEquals(0, result.size(), 'Result should be empty');
+        Assert.areEqual(0, result.size(), 'Result should be empty');
     }
 
     @isTest
@@ -541,7 +541,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
             errorMessage = e.getMessage();
         }
         Test.stopTest();
-        System.assertNotEquals(null, errorMessage, 'Exception should be thrown for null oppExternalId');
+        Assert.areNotEqual(null, errorMessage, 'Exception should be thrown for null oppExternalId');
     }
 
     @isTest
@@ -571,8 +571,8 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> result = DMT_Case_Steps_Controller.getCurrentStepFromFeaturesOpp(new List<String>{ 'OPP-FEAT-2' }, opp.DMT_Opp_Id__c);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assert(result.size() > 0, 'Result should contain current steps');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.isTrue(result.size() > 0, 'Result should contain current steps');
     }
 
     // ===== checkApprovalValidation =====
@@ -582,7 +582,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Test.startTest();
         Boolean result = DMT_Case_Steps_Controller.checkApprovalValidation(null);
         Test.stopTest();
-        System.assertEquals(false, result, 'Should return false for null lineId');
+        Assert.areEqual(false, result, 'Should return false for null lineId');
     }
 
     @isTest
@@ -592,7 +592,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Test.startTest();
         Boolean result = DMT_Case_Steps_Controller.checkApprovalValidation(line.Id);
         Test.stopTest();
-        System.assertEquals(false, result, 'Should return false when no passport found');
+        Assert.areEqual(false, result, 'Should return false when no passport found');
     }
 
     @isTest
@@ -607,7 +607,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Test.startTest();
         Boolean result = DMT_Case_Steps_Controller.checkApprovalValidation(line.Id);
         Test.stopTest();
-        System.assertEquals(true, result, 'Should return true when passport has no approval features');
+        Assert.areEqual(true, result, 'Should return true when passport has no approval features');
     }
 
     @isTest
@@ -622,7 +622,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Test.startTest();
         Boolean result = DMT_Case_Steps_Controller.checkApprovalValidation(line.Id);
         Test.stopTest();
-        System.assertEquals(false, result, 'Should return false when approval features do not match finished cases');
+        Assert.areEqual(false, result, 'Should return false when approval features do not match finished cases');
     }
 
     @isTest
@@ -650,7 +650,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Test.startTest();
         Boolean result = DMT_Case_Steps_Controller.checkApprovalValidation(line.Id);
         Test.stopTest();
-        System.assertEquals(false, result, 'Should return false when no tasks/steps found for the finished case');
+        Assert.areEqual(false, result, 'Should return false when no tasks/steps found for the finished case');
     }
 
     @isTest
@@ -684,7 +684,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         Boolean result = DMT_Case_Steps_Controller.checkApprovalValidation(line.Id);
         Test.stopTest();
 
-        System.assertEquals(true, result, 'Should return true when finished approval cases and step results match passport approval features');
+        Assert.areEqual(true, result, 'Should return true when finished approval cases and step results match passport approval features');
     }
 
     // ===== startNextCaseApproval (invocable) =====
@@ -697,7 +697,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
             new List<DMT_Case_Steps_Controller.DMT_InputCaseWrapper>()
         );
         Test.stopTest();
-        System.assert(true, 'Should handle null and empty requests gracefully');
+        Assert.isTrue(true, 'Should handle null and empty requests gracefully');
     }
 
     @isTest
@@ -709,7 +709,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
             new List<DMT_Case_Steps_Controller.DMT_InputCaseWrapper>{ wrapper }
         );
         Test.stopTest();
-        System.assert(true, 'Should handle null newCase and oldCase gracefully');
+        Assert.isTrue(true, 'Should handle null newCase and oldCase gracefully');
     }
 
     @isTest
@@ -744,7 +744,7 @@ static void testGetTaskFilesWithTaskContentDocument() {
         DMT_Case_Steps_Controller.getTaskFilesWithAttachments(t.Id);
     Test.stopTest();
 
-    System.assert(result.size() > 0, 'Should return task files');
+    Assert.isTrue(result.size() > 0, 'Should return task files');
 }
 
 @isTest
@@ -764,7 +764,7 @@ static void testUpdateTaskException() {
     }
     Test.stopTest();
 
-    System.assertNotEquals(
+    Assert.areNotEqual(
         '',
         errorMessage,
         'Should throw exception'
@@ -785,11 +785,11 @@ static void testCaseFeatureWrapperCompareTo() {
     DMT_Case_Steps_Controller.DMT_CaseFeatureWrapper nullWrap =
         new DMT_Case_Steps_Controller.DMT_CaseFeatureWrapper();
 
-    System.assertEquals(-1, firstWrap.compareTo(secondWrap));
-    System.assertEquals(1, secondWrap.compareTo(firstWrap));
-    System.assertEquals(1, nullWrap.compareTo(firstWrap));
-    System.assertEquals(-1, firstWrap.compareTo(nullWrap));
-    System.assertEquals(
+    Assert.areEqual(-1, firstWrap.compareTo(secondWrap));
+    Assert.areEqual(1, secondWrap.compareTo(firstWrap));
+    Assert.areEqual(1, nullWrap.compareTo(firstWrap));
+    Assert.areEqual(-1, firstWrap.compareTo(nullWrap));
+    Assert.areEqual(
         0,
         nullWrap.compareTo(
             new DMT_Case_Steps_Controller.DMT_CaseFeatureWrapper()
@@ -830,7 +830,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
 
     Test.stopTest();
 
-    System.assert(true, 'Queueable execute covered');
+    Assert.isTrue(true, 'Queueable execute covered');
 }
 
     @isTest
@@ -926,7 +926,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, oldCase);
         Test.stopTest();
 
-        System.assertEquals(
+        Assert.areEqual(
             DMT_Constants.FINISHED,
             newCase.Status,
             'Case should be finished'
@@ -940,7 +940,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         DMT_Case_Steps_Controller.startFirstBusinessApprovalFeature(null);
         Test.stopTest();
 
-        System.assert(true, 'Null contextId should exit gracefully');
+        Assert.isTrue(true, 'Null contextId should exit gracefully');
     }
 
     @isTest
@@ -960,7 +960,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         DMT_Case_Steps_Controller.startFirstBusinessApprovalFeature(opp.Id);
         Test.stopTest();
 
-        System.assert(true, 'Opportunity should start the first eligible approval feature');
+        Assert.isTrue(true, 'Opportunity should start the first eligible approval feature');
     }
 
     @isTest
@@ -968,7 +968,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         Test.startTest();
         DMT_Case_Steps_Controller.processStartNextCaseApproval(null, new Case());
         Test.stopTest();
-        System.assert(true, 'Should handle null case gracefully');
+        Assert.isTrue(true, 'Should handle null case gracefully');
     }
 
     @isTest
@@ -987,7 +987,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         Test.startTest();
         DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, new Case());
         Test.stopTest();
-        System.assert(true, 'Should return when neither Line nor Opportunity context');
+        Assert.isTrue(true, 'Should return when neither Line nor Opportunity context');
     }
 
     @isTest
@@ -1030,7 +1030,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, oldCase);
         Test.stopTest();
 
-        System.assert(true, 'Should process Opportunity context correctly');
+        Assert.isTrue(true, 'Should process Opportunity context correctly');
     }
 
     @isTest
@@ -1064,7 +1064,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, oldCase);
         Test.stopTest();
 
-        System.assert(true, 'Should return when case is not closed');
+        Assert.isTrue(true, 'Should return when case is not closed');
     }
 
     @isTest
@@ -1111,7 +1111,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, oldCase);
         Test.stopTest();
 
-        System.assert(true, 'Should handle Risk feature type correctly');
+        Assert.isTrue(true, 'Should handle Risk feature type correctly');
     }
 
     @isTest
@@ -1163,7 +1163,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, oldCase);
         Test.stopTest();
 
-        System.assert(true, 'Should prioritize Business over Risk when both present');
+        Assert.isTrue(true, 'Should prioritize Business over Risk when both present');
     }
 
     @isTest
@@ -1210,7 +1210,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, oldCase);
         Test.stopTest();
 
-        System.assert(true, 'Should handle Other features for Opportunity context');
+        Assert.isTrue(true, 'Should handle Other features for Opportunity context');
     }
 
     @isTest
@@ -1246,7 +1246,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         DMT_Case_Steps_Controller.processStartNextCaseApproval(newCase, oldCase);
         Test.stopTest();
 
-        System.assert(true, 'Should handle missing passport data gracefully');
+        Assert.isTrue(true, 'Should handle missing passport data gracefully');
     }
 
     // ===== getAllStepsFromFeaturesLine =====
@@ -1258,9 +1258,9 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
             DMT_Case_Steps_Controller.getAllStepsFromFeaturesLine(new List<String>{ 'Test' }, '00001');
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result map should not be null');
-        System.assert(result.containsKey('Test'), 'Result should contain the requested feature key');
-        System.assert(!result.get('Test').isEmpty(), 'Feature steps should not be empty');
+        Assert.areNotEqual(null, result, 'Result map should not be null');
+        Assert.isTrue(result.containsKey('Test'), 'Result should contain the requested feature key');
+        Assert.isTrue(!result.get('Test').isEmpty(), 'Feature steps should not be empty');
     }
 
     @isTest
@@ -1270,8 +1270,8 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
             DMT_Case_Steps_Controller.getAllStepsFromFeaturesLine(new List<String>{ 'NON_EXISTENT' }, '99999');
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result map should not be null');
-        System.assertEquals(0, result.size(), 'Result map should be empty when no cases match');
+        Assert.areNotEqual(null, result, 'Result map should not be null');
+        Assert.areEqual(0, result.size(), 'Result map should be empty when no cases match');
     }
 
     // ===== getAllStepsFromFeaturesOpp =====
@@ -1296,9 +1296,9 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
             DMT_Case_Steps_Controller.getAllStepsFromFeaturesOpp(new List<String>{ 'OPP-ALL-FEAT-1' }, opp.DMT_Opp_Id__c);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result map should not be null');
-        System.assert(result.containsKey('OPP-ALL-FEAT-1'), 'Result should contain the requested feature key');
-        System.assert(!result.get('OPP-ALL-FEAT-1').isEmpty(), 'Feature steps should not be empty');
+        Assert.areNotEqual(null, result, 'Result map should not be null');
+        Assert.isTrue(result.containsKey('OPP-ALL-FEAT-1'), 'Result should contain the requested feature key');
+        Assert.isTrue(!result.get('OPP-ALL-FEAT-1').isEmpty(), 'Feature steps should not be empty');
     }
 
     @isTest
@@ -1308,8 +1308,8 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
             DMT_Case_Steps_Controller.getAllStepsFromFeaturesOpp(new List<String>{ 'NON_EXISTENT' }, '99999');
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result map should not be null');
-        System.assertEquals(0, result.size(), 'Result map should be empty when no cases match');
+        Assert.areNotEqual(null, result, 'Result map should not be null');
+        Assert.areEqual(0, result.size(), 'Result map should be empty when no cases match');
     }
 
     // ===== updateTask success path =====
@@ -1323,7 +1323,262 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         Test.stopTest();
 
         Task updated = [SELECT Id, Subject FROM Task WHERE Id = :t.Id LIMIT 1];
-        System.assertEquals('Updated Subject', updated.Subject, 'Task subject should be updated');
+        Assert.areEqual('Updated Subject', updated.Subject, 'Task subject should be updated');
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // CIBGLOBALD-4477 - Automatic approval Case start (enqueueAutoWorkflowCases and its payload)
+    // ---------------------------------------------------------------------------------------------
+
+    private static String autoWorkflowPassportJson(String externalId) {
+        return '{"data":{"opportunityId":"' + externalId + '","features":[' +
+            '{"id":"31","name":"F31","passportSanction":"passport","orderNumber":2,"autoWorkflowRequest":"Y",' +
+                '"tasks":[{"id":"6","name":"T6","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY1","name":"A1"}]}]},' +
+            '{"id":"30","name":"F30","passportSanction":"passport","orderNumber":1,"autoWorkflowRequest":"Y",' +
+                '"tasks":[{"id":"7","name":"T7","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY2","name":"A2"}]}]},' +
+            '{"id":"29","name":"F29","passportSanction":"passport","orderNumber":0,' +
+                '"tasks":[{"id":"8","name":"T8","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY2","name":"A2"}]}]}' +
+            ']}}';
+    }
+
+    private static List<DMT_Line__c> insertLinesWithAutoWorkflowPassport(Integer count) {
+        List<DMT_Line__c> lines = new List<DMT_Line__c>();
+        for (Integer i = 0; i < count; i++) {
+            lines.add(new DMT_Line__c(Line_Id__c = 'LINE-AUTO-' + i, Status__c = DMT_Constants.PROPOSAL));
+        }
+        insert lines;
+
+        List<Passport__c> passports = new List<Passport__c>();
+        for (DMT_Line__c line : lines) {
+            passports.add(new Passport__c(DMT_Line__c = line.Id, DMT_Passport_Save__c = autoWorkflowPassportJson(line.Line_Id__c)));
+        }
+        insert passports;
+        return lines;
+    }
+
+    @isTest
+    static void testEnqueueAutoWorkflowCases_bulkUsesFixedQueriesAndPicksLowestOrder() {
+        List<DMT_Line__c> lines = insertLinesWithAutoWorkflowPassport(5);
+        Map<Id, String> stageByLineId = new Map<Id, String>();
+        for (DMT_Line__c line : lines) {
+            stageByLineId.put(line.Id, DMT_Constants.PROPOSAL);
+        }
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+
+        Test.startTest();
+        Integer queriesBefore = Limits.getQueries();
+        DMT_Case_Steps_Controller.enqueueAutoWorkflowCases(stageByLineId, false);
+        Integer queriesUsed = Limits.getQueries() - queriesBefore;
+        Test.stopTest();
+
+        Assert.areEqual(2, queriesUsed, 'Passports and existing Cases are queried once each, whatever the number of Lines');
+        Assert.areEqual(5, DMT_AsyncOrchestrator.payloadBuffer.size(), 'One payload per Line');
+        for (DMT_AsyncPayload p : DMT_AsyncOrchestrator.payloadBuffer) {
+            Assert.isTrue(p instanceof DMT_StartApprovalCasePayload, 'Payload type');
+            DMT_StartApprovalCasePayload startPayload = (DMT_StartApprovalCasePayload) p;
+            Assert.areEqual('30', startPayload.featureId, 'Flagged feature with the lowest order number wins; unflagged F29 is ignored');
+            Assert.areEqual('passport', startPayload.passportSanction, 'Sanction of the feature');
+        }
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+    }
+
+    @isTest
+    static void testEnqueueAutoWorkflowCases_singleRecordOverload() {
+        List<DMT_Line__c> lines = insertLinesWithAutoWorkflowPassport(1);
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+
+        Test.startTest();
+        DMT_Case_Steps_Controller.enqueueAutoWorkflowCases(lines[0].Id, DMT_Constants.PROPOSAL, false);
+        Test.stopTest();
+
+        Assert.areEqual(1, DMT_AsyncOrchestrator.payloadBuffer.size(), 'Single-record overload enqueues one payload');
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+    }
+
+    @isTest
+    static void testEnqueueAutoWorkflowCases_skipsStartedFeatureWrongStageAndMissingPassport() {
+        List<DMT_Line__c> lines = insertLinesWithAutoWorkflowPassport(2);
+        DMT_Line__c lineWithoutPassport = new DMT_Line__c(Line_Id__c = 'LINE-AUTO-NOPASSPORT', Status__c = DMT_Constants.PROPOSAL);
+        insert lineWithoutPassport;
+
+        // Lines[0] already has a Case for feature 30, so the next eligible one (31) is started instead.
+        Id approvalRT = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
+        TriggerBypass.setBypass();
+        insert new Case(RecordTypeId = approvalRT, DMT_Line__c = lines[0].Id, Status = 'Pending', DMT_Feature_Id__c = '30');
+        TriggerBypass.removeBypass();
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+
+        Map<Id, String> stageByLineId = new Map<Id, String>{
+            lines[0].Id => DMT_Constants.PROPOSAL,
+            lines[1].Id => 'Draft',
+            lineWithoutPassport.Id => DMT_Constants.PROPOSAL
+        };
+
+        Test.startTest();
+        DMT_Case_Steps_Controller.enqueueAutoWorkflowCases(stageByLineId, false);
+        Test.stopTest();
+
+        Assert.areEqual(1, DMT_AsyncOrchestrator.payloadBuffer.size(), 'Only Lines[0] qualifies: Lines[1] is in an unsupported stage, the third has no Passport');
+        Assert.areEqual('31', ((DMT_StartApprovalCasePayload) DMT_AsyncOrchestrator.payloadBuffer[0]).featureId, 'Feature 30 already has a Case, so 31 is next');
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+    }
+
+    @isTest
+    static void testEnqueueAutoWorkflowCases_emptyAndNullInput() {
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+
+        Test.startTest();
+        DMT_Case_Steps_Controller.enqueueAutoWorkflowCases((Map<Id, String>) null, false);
+        DMT_Case_Steps_Controller.enqueueAutoWorkflowCases(new Map<Id, String>(), true);
+        DMT_Case_Steps_Controller.enqueueAutoWorkflowCases((Id) null, DMT_Constants.PROPOSAL, false);
+        Test.stopTest();
+
+        Assert.isTrue(DMT_AsyncOrchestrator.payloadBuffer.isEmpty(), 'Nothing to enqueue');
+    }
+
+    @isTest
+    static void testStartApprovalCasePayload_dispatchDoesNotThrowWhenRecordNotFound() {
+        DMT_StartApprovalCasePayload payload = new DMT_StartApprovalCasePayload(
+            'EXT-NOT-FOUND', 'APPROVER-001', 'TASK-001', '[{"id":"1"},{"id":"2"}]', 'FEATURE-001', 'Feature', '', 'approval'
+        );
+
+        Test.startTest();
+        DMT_AsyncDispatcher.dispatch(payload);
+        Test.stopTest();
+
+        Assert.isTrue(DMT_AsyncOrchestrator.payloadBuffer.isEmpty(), 'startCase reports the missing record in its result and does not raise');
+    }
+
+    @isTest
+    static void testAsyncQueueJob_dispatchesOneStartApprovalCasePayloadPerTransaction() {
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+        List<DMT_AsyncPayload> payloads = new List<DMT_AsyncPayload>{
+            new DMT_StartApprovalCasePayload('EXT-A', 'APPROVER-001', 'TASK-001', '[]', 'FEATURE-A', 'A', '', 'approval'),
+            new DMT_StartApprovalCasePayload('EXT-B', 'APPROVER-001', 'TASK-001', '[]', 'FEATURE-B', 'B', '', 'approval')
+        };
+
+        Test.startTest();
+        new DMT_AsyncQueueJob(payloads).execute(null);
+        Integer queueablesAfterFirstPass = Limits.getQueueableJobs();
+        Test.stopTest();
+
+        Assert.areEqual(1, queueablesAfterFirstPass, 'The second payload is re-buffered and flushed into its own Queueable instead of running inline');
+        Assert.isTrue(DMT_AsyncOrchestrator.payloadBuffer.isEmpty(), 'Buffer is flushed');
+    }
+
+    // CIBGLOBALD-4477 - startCase early returns and its catch block, reached through the same entry point the
+    // auto-start payload uses.
+    @isTest
+    static void testStartCase_approverNotFoundReturnsFailure() {
+        insert new DMT_Line__c(Line_Id__c = 'LINE-STARTCASE-001', Status__c = DMT_Constants.PROPOSAL);
+
+        Test.startTest();
+        Map<String, Object> result = DMT_Passport_Handler.startCase(
+            'LINE-STARTCASE-001', 'APPROVER-DOES-NOT-EXIST', 'TASK-DOES-NOT-EXIST', new List<Map<String, Object>>(), 'FEATURE-001', 'Feature', '', 'approval'
+        );
+        Test.stopTest();
+
+        Assert.areEqual(false, result.get('success'), 'No approver can be resolved, so no Case is started');
+        Assert.areEqual(0, [SELECT COUNT() FROM Case WHERE DMT_Feature_Id__c = 'FEATURE-001'], 'No Case created');
+    }
+
+    @isTest
+    static void testStartCase_failureIsReportedThroughOrchestratorAndNeverThrows() {
+        Profile minimalProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];
+        User noAccessUser = new User(
+            Alias = 'noacc', Email = 'noaccess.startcase@example.com', EmailEncodingKey = 'UTF-8', LastName = 'NoAccess',
+            LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', ProfileId = minimalProfile.Id,
+            TimeZoneSidKey = 'America/Los_Angeles', UserName = 'noaccess.startcase' + System.currentTimeMillis() + '@example.com'
+        );
+        insert noAccessUser;
+
+        Map<String, Object> result;
+        Test.startTest();
+        System.runAs(noAccessUser) {
+            result = DMT_Passport_Handler.startCase('EXT-1', 'APPROVER-1', 'TASK-1', new List<Map<String, Object>>(), 'FEATURE-1', 'Feature', '', 'approval');
+        }
+        Test.stopTest();
+
+        Assert.areEqual(false, result.get('success'), 'A failure is returned in the result map instead of being thrown');
+        Assert.isTrue(DMT_AsyncOrchestrator.payloadBuffer.isEmpty(), 'The error log payload was flushed by startCase itself');
+    }
+
+    // CIBGLOBALD-4477 - the Opportunity handler methods that sit next to the auto-start one and share the
+    // after-update block.
+    @isTest
+    static void testOpportunityHandlerIntegrationEnqueue_closingStageChange() {
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+        opp = [SELECT Id, RecordTypeId, StageName FROM Opportunity WHERE Id = :opp.Id LIMIT 1];
+        Opportunity closing = opp.clone(true, true, true, true);
+        closing.StageName = 'Closed Won';
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+
+        Test.startTest();
+        DMT_OpportunityTriggerHandler handler = new DMT_OpportunityTriggerHandler();
+        handler.enqueueClosingIntegration(new List<Opportunity>{ closing }, new Map<Id, Opportunity>{ opp.Id => opp });
+        handler.enqueueStageChangeIntegration(new List<Opportunity>{ closing }, new Map<Id, Opportunity>{ opp.Id => opp });
+        Test.stopTest();
+
+        Assert.isTrue(DMT_AsyncOrchestrator.payloadBuffer.size() <= 2, 'At most one payload per method');
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+    }
+
+    @isTest
+    static void testOpportunityHandlerEnqueueAutoWorkflowOnStageChange_skipsUnchangedStage() {
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+        opp = [SELECT Id, RecordTypeId, StageName FROM Opportunity WHERE Id = :opp.Id LIMIT 1];
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+
+        Test.startTest();
+        new DMT_OpportunityTriggerHandler().enqueueAutoWorkflowOnStageChange(new List<Opportunity>{ opp }, new Map<Id, Opportunity>{ opp.Id => opp });
+        Test.stopTest();
+
+        Assert.isTrue(DMT_AsyncOrchestrator.payloadBuffer.isEmpty(), 'No stage change, nothing to start');
+    }
+
+    // CIBGLOBALD-4477 - known approver, unknown task type: startCase stops before creating anything.
+    @isTest
+    static void testStartCase_taskTypeNotFoundReturnsFailure() {
+        insert new DMT_Line__c(Line_Id__c = 'LINE-STARTCASE-002', Status__c = DMT_Constants.PROPOSAL);
+
+        Test.startTest();
+        Map<String, Object> result = DMT_Passport_Handler.startCase(
+            'LINE-STARTCASE-002', 'TestExternalIdDATAFACTORY1', 'TASK-DOES-NOT-EXIST', new List<Map<String, Object>>(), 'FEATURE-002', 'Feature', '', 'approval'
+        );
+        Test.stopTest();
+
+        Assert.areEqual(false, result.get('success'), 'No task type can be resolved, so no Case is started');
+        Assert.areEqual(0, [SELECT COUNT() FROM Case WHERE DMT_Feature_Id__c = 'FEATURE-002'], 'No Case created');
+    }
+
+    // CIBGLOBALD-4477 - the Line trigger entry point (list and single-record overloads): only Lines whose
+    // status changed into Proposal / Approval / Ready to close are handed to the controller, in one call.
+    @isTest
+    static void testLineHelperEnqueueAutoWorkflowOnStatusChange_listAndSingleOverloads() {
+        List<DMT_Line__c> lines = insertLinesWithAutoWorkflowPassport(3);
+        Map<Id, DMT_Line__c> oldLinesById = new Map<Id, DMT_Line__c>();
+        for (DMT_Line__c line : lines) {
+            DMT_Line__c oldLine = line.clone(true, true, true, true);
+            oldLine.Status__c = DMT_Constants.DRAFT;
+            oldLinesById.put(line.Id, oldLine);
+        }
+        // Third Line did not change status, so it must be left out.
+        oldLinesById.get(lines[2].Id).Status__c = lines[2].Status__c;
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+
+        Test.startTest();
+        DMT_Line_Helper helper = new DMT_Line_Helper();
+        helper.enqueueAutoWorkflowOnStatusChange(lines, oldLinesById);
+        Integer afterListCall = DMT_AsyncOrchestrator.payloadBuffer.size();
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+        helper.enqueueAutoWorkflowOnStatusChange(lines[0], oldLinesById.get(lines[0].Id));
+        Integer afterSingleCall = DMT_AsyncOrchestrator.payloadBuffer.size();
+        helper.enqueueAutoWorkflowOnStatusChange((DMT_Line__c) null, (DMT_Line__c) null);
+        Test.stopTest();
+
+        Assert.areEqual(2, afterListCall, 'Two of the three Lines changed status');
+        Assert.areEqual(1, afterSingleCall, 'Single-record overload enqueues one payload');
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
     }
 
 }

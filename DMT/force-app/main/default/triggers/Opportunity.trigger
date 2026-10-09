@@ -161,7 +161,7 @@ trigger Opportunity on Opportunity (before insert,before update,before delete,af
                 DMT_CloseWonNotificationService.sendDraftOppNotifications(Trigger.new, Trigger.oldMap);
                 dmtHandlerOpp.updatePassport_OppStatusChanged(Trigger.new,Trigger.oldMap);
                 dmtHandlerOpp.restartApprovalTasksOnOpportunityResubmission(Trigger.new, Trigger.oldMap);
-                dmtHandlerOpp.autoStartFirstBusinessApprovalFeature(Trigger.new, Trigger.oldMap);
+                dmtHandlerOpp.enqueueAutoWorkflowOnStageChange(Trigger.new, Trigger.oldMap);
                 System.debug('dmtHandlerOpp.checkReadyToCloseIBF: ' + Trigger.new);
                 dmtHandlerOpp.checkReadyToCloseIBF(Trigger.new, Trigger.oldMap);//CIBGLOBALD-3748
                 dmtHandlerOpp.checkOppGTB(Trigger.new, Trigger.oldMap);//CIBGLOBALD-3757
