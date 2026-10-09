@@ -41,6 +41,9 @@ const CUSTOMER_STRG = 'Customer';
 import { CurrentPageReference } from 'lightning/navigation';
 import hasLineGodPermission from '@salesforce/customPermission/DMT_Line_God';
 
+// CIBGLOBALD-4617 - refresh once on return if the tab was hidden longer than this (events are not delivered while unsubscribed)
+const CATCH_UP_AFTER_HIDDEN_MS = 30000;
+
 export default class Dmt_passport extends LightningElement {
 
   myPayload = [];
@@ -107,11 +110,13 @@ export default class Dmt_passport extends LightningElement {
   statusRefreshInProgress = false;
 
 
-  //Change Data Capture
-  channelNamePassport = '/data/Passport__ChangeEvent';
-  subscriptionPassport = {}; // holds subscription, used for unsubscribe
+  // CIBGLOBALD-4617 - single filtered channel. DMT_Task__e is published only for DMT approval Task
+  // changes and for Passport JSON / Obsolete changes, keyed by Line / Opportunity Id.
+  // The Passport__ChangeEvent subscription was removed.
   channelNameTask = '/event/DMT_Task__e';
-  subscriptionTask = {}; // holds subscription, used for unsubscribe
+  subscriptionTask = null; // holds subscription, used for unsubscribe
+  hiddenAt = null; // timestamp of the moment the tab became hidden
+  visibilityHandler;
 
   wiredLineResult; // holds the line information
   wiredPassportResult;
@@ -199,8 +204,8 @@ export default class Dmt_passport extends LightningElement {
   }
 
   disconnectedCallback() {
-    unsubscribe(this.subscriptionPassport, () => console.log('Unsubscribed to change events Passport.'));
-    unsubscribe(this.subscriptionTask, () => console.log('Unsubscribed to change events Task.'));
+    document.removeEventListener('visibilitychange', this.visibilityHandler);
+    this.unsubscribeFromTaskChannel();
     pubsub.unregister('callPassportLWC', this.handleEventObj);
     unregisterRefreshContainer(this.refreshContainerID);
   }
@@ -1029,113 +1034,98 @@ export default class Dmt_passport extends LightningElement {
   }
 
   // Called by connectedCallback()
+  // CIBGLOBALD-4617 - subscribes only to the filtered DMT_Task__e channel, and only while the tab is
+  // visible: a hidden tab would otherwise keep consuming event deliveries for nothing.
   registerSubscribe() {
-    const changeEventPassportCallback = changeEventPassport => {
-      this.processChangePassportEvent(changeEventPassport);
-    };
+    if (document.visibilityState !== 'hidden') {
+      this.subscribeToTaskChannel();
+    } else {
+      // Loaded in a background tab: remember it, so the first time it becomes visible it catches up
+      this.hiddenAt = Date.now();
+    }
 
-    const changeEventTaskCallback = changeEventTask => {
-      this.processChangeTaskEvent(changeEventTask);
-    };
-
-    // Sets up subscription and callback for change events
-    subscribe(this.channelNamePassport, -1, changeEventPassportCallback).then(subscription => {
-      this.subscriptionPassport = subscription;
-      console.log('[DEBUG-REFRESH] Subscribed to Passport channel:', this.channelNamePassport, subscription);
-    });
-    subscribe(this.channelNameTask, -1, changeEventTaskCallback).then(subscription => {
-      this.subscriptionTask = subscription;
-      console.log('[DEBUG-REFRESH] Subscribed to Task channel:', this.channelNameTask, subscription);
-    });
+    this.visibilityHandler = () => this.handleVisibilityChange();
+    document.addEventListener('visibilitychange', this.visibilityHandler);
 
     getRecordNotifyChange([{ recordId: this.passportId }]);
   }
 
-  // Called by registerSubscribe()
-  processChangePassportEvent(changeEvent) {
-    try {
-      const recordIds = changeEvent.data.payload.ChangeEventHeader.recordIds; // avoid deconstruction
-      console.log('[DEBUG-REFRESH] processChangePassportEvent received. recordIds:', recordIds, 'this.passportId:', this.passportId);
-      if(recordIds.includes(this.passportId)){
-          console.log('[DEBUG-REFRESH] Passport event MATCHES this.passportId - refreshing.');
-          getRecordNotifyChange([{ recordId: this.passportId }]); // Refresh all components
-          console.warn('[CDC] Passport changed. Forcing Wire Refresh.');
-
-          // This forces the wire to go back to the server and get the JSON updated by the Trigger
-          refreshApex(this.wiredPassportResult);
-
-          if (this.opportunityId) {
-            getRecordNotifyChange([{ recordId: this.opportunityId }]);
-          } else if (this.lineId) {
-            getRecordNotifyChange([{ recordId: this.lineId }]);
-          }
-      } else {
-          console.log('[DEBUG-REFRESH] Passport event did NOT match this.passportId - ignored.');
-      }
-    } catch (err) {
-      this.handleError(error);
+  subscribeToTaskChannel() {
+    if (this.subscriptionTask) {
+      return; // already subscribed
     }
+    this.subscriptionTask = {}; // placeholder so a second call while subscribing is ignored
+    subscribe(this.channelNameTask, -1, changeEventTask => {
+      this.processChangeTaskEvent(changeEventTask);
+    }).then(subscription => {
+      this.subscriptionTask = subscription;
+    }).catch(error => {
+      this.subscriptionTask = null;
+      console.error('Task channel subscription failed', JSON.stringify(error));
+    });
   }
 
+  unsubscribeFromTaskChannel() {
+    if (this.subscriptionTask && this.subscriptionTask.id !== undefined) {
+      unsubscribe(this.subscriptionTask, () => {});
+    }
+    this.subscriptionTask = null;
+  }
+
+  handleVisibilityChange() {
+    if (document.visibilityState === 'hidden') {
+      this.hiddenAt = Date.now();
+      this.unsubscribeFromTaskChannel();
+      return;
+    }
+
+    this.subscribeToTaskChannel();
+    // Events published while the tab was hidden were not delivered: catch up with one refresh
+    if (this.hiddenAt && Date.now() - this.hiddenAt > CATCH_UP_AFTER_HIDDEN_MS) {
+      this.refreshFromBackend();
+    }
+    this.hiddenAt = null;
+  }
+
+  // Re-reads the Passport record (JSON + Obsolete flag) and the Tasks / traffic lights
+  refreshFromBackend() {
+    refreshApex(this.wiredPassportResult);
+    refreshApex(this.wiredInformationPassportResult).then(() => {
+      if (this.rawPayload) {
+        this.executeSafeSync('TASK_UPDATED');
+      }
+    });
+  }
+
+  // CIBGLOBALD-4617 - DMT_Task__e payload: records__c = Line / Opportunity Ids, Operation__c =
+  // CREATE | MODIFY | MODIFY_MULTI (approval Tasks) or PASSPORT (Passport JSON / Obsolete changed).
+  // Matching on the record Id also catches brand-new replacement Tasks (e.g. a reopened Case).
   processChangeTaskEvent(changeEvent) {
     try {
       const recordIds = changeEvent.data.payload.records__c.split(',');
       const operation = changeEvent.data.payload.Operation__c;
-      console.log('[DEBUG-REFRESH] processChangeTaskEvent received. recordIds:', recordIds, 'operation:', operation, 'current this.tasksId:', this.tasksId);
-
-      // CIBGLOBALD-4117: DMT_ApprovalChangeStep_Helper.restartTasksForRecord publishes this operation with the
-      // Line/Opportunity Id itself, not a Task Id - this.lineId/this.opportunityId are already
-      // known from load, unlike a brand-new replacement Task's Id (see the isRelatedTask gap
-      // below), so this is a reliable way to detect "this passport's approval state changed"
-      // regardless of which specific Tasks were cancelled/created underneath it.
-      if (operation === 'CASE_UPDATE') {
-          const isRelatedRecord = recordIds.includes(this.lineId) || recordIds.includes(this.opportunityId);
-          console.log('[DEBUG-REFRESH] CASE_UPDATE event. this.lineId:', this.lineId, 'this.opportunityId:', this.opportunityId, 'isRelatedRecord:', isRelatedRecord);
-          if (isRelatedRecord) {
-              refreshApex(this.wiredInformationPassportResult).then(() => {
-                  if (this.rawPayload) {
-                      console.info('[DEBUG-REFRESH] CASE_UPDATE matched - calling executeSafeSync(TASK_UPDATED).');
-                      this.executeSafeSync('TASK_UPDATED');
-                  } else {
-                      console.info('[DEBUG-REFRESH] CASE_UPDATE matched but this.rawPayload is falsy - executeSafeSync NOT called.');
-                  }
-              });
-          }
-          return;
+      const isRelatedRecord = (this.lineId && recordIds.includes(this.lineId))
+        || (this.opportunityId && recordIds.includes(this.opportunityId));
+      if (!isRelatedRecord) {
+        return;
       }
 
-   //   if(operation === 'CREATE'){
-        refreshApex(this.wiredInformationPassportResult).then(result => {
-          console.log('[DEBUG-REFRESH] wiredInformationPassportResult refreshed after task event. New this.tasksId:', this.tasksId);
-          this.searchTask(recordIds);
-        });
-   //   }
-      this.searchTask(recordIds);
+      if (operation === 'PASSPORT') {
+        // Forces the wire to go back to the server for the JSON / Obsolete flag the backend updated
+        getRecordNotifyChange([{ recordId: this.passportId }]);
+        refreshApex(this.wiredPassportResult);
+        return;
+      }
 
-    } catch (err) {
+      refreshApex(this.wiredInformationPassportResult).then(() => {
+        if (this.rawPayload) {
+          // Safely rebuilds the buffer, checks the server and renders the traffic lights
+          this.executeSafeSync('TASK_UPDATED');
+        }
+      });
+    } catch (error) {
       this.handleError(error);
     }
-  }
-
-  searchTask(recordIds) {
-      // 1. Check if any of the updated tasks belong to this passport
-      const isRelatedTask = this.tasksId.some(t => recordIds.includes(t));
-      console.log('[DEBUG-REFRESH] searchTask called. recordIds:', recordIds, 'this.tasksId:', this.tasksId, 'isRelatedTask:', isRelatedTask);
-
-      if (isRelatedTask) {
-          // 2. Refresh the wire to get latest IDs, then run the Orchestrator
-          console.log('[DEBUG-REFRESH] isRelatedTask TRUE - refreshing wiredInformationPassportResult and calling executeSafeSync(TASK_UPDATED).');
-          refreshApex(this.wiredInformationPassportResult).then(() => {
-              if (this.rawPayload) {
-                  // This safely rebuilds the buffer, checks the server, and renders the UI
-                  this.executeSafeSync('TASK_UPDATED');
-              } else {
-                  console.log('[DEBUG-REFRESH] isRelatedTask TRUE but this.rawPayload is falsy - executeSafeSync NOT called.');
-              }
-          });
-      } else {
-          console.log('[DEBUG-REFRESH] isRelatedTask FALSE - no refresh triggered for this event. This is the gap: a brand-new task Id would not yet be in this.tasksId.');
-      }
   }
 
   @api

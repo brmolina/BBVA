@@ -1,0 +1,24 @@
+CIBGLOBALD-4617 - filter DMT_Task__e and replace the Passport change event subscription in the Passport LWCs
+
+Overview: the two Passport LWCs (Lines and Opportunities) were reaching the daily platform event delivery limit in PROD. DMT_Task__e was published for every Task of the org and delivered to every open Passport tab, and every change of every Passport__c was delivered through Change Data Capture to every open tab as well. Now only the events a Passport can use are published, each tab listens to one channel, and the traffic light also refreshes correctly after a case reopen.
+
+Estimated reduction (an estimate, not measured in PROD):
+- Published Task events: about 80-98% fewer, because only DMT_Step_Approval Tasks of a Case whose status, owner or result changed are published. The safe floor is the share of Tasks in PROD that are not DMT approval Tasks; the rest depends on how many saves of an approval Task touch no watched field.
+- Deliveries: fall further than the published count, because each event is delivered once per subscribed tab. A tab now has one subscription instead of two and none while it is in the background.
+- Passport changes: before, every change of every Passport__c was delivered to every open tab; now one event is published only when the Passport JSON or the Obsolete flag changes.
+- Opportunity LWC: refreshes only for its own record instead of on every event.
+
+Changes:
+- DTM_Task_Helper: publish DMT_Task__e only for DMT_Step_Approval Tasks of a Case, and on update only when a watched field changed. records__c now carries the Line or Opportunity Id (resolved with DMT_LineOpportunity__c) instead of Task Ids. Operations: CREATE, MODIFY, MODIFY_MULTI, PASSPORT.
+- Task.trigger: pass Trigger.oldMap to the helper.
+- DMT_Passport_TriggerHandler: publish a PASSPORT event when the Passport JSON or the Obsolete flag changes (replaces the Passport__ChangeEvent subscription). The logic that sets Obsolete is untouched.
+- DMT_ApprovalChangeStep_Helper: remove the explicit CASE_UPDATE publish, the Task trigger events now cover a case reopen.
+- DMT_Task__e: publish behavior changed from PublishImmediately to PublishAfterCommit, so an open Passport never reads data before the publishing transaction commits (found testing: the traffic light stayed stale after a reopen).
+- dmt_passport and dmt_passport_opportunity: subscribe only to DMT_Task__e, match on their own Line or Opportunity Id, unsubscribe while the tab is hidden and refresh once on return.
+- DTM_Task_Helper_Test: new test class.
+
+Tested in DMT_TCM_DEV without page reload: Line and Opportunity traffic light on reject and on reopen, Opportunity Obsolete warning appearing and disappearing.
+
+Manual post-deployment steps (the Passport CDC channel member is not tracked in git): see tickets/CIBGLOBALD-4617/deployment-notes.md. Manifests: manifest/CIBGLOBALD-4617-package.xml and manifest/CIBGLOBALD-4617-destructiveChanges.xml.
+
+Touches common element: Task.trigger and DTM_Task_Helper (Task object, DMT_Task__e payload and publish behavior) - ANS/DMT notification required

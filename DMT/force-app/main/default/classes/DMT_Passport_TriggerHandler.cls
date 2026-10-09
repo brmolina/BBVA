@@ -26,6 +26,9 @@ public with sharing class DMT_Passport_TriggerHandler extends DMT_TriggerHandler
     }
 
     public override void afterUpdate() {
+        // CIBGLOBALD-4617: tell open Passports the record changed (replaces Passport__ChangeEvent)
+        DTM_Task_Helper.processPassportChange(this.lstNew, this.mapOld);
+
         // CIBGLOBALD-4507: sync approval Cases/Tasks with the features received from Passport
         DMT_Passport_FeatureSync.sync(this.lstNew, this.mapOld);
     }

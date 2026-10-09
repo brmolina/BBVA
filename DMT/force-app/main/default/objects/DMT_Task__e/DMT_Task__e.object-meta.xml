@@ -4,5 +4,5 @@
     <eventType>HighVolume</eventType>
     <label>DMT_Task</label>
     <pluralLabel>DMT_Tasks</pluralLabel>
-    <publishBehavior>PublishImmediately</publishBehavior>
+    <publishBehavior>PublishAfterCommit</publishBehavior>
 </CustomObject>

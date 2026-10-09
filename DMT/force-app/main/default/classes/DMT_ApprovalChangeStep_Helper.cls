@@ -102,10 +102,10 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
             Database.insert(tasksToCreate, AccessLevel.SYSTEM_MODE);
             Database.update(casesToResetByCaseId.values(), AccessLevel.SYSTEM_MODE);
 
-            // Publishes the LINE/OPPORTUNITY Id, not a Task Id: dmt_passport.js only recognises
-            // Task Ids it already knows, so it can never match a brand-new replacement task. It
-            // does track the record Id, so this refreshes the traffic light reliably.
-            EventBus.publish(new DMT_Task__e(Operation__c = 'CASE_UPDATE', records__c = String.valueOf(recordId)));
+            // CIBGLOBALD-4617 - no explicit event here anymore: the cancelled and the replacement
+            // Tasks go through Task.trigger -> DTM_Task_Helper, which already publishes one
+            // DMT_Task__e keyed by this Line / Opportunity Id, so open Passports refresh the traffic
+            // light without a second event.
         } catch (Exception e) {
             Database.rollback(sp);
             logRestartFailure(e, 'Task', 'restartTasksForRecord');

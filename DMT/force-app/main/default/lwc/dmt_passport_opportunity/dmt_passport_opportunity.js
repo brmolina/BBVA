@@ -36,10 +36,7 @@ import OPPORTUNITY_ID_FIELD from '@salesforce/schema/Opportunity.Id';
 const LOAD_STYLE_MESSAGE = 'Static Resource Loaded';
 const ERROR_MESSAGE = 'error';
 const ERROR_PASSPORT_MESSAGE = 'Error processing passport';
-const UNSUBCRIBE_MESSAGE = 'Unsubscribed to change events';
 const UNKNOWN_MESSAGE = 'Unknown error';
-const PASSPORT_ENTITY = 'Passport__c';
-const TASK_ENTTITY = 'Task';
 const STRING_TYPE = 'string';
 const MOTOR_DESC_FIELD = 'motorDesc';
 const PASSPORT_SANCTION_FIELD = 'passportSanction';
@@ -75,8 +72,11 @@ const PROPOSAL_OPPORTUNITY_STATE = 'Proposal';
 const READY_TO_CLOSE_OPPORTUNITY_STATE = 'Ready to close';
 const CLOSED_WON_OPPORTUNITY_STATE = 'Closed Won';
 
-const CHANNEL_PASSPORT = '/data/Passport__ChangeEvent';
+// CIBGLOBALD-4617 - single filtered channel: DMT_Task__e is published only for DMT approval Task changes
+// and for Passport JSON / Obsolete changes, keyed by Line / Opportunity Id. Passport__ChangeEvent was removed.
 const CHANNEL_TASK = '/event/DMT_Task__e';
+// Refresh once on return if the tab was hidden longer than this (events are not delivered while unsubscribed)
+const CATCH_UP_AFTER_HIDDEN_MS = 30000;
 
 
 export default class Dmt_passport_opportunity extends LightningElement {
@@ -177,8 +177,9 @@ export default class Dmt_passport_opportunity extends LightningElement {
     features = [];
     showfeaturesTable = false;
     featuresId;
-    subscriptionPassport;
-    subscriptionTask;
+    subscriptionTask = null;
+    hiddenAt = null;
+    visibilityHandler;
     recordType;
     groupedData = [];
     featuresIds = [];
@@ -390,8 +391,8 @@ export default class Dmt_passport_opportunity extends LightningElement {
     }
 
     disconnectedCallback() {
-        unsubscribe(this.subscriptionPassport, () => console.info(UNSUBCRIBE_MESSAGE + PASSPORT_ENTITY));
-        unsubscribe(this.subscriptionTask, () => console.info(UNSUBCRIBE_MESSAGE + TASK_ENTTITY));
+        document.removeEventListener('visibilitychange', this.visibilityHandler);
+        this.unsubscribeFromTaskChannel();
         pubsub.unregister('callPassportLWC', this.handleEventObj);
         unregisterRefreshContainer(this.refreshContainerID);
     }
@@ -453,41 +454,77 @@ export default class Dmt_passport_opportunity extends LightningElement {
         });
     }
 
+    // CIBGLOBALD-4617 - subscribes only to the filtered DMT_Task__e channel, and only while the tab is
+    // visible: a hidden tab would otherwise keep consuming event deliveries for nothing.
     registerSubscribe() {
+        if (document.visibilityState !== 'hidden') {
+            this.subscribeToTaskChannel();
+        } else {
+            // Loaded in a background tab: remember it, so the first time it becomes visible it catches up
+            this.hiddenAt = Date.now();
+        }
 
-        const changeEventPassportCallback = changeEventPassport => {
-            this.processChangePassportEvent(changeEventPassport);
-        };
-
-        const changeEventTaskCallback = changeEventTask => {
-            this.processChangeTaskEvent(changeEventTask);
-        };
-
-        subscribe(CHANNEL_PASSPORT, -1, changeEventPassportCallback).then(subscription => {
-            this.subscriptionPassport = subscription;
-        });
-        subscribe(CHANNEL_TASK, -1, changeEventTaskCallback).then(subscription => {
-            this.subscriptionTask = subscription;
-        });
+        this.visibilityHandler = () => this.handleVisibilityChange();
+        document.addEventListener('visibilitychange', this.visibilityHandler);
 
         notifyRecordUpdateAvailable([{ recordId: this.passportId }]);
     }
 
-    processChangePassportEvent(changeEvent) {
-        try {
-            const recordIds = changeEvent.data.payload.ChangeEventHeader.recordIds;
-            if(recordIds.includes(this.passportId)){
-                notifyRecordUpdateAvailable([{ recordId: this.passportId }]);
-            }
-        } catch (error) {
-            this.handleError(error.message);
+    subscribeToTaskChannel() {
+        if (this.subscriptionTask) {
+            return; // already subscribed
         }
+        this.subscriptionTask = {}; // placeholder so a second call while subscribing is ignored
+        subscribe(CHANNEL_TASK, -1, changeEventTask => {
+            this.processChangeTaskEvent(changeEventTask);
+        }).then(subscription => {
+            this.subscriptionTask = subscription;
+        }).catch(error => {
+            this.subscriptionTask = null;
+            console.error('Task channel subscription failed', JSON.stringify(error));
+        });
     }
 
+    unsubscribeFromTaskChannel() {
+        if (this.subscriptionTask && this.subscriptionTask.id !== undefined) {
+            unsubscribe(this.subscriptionTask, () => {});
+        }
+        this.subscriptionTask = null;
+    }
+
+    handleVisibilityChange() {
+        if (document.visibilityState === 'hidden') {
+            this.hiddenAt = Date.now();
+            this.unsubscribeFromTaskChannel();
+            return;
+        }
+
+        this.subscribeToTaskChannel();
+        // Events published while the tab was hidden were not delivered: catch up with one refresh
+        if (this.hiddenAt && Date.now() - this.hiddenAt > CATCH_UP_AFTER_HIDDEN_MS) {
+            notifyRecordUpdateAvailable([{ recordId: this.passportId }]);
+            this.refreshAllWires();
+            this.getCurrentStepFromFeaturesOpp();
+        }
+        this.hiddenAt = null;
+    }
+
+    // CIBGLOBALD-4617 - DMT_Task__e payload: records__c = Line / Opportunity Ids, Operation__c =
+    // CREATE | MODIFY | MODIFY_MULTI (approval Tasks) or PASSPORT (Passport JSON / Obsolete changed).
+    // Only events for this Opportunity are processed (the previous handler refreshed on every event).
     processChangeTaskEvent(changeEvent) {
         try {
             const operation = changeEvent.data.payload.Operation__c;
-            const recordsInEvent = changeEvent.data.payload.records__c;            
+            const recordIds = changeEvent.data.payload.records__c.split(',');
+
+            if (!this.opportunityId || !recordIds.includes(this.opportunityId)) {
+                return;
+            }
+
+            if (operation === 'PASSPORT') {
+                notifyRecordUpdateAvailable([{ recordId: this.passportId }]);
+                return;
+            }
 
             if (operation === 'CREATE' && this.checkStatusApproval && this.approvalTransitionPending) {
                 this.approvalTransitionPending = false;
@@ -495,12 +532,12 @@ export default class Dmt_passport_opportunity extends LightningElement {
             }
 
             this.refreshAllWires();
-            this.getCurrentStepFromFeaturesOpp(); 
+            this.getCurrentStepFromFeaturesOpp();
 
-            // Detect "Close Task" (step 11): MODIFY event with multiple task IDs
-            // means all tasks in the case were set to Finished simultaneously.
+            // Detect "Close Task" (step 11): MODIFY_MULTI means several approval Tasks of this
+            // Opportunity changed in the same transaction (all Tasks of the case set to Finished).
             // This is the moment to refresh the passport (callService).
-            if (operation === 'MODIFY' && recordsInEvent && recordsInEvent.includes(',') && this.checkStatusReadyToClose) {
+            if (operation === 'MODIFY_MULTI' && this.checkStatusReadyToClose) {
                 if (!this.readytoclosePassportTriggered.has('_closetask_')) {
                     this.readytoclosePassportTriggered.add('_closetask_');
                     // Wait for Salesforce transaction to fully commit

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- CIBGLOBALD-4617. Order is arbitrary for retrieve. For deploy, DTM_Task_Helper (new processTask
+         signature) and the Task trigger that calls it must go in the same deployment. The two LWCs
+         read the new DMT_Task__e payload (Line / Opportunity Ids), so they must be deployed together
+         with the Apex, not before or after it. -->
+    <!-- DMT_Task__e: PublishImmediately -> PublishAfterCommit, so open Passports never read data before the transaction commits -->
+    <types>
+        <members>DMT_Task__e</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>DTM_Task_Helper</members>
+        <members>DTM_Task_Helper_Test</members>
+        <members>DMT_Passport_TriggerHandler</members>
+        <members>DMT_ApprovalChangeStep_Helper</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>Task</members>
+        <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>dmt_passport</members>
+        <members>dmt_passport_opportunity</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <version>65.0</version>
+</Package>
