@@ -78,3 +78,7 @@ Both Passport LWCs (`dmt_passport` = Lines, `dmt_passport_opportunity` = Opportu
 - Left uncommitted on purpose (other work in the tree): ticket 4477 files (DMT_StartApprovalCasePayload, DMT_AsyncDispatcher/QueueJob, Case_Steps_Controller(+Test), Line/Opportunity handlers+trigger, Passport_Handler, manifest 4477, tickets/CIBGLOBALD-4477), org drift from others (customMetadata HighlightPanel, form renderer, lineInfo, TaskApprovalFlowService, ApprovalDataController, LineController, LinesBulkActionController) and manifests 3779/4295.
 - ANS: 2 Si (modifies shared Task trigger behavior; affects platform event limits) => Nivel 2; draft given in chat.
 - Post-deploy manual steps: delete Passport in Setup > Change Data Capture; uncheck CIB_skip_platform_event__c on every CIB Bypass row.
+
+## Pushed in full (2026-10-09)
+- Branch 4617 on origin now has 4 commits: 6649cbc0 (4617 code, docs), 082a5f55 (4617 notes renamed with ticket code, commit message corrected), 1a4b3565 (ticket 4477 work and its manifest and CHANGES), 04c33abb (org sync drift + manifests 3779 and 4295). Working tree clean. Not merged to main (user did not ask).
+- Pending for the user: use tickets/CIBGLOBALD-4617/CIBGLOBALD-4617-commit-message.txt for the work repo; post the manual steps and ANS draft as comments/ticket; run the remaining tests (Line Obsolete visual, full chain Opp field edit, hidden tab, Close Task, two users, regression).
