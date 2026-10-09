@@ -146,6 +146,104 @@ public with sharing class DMT_LinesBulkActionController {
         public ModifySaveRelatedRecordDTO() {}
     }
 
+    @AuraEnabled(cacheable=true)
+    public static List<String> getEditableLineIds(List<String> lineIds) {
+        if (lineIds == null || lineIds.isEmpty()) {
+            return new List<String>();
+        }
+
+        List<DMT_Line__c> lines = [
+            SELECT Id, Line_Id__c, OwnerId
+            FROM DMT_Line__c
+            WHERE Line_Id__c IN :lineIds
+            WITH SYSTEM_MODE
+        ];
+
+        Set<Id> editableRecordIds = getEditableLineRecordIds(lines);
+        List<String> editableLineIds = new List<String>();
+
+        for (DMT_Line__c line : lines) {
+            if (editableRecordIds.contains(line.Id)) {
+                editableLineIds.add(line.Line_Id__c);
+            }
+        }
+
+        return editableLineIds;
+    }
+
+    private static Set<Id> getEditableLineRecordIds(List<DMT_Line__c> lines) {
+        Set<Id> lineRecordIds = new Set<Id>();
+
+        for (DMT_Line__c line : lines) {
+            lineRecordIds.add(line.Id);
+        }
+
+        if (lineRecordIds.isEmpty()) {
+            return lineRecordIds;
+        }
+
+        List<DMT_Line__c> authorizationLines = [
+            SELECT Id, Line_Id__c, OwnerId
+            FROM DMT_Line__c
+            WHERE Id IN :lineRecordIds
+            WITH SYSTEM_MODE
+        ];
+
+        User currentUser = [
+            SELECT Profile.Name
+            FROM User
+            WHERE Id = :UserInfo.getUserId()
+            WITH SYSTEM_MODE
+            LIMIT 1
+        ];
+
+        if (
+            FeatureManagement.checkPermission('DMT_Line_God') ||
+            currentUser.Profile.Name == 'System Administrator'
+        ) {
+            return lineRecordIds;
+        }
+
+        Set<Id> editableRecordIds = new Set<Id>();
+
+        for (DMT_Line__c line : authorizationLines) {
+            if (line.OwnerId == UserInfo.getUserId()) {
+                editableRecordIds.add(line.Id);
+            }
+        }
+
+        for (DMT_TeamMember__c teamMember : [
+            SELECT Line__c
+            FROM DMT_TeamMember__c
+            WHERE Line__c IN :lineRecordIds
+            AND User__c = :UserInfo.getUserId()
+            AND AccessLevel__c = 'Edit'
+            WITH SYSTEM_MODE
+        ]) {
+            editableRecordIds.add(teamMember.Line__c);
+        }
+
+        return editableRecordIds;
+    }
+
+    private static void assertCanEditLines(List<DMT_Line__c> lines) {
+        Set<Id> editableRecordIds = getEditableLineRecordIds(lines);
+        List<String> unauthorizedLineIds = new List<String>();
+
+        for (DMT_Line__c line : lines) {
+            if (!editableRecordIds.contains(line.Id)) {
+                unauthorizedLineIds.add(line.Line_Id__c);
+            }
+        }
+
+        if (!unauthorizedLineIds.isEmpty()) {
+            throw new AuraHandledException(
+                'You do not have edit access to the selected lines: ' +
+                String.join(unauthorizedLineIds, ', ')
+            );
+        }
+    }
+
     @AuraEnabled
     public static BulkActionResult processLines(List<String> lineIds, String actionType) {
 
@@ -187,10 +285,25 @@ public with sharing class DMT_LinesBulkActionController {
             throw new AuraHandledException('No DMT_Line__c records found for provided Line_Id__c');
         }
 
+        assertCanEditLines(lines);
+
         Database.update(lines, AccessLevel.SYSTEM_MODE);
     }
 
     public static void processDisconnect(List<String> lineIds) {
+
+        List<DMT_Line__c> lines = [
+            SELECT Id, Line_Id__c
+            FROM DMT_Line__c
+            WHERE Line_Id__c IN :lineIds
+            WITH SYSTEM_MODE
+        ];
+
+        if (lines.isEmpty()) {
+            throw new AuraHandledException('No DMT_Line__c records found for provided Line_Id__c');
+        }
+
+        assertCanEditLines(lines);
 
         List<DMT_Consolidated_Line__c> records = [
             SELECT Id, Line_Id__c, G_Multioperation_Ind_Type__c
@@ -242,6 +355,8 @@ public with sharing class DMT_LinesBulkActionController {
         if (originalLines.isEmpty()) {
             throw new AuraHandledException('No lines found');
         }
+
+        assertCanEditLines(originalLines);
 
         List<String> opportunityIds = getOpportunityCodesForRenew(originalLines);
 
@@ -1091,6 +1206,8 @@ public with sharing class DMT_LinesBulkActionController {
             throw new AuraHandledException('No lines found');
         }
 
+        assertCanEditLines(baseLines);
+
         for (DMT_Line__c line : baseLines) {
             if (line.Status__c != 'Draft') {
                 throw new AuraHandledException(
@@ -1465,6 +1582,8 @@ public with sharing class DMT_LinesBulkActionController {
         if (linesById.isEmpty()) {
             throw new AuraHandledException('No lines found');
         }
+
+        assertCanEditLines(linesById.values());
 
         Set<String> templates = new Set<String>();
         Set<String> geographies = new Set<String>();

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>DMT_HighlightPanel_Config.DMT_Opportunity</members>
+        <members>DMT_HighlightPanel_Config.Other_Lines_Panel</members>
+        <members>DMT_HighlightPanel_Config.Sanction_Panel</members>
+        <members>DMT_HighlightPanel_Config.Treasury_Panel</members>
+        <name>CustomMetadata</name>
+    </types>
+    <version>65.0</version>
+</Package>

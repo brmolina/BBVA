@@ -42,6 +42,7 @@ public without sharing class DMT_LineController {
             SELECT DMT_Value__c, DMT_Name_EN__c
             FROM DMT_Taxonomy_Values__c
             WHERE DMT_Catalog__c = :TYPE_OF_RISK_CATALOG
+            AND DMT_Active__c = true
             WITH SYSTEM_MODE
             ORDER BY DMT_Name_EN__c ASC
         ]) {
@@ -65,6 +66,7 @@ public without sharing class DMT_LineController {
             SELECT DMT_Value__c, DMT_Name_EN__c
             FROM DMT_Taxonomy_Values__c
             WHERE DMT_Catalog__c = :COMMITMENT_CATALOG
+            AND DMT_Active__c = true
             WITH SYSTEM_MODE
             ORDER BY DMT_Name_EN__c ASC
         ]) {
@@ -106,6 +108,7 @@ public without sharing class DMT_LineController {
             SELECT DMT_Name_EN__c
             FROM DMT_Taxonomy_Values__c
             WHERE DMT_Catalog__c = :COUNTRY_CATALOG AND DMT_Value__c = :geographyCode
+            AND DMT_Active__c = true
             WITH SYSTEM_MODE
             LIMIT 1
         ];

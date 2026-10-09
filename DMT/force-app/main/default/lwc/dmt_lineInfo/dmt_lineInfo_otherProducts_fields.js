@@ -10,9 +10,10 @@
 // Booking_Geography__c's country code into "code - country name" (e.g. "ES - Spain"), resolved at
 // runtime by DMT_LineController.getEntificDisplayValue().
 //
-// The two "Minimum percentage..." fields reuse the pre-existing gf_min_raroec_wo_fcg_per__c/
-// gf_min_rorc_wo_fcg_per__c fields and their original Setup labels, matching the Sanction field
-// set's wording (see dmt_lineInfo_sanction_fields.js).
+// The two "Minimum ... without financing" fields reuse the pre-existing gf_min_raroec_wo_fcg_per__c/
+// gf_min_rorc_wo_fcg_per__c fields. They store a rate per unity (0 to 1), so they are shown as a
+// percentage (isFractionPercent) and the edit input is capped at 1, same as the Sanction field set
+// (see dmt_lineInfo_sanction_fields.js).
 export const otherProductsFields = [
     {
         // Editable per AvoidEditNotDraft, the validation rule that lists ISCHANGED(Name) among
@@ -76,16 +77,16 @@ export const otherProductsFields = [
     },
     {
         // Options populated at runtime — see file header note.
-        id: 'CurrencyIsoCode',
-        label: 'Currency',
-        apiName: 'CurrencyIsoCode',
+        id: 'DMT_LastLevelId__c',
+        label: 'Type of risk',
+        apiName: 'DMT_LastLevelId__c',
         value: '',
         size: '1-of-2',
         type: 'picklist',
         isReadOnly: false,
         isHidden: false,
-        isRequired: false,
-        placeholder: 'Select a currency',
+        isRequired: true,
+        placeholder: 'Select a type of risk',
         options: []
     },
     {
@@ -104,16 +105,16 @@ export const otherProductsFields = [
     },
     {
         // Options populated at runtime — see file header note.
-        id: 'DMT_LastLevelId__c',
-        label: 'Type of risk',
-        apiName: 'DMT_LastLevelId__c',
+        id: 'CurrencyIsoCode',
+        label: 'Currency',
+        apiName: 'CurrencyIsoCode',
         value: '',
         size: '1-of-2',
         type: 'picklist',
         isReadOnly: false,
         isHidden: false,
-        isRequired: true,
-        placeholder: 'Select a type of risk',
+        isRequired: false,
+        placeholder: 'Select a currency',
         options: []
     },
     {
@@ -158,11 +159,16 @@ export const otherProductsFields = [
     },
     {
         id: 'gf_min_raroec_wo_fcg_per__c',
-        label: 'Minimum percentage RAROEC without financing',
+        label: 'Minimum RAROEC without financing',
         apiName: 'gf_min_raroec_wo_fcg_per__c',
         value: '',
         size: '1-of-2',
+        helpText: 'Rate per unity (e.g. 0.2 = 20%). Maximum 1.',
         step: '0.000001',
+        min: 0,
+        max: 1,
+        isFractionPercent: true,
+        percentFractionDigits: 4,
         type: 'number',
         isReadOnly: false,
         isHidden: false,
@@ -170,11 +176,16 @@ export const otherProductsFields = [
     },
     {
         id: 'gf_min_rorc_wo_fcg_per__c',
-        label: 'Minimum percentage RORC without financing',
+        label: 'Minimum RORC without financing',
         apiName: 'gf_min_rorc_wo_fcg_per__c',
         value: '',
         size: '1-of-2',
+        helpText: 'Rate per unity (e.g. 0.2 = 20%). Maximum 1.',
         step: '0.000001',
+        min: 0,
+        max: 1,
+        isFractionPercent: true,
+        percentFractionDigits: 4,
         type: 'number',
         isReadOnly: false,
         isHidden: false,

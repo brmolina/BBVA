@@ -1,3 +1,10 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 10-08-2026
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
 <template>
     <div class="slds-grid slds-wrap">
         <template for:each={displayFields} for:item="field" for:index="index">
@@ -58,10 +65,21 @@
                                                     </lightning-formatted-number>
                                                 </template>
 
+                                                <!-- CIBGLOBALD-3779 - stored value is a fraction (0.2), shown as a percentage (20%) -->
+                                                <template if:true={field.isFractionPercent}>
+                                                    <lightning-formatted-number
+                                                        value={field.fractionPercentValue}
+                                                        format-style="percent"
+                                                        maximum-fraction-digits={field.percentFractionDigits}>
+                                                    </lightning-formatted-number>
+                                                </template>
+
                                                 <template if:true={field.isNumber}>
                                                     <template if:false={field.isPercent}>
+                                                    <template if:false={field.isFractionPercent}>
                                                     <lightning-formatted-number value={field.value}></lightning-formatted-number>
                                                     </template>
+                                                </template>
                                                 </template>
 
                                                 <template if:true={field.isNumberWithSuffix}>
@@ -301,7 +319,7 @@
                                                         onchange={handleFieldChange}>
                                                     </lightning-input>
                                                 </div>
-                                                </template>
+                                            </template>
                                             </template>
 
                                             <!-- NUMBER WITH SUFFIX -->

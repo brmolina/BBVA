@@ -7,78 +7,6 @@
 public with sharing class DMT_TaskApprovalFlowService {
 
     /**
-     * @description Contexto completo para el flujo de cierre de task
-     * (equivalente a DMT_CloseTask_Controller.CloseTaskInitDTO)
-     */
-    public class CloseTaskContextDTO {
-        @AuraEnabled public Id caseId;
-        @AuraEnabled public Id taskId;
-        @AuraEnabled public String taskName;
-        @AuraEnabled public String stepResult;
-        @AuraEnabled public String comments;
-        @AuraEnabled public String currentTaskTypeId;
-        @AuraEnabled public String currentTaskExternalId;
-        @AuraEnabled public String defaultStepSelected;
-        @AuraEnabled public Id defaultTaskTypeId;
-        @AuraEnabled public Id defaultRelationshipId;
-        @AuraEnabled public List<TaskOptionDTO> validations;
-        @AuraEnabled public String accessLevel;
-        @AuraEnabled public Boolean buttonDisabled;
-        @AuraEnabled public Boolean hasRelatedApprovalTask;
-        @AuraEnabled public String lineStatus;
-        @AuraEnabled public String lineOpportunityType;
-        @AuraEnabled public String username;
-    }
-
-    /**
-     * @description DTO de opciones para combobox de task
-     */
-    public class TaskOptionDTO {
-        @AuraEnabled public Id id;
-        @AuraEnabled public String value;
-        @AuraEnabled public String label;
-        @AuraEnabled public Boolean isDefault;
-        @AuraEnabled public Boolean approvalEdit;
-        @AuraEnabled public String approverField;
-    }
-
-    /**
-     * @description Selección de task y approvers
-     * (equivalente a DMT_CloseTask_Controller.TaskSelectionDTO)
-     */
-    public class TaskApproverSelectionDTO {
-        @AuraEnabled public Id taskTypeId;
-        @AuraEnabled public String taskTypeName;
-        @AuraEnabled public String externalId;
-        @AuraEnabled public String approverField;
-        @AuraEnabled public Boolean approvalEdit;
-        @AuraEnabled public List<ApproverOptionDTO> approvers;
-        @AuraEnabled public String defaultApproverCode;
-        @AuraEnabled public Boolean showApprovers;
-    }
-
-    /**
-     * @description DTO de opciones para combobox de approver
-     */
-    public class ApproverOptionDTO {
-        @AuraEnabled public Id id;
-        @AuraEnabled public String label;
-        @AuraEnabled public String value;
-        @AuraEnabled public String approverCode;
-        @AuraEnabled public String approverType;
-    }
-
-    /**
-     * @description Resultado del cierre de task
-     * (equivalente a DMT_CloseTask_Controller.CloseTaskResult)
-     */
-    public class CloseTaskResultDTO {
-        @AuraEnabled public Boolean success;
-        @AuraEnabled public Id newTaskId;
-        @AuraEnabled public String message;
-    }
-
-    /**
      * @description Obtiene contexto completo para el flujo de cierre de task.
      * Lógica extraída de DMT_CloseTask_Controller.getInitialData().
      * @param recordId Case identifier usado como entry point
@@ -93,7 +21,7 @@ public with sharing class DMT_TaskApprovalFlowService {
         CloseTaskContextDTO response = new CloseTaskContextDTO();
 
         // CASE + CURRENT TASK
-        Case caseRecord = DMT_CloserTask_Selector.getCaseWithCurrentTask(recordId);
+        Case caseRecord = DMT_ApprovalTemplate_Selector.getCaseWithCurrentTask(recordId);
         if (caseRecord == null) {
             throw new AuraHandledException('Case not found.');
         }
@@ -114,7 +42,7 @@ public with sharing class DMT_TaskApprovalFlowService {
         response.buttonDisabled = String.isBlank(currentTask.DMT_Step_Result__c);
 
         // CURRENT TASK TYPE
-        DMT_Task_Type__c currentTaskType = DMT_CloserTask_Selector.getTaskTypeById(currentTask.DMT_Task_Type__c);
+        DMT_Task_Type__c currentTaskType = DMT_ApprovalTemplate_Selector.getTaskType(currentTask.DMT_Task_Type__c);
         if (currentTaskType == null) {
             throw new AuraHandledException('Current Task Type not found.');
         }
@@ -124,7 +52,7 @@ public with sharing class DMT_TaskApprovalFlowService {
         response.taskName = currentTaskType.Name;
 
         // TASK RELATIONSHIPS
-        List<DMT_Task_Relationship__c> relationships = DMT_CloserTask_Selector.getTaskRelationships(currentTaskType.Id);
+        List<DMT_Task_Relationship__c> relationships = DMT_ApprovalTemplate_Selector.getTaskRelationships(currentTaskType.Id);
 
         // DEFAULT RELATIONSHIP
         DMT_Task_Relationship__c defaultRelationship = resolveDefaultRelationship(relationships);
@@ -144,7 +72,7 @@ public with sharing class DMT_TaskApprovalFlowService {
         }
 
         // NEXT TASK TYPES
-        List<DMT_Task_Type__c> nextTaskTypes = DMT_CloserTask_Selector.getTaskTypesByIds(nextTaskTypeIds);
+        List<DMT_Task_Type__c> nextTaskTypes = DMT_ApprovalTemplate_Selector.getTaskTypesByIds(nextTaskTypeIds);
         Map<Id, DMT_Task_Type__c> taskTypeById = new Map<Id, DMT_Task_Type__c>(nextTaskTypes);
 
         // OPTIONS
@@ -201,7 +129,7 @@ public with sharing class DMT_TaskApprovalFlowService {
         }
 
         // SELECTED TASK TYPE
-        DMT_Task_Type__c selectedTaskType = DMT_CloserTask_Selector.getTaskTypeByExternalId(stepSelected);
+        DMT_Task_Type__c selectedTaskType = DMT_ApprovalTemplate_Selector.getTaskTypeByExternalId(stepSelected);
 
         if (selectedTaskType == null) {
             throw new AuraHandledException('Selected Task Type not found.');
@@ -214,19 +142,8 @@ public with sharing class DMT_TaskApprovalFlowService {
         response.approverField = selectedTaskType.DMT_Approver_Field__c;
         response.approvalEdit = selectedTaskType.DMT_ApprovalEdit__c;
 
-        // TASK -> APPROVER RELATIONSHIPS
-        List<DMT_Task_Approver_Relationship__c> relationships = DMT_CloserTask_Selector.getTaskApproverRelationships(selectedTaskType.Id);
-
-        Set<Id> approverIds = new Set<Id>();
-
-        for (DMT_Task_Approver_Relationship__c relationship : relationships) {
-            if (relationship.DMT_Approver__c != null) {
-                approverIds.add(relationship.DMT_Approver__c);
-            }
-        }
-
         // APPROVERS
-        List<DMT_Approver__c> approvers = DMT_CloserTask_Selector.getApproversByIds(approverIds);
+        List<DMT_Approver__c> approvers = DMT_ApprovalTemplate_Selector.getApproversForTaskType(selectedTaskType.Id);
 
         response.approvers = new List<ApproverOptionDTO>();
 
@@ -242,7 +159,7 @@ public with sharing class DMT_TaskApprovalFlowService {
         }
 
         // DEFAULT APPROVER
-        Case caseRecord = DMT_CloserTask_Selector.getCaseWithCurrentTask(recordId);
+        Case caseRecord = DMT_ApprovalTemplate_Selector.getCaseWithCurrentTask(recordId);
         response.defaultApproverCode = resolveDefaultApprover(caseRecord, selectedTaskType);
         Task currentTask = (caseRecord != null && !caseRecord.Tasks.isEmpty()) ? caseRecord.Tasks[0] : null;
         Boolean relatedTaskExists = hasRelatedApprovalTask(caseRecord, currentTask);
@@ -275,7 +192,7 @@ public with sharing class DMT_TaskApprovalFlowService {
     ) {
         validateCloseTaskRequest(caseId, currentTaskId, stepSelected, approverSelected);
 
-        Savepoint sp = Database.setSavepoint();
+        Savepoint savepointToken = Database.setSavepoint();
 
         try {
             // STEP 1: UpdateValuesToTask
@@ -304,7 +221,7 @@ public with sharing class DMT_TaskApprovalFlowService {
             return result;
 
         } catch (Exception e) {
-            Database.rollback(sp);
+            Database.rollback(savepointToken);
             throw new AuraHandledException('Error executing Close Task: ' + e.getMessage());
         }
     }
@@ -328,14 +245,20 @@ public with sharing class DMT_TaskApprovalFlowService {
         if (taskId == null) {
             throw new AuraHandledException('currentTaskId is required.');
         }
-        update new Task(Id = taskId, Status = 'Completed');
+
+        DMT_TaskCompletionService.TaskCompletionRequest request =
+            new DMT_TaskCompletionService.TaskCompletionRequest();
+        request.taskId = taskId;
+        request.status = 'Completed';
+
+        DMT_TaskCompletionService.completeTask(request);
     }
 
     /**
      * @description Resolves owner Group for approver, validating existence and Group link
      */
     private static Group resolveApproverGroup(String approverExternalId) {
-        DMT_Approver__c approver = DMT_CloserTask_Selector.getApproverByExternalId(approverExternalId);
+        DMT_Approver__c approver = DMT_ApprovalTemplate_Selector.getApproverByExternalId(approverExternalId);
 
         if (approver == null) {
             throw new AuraHandledException('Approver not found: ' + approverExternalId);
@@ -345,7 +268,7 @@ public with sharing class DMT_TaskApprovalFlowService {
             throw new AuraHandledException('Approver does not have DMT_Group__c.');
         }
 
-        Group ownerGroup = DMT_CloserTask_Selector.getGroupByDeveloperName(approver.DMT_Group__c);
+        Group ownerGroup = DMT_ApprovalTemplate_Selector.getGroupByDeveloperName(approver.DMT_Group__c);
 
         if (ownerGroup == null) {
             throw new AuraHandledException('Group not found: ' + approver.DMT_Group__c);
@@ -358,7 +281,7 @@ public with sharing class DMT_TaskApprovalFlowService {
      * @description Creates next approval Task for selected step and approver
      */
     private static Id createNewTask(Id caseId, Group ownerGroup, String stepSelected) {
-        DMT_Task_Type__c taskType = DMT_CloserTask_Selector.getTaskTypeByExternalId(stepSelected);
+        DMT_Task_Type__c taskType = DMT_ApprovalTemplate_Selector.getTaskTypeByExternalId(stepSelected);
 
         if (taskType == null) {
             throw new AuraHandledException('Task Type not found: ' + stepSelected);
@@ -370,18 +293,33 @@ public with sharing class DMT_TaskApprovalFlowService {
             throw new AuraHandledException('Record Type DMT_Step_Approval does not exist.');
         }
 
-        Task newTask = new Task(
-            Subject = 'Task',
-            WhatId = caseId,
-            Status = 'Not Started',
-            OwnerId = ownerGroup.Id,
-            RecordTypeId = recordTypeInfo.getRecordTypeId(),
-            DMT_Task_Type__c = taskType.Id
-        );
+        DMT_TaskCompletionService.TaskCompletionRequest request =
+            new DMT_TaskCompletionService.TaskCompletionRequest();
+        request.recordTypeId = recordTypeInfo.getRecordTypeId();
+        request.subject = 'Task';
+        request.caseId = caseId;
+        request.status = 'Not Started';
+        request.ownerId = ownerGroup.Id;
+        request.taskTypeId = taskType.Id;
 
-        insert newTask;
+        DMT_TaskCompletionService.completeTask(request);
 
-        return newTask.Id;
+        List<Task> createdTasks = [
+            SELECT Id
+            FROM Task
+            WHERE WhatId = :caseId
+              AND OwnerId = :ownerGroup.Id
+              AND RecordTypeId = :recordTypeInfo.getRecordTypeId()
+              AND DMT_Task_Type__c = :taskType.Id
+            ORDER BY CreatedDate DESC
+            LIMIT 1
+        ];
+
+        if (createdTasks.isEmpty()) {
+            throw new AuraHandledException('Created Task could not be resolved after insert.');
+        }
+
+        return createdTasks[0].Id;
     }
 
     /**
@@ -476,25 +414,16 @@ public with sharing class DMT_TaskApprovalFlowService {
      * @description Resolves current user's access level for case owner group
      */
     private static String resolveAccessLevel(Case caseRecord) {
-        Group ownerGroup = DMT_CloserTask_Selector.getGroupById(caseRecord.OwnerId);
+        Group ownerGroup = DMT_ApprovalTemplate_Selector.getGroupByOwnerId(caseRecord.OwnerId);
 
         if (ownerGroup == null) {
             return '';
         }
 
-        List<DMT_Approver__c> approvers = DMT_CloserTask_Selector.getApproversByGroup(ownerGroup.DeveloperName);
-
-        if (approvers.isEmpty()) {
-            return '';
-        }
-
-        Set<Id> approverIds = new Set<Id>();
-
-        for (DMT_Approver__c approver : approvers) {
-            approverIds.add(approver.Id);
-        }
-
-        List<DMT_Approver_Member__c> members = DMT_CloserTask_Selector.getApproverMembers(approverIds, UserInfo.getUserId());
+        List<DMT_Approver_Member__c> members = DMT_ApprovalTemplate_Selector.getApproverMembersByGroupAndUser(
+            ownerGroup.DeveloperName,
+            UserInfo.getUserId()
+        );
 
         String result = '';
 
@@ -519,7 +448,7 @@ public with sharing class DMT_TaskApprovalFlowService {
             return false;
         }
 
-        List<Case> relatedCases = DMT_CloserTask_Selector.getOpenCasesByLine(caseRecord.DMT_Line__c);
+        List<Case> relatedCases = DMT_ApprovalTemplate_Selector.getOpenCasesByLine(caseRecord.DMT_Line__c);
 
         Set<Id> caseIds = new Set<Id>();
 
@@ -527,7 +456,7 @@ public with sharing class DMT_TaskApprovalFlowService {
             caseIds.add(record.Id);
         }
 
-        List<Task> relatedTasks = DMT_CloserTask_Selector.getRelatedLineTasks(
+        List<Task> relatedTasks = DMT_ApprovalTemplate_Selector.getRelatedLineTasks(
             caseIds,
             currentTask != null ? currentTask.Id : null
         );
@@ -553,8 +482,8 @@ public with sharing class DMT_TaskApprovalFlowService {
         }
 
         SObject record = caseRecord.DMT_LineOpportunity__c == 'O'
-            ? (SObject) DMT_CloserTask_Selector.getOpportunity(caseRecord.opportunity_id__c)
-            : (SObject) DMT_CloserTask_Selector.getLine(caseRecord.DMT_Line__c);
+            ? (SObject) DMT_ApprovalTemplate_Selector.getOpportunity(caseRecord.opportunity_id__c)
+            : (SObject) DMT_ApprovalTemplate_Selector.getLine(caseRecord.DMT_Line__c);
 
         if (record == null) {
             return null;
@@ -565,4 +494,76 @@ public with sharing class DMT_TaskApprovalFlowService {
 
         return approverRecord != null ? (String) approverRecord.get('DMT_Approver_Code__c') : null;
     }
+    /**
+     * @description Contexto completo para el flujo de cierre de task
+     * (equivalente a DMT_CloseTask_Controller.CloseTaskInitDTO)
+     */
+    public class CloseTaskContextDTO {
+        @AuraEnabled public Id caseId;
+        @AuraEnabled public Id taskId;
+        @AuraEnabled public String taskName;
+        @AuraEnabled public String stepResult;
+        @AuraEnabled public String comments;
+        @AuraEnabled public String currentTaskTypeId;
+        @AuraEnabled public String currentTaskExternalId;
+        @AuraEnabled public String defaultStepSelected;
+        @AuraEnabled public Id defaultTaskTypeId;
+        @AuraEnabled public Id defaultRelationshipId;
+        @AuraEnabled public List<TaskOptionDTO> validations;
+        @AuraEnabled public String accessLevel;
+        @AuraEnabled public Boolean buttonDisabled;
+        @AuraEnabled public Boolean hasRelatedApprovalTask;
+        @AuraEnabled public String lineStatus;
+        @AuraEnabled public String lineOpportunityType;
+        @AuraEnabled public String username;
+    }
+
+    /**
+     * @description DTO de opciones para combobox de task
+     */
+    public class TaskOptionDTO {
+        @AuraEnabled public Id id;
+        @AuraEnabled public String value;
+        @AuraEnabled public String label;
+        @AuraEnabled public Boolean isDefault;
+        @AuraEnabled public Boolean approvalEdit;
+        @AuraEnabled public String approverField;
+    }
+
+    /**
+     * @description Selección de task y approvers
+     * (equivalente a DMT_CloseTask_Controller.TaskSelectionDTO)
+     */
+    public class TaskApproverSelectionDTO {
+        @AuraEnabled public Id taskTypeId;
+        @AuraEnabled public String taskTypeName;
+        @AuraEnabled public String externalId;
+        @AuraEnabled public String approverField;
+        @AuraEnabled public Boolean approvalEdit;
+        @AuraEnabled public List<ApproverOptionDTO> approvers;
+        @AuraEnabled public String defaultApproverCode;
+        @AuraEnabled public Boolean showApprovers;
+    }
+
+    /**
+     * @description DTO de opciones para combobox de approver
+     */
+    public class ApproverOptionDTO {
+        @AuraEnabled public Id id;
+        @AuraEnabled public String label;
+        @AuraEnabled public String value;
+        @AuraEnabled public String approverCode;
+        @AuraEnabled public String approverType;
+    }
+
+    /**
+     * @description Resultado del cierre de task
+     * (equivalente a DMT_CloseTask_Controller.CloseTaskResult)
+     */
+    public class CloseTaskResultDTO {
+        @AuraEnabled public Boolean success;
+        @AuraEnabled public Id newTaskId;
+        @AuraEnabled public String message;
+    }
+
 }

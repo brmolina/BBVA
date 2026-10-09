@@ -194,6 +194,25 @@ export default class dmt_form_renderer extends LightningElement {
         return { isValid, invalidFields, invalidFieldIds };
     }
 
+    @api clearValidation() {
+        const controls = this.template.querySelectorAll(
+            'lightning-input, lightning-textarea, lightning-combobox, lightning-record-picker, c-dmt_custom_lookup'
+        );
+
+        for (const control of controls) {
+            if (typeof control.setCustomValidity === 'function') {
+                control.setCustomValidity('');
+            }
+
+            const fieldIndex = this._fieldIndexById.get(control.dataset?.id);
+            if (fieldIndex !== undefined) {
+                this._rawFields[fieldIndex].isFieldValid = typeof control.reportValidity === 'function'
+                    ? control.reportValidity()
+                    : true;
+            }
+        }
+    }
+
     disconnectedCallback() {
         if (this._resizeObserver) {
             this._resizeObserver.disconnect();
@@ -545,6 +564,9 @@ export default class dmt_form_renderer extends LightningElement {
             isTextarea: type === FIELD_TYPES.TEXTAREA,
             isNumber: type === FIELD_TYPES.NUMBER,
             isPercent: field.isPercent === true,
+            // CIBGLOBALD-3779 - read-mode only: the stored value is already a fraction (0.2),
+            // displayed as 20%. The edit input stays a plain number, so no percent addon.
+            isFractionPercent: field.isFractionPercent === true,
             isCurrency: type === FIELD_TYPES.CURRENCY,
             isNumberWithSuffix: type === FIELD_TYPES.NUMBER_WITH_SUFFIX,
             isTextWithSuffix: type === FIELD_TYPES.TEXT_WITH_SUFFIX,
@@ -568,7 +590,10 @@ export default class dmt_form_renderer extends LightningElement {
             percentValue: field.isPercent && this._isNumericValue(value)
                 ? Number(value) / 100
                 : null,
-            percentFractionDigits: field.isPercent
+            fractionPercentValue: field.isFractionPercent && this._isNumericValue(value)
+                ? Number(value)
+                : null,
+            percentFractionDigits: (field.isPercent || field.isFractionPercent)
                 ? (Number.isInteger(field.percentFractionDigits) ? field.percentFractionDigits : 2)
                 : null,
 

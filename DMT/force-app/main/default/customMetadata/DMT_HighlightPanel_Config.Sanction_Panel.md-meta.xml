@@ -227,10 +227,6 @@
 {
   &quot;label&quot;: &quot;Feedback&quot;,
   &quot;name&quot;: &quot;Feedback&quot;,
-  &quot;iconConfig&quot;: {
-    &quot;type&quot;: &quot;utility&quot;,
-    &quot;name&quot;: &quot;chat&quot;
-  },
   &quot;variant&quot;: &quot;brand&quot;,
   &quot;actionType&quot;: &quot;labelUrl&quot;
 },

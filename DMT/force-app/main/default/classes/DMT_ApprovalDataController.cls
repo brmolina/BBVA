@@ -231,7 +231,7 @@ public with sharing class DMT_ApprovalDataController {
         return comparison;
     }
 
-    private static List<DMT_Global_Structure__c> getGlobalStructure(Id opportunityId) {
+    public static List<DMT_Global_Structure__c> getGlobalStructure(Id opportunityId) {
         return [
             SELECT Id, Name, DMT_Funds__c, DMT_Type__c
             FROM DMT_Global_Structure__c
@@ -241,7 +241,7 @@ public with sharing class DMT_ApprovalDataController {
         ];
     }
 
-    private static List<DMT_Banking_Pool_Structure__c> getBankingPool(Id opportunityId) {
+    public static List<DMT_Banking_Pool_Structure__c> getBankingPool(Id opportunityId) {
         return [
             SELECT Id, Name, DMT_Ticket__c, DMT_Fees__c, DMT_Margin__c, DMT_N_Banks__c
             FROM DMT_Banking_Pool_Structure__c
