@@ -17,8 +17,6 @@ Changes:
 - dmt_passport and dmt_passport_opportunity: subscribe only to DMT_Task__e, match on their own Line or Opportunity Id, unsubscribe while the tab is hidden and refresh once on return.
 - DTM_Task_Helper_Test: new test class.
 
-Tested in DMT_TCM_DEV without page reload: Line and Opportunity traffic light on reject and on reopen, Opportunity Obsolete warning appearing and disappearing.
-
-Manual post-deployment steps (the Passport CDC channel member is not tracked in git): see tickets/CIBGLOBALD-4617/deployment-notes.md. Manifests: manifest/CIBGLOBALD-4617-package.xml and manifest/CIBGLOBALD-4617-destructiveChanges.xml.
+Manual post-deployment steps (the Passport change data capture channel member is not tracked in git) are documented in the ticket comment.
 
 Touches common element: Task.trigger and DTM_Task_Helper (Task object, DMT_Task__e payload and publish behavior) - ANS/DMT notification required

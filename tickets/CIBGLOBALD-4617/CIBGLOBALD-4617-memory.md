@@ -72,3 +72,9 @@ Both Passport LWCs (`dmt_passport` = Lines, `dmt_passport_opportunity` = Opportu
 - PASSED live without reload: Line ST11 reject (red), reopen (yellow), reject again (red), reopen (yellow) after DMT_Task__e switched to PublishAfterCommit (deployed). Opp OPP - Global Banker Advisory reject (red) + reopen (yellow). Opp Obsolete warning appears and disappears live. CometD listener confirmed events published after commit.
 - NOT yet done: Line Obsolete warning visually (page too tall), full chain Opp field edit -> flow -> obsolete -> warning, hidden-tab >30s catch-up, Close Task MODIFY_MULTI refresh on Opp in Ready to close, two users, regression (Request/close/reactivate), multi-user.
 - Docs: tickets/CIBGLOBALD-4617/deployment-notes.md (order + manual step for the CDC channel member, which is not tracked in git).
+
+## Committed and pushed (2026-10-09)
+- Commit 6649cbc0 on branch 4617 pushed to origin (github brmolina/BBVA) with the 9 code files, 2 manifests, tickets/CIBGLOBALD-4617/ (CHANGES.md with line numbers, commit-message.txt, deployment-notes.md, memory.md) and tickets/CIBGLOBALD-4157/memory.md. NOT merged to main yet (user did not ask).
+- Left uncommitted on purpose (other work in the tree): ticket 4477 files (DMT_StartApprovalCasePayload, DMT_AsyncDispatcher/QueueJob, Case_Steps_Controller(+Test), Line/Opportunity handlers+trigger, Passport_Handler, manifest 4477, tickets/CIBGLOBALD-4477), org drift from others (customMetadata HighlightPanel, form renderer, lineInfo, TaskApprovalFlowService, ApprovalDataController, LineController, LinesBulkActionController) and manifests 3779/4295.
+- ANS: 2 Si (modifies shared Task trigger behavior; affects platform event limits) => Nivel 2; draft given in chat.
+- Post-deploy manual steps: delete Passport in Setup > Change Data Capture; uncheck CIB_skip_platform_event__c on every CIB Bypass row.

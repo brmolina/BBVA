@@ -49,7 +49,6 @@ Anything else that shows as modified in the working tree (for example DMT_Line_H
 
 - Setup > Change Data Capture.
 - In Selected Entities, remove Passport (Passport__ChangeEvent). Save.
-  (Alternative: deploy `manifest/CIBGLOBALD-4617-destructiveChanges.xml`.)
 - Setup > Custom Settings > CIB Bypass > Manage.
 - On every row (org default, profile or user) with CIB_skip_platform_event__c checked: Edit, uncheck CIB_skip_platform_event__c, Save.
 - Open a Line Passport and an Opportunity Passport: change a Task from another session and check the traffic light updates without reload.
