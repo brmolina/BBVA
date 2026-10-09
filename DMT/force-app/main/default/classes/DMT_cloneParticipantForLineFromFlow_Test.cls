@@ -46,6 +46,10 @@ private without sharing class DMT_cloneParticipantForLineFromFlow_Test {
     static void testCloneCoverageTeamToTeamMbembers() {
         DMT_Line__c oldLine = [SELECT Id,Client__c,Client__r.DES_Group_Code__c FROM DMT_Line__c WHERE Line_Id__c = '00002' LIMIT 1];
         DMT_Line__c newLine = [SELECT Id, Client__c,Client__r.DES_Group_Code__c FROM DMT_Line__c WHERE Line_Id__c = '00001' LIMIT 1];
+        
+        Account clientAcc = new Account(Id = newLine.Client__c, DES_Group_Code__c = 'GP0000000000001');
+        update clientAcc;
+        
         // Crear la lista de entrada para el método invocable
         List<DMT_cloneParticipantForLineFromFlow.WrapperClone> inputList = new List<DMT_cloneParticipantForLineFromFlow.WrapperClone>();
         // Instanciar y poblar el wrapper con los datos de prueba
@@ -132,10 +136,7 @@ private without sharing class DMT_cloneParticipantForLineFromFlow_Test {
         Account testAcc = DMT_Test_DataFactory.generateAccount();
         testAcc.DES_Group_Code__c = 'ES0182054986618';
         update testAcc;
-        Local_Client__c lClient = new Local_Client__c(Cib_Client__c = testAcc.Id);
-        insert lClient;
-        String idLocalCLient = lClient.Id;
-        DMT_cloneParticipantForLine_Selector.getLocalClient(idLocalCLient);
+        Account localClient = DMT_cloneParticipantForLine_Selector.getLocalClient(testAcc.Id);
 
         oldLine.Client__c = testAcc.Id;
         update oldLine;
@@ -154,7 +155,7 @@ private without sharing class DMT_cloneParticipantForLineFromFlow_Test {
         // Instanciar y poblar el wrapper con los datos de prueba
         DMT_cloneParticipantForLineFromFlow.WrapperClone wrapper = new DMT_cloneParticipantForLineFromFlow.WrapperClone();
         wrapper.accounId = newLine.Client__c;
-        wrapper.localClient = lClient.Id;
+        wrapper.localClient = localClient.Id;
         wrapper.oldLineId = oldLine.Id;
         wrapper.newLineId = newLine.Id;
         wrapper.isDeleteOrUpdate = false;

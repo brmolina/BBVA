@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__ll_collective_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Type of Leveraged Lending collective under BCE definictions</description>
+    <label>Leveraged Lending collective</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>1</fullName>
+                <default>false</default>
+                <label>LBO by Financial Sponsor</label>
+            </value>
+            <value>
+                <fullName>2</fullName>
+                <default>false</default>
+                <label>Financing of company acquisition with a specific structure</label>
+            </value>
+            <value>
+                <fullName>3</fullName>
+                <default>false</default>
+                <label>Debt for extraordinary distribution of dividends</label>
+            </value>
+            <value>
+                <fullName>4</fullName>
+                <default>false</default>
+                <label>Leveraged flagged because of a deterioration in comparison with previous period</label>
+            </value>
+            <value>
+                <fullName>5</fullName>
+                <default>false</default>
+                <label>Corporate Purposes</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__contrast_risk_unit_neg_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Field to write the answer of the question &quot;The proposed Risk Unit shows its opinion unfavorable regarding the approach submitted to the Committee based on the following:&quot;</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Contrast risk unit negative desc</label>
+    <length>1500</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

@@ -1,94 +1,149 @@
 <template>
     <template if:true={showModal}>
-        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+        <!-- Modal estándar SLDS -->
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_small">
             <div class="slds-modal__container">
-                <header class="slds-modal__header slds-p-bottom_medium">
+                
+                <!-- Cabecera SLDS -->
+                <header class="slds-modal__header">
+                    <!-- Botón "X" oficial: variant="bare-inverse" elimina el fondo blanco y deja la X nativa -->
                     <lightning-button-icon
                         icon-name="utility:close"
                         alternative-text="Cerrar"
-                        variant="bare"
-                        class="slds-modal__close modal-close-btn"
+                        variant="border-filled"
+                        size="large"
+                        class="slds-modal__close boton-circular-limpio"
                         onclick={handleClose}>
                     </lightning-button-icon>
-                    <h2 class="slds-text-heading_medium">CLOSE TASK AND:</h2>
+
+                    <!-- Rejilla de Cabecera: Alineación vertical perfecta y 3 columnas para PC -->
+                    <div class="slds-grid slds-wrap slds-grid_vertical-align-center">
+                        
+                        <!-- Columna Izquierda: Caja de detalle -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-text-align_left slds-m-bottom_x-small slds-medium-m-bottom_none">
+                            <template if:true={hasCaseLink}>
+                                <!-- slds-box nativo. El grid interior alinea el texto y el enlace perfectamente al centro vertical -->
+                                <div class="slds-box slds-box_xx-small slds-theme_shade slds-p-around_xx-small slds-m-top_small">
+                                    <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-center">
+                                        <span class="slds-text-body_small slds-m-right_xx-small">Check features detail</span>
+                                        <a href={caseLinkUrl} target="_blank" rel="noopener noreferrer" class="slds-text-link slds-text-body_small">here</a>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Columna Central: Título -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-text-align_center">
+                            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">CLOSE TASK AND:</h2>
+                        </div>
+
+                        <!-- Columna Derecha: Oculta en móvil, visible en PC para balancear el título al centro exacto -->
+                        <div class="slds-col slds-medium-size_1-of-3 slds-show_medium"></div>
+                    </div>
                 </header>
-                <div class="slds-modal__content">
+
+                <!-- Cuerpo del Modal -->
+                <div class="slds-modal__content slds-p-around_medium slds-is-relative" id="modal-content-id-1">
+                    
+                    <!-- Notificación de Error -->
                     <template if:true={showErrorMessage}>
-                        <div class="slds-text-color_error modal-error">{errorMessage}</div>
+                        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error slds-m-bottom_small" role="alert">
+                            <span class="slds-assistive-text">Error</span>
+                            <h2>{errorMessage}</h2>
+                        </div>
                     </template>
                     
-<div class="toggle-group slds-p-top_medium">
-    <div class="toggle-row">
-        <div class="toggle-label" title={label.CHECK_TEXT_1}>
-            {label.CHECK_TEXT_1}
-        </div>
-        <div class="toggle-input">
-            <lightning-input
-                type="toggle"
-                variant="label-hidden"
-                label={label.CHECK_TEXT_1}
-                checked={isActive1}
-                onchange={handleToggle1}
-                message-toggle-active=""
-                message-toggle-inactive=""
-                disabled={finishStep}>
-            </lightning-input>
-        </div>
-    </div>
+                    <!-- Lista de Toggles -->
+                    <div class="slds-p-top_x-small">
+                        
+                        <!-- Fila 1 -->
+                        <div class="slds-grid slds-wrap slds-grid_vertical-align-center slds-p-vertical_small slds-border_bottom">
+                            <div class="slds-col slds-size_8-of-12 slds-p-right_small slds-hyphenate" title={label.CHECK_TEXT_1}>
+                                <span class="slds-text-body_regular">{label.CHECK_TEXT_1}</span>
+                            </div>
+                            <div class="slds-col slds-size_4-of-12 slds-clearfix">
+                                <div class="slds-float_right">
+                                    <lightning-input
+                                        type="toggle"
+                                        variant="label-hidden"
+                                        label={label.CHECK_TEXT_1}
+                                        checked={isActive1}
+                                        onchange={handleToggle1}
+                                        message-toggle-active=""
+                                        message-toggle-inactive=""
+                                        disabled={finishStep}>
+                                    </lightning-input>
+                                </div>
+                            </div>
+                        </div>
 
-        <div class="toggle-row">
-            <div class="toggle-label" title={label.CHECK_TEXT_2}>
-                {label.CHECK_TEXT_2}
-            </div>
-            <div class="toggle-input">
-                <lightning-input
-                    type="toggle"
-                    variant="label-hidden"
-                    label={label.CHECK_TEXT_2}
-                    checked={isActive2}
-                    onchange={handleToggle2}
-                    message-toggle-active=""
-                    message-toggle-inactive=""
-                    disabled={returnToProposalDisabled}>
-                </lightning-input>
-            </div>
-        </div>
+                        <!-- Fila 2 -->
+                        <div class="slds-grid slds-wrap slds-grid_vertical-align-center slds-p-vertical_small slds-border_bottom">
+                            <div class="slds-col slds-size_8-of-12 slds-p-right_small slds-hyphenate" title={checkText2Label}>
+                                <span class="slds-text-body_regular">{checkText2Label}</span>
+                            </div>
+                            <div class="slds-col slds-size_4-of-12 slds-clearfix">
+                                <div class="slds-float_right">
+                                    <lightning-input
+                                        type="toggle"
+                                        variant="label-hidden"
+                                        label={checkText2Label}
+                                        checked={isActive2}
+                                        onchange={handleToggle2}
+                                        message-toggle-active=""
+                                        message-toggle-inactive=""
+                                        disabled={returnToProposalDisabled}>
+                                    </lightning-input>
+                                </div>
+                            </div>
+                        </div>
 
-        <div class="toggle-row">
-            <div class="toggle-label" title={label.CHECK_TEXT_3}>
-                {label.CHECK_TEXT_3}
-            </div>
-            <div class="toggle-input">
-                <lightning-input
-                    type="toggle"
-                    variant="label-hidden"
-                    label={label.CHECK_TEXT_3}
-                    checked={isActive3}
-                    onchange={handleToggle3}
-                    message-toggle-active=""
-                    message-toggle-inactive=""
-                    disabled={buttonDisabled}>
-                </lightning-input>
-            </div>
-        </div>
-    </div>
+                        <!-- Fila 3 -->
+                        <div class="slds-grid slds-wrap slds-grid_vertical-align-center slds-p-vertical_small">
+                            <div class="slds-col slds-size_8-of-12 slds-p-right_small slds-hyphenate" title={label.CHECK_TEXT_3}>
+                                <span class="slds-text-body_regular">{label.CHECK_TEXT_3}</span>
+                            </div>
+                            <div class="slds-col slds-size_4-of-12 slds-clearfix">
+                                <div class="slds-float_right">
+                                    <lightning-input
+                                        type="toggle"
+                                        variant="label-hidden"
+                                        label={label.CHECK_TEXT_3}
+                                        checked={isActive3}
+                                        onchange={handleToggle3}
+                                        message-toggle-active=""
+                                        message-toggle-inactive=""
+                                        disabled={buttonDisabled}>
+                                    </lightning-input>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Spinner -->
+                    <template if:true={showSpinner}>
                         <lightning-spinner 
-                            if:true={showSpinner} 
                             alternative-text="loading" 
                             size="medium" 
-                            variant="brand"
-                            class="spinnerClass">
+                            variant="brand">
                         </lightning-spinner>
+                    </template>
                 </div>
+
+                <!-- Pie del Modal -->
                 <footer class="slds-modal__footer slds-grid slds-grid_align-center">
                     <lightning-button
-                            variant="brand"
-                            label="Next"
-                            disabled={disabledNextButton}
-                            onclick={handleNext}
-                    ></lightning-button>
+                        variant="brand"
+                        label="Next"
+                        disabled={disabledNextButton}
+                        onclick={handleNext}>
+                    </lightning-button>
                 </footer>
             </div>
         </section>
+
+        <!-- Fondo Backdrop Nativo -->
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
     </template>
 </template>

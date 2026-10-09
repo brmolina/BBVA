@@ -34,16 +34,27 @@
                             </div>
                         </div>
                         <div class="slds-no-flex slds-grid slds-grid_vertical-align-center" style="gap: 8px">
+                            <lightning-button-icon
+                                icon-name="utility:notification"
+                                variant="border-filled"
+                                alternative-text="Schedule summary"
+                                title="Schedule summary"
+                                onclick={handleOpenScheduleSummaryModal}>
+                            </lightning-button-icon>
                             <template lwc:if={isTabLines}>
-                                <template lwc:if={hasAccessActionLines}>
+                                <template lwc:if={showLineActionGroup}>
                                     <lightning-button-group>
-                                        <lightning-button label="New Line" variant="brand" data-action="newLine"
-                                            onclick={handleHeaderAction} disabled={actionExecution}>
-                                        </lightning-button>
-                                        <lightning-button label={labels.DMT_RecalcuationLine} variant="neutral"
-                                            data-action="recalculateApprovals" onclick={handleHeaderAction}
-                                            disabled={actionExecution}>
-                                        </lightning-button>
+                                        <template lwc:if={hasAccessNewLine}>
+                                            <lightning-button label="New Line" variant="brand" data-action="newLine"
+                                                onclick={handleHeaderAction} disabled={actionExecution}>
+                                            </lightning-button>
+                                        </template>
+                                        <template lwc:if={hasAccessRecalculateApprovals}>
+                                            <lightning-button label={labels.DMT_RecalcuationLine} variant="neutral"
+                                                data-action="recalculateApprovals" onclick={handleHeaderAction}
+                                                disabled={actionExecution}>
+                                            </lightning-button>
+                                        </template>
                                     </lightning-button-group>
                                 </template>
                             </template>
@@ -65,6 +76,9 @@
                                 survey-name="SupportWUT" module-name="Deal Management" variant="neutral" open-in-new-tab="true"
                                 is-not-quick-action="true">
                             </c-des_lwc_-boton-note-book-lm>
+                            <lightning-button label="Feedback" title="Feedback" variant="neutral"
+                                onclick={handleFeedbackClick}>
+                            </lightning-button>
                         </div>
                     </div>
 
@@ -72,18 +86,20 @@
                     <div class="tabset-wrapper">
                         <div class="slds-tabs_default tabs-root slds-tabs_medium">
                             <ul class="slds-tabs_default__nav slds-m-left_medium slds-m-right_medium" role="tablist">
-                                <li class={tabClassLines} title="Lines" role="presentation">
-                                    <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab"
-                                        tabindex="0" aria-selected={isTabLines} aria-controls="tab-lines"
-                                        id="tab-lines__item" onclick={handleTabClick} data-tab="lines">Lines</a>
-                                </li>
-                                <template lwc:if={workspaceInput.OppAccess}>
+                                <template lwc:if={workspaceInput.hasOpportunityListAccess}>
                                     <li class={tabClassOpps} title="Opportunities" role="presentation">
                                         <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab"
                                             tabindex="-1" aria-selected={isTabOpps} aria-controls="tab-opps"
                                             id="tab-opps__item" onclick={handleTabClick}
                                             data-tab="opps">Opportunities</a>
                                     </li>
+                                </template>
+                                <li class={tabClassLines} title="Lines" role="presentation">
+                                    <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab"
+                                        tabindex="0" aria-selected={isTabLines} aria-controls="tab-lines"
+                                        id="tab-lines__item" onclick={handleTabClick} data-tab="lines">Treasury - Settlement & Other Lines</a>
+                                </li>
+                                <template lwc:if={workspaceInput.OppAccess}>
                                     <li class={tabClassProfitabilityTest} title="Profitability Test"
                                         role="presentation">
                                         <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab"
@@ -99,37 +115,52 @@
                                     style="padding-bottom: 0 !important; border-bottom: none">
                                     <c-dmt-lines-management-content values-filters={lineMgmtInput.countType}
                                         table-data={lineMgmtInput.line} is-expanded-side-bar={isExpandedSideBar}
-                                        group-id={lineMgmtInput.originGroup} user-info={workspaceInput.UserInfo}>
+                                        group-id={resolvedGroupId} client-id={resolvedClientId} taxpayer={resolvedTaxpayerId}
+                                        user-info={workspaceInput.UserInfo} onrefreshdata={handleRefreshPage}> 
                                     </c-dmt-lines-management-content>
                                 </div>
                             </template>
-                            <template lwc:if={workspaceInput.OppAccess}>
+                            <template lwc:if={workspaceInput.hasOpportunityListAccess}>
                                 <template lwc:if={isTabOpps}>
                                     <div id="tab-opps" class={tabContentClassOpps} role="tabpanel"
                                         aria-labelledby="tab-opps__item"
                                         style="padding-bottom: 0 !important; border-bottom: none">
                                         <c-dmt-opportunities-managment-content values-filters={oppMgmtInput.countType}
                                             table-data={oppMgmtInput.opp} is-expanded-side-bar={isExpandedSideBar}
-                                            user-info={workspaceInput.UserInfo}>
+                                            group-id={resolvedGroupId} client-id={resolvedClientId}
+                                            taxpayer={resolvedTaxpayerId}
+                                            user-info={workspaceInput.UserInfo} onrefreshdata={handleRefreshPage}>
                                         </c-dmt-opportunities-managment-content>
                                     </div>
                                 </template>
+                            </template>
+                            <template lwc:if={workspaceInput.OppAccess}>
                                 <template lwc:if={isTabProfitabilityTest}>
                                     <div id="tab-ProfitabilityTest" class={tabContentClassProfitabilityTest}
                                         role="tabpanel" aria-labelledby="tab-ProfitabilityTest__item"
-                                        style="padding-bottom: 0 !important; border-bottom: none">
-                                        <c-cf-d-m-t_-profitability-test
-                                            parent-attribute={profiMgmtInput}></c-cf-d-m-t_-profitability-test>
-                                    </div>
+                                        style="padding-bottom: 0 !important; border-bottom: none; overflow: scroll">
+                                         <!-- <c-cf-d-m-t_-profitability-test
+                                            parent-attribute={profiMgmtInput} ></c-cf-d-m-t_-profitability-test>   -->
+                                        <c-dmt_profitability-test-main
+                                            parent-attribute={profiMgmtInput} ></c-dmt_profitability-test-main>
+                                        </div>
                                 </template>
                             </template>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <c-dmt_schedule_summary_modal
+                show-modal={showScheduleSummaryModal}
+                account-id={originId}
+                onschedulesave={handleScheduleSummarySave}
+                onclosemodal={handleCloseScheduleSummaryModal}
+                onclose={handleCloseScheduleSummaryModal}>
+            </c-dmt_schedule_summary_modal>
         </div>
     </template>
-    <template lwc:else>
+    <template lwc:if={errorService}>
         <div class="slds-grid slds-has-flexi-truncate main-wrapper slds-p-horizontal_x-small">
 
             <div class="slds-card slds-grid_vertical-align-center slds-grid_align-center slds-theme_default slds-p-around_none"

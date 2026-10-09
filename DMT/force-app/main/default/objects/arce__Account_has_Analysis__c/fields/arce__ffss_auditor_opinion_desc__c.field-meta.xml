@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__ffss_auditor_opinion_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>This is the opinion given by the auditor once the company has been analyzed in terms of solvency and profitability</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Auditor&apos;s opinion comments</label>
+    <length>500</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>2</visibleLines>
+</CustomField>

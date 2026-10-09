@@ -46,8 +46,8 @@ public with sharing class DMT_Passport_Helper {
         body.products = buildProductsForOtherProducts(dmtLine);
         if ( dmtLine.RecordType.DeveloperName != 'Sanction') {
         body.features = new List<DMT_Wrapper_Passport_Abs.Feature> { calculateFeatureGenCons(recordId, clientsGroup) };
-        body.documentsloads = buildDocumentLoads(dmtLine.CoreDocsTaxonomyValues__c);
         }
+        body.documentsloads = buildDocumentLoads(dmtLine.CoreDocsTaxonomyValues__c);
         body.optionalFeatures = calculateOptionalFeatures(dmtLine);
 
         payloadMap.body = JSON.serialize(body);
@@ -62,6 +62,7 @@ public with sharing class DMT_Passport_Helper {
         body.client.products = new List<DMT_Passport_Wrapper.Product> { buildStandardProducts(dmtLine) };
         body.client.indRenovada = dmtLine.DMT_Parent_Line__r.Line_Id__c != null;
         body.client.parentConsums = parentConsumsStandard(dmtLine);
+        body.documentsloads = buildDocumentLoads(dmtLine.CoreDocsTaxonomyValues__c);
 
         if(clientsGroup != ''){
             body.features = new List<DMT_Wrapper_Passport_Abs.Feature> { calculateFeatureGenCons(recordId, clientsGroup) };
@@ -306,7 +307,6 @@ public with sharing class DMT_Passport_Helper {
         System.debug('log::handleOpportunityPayload');
         Account acc = DMT_Passport_Selector.getAccountWithRelatedListsFromOppId(recordId);
         Opportunity oppty = acc.Opportunities[0];
-        Id prospectSubsidiaryRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Subsidiary').getRecordTypeId();
 
         Id rtIdDmtOpportunity = Schema.SObjectType.Opportunity
             .getRecordTypeInfosByDeveloperName()
@@ -315,7 +315,6 @@ public with sharing class DMT_Passport_Helper {
 
         DMT_Opportunity_Client__c oppClient;
         Account validationAccount = acc; // default → single holder
-        Boolean isProspectSubsidiary = validationAccount.RecordType != null && validationAccount.RecordTypeId == prospectSubsidiaryRtId;
 
         if (oppty.DMT_MDE_Opportunities_Clients__r != null &&
             !oppty.DMT_MDE_Opportunities_Clients__r.isEmpty()) {
@@ -350,20 +349,10 @@ public with sharing class DMT_Passport_Helper {
             }
         }
 
-        if (oppClient != null && String.isNotBlank(oppClient.Alpha_Code_Client__c)) {
-            mitigantClientCode = oppClient.Alpha_Code_Client__c;
-        } else if (isProspectSubsidiary) {
-            mitigantClientCode = validationAccount.g_customer_id__c;
-        } else {
-            mitigantClientCode = validationAccount.Local_Clients__r[0].Alpha_code__c;
-        }
-
-    if (String.isNotBlank(oppClient.Alpha_Code_Client__c)) {
+    if (oppClient != null && String.isNotBlank(oppClient.Alpha_Code_Client__c)) {
         recordCode = oppClient.Alpha_Code_Client__c;
-    } else if (isProspectSubsidiary) {
-        recordCode = validationAccount.g_customer_id__c;
     } else {
-        recordCode = validationAccount.Local_Clients__r[0].Alpha_code__c;
+        recordCode = validationAccount.g_customer_id__c;
     }
 
     if (mapGroupsCache.isEmpty()) {
@@ -375,7 +364,7 @@ public with sharing class DMT_Passport_Helper {
         payloadMap.version = String.valueOf(oppty.DMT_NUM_Version__c);
         payloadMap.auditDate = Datetime.now();
         payloadMap.entific = oppty.Entific__c;
-        payloadMap.booking = oppty.DMT_branch_id_c__c;
+        payloadMap.booking = oppty.Entific__c;
         payloadMap.entity = oppty.DMT_Entity__c;
         payloadMap.lineDesc = oppty.Name;
         payloadMap.user = userId(oppty.OwnerId);
@@ -429,7 +418,8 @@ public with sharing class DMT_Passport_Helper {
         client.spExternalRating = oppClient.DMT_External_Rating_SP__c;
         client.fitchExternalRating = oppClient.DMT_External_Rating_Fitch__c;
         client.sectorHead = oppClient.DMT_Sector_Head__c;
-        
+        client.guarantorNameFiscalId = oppClient.DMT_Guarantor_Name_Fiscal_ID__c;
+
         if (mapGroupsCache.containsKey('groupCode')) {
             client.groupId = (String) mapGroupsCache.get('groupCode');
         }
@@ -469,36 +459,47 @@ public with sharing class DMT_Passport_Helper {
         opp.capitalAction = oppty.DMT_Capital_Action__c;
         opp.contingentCommitments = oppty.DMT_ContingentCommitments__c;
         opp.confidential = oppty.DMT_Confidential__c;
+        opp.bookingGeography = oppty.DMT_branch_id_c__c;
+        opp.bookingEFAN = oppty.DMT_Booking_EFAN__c;
+        opp.sppiFileUploaded = oppty.DMT_SPPI_File_Uploaded__c;
+        opp.sppiStatus = oppty.DMT_SPPI_Status__c;
+        opp.sppiUser = oppty.DMT_SPPI_User__c;
+        opp.financialSponsors = oppty.DMT_Financial_Sponsors__c;
+        opp.structuredGTB    = oppty.DMT_Structured_GTB__c;
+        opp.defenseDueDiligence = oppty.DMT_Defense_Due_Diligence__c;
+        opp.credentials      = oppty.DMT_Credentials__c;
+        opp.sustainableDeal    = oppClient.DMT_Sustainable_Deal__c;
+
         opp.opportunityAmountDealTotal = oppty.DMT_Opportunity_amount__c;
         opp.xsellCostToIncome = oppClient.DMT_Xsell_Cost_to_Income__c;
-    
+
         if(oppClient.Group_Sales_Check__c==true){
             opp.groupSales = 1;
         }else{
             opp.groupSales = 0;
         }
 
-        opp.xsells = buildBusinessPlanXsells(oppClient);
+        opp.xsells = buildBusinessPlanXsells(oppty.Id, oppty.DMT_CurrencyText__c);
         system.debug('funciona correctamente ->' +  opp.opportunityAmountEUR);
         system.debug('funciona correctamente ->' +  opp.opportunityAmount);
         return opp;
 
     }
 
-    private static List<DMT_PassportOpportunity_Wrapper.Xsells> buildBusinessPlanXsells(DMT_Opportunity_Client__c oppClient) {
+    private static List<DMT_PassportOpportunity_Wrapper.Xsells> buildBusinessPlanXsells(Id opportunityId, String fallbackCurrency) {
         List<DMT_PassportOpportunity_Wrapper.Xsells> xsells = new List<DMT_PassportOpportunity_Wrapper.Xsells>();
 
-        if (oppClient == null) {
+        if (opportunityId == null) {
             return xsells;
         }
 
-        Integer currentYear = Date.today().year();
-        String currencyId = oppClient.DMT_Currency__c;
+        List<DMT_Opportunity_Business_Plan__c> bpRecords = DMT_Passport_Selector.getGlobalBusinessPlansByOpportunity(opportunityId);
 
-        addBusinessPlanXsellIfValid(xsells, currentYear - 2, oppClient.Past2_FY_Child_X_Sell_amount__c, currencyId);
-        addBusinessPlanXsellIfValid(xsells, currentYear - 1, oppClient.Past_FY_Child_X_Sell_amount__c, currencyId);
-        addBusinessPlanXsellIfValid(xsells, currentYear, oppClient.Current_FY_Child_X_Sell_amount__c, currencyId);
-        addBusinessPlanXsellIfValid(xsells, currentYear + 1, oppClient.Next_FY_Child_X_Sell_amount__c, currencyId);
+        for (DMT_Opportunity_Business_Plan__c bp : bpRecords) {
+            Integer year = Integer.valueOf(bp.DMT_Year__c);
+            String currencyId = String.isNotBlank(bp.DMT_Currency__c) ? bp.DMT_Currency__c : fallbackCurrency;
+            addBusinessPlanXsellIfValid(xsells, year, bp.Current_FY_Total_X_Sell_amount__c, currencyId);
+        }
 
         return xsells;
     }
@@ -522,14 +523,34 @@ public with sharing class DMT_Passport_Helper {
         Map<Id, List<DMT_Opportunity_Mitigant__c>> mitigantsMap = buildMitigantsMap(oppLineItems);
         Map<String, String> tax895Map = buildTaxonomyMap(mitigantsMap);
         Map<Id, List<DMT_Opportunity_Tenor__c>> amortizationPayMap = buildAmortizationMap(oppLineItems);
+        Map<Id, List<DMT_Underlying__c>> underlyingsMap = buildUnderlyingsMap(oppLineItems);
         Map<String, String> groupCountryRiskMap = buildGroupCountryRiskMap(oppLineItems);
+        Map<String, String> underlyingTaxonomyMap = buildUnderlyingTaxonomyMap(underlyingsMap);
 
         List<DMT_PassportOpportunity_Wrapper.Product> products = new List<DMT_PassportOpportunity_Wrapper.Product>();
         for (OpportunityLineItem opplitem : oppLineItems) {
-            products.add(buildProduct(opplitem, mitigantsMap, tax895Map, amortizationPayMap, groupCountryRiskMap, oppty));
+            products.add(buildProduct(opplitem, mitigantsMap, underlyingsMap, tax895Map, amortizationPayMap, groupCountryRiskMap, oppty, underlyingTaxonomyMap));
         }
 
         return products;
+    }
+
+    private static Map<String, String> buildUnderlyingTaxonomyMap(Map<Id, List<DMT_Underlying__c>> underlyingsMap) {
+        Set<String> underlyingNames = new Set<String>();
+        for (List<DMT_Underlying__c> uls : underlyingsMap.values()) {
+            for (DMT_Underlying__c ul : uls) {
+                if (String.isNotBlank(ul.Name)) {
+                    underlyingNames.add(ul.Name);
+                }
+            }
+        }
+        Map<String, String> nameToTaxValueMap = new Map<String, String>();
+        for (DMT_Taxonomy_Values__c tv : DMT_Passport_Selector.getUnderlyingTaxonomyByNames(underlyingNames)) {
+            if (!nameToTaxValueMap.containsKey(tv.DMT_Name_EN__c)) {
+                nameToTaxValueMap.put(tv.DMT_Name_EN__c, tv.gf_catalog_atrb_val1_name_c__c);
+            }
+        }
+        return nameToTaxValueMap;
     }
 
     private static Map<String, String> buildGroupCountryRiskMap(List<OpportunityLineItem> oppLineItems) {
@@ -642,7 +663,27 @@ public with sharing class DMT_Passport_Helper {
         return amortizationPayMap;
     }
 
-    private static DMT_PassportOpportunity_Wrapper.Product buildProduct(OpportunityLineItem opplitem, Map<Id, List<DMT_Opportunity_Mitigant__c>> mitigantsMap, Map<String, String> tax895Map, Map<Id, List<DMT_Opportunity_Tenor__c>> amortizationPayMap, Map<String, String> groupCountryRiskMap, Opportunity oppty) {
+    private static Map<Id, List<DMT_Underlying__c>> buildUnderlyingsMap(List<OpportunityLineItem> oppLineItems) {
+        List<DMT_Underlying__c> underlyings = new List<DMT_Underlying__c>();
+        for (OpportunityLineItem oli : oppLineItems) {
+            if (oli.Underlyings__r != null && !oli.Underlyings__r.isEmpty()) {
+                underlyings.addAll(oli.Underlyings__r);
+            }
+        }
+
+        Map<Id, List<DMT_Underlying__c>> underlyingsMap = new Map<Id, List<DMT_Underlying__c>>();
+        for (DMT_Underlying__c underlying : underlyings) {
+            if (underlyingsMap.containsKey(underlying.DMT_Opportunity_Product__c)) {
+                underlyingsMap.get(underlying.DMT_Opportunity_Product__c).add(underlying);
+            } else {
+                underlyingsMap.put(underlying.DMT_Opportunity_Product__c, new List<DMT_Underlying__c>{underlying});
+            }
+        }
+
+        return underlyingsMap;
+    }
+
+    private static DMT_PassportOpportunity_Wrapper.Product buildProduct(OpportunityLineItem opplitem, Map<Id, List<DMT_Opportunity_Mitigant__c>> mitigantsMap, Map<Id, List<DMT_Underlying__c>> underlyingsMap, Map<String, String> tax895Map, Map<Id, List<DMT_Opportunity_Tenor__c>> amortizationPayMap, Map<String, String> groupCountryRiskMap, Opportunity oppty, Map<String, String> underlyingTaxonomyMap) {
         DMT_PassportOpportunity_Wrapper.Product product = new DMT_PassportOpportunity_Wrapper.Product();
         product.name = opplitem.DMT_TXT_ProductNameOLI__c;
         product.geographyBranch = opplitem.g_branch_id__c;
@@ -654,19 +695,25 @@ public with sharing class DMT_Passport_Helper {
         product.TXTComentarios = opplitem.DMT_TXT_Comentarios__c;
         product.lastLevelId = opplitem.DMT_Risk_Type__c;
         product.businessArea = oppty.DMT_Product_Area__c;
+        product.committedLine = opplitem.g_line_commitment_level_type__c;
         product.prco = opplitem.ProductCode;
         product.intermediateDate = opplitem.gf_intermediate_date__c;
         product.countryRisk = opplitem.gf_country_risk__c;
         product.groupCountryRisk = groupCountryRiskMap.get(opplitem.gf_country_risk__c);
         product.crr2 = String.valueOf(opplitem.gf_crr2_essential_public_services__c);
         product.countryRating = opplitem.gf_country_rating__c;
-        product.tenorAmount = opplitem.DMT_Deal_Amount_Tenors__c;
+        product.tenorAmount = opplitem.bbva_prtcp_tranche_amount__c;
+        product.committedUncommitted = opplitem.DMT_Line_LC_LNC__c;
+        product.lineOneOffDeal = opplitem.DMT_Line_Oneoffdeal__c;
 
         product.funding = buildFunding(opplitem);
         product.mitigants = buildMitigants(opplitem.Id, mitigantsMap, tax895Map);
         product.amortization = buildAmortization(opplitem, amortizationPayMap.get(opplitem.Id));
+        product.amortization.underlyings = buildUnderlyings(opplitem.Id, underlyingsMap, underlyingTaxonomyMap);
         product.liquidityFee = opplitem.DMT_Liquidity_Fee__c;
         product.dealAmount = opplitem.DMT_Deal_amount__c;
+        product.roleType = opplitem.entity_role_type__c;
+        product.subLimit = opplitem.DMT_Sub_Limit__c;
 
         return product;
     }
@@ -733,9 +780,9 @@ public with sharing class DMT_Passport_Helper {
         //periodic
         amortization.rateType = RATE_TYPE_MAPPING.containsKey(opplitem.DMT_RateType__c) ? RATE_TYPE_MAPPING.get(opplitem.DMT_RateType__c) : opplitem.DMT_RateType__c;
         amortization.payments = new List<DMT_PassportOpportunity_Wrapper.AmortizationPayments>();
-        amortization.newmoney = opplitem.DMT_NewMoney_BBVA__c;
+        amortization.newMoney = opplitem.DMT_NewMoney_BBVA__c;
         amortization.oldmoney = opplitem.DMT_OldMoney_BBVA__c;
-        amortization.finaltake = opplitem.syndicated_loan_drawn_amount__c;
+        amortization.expectedFinalTake = opplitem.syndicated_loan_drawn_amount__c;
         amortization.pricinggridOrstepUp = opplitem.DMT_PricingGrid_OR_StepUps__c;
         amortization.extensionDurationFees = opplitem.DMT_Extension_Duration_Fees__c;
         amortization.expectedDrawn = opplitem.DMT_Expected_Drawn__c;
@@ -761,6 +808,87 @@ public with sharing class DMT_Passport_Helper {
         return amortization;
     }
 
+    private static Map<String, Map<String, String>> termPicklistLabelsCache = new Map<String, Map<String, String>>();
+
+    private static Map<String, String> getTermPicklistLabels(String fieldApiName) {
+        if (!termPicklistLabelsCache.containsKey(fieldApiName)) {
+            Map<String, String> labels = new Map<String, String>();
+            Schema.DescribeFieldResult fieldDescribe = DMT_Underlying__c.SObjectType.getDescribe().fields.getMap().get(fieldApiName).getDescribe();
+            for (Schema.PicklistEntry entry : fieldDescribe.getPicklistValues()) {
+                if (String.isNotBlank(entry.getValue())) {
+                    labels.put(entry.getValue(), entry.getLabel());
+                }
+            }
+            termPicklistLabelsCache.put(fieldApiName, labels);
+        }
+        return termPicklistLabelsCache.get(fieldApiName);
+    }
+
+    private static Date calculateUnderlyingEndDate(Date referenceDate, String termValue, String fieldApiName) {
+        if (referenceDate == null) {
+            return null;
+        }
+        if (String.isBlank(termValue)) {
+            return referenceDate;
+        }
+
+        String label = getTermPicklistLabels(fieldApiName).get(termValue);
+        if (String.isBlank(label)) {
+            return referenceDate.addDays(Integer.valueOf(termValue));
+        }
+
+        Matcher m = Pattern.compile('^([0-9]+(?:,[0-9]+)?)\\s*(week|month|year)').matcher(label.toLowerCase().trim());
+        if (!m.find()) {
+            return referenceDate.addDays(Integer.valueOf(termValue));
+        }
+
+        Decimal quantity = Decimal.valueOf(m.group(1).replace(',', '.'));
+        String unit = m.group(2);
+
+        if (unit == 'week') {
+            return referenceDate.addDays((quantity * 7).intValue());
+        }
+        if (unit == 'year') {
+            Boolean isWholeYears = Math.mod((quantity * 100).intValue(), 100) == 0;
+            return isWholeYears ? referenceDate.addYears(quantity.intValue()) : referenceDate.addMonths((quantity * 12).intValue());
+        }
+        return referenceDate.addMonths(quantity.intValue());
+    }
+
+    private static List<DMT_PassportOpportunity_Wrapper.Underlying> buildUnderlyings(Id productId, Map<Id, List<DMT_Underlying__c>> underlyingsMap, Map<String, String> underlyingTaxonomyMap) {
+        List<DMT_PassportOpportunity_Wrapper.Underlying> underlyings = new List<DMT_PassportOpportunity_Wrapper.Underlying>();
+        if (underlyingsMap.get(productId) != null) {
+            for (DMT_Underlying__c ul : underlyingsMap.get(productId)) {
+                DMT_PassportOpportunity_Wrapper.Underlying underlying = new DMT_PassportOpportunity_Wrapper.Underlying();
+                // New fields
+                underlying.underlyingId = ul.Id;
+                underlying.underlyingPrco = underlyingTaxonomyMap.get(ul.Name);
+                underlying.underlyingInitDate = ul.CreatedDate.date();
+                // Calculate endDate and term based on underlyingType
+                String termFieldApiName = ul.DMT_Underlying_Type__c == 'Restriction' ? 'DMT_Max_Term__c' : 'DMT_Term__c';
+                String termValue = ul.DMT_Underlying_Type__c == 'Restriction' ? ul.DMT_Max_Term__c : ul.DMT_Term__c;
+                underlying.term = termValue;
+                underlying.underlyingEndDate = calculateUnderlyingEndDate(ul.CreatedDate.date(), termValue, termFieldApiName);
+                // Existing fields
+                underlying.amortizationType = ul.DMT_Amortization_Type__c;
+                underlying.currencyId = ul.DMT_Currency__c;
+                underlying.nominalDrawn = ul.DMT_Drawn_Reference_Amount__c;
+                underlying.spreadDrawn = ul.DMT_Drawn_Speed__c;
+                underlying.interestPaymentFrequency = ul.DMT_Interest_Payment_Frequency__c;
+                underlying.maxAmount = ul.DMT_Max_Amount__c;
+                underlying.maxTerm = ul.DMT_Max_Term__c;
+                underlying.otherRestrictions = ul.DMT_Other_restrictions__c;
+                underlying.underlyingType = ul.DMT_Underlying_Type__c;
+                underlying.nominalUndrawn = ul.DMT_Undrawn_Reference_Amount__c;
+                underlying.spreadUndrawn = ul.DMT_Undrawn_Spread__c;
+                underlying.fees = ul.DMT_Upfront_Fees__c;
+                underlying.upfrontFeesAmount = ul.DMT_Upfront_Fees_amount__c;
+                underlyings.add(underlying);
+            }
+        }
+        return underlyings;
+    }
+
     public static List<DMT_PassportOpportunity_Wrapper.OpportunitySanctions> buildOpportunitySanctions(Opportunity oppty) {
         DMT_PassportOpportunity_Wrapper.OpportunitySanctions oppSanctions = new DMT_PassportOpportunity_Wrapper.OpportunitySanctions();
         oppSanctions.lineCode = oppty.DMT_Sanction__r.Line_Id__c;
@@ -781,7 +909,7 @@ public with sharing class DMT_Passport_Helper {
 
         oppSanctions.productsLine = productsLineList;
         oppSanctions.businessApprovedDateStartDate = oppty.DMT_Sanction__r.DMT_Bussiness_Approved_Date__c;
-        oppSanctions.businessApprovedDateEndDate = oppty.DMT_Sanction__r.DMT_Bussiness_Approved_End_Date__c;
+        oppSanctions.businessApprovedDateEndDate = oppty.DMT_Sanction__r.DMT_Business_Approved_End_Date__c;
         oppSanctions.riskStartDate = oppty.DMT_Sanction__r.Start_Date__c;
         oppSanctions.riskEndDate = oppty.DMT_Sanction__r.End_Date__c;
         oppSanctions.newApproval = (oppty.DMT_Sanction__r.DMT_Opportunity__c == oppty.Id);
@@ -895,6 +1023,21 @@ public with sharing class DMT_Passport_Helper {
         //CIBGLOBALD-1444 parameter is added to the method
         newCase.DMT_Passport_Sanction__c = passportSanction;
 
+        // Renovación: solo si la línea/opp tiene padre (es renovación), asignar el ParentId del Case correspondiente
+        Boolean isLineRenewal = line != null && line.DMT_Parent_Line__c != null;
+        Boolean isOppRenewal  = opp  != null && opp.DMT_Parent_Opportunity__c != null;
+        if (String.isNotBlank(featureId) && (isLineRenewal || isOppRenewal)) {
+            System.debug('###RENEWAL### createCase - featureId=' + featureId + ' line=' + (line != null ? line.Id : null) + ' opp=' + (opp != null ? opp.Id : null));
+            Id parentId = isLineRenewal ? line.DMT_Parent_Line__c : opp.DMT_Parent_Opportunity__c;
+            System.debug('###RENEWAL### parentId=' + parentId);
+            List<Case> parentCase = DMT_Passport_Selector.getCaseByLineFeature(parentId, featureId);
+            System.debug('###RENEWAL### parentCase size=' + parentCase.size());
+            if (!parentCase.isEmpty()) {
+                newCase.ParentId = parentCase[0].Id;
+                System.debug('###RENEWAL### ParentId assigned=' + newCase.ParentId);
+            }
+        }
+
         insert newCase;
 
         return newCase;
@@ -944,6 +1087,11 @@ public with sharing class DMT_Passport_Helper {
 
                 bodyResponse = bodyResponse.replaceAll('@date', Datetime.now().format('yyyy-MM-dd HH:mm:ss'));
 
+                // Enrich every feature's validation message (when it lists multiple missing fields
+                // separated by commas) with a "fieldsRequired" map grouped by UI tab, so the front-end
+                // can highlight the missing fields in YELLOW.
+                bodyResponse = enrichMissingFields(bodyResponse);
+
                 outMap.put('payload', bodyResponse);
                 // 2. Return the state of the flag
                 outMap.put('isObsolete', false);
@@ -956,11 +1104,96 @@ public with sharing class DMT_Passport_Helper {
 
                 // New logic for non-mandatory proposal/passport features
                 cancelNonMandatoryProposalWorkflows(passport, bodyResponse, objectName);
+
+                // Update rentability fields on Opportunity and OpportunityLineItems
+                if (objectName == Opportunity.getSObjectType().getDescribe().getName() && passport.Opportunity__c != null) {
+                    DMT_PassportProfitabilityProcessor.updateProfitabilityFields(passport.Opportunity__c, bodyResponse);
+                }
         } else {
             outMap.put('payload', null);
             outMap.put('isObsolete', true);
             outMap.put('result', false);
             outMap.put('message', Label.OpportunityServiceError);
+        }
+    }
+
+    // Feature names whose validations are eligible for fieldsRequired enrichment. Not every feature
+    // encodes its missing fields the same way (comma-separated field paths), so enrichment is
+    // opt-in per feature name. Add new feature names here as they adopt the same message format.
+    private static final Set<String> FIELDS_REQUIRED_ELIGIBLE_FEATURES = new Set<String>{
+        'Profitability Engine'
+    };
+
+    /**
+     * @description Enrichment applied to the raw Passport evaluation service JSON response, restricted
+     * to the features listed in FIELDS_REQUIRED_ELIGIBLE_FEATURES (currently "Profitability Engine"),
+     * since other features may not follow the same comma-separated field-path message format.
+     * For each eligible feature it inspects every validation's "message" and passes it as-is to
+     * DMT_FieldsRequiredParser.parse(). The result (possibly an empty map, if no field in the
+     * message resolves to an active DMT_FieldsRequiredPassport__mdt record) always overwrites the
+     * feature's "fieldsRequired" key, so a stale value from a previous enrichment run never
+     * survives. The original "message" is left untouched.
+     * If the JSON cannot be parsed, or the expected structure ("data.features") is not present, the
+     * original body is returned unchanged.
+     * @param jsonBody raw JSON response from the passport evaluation service
+     * @return String enriched JSON (or the original jsonBody on any parsing issue)
+     */
+    public static String enrichMissingFields(String jsonBody) {
+        if (String.isBlank(jsonBody)) {
+            return jsonBody;
+        }
+
+        try {
+            Map<String, Object> root = (Map<String, Object>) JSON.deserializeUntyped(jsonBody);
+            Map<String, Object> dataMap = root != null ? (Map<String, Object>) root.get('data') : null;
+
+            if (dataMap == null || !dataMap.containsKey('features')) {
+                return jsonBody;
+            }
+
+            List<Object> rawFeatures = (List<Object>) dataMap.get('features');
+            if (rawFeatures == null) {
+                return jsonBody;
+            }
+
+            for (Object featureObj : rawFeatures) {
+                if (!(featureObj instanceof Map<String, Object>)) {
+                    continue;
+                }
+
+                Map<String, Object> featureMap = (Map<String, Object>) featureObj;
+                String featureName = (String) featureMap.get('name');
+
+                if (!FIELDS_REQUIRED_ELIGIBLE_FEATURES.contains(featureName)) {
+                    continue;
+                }
+
+                List<Object> rawValidations = (List<Object>) featureMap.get('validations');
+                if (rawValidations == null) {
+                    continue;
+                }
+
+                for (Object validationObj : rawValidations) {
+                    if (!(validationObj instanceof Map<String, Object>)) {
+                        continue;
+                    }
+
+                    Map<String, Object> validationMap = (Map<String, Object>) validationObj;
+                    String message = (String) validationMap.get('message');
+
+                    Map<String, Object> fieldsRequired = DMT_FieldsRequiredParser.parse(message);
+
+                    // Always overwrite (even with an empty map) so a stale "fieldsRequired" value
+                    // from a previous enrichment run never survives when the current message no
+                    // longer resolves to any active DMT_FieldsRequiredPassport__mdt record.
+                    featureMap.put('fieldsRequired', fieldsRequired);
+                }
+            }
+
+            return JSON.serialize(root);
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'DMT_Passport_Helper.enrichMissingFields error: ' + e.getMessage() + ' at line ' + e.getLineNumber());
+            return jsonBody;
         }
     }
 
@@ -982,7 +1215,7 @@ public with sharing class DMT_Passport_Helper {
                 return;
             }
 
-            // Se valida que hay Passport y Opportunity 
+            // Se valida que hay Passport y Opportunity
             if (passport == null || passport.Opportunity__c == null) {
                 return;
             }
@@ -1279,7 +1512,7 @@ public with sharing class DMT_Passport_Helper {
         }
         return null;
     }
-    
+
     // --- Helper method to parse CoreDocs Taxonomies ---
     public static List<DMT_Wrapper_Passport_Abs.DocumentLoad> buildDocumentLoads(String taxonomyValues) {
         List<DMT_Wrapper_Passport_Abs.DocumentLoad> docs = new List<DMT_Wrapper_Passport_Abs.DocumentLoad>();

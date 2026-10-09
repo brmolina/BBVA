@@ -19,8 +19,20 @@
         <value xsi:type="xsd:boolean">true</value>
     </values>
     <values>
+        <field>DMT_Depos_layout2__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>DMT_Derivatives_layout2__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
         <field>DMT_Operational_Restrictions_Name__c</field>
         <value xsi:type="xsd:string">REAC</value>
+    </values>
+    <values>
+        <field>DMT_Repos_layout2__c</field>
+        <value xsi:type="xsd:boolean">false</value>
     </values>
     <values>
         <field>DVP_Disabled__c</field>
@@ -68,6 +80,6 @@
     </values>
     <values>
         <field>isActive__c</field>
-        <value xsi:type="xsd:boolean">true</value>
+        <value xsi:type="xsd:boolean">false</value>
     </values>
 </CustomMetadata>

@@ -3,21 +3,73 @@ import { LightningElement, track, api, wire } from 'lwc';
 import DMT_Styles from "@salesforce/resourceUrl/DMT_Styles";
 import { loadStyle } from "lightning/platformResourceLoader";
 import TITLE_TABLE from '@salesforce/label/c.dmt_cl_OperationalRestrc_Text';
+import DERIVATIVES_RESTRICTIONS_LABEL from '@salesforce/label/c.dmt_cl_DerivativesRestrc_Text';
+import DEPOS_RESTRICTIONS_LABEL from '@salesforce/label/c.dmt_cl_DeposRestrc_Text';
+import REPOS_RESTRICTIONS_LABEL from '@salesforce/label/c.dmt_cl_ReposRestrc_Text';
 import dataTableWithoutTruncate from '@salesforce/resourceUrl/DataTableTruncateCss';
+import getCurrencyLabel from '@salesforce/apex/DMT_Currency_Conversion_Utils.getCurrencyLabel';
+
+const BR_CO_TERM_OPTIONS = [{ label: '', value: '' }, { label: '0D', value: '0' }, { label: '1D', value: '1' }, { label: '2D', value: '2' }, { label: '3D', value: '3' }, { label: '7D', value: '7' }, { label: '10D', value: '10' }, { label: '15D', value: '15' }, { label: '1M', value: '30' }, { label: '3M', value: '90' }, { label: '6M', value: '180' }, { label: '1Y', value: '365' }, { label: '2Y', value: '730' }, { label: '3Y', value: '1095' }, { label: '4Y', value: '1460' }, { label: '5Y', value: '1825' }, { label: '7Y', value: '2555' }, { label: '10Y', value: '3650' }, { label: '15Y', value: '5475' }, { label: '20Y', value: '7300' }, { label: '30Y', value: '10950' }];
 
 export default class ProductRestricTable extends LightningElement {
 
     tableData;
     bookingGeography;
+    clientCodevalue;
     productOptions;
     maxTenorOptions;
+    _tableTittle;
     @track columns;
     allColumns;
-    @api columnstablecopypaste = []
-    @api isReadOnlyUser;
+    @api
+    set columnstablecopypaste(value) {
+        this.allColumns = value;
+    }
+    get columnstablecopypaste() {
+        return this.allColumns;
+    }
+    @api restricCopy = [];
+    _isReadOnlyUser = false;
+
+    @api
+    get isReadOnlyUser() {
+      return this._isReadOnlyUser;
+    }
+
+    set isReadOnlyUser(value) {
+      this._isReadOnlyUser = value === true || value === 'true';
+      this._applyReadOnlyState();
+    }
+
+    _applyReadOnlyState() {
+      if (!Array.isArray(this.tableData)) {
+        return;
+      }
+      this.tableData = this.tableData.map(item => ({
+        ...item,
+        derivativesEdit: this._isReadOnlyUser ? false : item.derivativesEdit,
+        DVPEdit: this._isReadOnlyUser ? false : item.DVPEdit,
+        FDEdit: this._isReadOnlyUser ? false : item.FDEdit,
+        isDisabled: this._isReadOnlyUser || item.isDisabled
+      }));
+    }
+    
     labels = {
         TITLE_TABLE,
+        DERIVATIVES_RESTRICTIONS_LABEL,
+        DEPOS_RESTRICTIONS_LABEL,
+        REPOS_RESTRICTIONS_LABEL
     };
+    
+    @api 
+    get tablename() {
+        return this._tableTittle;
+    }
+    set tablename(value) {
+        console.log("Setting table title to: " + value);
+        this._tableTittle = this.labels[value];
+    }
+    
 
 
     addProductRes;
@@ -30,7 +82,7 @@ export default class ProductRestricTable extends LightningElement {
     dvpAmountvalue;
     @api
     get  dvpAmount() {
-      return this.dvpAmountvalue;
+      return this.dvpAmountvalue == undefined ? 0 : this.dvpAmountvalue;
     }
     set dvpAmount(value) {
       this.dvpAmountvalue = value;
@@ -39,13 +91,14 @@ export default class ProductRestricTable extends LightningElement {
     fdAmountvalue;
     @api
     get  fdAmount() {
-      return this.fdAmountvalue;
+      return this.fdAmountvalue == undefined ? 0 : this.fdAmountvalue;
     }
   
     set fdAmount(value) {
       this.fdAmountvalue = value;
       this.setColumns();
     }
+    
     
     @api
     get  addProduct() {
@@ -74,6 +127,25 @@ export default class ProductRestricTable extends LightningElement {
       }
     }
 
+    get activeTermOptions() {
+      return ['BR', 'CO'].includes((this.bookingGeography || '').trim().toUpperCase())
+        ? BR_CO_TERM_OPTIONS
+        : this.termoptions;
+    }
+
+    @api
+    get clientCode() {
+      return this.clientCodevalue;
+    }
+
+    set clientCode(value) {
+      this.clientCodevalue = value;
+      if (this.tableData && this.bookingGeography) {
+        this.checkProductsByGeography();
+        this.setColumns();
+      }
+    }
+
 
     @api
     get  tableDataName() {
@@ -81,12 +153,13 @@ export default class ProductRestricTable extends LightningElement {
     }
   
     set tableDataName(value) {
-        //console.log("tableData ds5555a "+ JSON.stringify(value));
+       console.log("tableData ds5555a "+ JSON.stringify(value));
       this.tableData = value;
       if (this.bookingGeography) {
         this.checkProductsByGeography();
         this.setColumns();
       }
+      this._applyReadOnlyState();
     }
 
     // @api
@@ -100,16 +173,94 @@ export default class ProductRestricTable extends LightningElement {
     // }
 
     @api
-    get  maxTenorOptionsName() {
-      return this.maxTenorOptions;
+    get maxTenorOptions() {
+      return this._maxTenorOptions;
     }
-    set maxTenorOptionsName(value) {
-      this.maxTenorOptions = value;
+
+    set maxTenorOptions(value) {
+      if (typeof value === 'string') {
+        try {
+          this._maxTenorOptions = JSON.parse(value);
+        } catch (e) {
+          this._maxTenorOptions = value;
+        }
+      } else {
+        this._maxTenorOptions = value;
+      }
       this.setColumns();
     }
 
+    @api
+    get maxTenorOptionsName() {
+      return this.maxTenorOptions;
+    }
+
+    set maxTenorOptionsName(value) {
+      this.maxTenorOptions = value;
+    }
+
+    _currencyLabel = '';
+
+    @api
+    get currencyCode() {
+      return this._currencyCode;
+    }
+
+    set currencyCode(value) {
+      if (this._currencyCode === value) return;
+      this._currencyCode = value;
+      if (!value) {
+        this._currencyLabel = '';
+        this.setColumns();
+        return;
+      }
+      getCurrencyLabel({ currencyIsoCode: value })
+        .then(result => {
+          this._currencyLabel = result || value;
+          this.setColumns();
+        })
+        .catch(() => {
+          this._currencyLabel = value;
+          this.setColumns();
+        });
+    }
+
     lastSavedData = [];
+    formatAmountForHeader(value) {
+        if (value === null || value === undefined || value === '') {
+            return '0,00';
+        }
+
+        if (typeof value === 'number' && Number.isFinite(value)) {
+            return new Intl.NumberFormat('es-ES', { 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2,
+                useGrouping: 'always' 
+            }).format(value);
+        }
+
+        const textValue = String(value).trim();
+        const normalizedNumeric = textValue.replace(/,/g, '');
+        if (/^-?\d+(\.\d+)?$/.test(normalizedNumeric)) {
+            return new Intl.NumberFormat('es-ES', { 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2,
+                useGrouping: 'always' 
+            }).format(Number(normalizedNumeric));
+        }
+
+        return textValue;
+    }
+
     setColumns(){
+        const isBrOrCo = ['BR', 'CO'].includes((this.bookingGeography || '').trim().toUpperCase());
+        const optionsToUse = (Array.isArray(this._maxTenorOptions) && this._maxTenorOptions.length > 0 && !isBrOrCo)
+            ? this._maxTenorOptions
+          : this.activeTermOptions;
+
+        const fdAmountLabel = this.formatAmountForHeader(this.fdAmount);
+        const dvpAmountLabel = this.formatAmountForHeader(this.dvpAmount);
+
         this.allColumns = [
           { label: 'PRODUCT GROUP', fieldName: 'products',  type: 'url',
             typeAttributes: {
@@ -120,20 +271,20 @@ export default class ProductRestricTable extends LightningElement {
             class: "dmt-datatable-url",
           }
           ,hideDefaultActions:true ,editable: false},
-          { label: 'DERIVATIVES LINE', fieldName: 'derivativesLine', type:'customselectRow',hideDefaultActions:true, cellAttributes:{style: 'text-align: center;'},
+          { label: 'DERIVATIVES LINE', fieldName: 'derivativesLine', type:'customselectRow',hideDefaultActions:true, cellAttributes:{style: 'text-align: center;', class: 'checkboxDataTable'},
             typeAttributes: {
               aviableItem: {fieldName: 'derivativesEdit'}, checkedItem: { fieldName: 'derivativesLine' }, fieldName: 'derivativesLine', context: { fieldName: 'Id' }
           }},
-          { label: 'MATURITY TERM', fieldName: 'maxTerm', hidden: { fieldName: 'MTDisabled' }, type:'picklist',hideDefaultActions:true, typeAttributes: { isDisabled : { fieldName: 'isDisabled' },
-              placeholder: 'Select...', options: this.termoptions, fieldName: 'maxTerm' // list of all picklist options
+          { label: 'MATURITY TERM', fieldName: 'maxTerm', hidden: { fieldName: 'MTDisabled' }, type:'picklist',hideDefaultActions:true,  typeAttributes: { isDisabled : { fieldName: 'isDisabled' },
+              placeholder: 'Select...', options: optionsToUse, fieldName: 'maxTerm' // list of all picklist options
               , value: { fieldName: 'maxTerm' } // default value for picklist
               , context: { fieldName: 'Id' } // binding account Id with context variable to be returned back
           },cellAttributes:{class: {fieldName:'deriVisible'}}},
-          { label: 'FD LINE: ' +this.fdAmount, hidden:{ fieldName: 'FDDisabled' }, fieldName: 'lineFD', type:'customselectRow',hideDefaultActions:true ,cellAttributes:{style: 'text-align: center;'},
+          { label: 'FD LINE: ' + fdAmountLabel + (this._currencyLabel ? ' ' + this._currencyLabel : ''), hidden:{ fieldName: 'FDDisabled' }, fieldName: 'lineFD', type:'customselectRow',hideDefaultActions:true ,cellAttributes:{style: 'text-align: center;', class: 'checkboxDataTable'},
             typeAttributes: {
               aviableItem: {fieldName: 'FDEdit'}, checkedItem: { fieldName: 'lineFD' }, fieldName: 'lineFD', context: { fieldName: 'Id' }
             }},
-          { label: 'DVP LINE: ' +this.dvpAmount, hidden: { fieldName: 'DVPDisabled' }, fieldName: 'lineDVP', type:'customselectRow',hideDefaultActions:true,cellAttributes:{style: 'text-align: center;'},
+          { label: 'DVP LINE: ' + dvpAmountLabel + (this._currencyLabel ? ' ' + this._currencyLabel : ''), hidden: { fieldName: 'DVPDisabled' }, fieldName: 'lineDVP', type:'customselectRow',hideDefaultActions:true,cellAttributes:{style: 'text-align: center;', class: 'checkboxDataTable'},
             typeAttributes: {
               aviableItem: {fieldName: 'DVPEdit'}, checkedItem: { fieldName: 'lineDVP' }, fieldName: 'lineDVP', context: { fieldName: 'Id' }
           }}
@@ -161,6 +312,12 @@ export default class ProductRestricTable extends LightningElement {
             return !shouldBeHidden;
         });
       this.columns = [...this.columns];
+
+      if (this.bookingGeography === 'PE') {
+        this.columns = this.columns.filter(
+          col => col.fieldName !== 'derivativesLine' && col.fieldName !== 'maxTerm'
+        );
+      }
     
 }
     renderedCallback() {
@@ -220,7 +377,7 @@ export default class ProductRestricTable extends LightningElement {
         });
         //console.log('copyData',JSON.stringify(copyData))
         //write changes back to original data
-        this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyData} ));
+        this.dispatchEvent(new CustomEvent('tableproductchanges',  { bubbles:true, composed:true,detail:  copyData} ));
     }
 
     updateDraftValues(updateItem) {
@@ -333,11 +490,14 @@ export default class ProductRestricTable extends LightningElement {
             "Max_Tenor_WC__c": "",
             "Product_Code__c": ""
           });//console.log('copyData',copyData)
-          this.dispatchEvent(new CustomEvent('tableProductChanges',  { bubbles:true, composed:true,detail:  copyData} ));
+          this.dispatchEvent(new CustomEvent('tableproductchanges',  { bubbles:true, composed:true,detail:  copyData} ));
     }
 
     checkProductsByGeography() {
 
+      if (!this.tableData || !Array.isArray(this.tableData)) {
+        return;
+      }
       
       this.tableData = this.tableData.map((item) => ({
           ...item,
@@ -346,6 +506,25 @@ export default class ProductRestricTable extends LightningElement {
           FDEdit: item.isDisabled ? false : item.FDEdit
       }));
 
+      // if (this.bookingGeography === 'PE') {
+      //   const isClientCodePE = (this.clientCodevalue || '').toString().trim().toUpperCase().startsWith('PE');
+      //   this.tableData = this.tableData.map((item) => {
+      //     const productValue = (item.productsValue || '').toString().toUpperCase();
+      //     const isFXProduct = productValue === 'FOEX' || productValue === 'CODEFX';
+
+      //     if (!isFXProduct || item.isDisabled) {
+      //       return item;
+      //     }
+
+      //     return {
+      //       ...item,
+      //       DVPEdit: isClientCodePE,
+      //       FDEdit: !isClientCodePE,
+      //       lineDVP: isClientCodePE ? item.lineDVP : false,
+      //       lineFD: !isClientCodePE ? item.lineFD : false
+      //     };
+      //   });
+      // }
 
     }
 

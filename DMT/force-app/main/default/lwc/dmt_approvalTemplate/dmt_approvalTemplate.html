@@ -1,0 +1,241 @@
+<template>
+    
+    <!-- Title -->
+    <div class="slds-text-heading_small slds-p-around_x-small slds-text-title_bold">(testing)</div>
+
+    <!-- Spinner -->
+    <template if:true={showSpinner}>
+        <div class="slds-is-relative" style="min-height:6rem;">
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </div>
+    </template>
+
+    <!-- Global Error Popover (visible in any state) -->
+    <template if:true={showPopover}>
+        <div class="slds-p-around_small">
+            <c-dmt_show-popover
+                header="We hit a snag."
+                message={errorMessage}
+                message-title="Review the errors on this page."
+                show-popover={showPopover}
+                variant="error">
+            </c-dmt_show-popover>
+        </div>
+    </template>
+
+    <!-- STATE: No Pending Task -->
+    <template if:true={isNoPendingTask}>
+        <div class="slds-card slds-p-around_x-small slds-m-bottom_x-small">
+            <div class="slds-p-around_x-small" style="height:2em;"></div>
+            <div class="slds-text-align_center slds-m-left_x-small slds-m-top_xx-small slds-page-header__title">
+                {labels.noPendingTask}
+            </div>
+            <div class="slds-p-around_x-small" style="height:2em;"></div>
+        </div>
+    </template>
+
+    <!-- STATE: View State -->
+    <template if:true={isViewState}>
+        <div class="slds-card slds-p-around_x-small slds-m-bottom_x-small slds-clearfix detail-panel-root">
+            <!-- Task Name -->
+            <div class="slds-text-align_left slds-m-left_x-small slds-m-top_xx-small slds-page-header__title slds-m-right--small slds-line-clamp clip-text">
+                {taskName}
+            </div>
+
+            <div class="slds-col slds-p-horizontal_small" style="height:1.5em;"></div>
+
+            <!-- Result Row -->
+            <div class="slds-col slds-p-horizontal_small">
+                <div class="slds-form-element slds-hint-parent slds-form-element_readonly is-stacked" style="margin-top:0.5rem">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-size_11-of-12">
+                            <template if:true={showResultEmpty}>
+                                <span class="slds-form-element__label">{labels.result}</span>
+                                <div class="slds-form-element__static"></div>
+                            </template>
+                            <template if:true={showResultYes}>
+                                <span class="slds-form-element__label">{labels.result}</span>
+                                <div class="slds-form-element__static">{yesFlag}</div>
+                            </template>
+                            <template if:true={showResultNo}>
+                                <span class="slds-form-element__label">{labels.result}</span>
+                                <div class="slds-form-element__static">{noFlag}</div>
+                            </template>
+                            <template if:true={showResultNA}>
+                                <span class="slds-form-element__label">{labels.result}</span>
+                                <div class="slds-form-element__static">{naFlag}</div>
+                            </template>
+                        </div>
+                        <template if:true={canEdit}>
+                            <div class="slds-size_1-of-12 slds-text-align_right slds-p-around_xx-small" style="padding-top:0.9rem">
+                                <lightning-button-icon icon-name="utility:edit" size="medium" variant="bare" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments Row -->
+            <div class="slds-col slds-p-horizontal_small">
+                <div class="slds-form-element slds-hint-parent slds-form-element_readonly is-stacked" style="margin-top:0.5rem">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-size_11-of-12">
+                            <span class="slds-form-element__label">{labels.comments}</span>
+                            <div class="slds-form-element__static">{comments}</div>
+                        </div>
+                        <template if:true={canEdit}>
+                            <div class="slds-size_1-of-12 slds-text-align_right slds-p-around_xx-small" style="padding-top:0.9rem">
+                                <lightning-button-icon icon-name="utility:edit" size="medium" variant="bare" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Committee Label Row -->
+            <div class="slds-col slds-p-horizontal_small">
+                <div class="slds-form-element slds-hint-parent slds-form-element_readonly is-stacked" style="margin-top:0.5rem">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-size_11-of-12">
+                            <span class="slds-form-element__label">Approver Label</span>
+                            <div class="slds-form-element__static">{committeeLabel}</div>
+                        </div>
+                        <template if:true={canEdit}>
+                            <div class="slds-size_1-of-12 slds-text-align_right slds-p-around_xx-small" style="padding-top:0.9rem">
+                                <lightning-button-icon icon-name="utility:edit" size="medium" variant="bare" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Do Not Ask Checkbox -->
+            <div class="slds-col slds-p-horizontal_small" style="margin-top:1rem">
+                <div class="slds-form-element slds-hint-parent slds-form-element_readonly is-stacked">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-size_11-of-12">
+                            <lightning-input type="checkbox" label={labels.notAsk} checked={doNotAskCheck} disabled></lightning-input>
+                        </div>
+                        <template if:true={canEdit}>
+                            <div class="slds-size_1-of-12 slds-text-align_right slds-p-around_xx-small" style="padding-top:0.9rem">
+                                <lightning-button-icon icon-name="utility:edit" size="medium" variant="bare" onclick={handleEdit}></lightning-button-icon>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slds-p-around_x-small" style="height:2em;"></div>
+
+            <!-- View State Buttons -->
+            <template if:true={canEdit}>
+                <div class="slds-grid slds-wrap">
+                    <!-- Send Next Approver -->
+                    <template if:true={showSendNextApprover}>
+                        <div class="slds-size_6-of-12 slds-text-align_right slds-p-right_xx-small slds-m-top_x-small">
+                            <lightning-button label={labels.sendNextApprover} variant="neutral" disabled={isButtonDisabled} onclick={handleSendNextApprover}></lightning-button>
+                        </div>
+                    </template>
+                    <!-- Return to Requester -->
+                    <template if:true={showReturnToRequester}>
+                        <div class="slds-size_6-of-12 slds-text-align_left slds-p-left_xx-small slds-m-top_x-small">
+                            <lightning-button label={labels.returnRequester} variant="brand" disabled={isFinishStepDisabled} onclick={handleReturnToProposalCard}></lightning-button>
+                        </div>
+                    </template>
+                    <!-- Close Task -->
+                    <div class="slds-size_12-of-12 slds-text-align_center slds-m-top_x-small">
+                        <lightning-button label={labels.closeTask} variant="brand" disabled={isButtonDisabled} onclick={handleCloseTask}></lightning-button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </template>
+
+    <!-- STATE: Edit State -->
+    <template if:true={isEditState}>
+        <div class="slds-card slds-p-around_x-small slds-m-bottom_x-small">
+            <!-- Task Name -->
+            <div class="slds-text-align_left slds-m-left_x-small slds-m-top_xx-small slds-page-header__title slds-m-right--small slds-line-clamp clip-text">
+                {taskName}
+            </div>
+
+            <div class="slds-col slds-p-horizontal_small" style="height:1.5em;"></div>
+
+            <!-- Yes / No / NA Buttons -->
+            <div class="slds-grid slds-wrap slds-gutters_xx-small slds-p-horizontal_small">
+                <div class={yesBtnWrapperClass}>
+                    <lightning-button label={yesFlag} variant="neutral" onclick={handleYes}></lightning-button>
+                </div>
+                <div class={noBtnWrapperClass}>
+                    <lightning-button label={noFlag} variant="neutral" onclick={handleNo}></lightning-button>
+                </div>
+                <div class={naBtnWrapperClass}>
+                    <lightning-button label={naFlag} variant="neutral" onclick={handleNA}></lightning-button>
+                </div>
+            </div>
+
+            <!-- Comments (reusing dmt_textfield) -->
+            <c-dmt_textfield
+                label={labels.comments}
+                record-id={data.taskId}
+                field-name="Description"
+                field-type="textarea"
+                max-length="1000"
+                object-api-name="Task"
+                ontextfieldchange={handleTextfieldChange}>
+            </c-dmt_textfield>
+
+            <!-- Approver Label Input -->
+            <div class="slds-p-around_xxx-small">
+                <lightning-input label="Approver Label" value={committeeLabel} onchange={handleCommitteeLabelChange}></lightning-input>
+            </div>
+
+            <!-- Do Not Ask Checkbox (editable) -->
+            <div class="slds-p-right_x-small slds-m-bottom_xx-small">
+                <lightning-input type="checkbox" label={labels.notAsk} checked={doNotAskCheck} onchange={handleDoNotAskChange}></lightning-input>
+            </div>
+
+            <!-- Page-Level Docked Footer -->
+            <div class="page-docked-footer">
+                <div class="footer-content">
+                    <lightning-button label="Cancel" variant="neutral" onclick={handleCancel}></lightning-button>
+                    <lightning-button label="Save" variant="brand" onclick={handleSave}></lightning-button>
+                    <lightning-button label="Save & Close Task" variant="brand" disabled={isButtonDisabled} onclick={handleSaveAndClose}></lightning-button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Close Task Modal (reusing dmt_modal_close_task) -->
+    <template if:true={showModal}>
+        <c-dmt_modal_close_task
+            record-id={recordId}
+            step-result={stepResult}
+            dmt-finish-case-config={normalizedFinishCaseConfig}
+            dmt-review-operation-config={normalizedReviewOperationConfig}
+            dmt-send-to-approver-config={normalizedSendToApproverConfig}
+            finish-step={closeTaskModalParams.finishStep}
+            button-disabled={closeTaskModalParams.buttonDisabled}
+            return-to-proposal-disabled={closeTaskModalParams.returnToProposalDisabled}
+            error-message={closeTaskModalParams.errorMessage}
+            onclosemodal={handleCloseModal}
+            onclose={handleCloseModal}
+            oncancel={handleCloseModal}>
+        </c-dmt_modal_close_task>
+    </template>
+
+    <!-- Close Task Child Component (delegated for Toggle 3: Close task and send to approver) -->
+    <!-- Rendered as modal in center of screen with backdrop -->
+    <template if:true={showCloseTaskChild}>
+        <div class="slds-modal slds-fade-in-open dmt-close-task-shell" role="dialog" aria-labelledby="modal-heading-01" aria-modal="true">
+            <div class="slds-modal__container">
+                <c-dmt_close_task 
+                    case-id={recordId}
+                    onclosemodal={handleCloseTaskCancel}
+                    onclosetasksuccess={handleCloseTaskSuccess}>
+                </c-dmt_close_task>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

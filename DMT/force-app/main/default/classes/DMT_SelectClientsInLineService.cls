@@ -40,7 +40,7 @@ public with sharing class DMT_SelectClientsInLineService {
                     DMT_Line__c line = [
                         SELECT Id, Client__c, Line_Id__c, Status__c, Closed__c, CurrencyIsoCode, Booking_Geography__c, Client_Type__c,
                           DMT_line_template_type__c,
-                           Custom_Association__c, Custom_Association__r.g_customer_id__c
+                           Custom_Association__c, Custom_Association__r.g_customer_id__c, Golden_Code__c
                     FROM DMT_Line__c
                     WHERE Id = :recordId
                     LIMIT 1
@@ -66,6 +66,13 @@ public with sharing class DMT_SelectClientsInLineService {
                 response.put('lineclienttype', line.Client_Type__c);
                 response.put('lineTemplateType', line.DMT_line_template_type__c);
                 response.put('canEditSelection', canEditLineSelection(line));
+                response.put('hasCustomAssociation', line.Custom_Association__c != null);
+                response.put('goldenCode', line.Golden_Code__c);
+
+                if (String.valueOf(line.Client_Type__c).toLowerCase() == 'customer') {
+                    effectiveClientPosition = 'Y/N';
+                    response.put('clientPosition', effectiveClientPosition);
+                }
 
                 if (line.Custom_Association__c != null) {
                     List<Custom_Association_Client__c> rows = [
@@ -245,6 +252,396 @@ public with sharing class DMT_SelectClientsInLineService {
         return result;
     }
 
+
+    @AuraEnabled
+    public static Map<String, Object> saveGoldenSelection(Id lineId, String goldenCode) {
+        Map<String, Object> result = new Map<String, Object>();
+        logStep('saveGoldenSelection.start', new Map<String, Object>{
+            'lineId' => lineId,
+            'goldenCode' => goldenCode
+        });
+        try {
+            if (!canEditLineSelection(lineId)) {
+                result.put('error', 'This line cannot be edited with your current permissions and line status.');
+                result.put('success', false);
+                return result;
+            }
+
+            update new DMT_Line__c(
+                Id = lineId,
+                Golden_Code__c = goldenCode
+            );
+
+            result.put('error', 'OK');
+            result.put('success', true);
+            logStep('saveGoldenSelection.end', result);
+        } catch (Exception e) {
+            result.put('error', e.getMessage());
+            result.put('success', false);
+            logStep('saveGoldenSelection.error', new Map<String, Object>{
+                'message' => e.getMessage(),
+                'stack' => e.getStackTraceString()
+            });
+        }
+        return result;
+    }
+
+    @AuraEnabled
+    public static Map<String, Object> clearGoldenSelection(Id lineId) {
+        Map<String, Object> result = new Map<String, Object>();
+        logStep('clearGoldenSelection.start', new Map<String, Object>{ 'lineId' => lineId });
+        try {
+            if (!canEditLineSelection(lineId)) {
+                result.put('error', 'This line cannot be edited with your current permissions and line status.');
+                result.put('success', false);
+                return result;
+            }
+
+            update new DMT_Line__c(
+                Id = lineId,
+                Golden_Code__c = null
+            );
+
+            result.put('error', 'OK');
+            result.put('success', true);
+            logStep('clearGoldenSelection.end', result);
+        } catch (Exception e) {
+            result.put('error', e.getMessage());
+            result.put('success', false);
+            logStep('clearGoldenSelection.error', new Map<String, Object>{
+                'message' => e.getMessage(),
+                'stack' => e.getStackTraceString()
+            });
+        }
+        return result;
+    }
+
+    @AuraEnabled
+    public static Map<String, Object> deleteCustomAssociation(Id lineId) {
+        Map<String, Object> result = new Map<String, Object>();
+        logStep('deleteCustomAssociation.start', new Map<String, Object>{ 'lineId' => lineId });
+        try {
+            if (!canEditLineSelection(lineId)) {
+                result.put('error', 'This line cannot be edited with your current permissions and line status.');
+                result.put('success', false);
+                return result;
+            }
+
+            DMT_Line__c line = [
+                SELECT Id, Custom_Association__c
+                FROM DMT_Line__c
+                WHERE Id = :lineId
+                LIMIT 1
+            ];
+
+            if (line.Custom_Association__c != null) {
+                delete [
+                    SELECT Id
+                    FROM Custom_Association__c
+                    WHERE Id = :line.Custom_Association__c
+                ];
+            }
+
+            result.put('error', 'OK');
+            result.put('success', true);
+            logStep('deleteCustomAssociation.end', result);
+        } catch (Exception e) {
+            result.put('error', e.getMessage());
+            result.put('success', false);
+            logStep('deleteCustomAssociation.error', new Map<String, Object>{
+                'message' => e.getMessage(),
+                'stack' => e.getStackTraceString()
+            });
+        }
+        return result;
+    }
+
+
+    @AuraEnabled
+    public static Map<String, Object> loadProductDatasource(Id lineId, String priorityId, String clientPosition) {
+        Map<String, Object> response = new Map<String, Object>();
+        List<Map<String, Object>> lineAssociationRows = new List<Map<String, Object>>();
+        List<Map<String, Object>> selectedRows = new List<Map<String, Object>>();
+
+        logStep('loadProductDatasource.start', new Map<String, Object>{
+            'lineId' => lineId,
+            'priorityId' => priorityId,
+            'clientPosition' => clientPosition
+        });
+
+        if (lineId == null) {
+            logStep('loadProductDatasource.lineIdNull', null);
+            return response;
+        }
+
+        try {
+            DMT_Line__c line = [
+                SELECT Id, Client__c, Line_Id__c, Status__c, Closed__c, CurrencyIsoCode,
+                       Booking_Geography__c, Client_Type__c, DMT_line_template_type__c,
+                       Custom_Association__c, Custom_Association__r.g_customer_id__c
+                FROM DMT_Line__c
+                WHERE Id = :lineId
+                LIMIT 1
+            ];
+
+            String effectiveClientPosition = String.isBlank(clientPosition) ? 'Y/N' : clientPosition;
+            String effectivePriority = String.isBlank(priorityId) ? '' : priorityId;
+            String productAssociationExternalId = buildProductAssociationExternalId(line.Line_Id__c, effectivePriority);
+            String mainHolder = line.Custom_Association__r == null ? null : line.Custom_Association__r.g_customer_id__c;
+
+            response.put('lineId', line.Id);
+            response.put('externallineId', line.Line_Id__c);
+            response.put('accountId', line.Client__c);
+            response.put('groupSfId', line.Client__c);
+            response.put('lineStatus', line.Status__c);
+            response.put('lineClosed', line.Closed__c);
+            response.put('currency', line.CurrencyIsoCode);
+            response.put('booking', line.Booking_Geography__c);
+            response.put('lineclienttype', line.Client_Type__c);
+            response.put('lineTemplateType', line.DMT_line_template_type__c);
+            response.put('clientPosition', effectiveClientPosition);
+            response.put('productAssociationExternalId', productAssociationExternalId);
+            response.put('returnedDate', DMT_HPG_Utils.lastDate());
+            response.put('canEditSelection', canEditLineSelection(line));
+
+            if (line.Client__c != null) {
+                Account contextAccount = [
+                    SELECT Id, DES_Group_Code__c
+                    FROM Account
+                    WHERE Id = :line.Client__c
+                    LIMIT 1
+                ];
+                response.put('groupId', contextAccount.DES_Group_Code__c);
+            }
+
+            Set<String> lineCustomerIds = new Set<String>();
+            if (line.Custom_Association__c != null) {
+                for (Custom_Association_Client__c row : [
+                    SELECT Id, Name, Alpha_Code_Client__c, g_entific_Id__c, DMT_Term__c,
+                           DMT_Amount__c, DMT_FDAmount__c, DMT_DVPAmount__c,
+                           DMT_ClientRating__c, DMT_ClientStarCode__c, DMT_ClientContracts__c,
+                           DMT_Client_Rating_Date__c, CurrencyIsoCode
+                    FROM Custom_Association_Client__c
+                    WHERE Custom_Association__c = :line.Custom_Association__c
+                    ORDER BY Name ASC
+                ]) {
+                    Map<String, Object> mapped = mapAssociationClient(row, mainHolder);
+                    lineAssociationRows.add(mapped);
+                    String customerId = stringValue(mapped.get('customerId'));
+                    if (String.isNotBlank(customerId)) {
+                        lineCustomerIds.add(customerId);
+                    }
+                }
+            }
+
+            List<Map<String, Object>> serviceRows = cloneRowList(lineAssociationRows);
+            if (line.Client__c != null && !lineCustomerIds.isEmpty()) {
+                Map<String, Object> pageResult = getAvailableClientsPageInternal(
+                    line.Client__c,
+                    effectiveClientPosition,
+                    DEFAULT_PAGE,
+                    '5000'
+                );
+                Map<String, Map<String, Object>> sourceByCustomer = new Map<String, Map<String, Object>>();
+                for (Map<String, Object> sourceRow : lineAssociationRows) {
+                    sourceByCustomer.put(stringValue(sourceRow.get('customerId')), sourceRow);
+                }
+                Map<String, Map<String, Object>> enrichedByCustomer = new Map<String, Map<String, Object>>();
+                for (Map<String, Object> serviceRow : toMapList(pageResult.get('availableClients'))) {
+                    String customerId = stringValue(serviceRow.get('customerId'));
+                    if (lineCustomerIds.contains(customerId)) {
+                        Map<String, Object> merged = new Map<String, Object>();
+                        merged.putAll(sourceByCustomer.get(customerId));
+                        merged.putAll(serviceRow);
+                        merged.put('mainHolder', mainHolder);
+                        enrichedByCustomer.put(customerId, merged);
+                    }
+                }
+
+                serviceRows = new List<Map<String, Object>>();
+                for (Map<String, Object> lineRow : lineAssociationRows) {
+                    String customerId = stringValue(lineRow.get('customerId'));
+                    serviceRows.add(enrichedByCustomer.containsKey(customerId) ? enrichedByCustomer.get(customerId) : lineRow);
+                }
+            }
+
+            if (String.isNotBlank(productAssociationExternalId)) {
+                List<Custom_Association__c> productAssociations = [
+                    SELECT Id, g_customer_id__c
+                    FROM Custom_Association__c
+                    WHERE gf_customer_group_id__c = :productAssociationExternalId
+                    LIMIT 1
+                ];
+
+                if (!productAssociations.isEmpty()) {
+                    for (Custom_Association_Client__c row : [
+                        SELECT Id, Name, Alpha_Code_Client__c, g_entific_Id__c, DMT_Term__c,
+                               DMT_Amount__c, DMT_FDAmount__c, DMT_DVPAmount__c,
+                               DMT_ClientRating__c, DMT_ClientStarCode__c, DMT_ClientContracts__c,
+                               DMT_Client_Rating_Date__c, CurrencyIsoCode
+                        FROM Custom_Association_Client__c
+                        WHERE Custom_Association__c = :productAssociations[0].Id
+                        ORDER BY Name ASC
+                    ]) {
+                        selectedRows.add(mapAssociationClient(row, productAssociations[0].g_customer_id__c));
+                    }
+                }
+            }
+
+            response.put('availableClients', serviceRows);
+            response.put('priorselectedRows', selectedRows);
+            response.put('selectedRows', cloneRowList(selectedRows));
+
+            logStep('loadProductDatasource.end', new Map<String, Object>{
+                'availableClientsSize' => serviceRows.size(),
+                'selectedRowsSize' => selectedRows.size(),
+                'productAssociationExternalId' => productAssociationExternalId
+            });
+
+            return response;
+        } catch (Exception e) {
+            logStep('loadProductDatasource.error', new Map<String, Object>{
+                'message' => e.getMessage(),
+                'stack' => e.getStackTraceString()
+            });
+            throw e;
+        }
+    }
+
+    @AuraEnabled
+    public static Map<String, Object> saveProductSelection(
+        Id lineId,
+        String priorityId,
+        String mainHolderAlphaCode,
+        String currencyLine,
+        String groupId,
+        Id groupSfId,
+        List<Object> selectedRows
+    ) {
+        Map<String, Object> result = new Map<String, Object>();
+        logStep('saveProductSelection.start', new Map<String, Object>{
+            'lineId' => lineId,
+            'priorityId' => priorityId,
+            'mainHolderAlphaCode' => mainHolderAlphaCode,
+            'selectedRowsSize' => selectedRows == null ? 0 : selectedRows.size()
+        });
+
+        try {
+            if (!canEditLineSelection(lineId)) {
+                result.put('error', 'This line cannot be edited with your current permissions and line status.');
+                result.put('success', false);
+                return result;
+            }
+
+            DMT_Line__c line = [
+                SELECT Id, Client__c, Line_Id__c, CurrencyIsoCode, Booking_Geography__c
+                FROM DMT_Line__c
+                WHERE Id = :lineId
+                LIMIT 1
+            ];
+
+            String productAssociationExternalId = buildProductAssociationExternalId(line.Line_Id__c, priorityId);
+            if (String.isBlank(productAssociationExternalId)) {
+                throw new AuraHandledException('Product association identifier is missing.');
+            }
+
+            List<Map<String, Object>> normalizedRows = toMapList(selectedRows);
+            if (normalizedRows.isEmpty()) {
+                List<Custom_Association__c> toDelete = [
+                    SELECT Id
+                    FROM Custom_Association__c
+                    WHERE gf_customer_group_id__c = :productAssociationExternalId
+                    LIMIT 1
+                ];
+                if (!toDelete.isEmpty()) {
+                    delete toDelete;
+                }
+                result.put('success', true);
+                result.put('error', 'OK');
+                return result;
+            }
+
+            Custom_Association__c association = new Custom_Association__c();
+            association.DMT_Line__c = line.Id;
+            association.CurrencyIsoCode = String.isBlank(currencyLine) ? line.CurrencyIsoCode : currencyLine;
+            association.g_group_Id__c = groupId;
+            association.Group__c = groupSfId == null ? line.Client__c : groupSfId;
+            association.gf_customer_group_Id__c = productAssociationExternalId;
+            association.g_customer_id__c = mainHolderAlphaCode;
+            association.gf_origin_application_type__c = '04';
+            upsert association gf_customer_group_id__c;
+
+            Custom_Association__c persistedAssociation = [
+                SELECT Id
+                FROM Custom_Association__c
+                WHERE gf_customer_group_id__c = :productAssociationExternalId
+                LIMIT 1
+            ];
+
+            List<Custom_Association_Client__c> existingClients = [
+                SELECT Id
+                FROM Custom_Association_Client__c
+                WHERE Custom_Association__c = :persistedAssociation.Id
+            ];
+            if (!existingClients.isEmpty()) {
+                delete existingClients;
+            }
+
+            List<Custom_Association_Client__c> clientsToInsert = new List<Custom_Association_Client__c>();
+            for (Map<String, Object> row : normalizedRows) {
+                String customerId = stringValue(row.get('customerId'));
+                if (String.isBlank(customerId)) {
+                    continue;
+                }
+
+                Custom_Association_Client__c client = new Custom_Association_Client__c();
+                client.Custom_Association__c = persistedAssociation.Id;
+                client.Alpha_Code_Client__c = customerId;
+                client.g_customer_id__c = customerId;
+                client.gf_customer_group_Id__c = productAssociationExternalId;
+                client.gf_origin_application_type__c = '04';
+                client.Name = stringValue(row.get('customerName'));
+                client.g_entific_Id__c = String.isBlank(stringValue(row.get('countryIfoId')))
+                    ? line.Booking_Geography__c
+                    : stringValue(row.get('countryIfoId'));
+                client.DMT_ClientRating__c = stringValue(row.get('updSmsclInternalRatgType'));
+                client.DMT_ClientStarCode__c = stringValue(row.get('customerCounterpartiesCodesDesc'));
+                client.DMT_ClientContracts__c = stringValue(row.get('operationMitigantDesc'));
+                client.DMT_Term__c = stringValue(row.get('term'));
+                String dateStr = stringValue(row.get('currentRatingToolDate'));
+                client.DMT_Client_Rating_Date__c = String.isNotBlank(dateStr) ? Date.valueOf(dateStr.substring(0, 10)) : null;
+                clientsToInsert.add(client);
+            }
+
+            if (!clientsToInsert.isEmpty()) {
+                insert clientsToInsert;
+            }
+
+            result.put('success', true);
+            result.put('error', 'OK');
+            logStep('saveProductSelection.end', new Map<String, Object>{
+                'insertedClients' => clientsToInsert.size(),
+                'productAssociationExternalId' => productAssociationExternalId
+            });
+        } catch (Exception e) {
+            result.put('success', false);
+            result.put('error', e.getMessage());
+            logStep('saveProductSelection.error', new Map<String, Object>{
+                'message' => e.getMessage(),
+                'stack' => e.getStackTraceString()
+            });
+        }
+
+        return result;
+    }
+
+    private static String buildProductAssociationExternalId(String externalLineId, String priorityId) {
+        if (String.isBlank(externalLineId) || String.isBlank(priorityId)) {
+            return null;
+        }
+        return externalLineId + '_' + priorityId;
+    }
+
     private static Boolean canEditLineSelection(Id lineId) {
         if (lineId == null) {
             return false;
@@ -363,7 +760,6 @@ public with sharing class DMT_SelectClientsInLineService {
         Map<String, Object> responseMap = toMap(rawResponse);
         List<Map<String, Object>> serviceRows = toMapList(responseMap.get('data'));
         Map<String, Object> pagination = toMap(responseMap.get('pagination'));
-
         logStep('getAvailableClients.fetchInitialData', new Map<String, Object>{
             'responseKeys' => responseMap == null ? null : responseMap.keySet(),
             'success' => responseMap == null ? null : responseMap.get('success'),
@@ -384,6 +780,9 @@ public with sharing class DMT_SelectClientsInLineService {
             mapped.put('customerCounterpartiesCodesDesc', row.get('customerCounterpartiesCodesDesc'));
             mapped.put('operationMitigantDesc', row.get('operationMitigantDesc'));
             mapped.put('currentRatingToolDate', row.get('currentRatingToolDate'));
+            mapped.put('totalRatingScoreNumber', row.get('totalRatingScoreNumber'));
+            mapped.put('leveragedLendingIndType', row.get('leveragedLendingIndType'));
+            mapped.put('assetAllocationSectorType', row.get('assetAllocationSectorType'));
             mapped.put('ratingValidityStartDate', row.get('ratingValidityStartDate'));
             mapped.put('scaleLastUpdDate', row.get('scaleLastUpdDate'));
             mapped.put('ffssRegulatoryRatingDate', row.get('ffssRegulatoryRatingDate'));
@@ -392,6 +791,7 @@ public with sharing class DMT_SelectClientsInLineService {
             mapped.put('amount', null);
             mapped.put('amountFD', null);
             mapped.put('amountDVP', null);
+            mapped.put('goldenCustomerId', row.get('goldenCustomerId')); 
             availableClients.add(mapped);
         }
 

@@ -1,13 +1,13 @@
 import { LightningElement, track } from 'lwc';
 import refreshAllFlexcards from '@salesforce/apex/DES_OmnistudioAdmin_Controller.refreshAllFlexcardsLatestVersion';
+import refreshRecentlyModifiedFlexcards from '@salesforce/apex/DES_OmnistudioAdmin_Controller.refreshRecentlyModifiedFlexcards';
 import returnAllIntegrationProcedureWithVersions from '@salesforce/apex/DES_OmnistudioAdmin_Controller.returnAllIntegrationProcedureWithVersions';
 import returnAllFlexcardsWithVersions from '@salesforce/apex/DES_OmnistudioAdmin_Controller.returnAllFlexcardsWithVersions';
 import refreshSpecificIntegrationProcedure from '@salesforce/apex/DES_OmnistudioAdmin_Controller.refreshSpecificIntegrationProcedure';
 import refreshSpecificFlexcard from '@salesforce/apex/DES_OmnistudioAdmin_Controller.refreshSpecificFlexcard';
-import { NavigationMixin } from 'lightning/navigation';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-export default class Des_omnistudioadmin extends LightningElement {
+export default class DesOmnistudioAdmin extends LightningElement {
 
     @track isLoading = false;
     @track isModalOpen = false;
@@ -35,6 +35,9 @@ export default class Des_omnistudioadmin extends LightningElement {
     @track selectedFlexcardValue;
     @track isVersionNumFlexcardDisabled = true;
     @track selectedFlexcardId;
+    @track refreshMode = 'all';
+    @track recentMinutesWindow = 1440;
+    @track showLegacyActions = false;
 
 
     compareVersionNumbers(a, b) {
@@ -47,9 +50,25 @@ export default class Des_omnistudioadmin extends LightningElement {
     }
 
     handleRefresh() {
+        this.refreshMode = 'all';
         this.isCheckboxChecked = false;
         this.isConfirmButtonDisabled = true;
         this.isModalOpen = true;
+    }
+
+    handleRefreshRecent() {
+        this.refreshMode = 'recent';
+        this.isCheckboxChecked = false;
+        this.isConfirmButtonDisabled = true;
+        this.isModalOpen = true;
+    }
+
+    handleToggleLegacyActions() {
+        this.showLegacyActions = !this.showLegacyActions;
+    }
+
+    get legacyToggleLabel() {
+        return this.showLegacyActions ? 'Ocultar acciones legacy' : 'Mostrar acciones legacy';
     }
 
     handleCancel() {
@@ -79,8 +98,22 @@ export default class Des_omnistudioadmin extends LightningElement {
 
         if (isChrome) {
             console.log('Navegador detectado: Chrome. Navegando...');
-            refreshAllFlexcards({})
+            const refreshPromise = this.refreshMode === 'recent'
+                ? refreshRecentlyModifiedFlexcards({ minutesWindow: this.recentMinutesWindow })
+                : refreshAllFlexcards({});
+            refreshPromise
                 .then(result => {
+                    if (!result) {
+                        this.dispatchEvent(new ShowToastEvent({
+                            title: 'Sin cambios recientes',
+                            message: 'No se encontraron flexcards modificadas en las últimas 24 horas.',
+                            variant: 'info',
+                            mode: 'dismissible'
+                        }));
+                        this.isLoading = false;
+                        return;
+                    }
+
                     console.log('URL recibida: ' + result);
                     const url = 'microsoft-edge:' + result;
                     window.open(url, '_blank');
@@ -88,6 +121,12 @@ export default class Des_omnistudioadmin extends LightningElement {
                 })
                 .catch(error => {
                     console.error('Error returning url: ', error);
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Error al refrescar',
+                        message: error?.body?.message || error?.message || 'No se pudo completar el refresco.',
+                        variant: 'error',
+                        mode: 'dismissible'
+                    }));
                     this.isLoading = false; // Asegurarse de quitar el spinner en caso de error
                 });
         } else {
@@ -101,6 +140,33 @@ export default class Des_omnistudioadmin extends LightningElement {
             this.dispatchEvent(evt);
             this.isLoading = false;
         }
+    }
+
+    get modalTitle() {
+        return this.refreshMode === 'recent'
+            ? 'Confirmación de refresco reciente'
+            : 'Confirmación de Refresco';
+    }
+
+    get modalDescription() {
+        return this.refreshMode === 'recent'
+            ? 'Solo se refrescarán las flexcards modificadas en las últimas 24 horas desde este momento.'
+            : 'Se refrescarán todas las flexcards activas a su última versión disponible.';
+    }
+
+    get modalConsiderations() {
+        if (this.refreshMode === 'recent') {
+            return [
+                { id: 'recent-1', text: 'La búsqueda se hace usando la hora actual al pulsar el botón.' },
+                { id: 'recent-2', text: 'Se incluyen flexcards con LastModifiedDate dentro de las últimas 24 horas.' },
+                { id: 'recent-3', text: 'Si no hay cambios en ese rango, no se lanza compilación.' }
+            ];
+        }
+
+        return [
+            { id: 'all-1', text: 'Si hay un despliegue, validación o ejecución de tests en curso, no se ha de lanzar la compilación de flexcards.' },
+            { id: 'all-2', text: 'Si ha fallado el script previamente, se ha de esperar 10 minutos para volver a lanzarlo.' }
+        ];
     }
 
     /*handleRefresh() {
@@ -158,7 +224,7 @@ export default class Des_omnistudioadmin extends LightningElement {
                     }
                     this.ipsWithVersions[result[i].omniName].versions.push(obj);
                 }
-                this.optionsIPs = JSON.parse(JSON.stringify(auxArray))
+                this.optionsIPs = structuredClone(auxArray)
                 this.retrieveAllFlexcards();
             });
     }
@@ -166,11 +232,12 @@ export default class Des_omnistudioadmin extends LightningElement {
 
     handleChangeIP(event) {
         this.isLoading = true;
-        if (event.detail.data.value != null && event.detail.data.value != undefined && event.detail.data.value != '') {
-            this.optionsVersionNumIP = JSON.parse(JSON.stringify(this.ipsWithVersions[event.detail.data.value].versions));
+        const selectedValue = event?.detail?.data?.value;
+        if (selectedValue != null && selectedValue != undefined && selectedValue != '') {
+            this.optionsVersionNumIP = structuredClone(this.ipsWithVersions[selectedValue].versions);
             this.optionsVersionNumIP.sort((a, b) => b.label - a.label);
             this.isVersionNumIPDisabled = false;
-            this.selectedIPValue = event.detail.data.value;
+            this.selectedIPValue = selectedValue;
         } else {
             this.optionsVersionNumIP = [];
             this.selectedIPId = null;
@@ -183,8 +250,9 @@ export default class Des_omnistudioadmin extends LightningElement {
 
     handleChangeVersionNumIP(event) {
         this.isLoading = true;
-        if (event.detail.data.value != null && event.detail.data.value != undefined && event.detail.data.value != '') {
-            this.selectedIPId = event.detail.data.value;
+        const selectedValue = event?.detail?.data?.value;
+        if (selectedValue != null && selectedValue != undefined && selectedValue != '') {
+            this.selectedIPId = selectedValue;
             this.isButtonIPDisabled = false;
         } else {
             this.selectedIPId = null;
@@ -230,7 +298,7 @@ export default class Des_omnistudioadmin extends LightningElement {
                     }
                     this.flexcardsWithVersions[result[i].omniName].versions.push(obj);
                 }
-                this.optionsFlexcards = JSON.parse(JSON.stringify(auxArray))
+                this.optionsFlexcards = structuredClone(auxArray)
                 this.isLoading = false;
             });
     }
@@ -238,11 +306,12 @@ export default class Des_omnistudioadmin extends LightningElement {
 
     handleChangeFlexcard(event) {
         this.isLoading = true;
-        if (event && event.detail && event.detail.data && event.detail.data.value != null && event.detail.data.value != undefined && event.detail.data.value != '') {
-            this.optionsVersionNumFlexcards = JSON.parse(JSON.stringify(this.flexcardsWithVersions[event.detail.data.value].versions));
+        const selectedValue = event?.detail?.data?.value;
+        if (selectedValue != null && selectedValue != undefined && selectedValue != '') {
+            this.optionsVersionNumFlexcards = structuredClone(this.flexcardsWithVersions[selectedValue].versions);
             this.optionsVersionNumFlexcards.sort((a, b) => b.label - a.label);
             this.isVersionNumFlexcardDisabled = false;
-            this.selectedFlexcardValue = event.detail.data.value;
+            this.selectedFlexcardValue = selectedValue;
         } else {
             this.optionsVersionNumFlexcards = [];
             this.selectedFlexcardId = null;
@@ -257,8 +326,9 @@ export default class Des_omnistudioadmin extends LightningElement {
 
     handleChangeVersionNumFlexcard(event) {
         this.isLoading = true;
-        if (event && event.detail && event.detail.data && event.detail.data.value != null && event.detail.data.value != undefined && event.detail.data.value != '') {
-            this.selectedFlexcardId = event.detail.data.value;
+        const selectedValue = event?.detail?.data?.value;
+        if (selectedValue != null && selectedValue != undefined && selectedValue != '') {
+            this.selectedFlexcardId = selectedValue;
             this.isButtonFlexcardDisabled = false;
         } else {
             this.isButtonFlexcardDisabled = true;

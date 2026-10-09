@@ -14,15 +14,20 @@
     </template>
     <template lwc:else>
         <c-dmt_highlight_panel object-api-name="DMT_Line__c" status={lineStatus} record-id={recordId} onclick={handleClickPath}></c-dmt_highlight_panel>
-        <c-dmt_custom_path_line record-id={recordId} onclick={handleClickPath}>
-
+        <c-dmt_custom_path_line record-id={recordId} onclick={handleClickPath} editingtab={editingTab}>
         </c-dmt_custom_path_line>
         <div class="slds-grid slds-wrap slds-col slds-size_1-of-1 row row-main">
         <div class="column slds-size_1-of-1 slds-medium-size_8-of-12 slds-large-size_8-of-12 region-main slds-p-top_xx-small">
                         <div class="slds-tabs_card">
         <lightning-tabset active-tab-value={selectedTab}>
         <lightning-tab label="LINE INFO" title="Line info title" value="lineinfo" onactive={handleClickTab}>
+            <!-- CIBGLOBALD-3779: OtherProducts/Sanction lines use the native dmt_lineInfo LWC; every other record type keeps the shared cfSummaryTreasury_Flexcard FlexCard. -->
+            <template lwc:if={isRiskApprovalLine}>
+            <c-dmt_line-info oneditingtab={handleEditing} record-id={recordId}></c-dmt_line-info>
+            </template>
+            <template lwc:else>
             <c-cf-summary-treasury_-flexcard oneditingtab={handleEditing} record-id={recordId} key={updateKey}></c-cf-summary-treasury_-flexcard>
+            </template>
             <c-dmt_document_manager_for_core_document record-id={recordId}></c-dmt_document_manager_for_core_document>
         </lightning-tab>
         <lightning-tab label="CLIENT" title="Client title" value="client" onactive={handleClickTab}>
@@ -36,12 +41,21 @@
         <lightning-tab label="CLIENT LEGACY (TEMP)" title="Client legacy comparison" value="clientlegacy" onactive={handleClickTab}>
             <c-cf-select-clients-in-line_43_-b-b-v-a oneditingtab={handleEditing} record-id={recordId} key={updateKey}></c-cf-select-clients-in-line_43_-b-b-v-a>
         </lightning-tab>
-        <lightning-tab label="PRODUCTS" value="products" onactive={handleClickTab}>
+        <!--<lightning-tab label="PRODUCTS OLD" value="products" onactive={handleClickTab}>
             <template lwc:if={treasuryTemplate}>
             <c-cf-risk-tables-line oneditingtab={handleEditing} record-id={recordId} key={updateKey}></c-cf-risk-tables-line>
             </template>
             <template lwc:else>
-            <c-cf-product-sanction-template oneditingtab={handleEditing} record-id={recordId} key={updateKey}></c-cf-product-sanction-template>
+            <c-dmt-product-sanction-migration oneditingtab={handsileEditing} record-id={recordId} line-status={lineStatus}></c-dmt-product-sanction-migration>
+            </template>
+
+        </lightning-tab>-->
+        <lightning-tab label="PRODUCTS" value="productsnew" onactive={handleClickTab}>
+            <template lwc:if={treasuryTemplate}>
+            <c-dmt-risk-tables-line oneditingtab={handleEditing} record-id={recordId} key={updateKey}></c-dmt-risk-tables-line>
+            </template>
+            <template lwc:else>
+            <c-dmt-product-sanction-migration oneditingtab={handleEditing} record-id={recordId} line-status={lineStatus}></c-dmt-product-sanction-migration>
             </template>
 
         </lightning-tab>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__financial_statement_id__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <deprecated>false</deprecated>
+    <description>Financial Statement retrieved by triage service</description>
+    <label>Financial Statement</label>
+    <referenceTo>arce__Financial_Statements__c</referenceTo>
+    <relationshipLabel>Account has Analysis (Financial Statement)</relationshipLabel>
+    <relationshipName>Account_has_Analysis_Triage</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

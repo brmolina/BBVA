@@ -1,0 +1,238 @@
+:host {
+    display: block;
+    position: relative;
+    z-index: 1;
+}
+
+.underlyings-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    position: relative;
+    z-index: 20;
+    isolation: isolate;
+    -webkit-overflow-scrolling: touch;
+}
+
+.underlyings-table {
+    min-width: 80rem;
+    table-layout: fixed;
+    position: relative;
+    z-index: 1;
+}
+
+.profitability-table {
+    min-width: 120rem;
+}
+
+.underlyings-table th,
+.underlyings-table td {
+    vertical-align: top;
+    overflow: hidden;
+}
+
+.underlyings-table lightning-input,
+.underlyings-table lightning-combobox {
+    width: 100%;
+}
+
+.underlyings-table c-datatable-picklist {
+    display: block;
+    width: 100%;
+}
+
+.underlyings-table lightning-combobox {
+    position: relative;
+    z-index: 60;
+    --slds-c-combobox-dropdown-z-index: 12000;
+    --slds-z-index-dropdown: 12000;
+}
+
+.underlyings-table tbody tr:focus-within {
+    position: relative;
+    z-index: 80;
+}
+
+.underlyings-table tbody td:focus-within {
+    position: relative;
+    z-index: 90;
+}
+
+.cell-text {
+    display: block;
+    max-width: 100%;
+    min-height: 2rem;
+    line-height: 1.5rem;
+    padding-top: 0.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.action-col {
+    width: 3rem;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* ── Custom overlay picklist trigger ── */
+.underlying-picklist {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background: #fff;
+    border: 1px solid #747474;
+    border-radius: 0.25rem;
+    min-height: 2rem;
+    padding: 0 0.5rem 0 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.underlying-picklist:hover {
+    border-color: #747474;
+}
+
+.required-indicator {
+    color: #c23030;
+    font-weight: bold;
+    margin-right: 0.25rem;
+}
+
+.underlying-picklist-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    color: #3e3e3c;
+    pointer-events: none;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.underlying-picklist-input::placeholder {
+    color: #9fadb1;
+}
+
+.searchable-input,
+.currency-search-input {
+    pointer-events: auto;
+    cursor: text;
+}
+
+.underlying-picklist-arrow {
+    color: #706e6b;
+    font-size: 0.6rem;
+    margin-left: 0.25rem;
+    flex-shrink: 0;
+}
+
+/* ── Dropdown items (container styled inline via JS for position:fixed) ── */
+.underlying-dropdown-list {
+    position: fixed;
+    z-index: 99999;
+    max-height: 140px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #dddbda;
+    border-radius: .25rem;
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, .16);
+    list-style: none;
+    margin: 0;
+    padding: .25rem 0;
+}
+
+.underlying-dropdown-item {
+    padding: 0.4rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    color: #3e3e3c;
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.underlying-dropdown-item:hover {
+    background: #f3f2f2;
+    color: #0070d2;
+}
+
+.profitability-table th:nth-child(1),
+.profitability-table td:nth-child(1) {
+    width: 200px;
+}
+
+.profitability-table th.col-amount-currency,
+.profitability-table td.col-amount-currency {
+    width: 240px;
+}
+
+.profitability-table td.col-upfront-amount {
+    width: 240px;
+    min-width: 240px;
+}
+
+.profitability-table th.col-upfront-unit,
+.profitability-table td.col-upfront-unit {
+    width: 140px;
+}
+
+.amount-with-currency {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.amount-with-currency-wide {
+    width: 100%;
+}
+
+.amount-with-currency lightning-input {
+    flex: 1;
+    min-width: 0;
+}
+
+.amount-with-currency-wide lightning-input {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: calc(100% - 5rem);
+}
+
+.cell-text.amount-with-currency {
+    display: flex;
+    align-items: baseline;
+}
+
+.amount-with-currency .amount-value {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.currency-suffix {
+    font-size: 0.8125rem;
+    color: inherit;
+    white-space: nowrap;
+}
+
+/* Edit mode: reserve a fixed-width column for the suffix so the input width
+   (and suffix start position) stays consistent across rows regardless of
+   label length ("Units EUR" vs "Millions COP"). */
+.amount-with-currency:not(.cell-text) .currency-suffix {
+    flex: 0 0 5rem;
+    min-width: 5rem;
+    text-align: left;
+}
+
+/* Read-only mode: keep the suffix tight against the value, no reserved gap. */
+.cell-text.amount-with-currency .currency-suffix {
+    flex: 0 0 auto;
+    text-align: left;
+}

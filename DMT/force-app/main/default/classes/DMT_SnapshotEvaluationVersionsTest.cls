@@ -1,6 +1,25 @@
 @isTest
 public class DMT_SnapshotEvaluationVersionsTest {
 
+    private class SnapshotGetErrorMock implements HttpCalloutMock {
+        public HttpResponse respond(HttpRequest req) {
+            HttpResponse res = new HttpResponse();
+            res.setStatusCode(500);
+            res.setBody('{"error":"Internal Server Error"}');
+            return res;
+        }
+    }
+
+    private class SnapshotGetEmptyVersionsMock implements HttpCalloutMock {
+        public HttpResponse respond(HttpRequest req) {
+            HttpResponse res = new HttpResponse();
+            res.setStatusCode(200);
+            res.setHeader('Content-Type', 'application/json');
+            res.setBody('{"data":{"versions":[]},"success":true}');
+            return res;
+        }
+    }
+
     private class SnapshotPostSuccessMock implements HttpCalloutMock {
         public HttpResponse respond(HttpRequest req) {
             HttpResponse res = new HttpResponse();
@@ -118,6 +137,30 @@ public class DMT_SnapshotEvaluationVersionsTest {
         Test.stopTest();
     }
 
+    // CIBGLOBALD-3731: snapshot persistence now sources wrapper.body from the 'HTML' key of the
+    // generatePdfJSON response (was 'PDF'). DMT_HPG_Utils.callService short-circuits to a canned
+    // Custom Metadata mock in test context (no real HttpRequest is constructed), so the exact bytes
+    // sent to the external service can't be intercepted here — this is a regression-safety test
+    // confirming the full processPostSnapshotEvaluationVersion -> postSnapshotEvaluationVersions flow
+    // still completes successfully now that the in-test mock fullJson carries both HTML and PDF keys.
+    @isTest
+    static void testProcessPostSnapshotEvaluationVersion_succeedsWithHtmlAndPdfKeysPresent() {
+        DMT_SnapshotEvaluationVersions.PostRequestWrapperClass mockRequest = new DMT_SnapshotEvaluationVersions.PostRequestWrapperClass();
+        mockRequest.categoryId = '12345';
+        mockRequest.opportunityId = '67890';
+        mockRequest.user = 'Test User';
+        mockRequest.versionDescription = 'Test version description';
+
+        Test.setMock(HttpCalloutMock.class, new DMT_Integration_MockGenerator());
+
+        Test.startTest();
+        String response = DMT_SnapshotEvaluationVersions.processPostSnapshotEvaluationVersion(JSON.serialize(mockRequest), null, null);
+        Test.stopTest();
+
+        Map<String, Object> parsed = (Map<String, Object>) JSON.deserializeUntyped(response);
+        Assert.isTrue((Boolean) parsed.get('success'), 'Process should succeed when the mocked fullJson includes the HTML key');
+    }
+
     @IsTest
     public static void testGetDMTUserId(){
         User testUser = [SELECT Id FROM User WHERE Email = 'useremail@test.comm' LIMIT 1];
@@ -129,10 +172,10 @@ public class DMT_SnapshotEvaluationVersionsTest {
     }
 
     @isTest
-    public static void testGeneratePdfJSON(){
+    public static void testGenerateVersionHtml(){
         DMT_Line__c line = [SELECT Id, Status__c, DMT_ApprovalDate__c, Closed__c, Booking_Geography__c FROM DMT_Line__c WHERE Status__c = 'Draft' LIMIT 1];
         Test.startTest();
-        String response = DMT_SnapshotEvaluationVersions.generatePdfJSON(line.Id, 'Line');
+        String response = DMT_SnapshotEvaluationVersions.generateVersionHtml(line.Id, 'Line');
         Assert.isNotNull(response, 'Response should not be null');
         Test.stopTest();
     }
@@ -199,6 +242,34 @@ public class DMT_SnapshotEvaluationVersionsTest {
 
         mockData.versions = new List<DMT_SnapshotEvaluationVersions.Version>{ mockVersion };
         return mockData;
+    }
+
+    @isTest
+    static void testGetSnapshotEvaluationVersions_withAlternateMock() {
+        String mockRequest = '{"key":"value"}';
+
+        Test.setMock(HttpCalloutMock.class, new SnapshotGetErrorMock());
+
+        Test.startTest();
+        String response = DMT_SnapshotEvaluationVersions.getSnapshotEvaluationVersions(mockRequest);
+        Test.stopTest();
+
+        Assert.isNotNull(response, 'Response must not be null even with an alternate mock.');
+        Assert.isTrue(response.contains('success'), 'Response must always contain success field.');
+    }
+
+    @isTest
+    static void testGetSnapshotEvaluationVersions_emptyVersionsPath() {
+        String mockRequest = '{"key":"value"}';
+
+        Test.setMock(HttpCalloutMock.class, new SnapshotGetEmptyVersionsMock());
+
+        Test.startTest();
+        String response = DMT_SnapshotEvaluationVersions.getSnapshotEvaluationVersions(mockRequest);
+        Test.stopTest();
+
+        Assert.isNotNull(response, 'Empty versions response must not be null.');
+        Assert.isTrue(response.contains('success'), 'Response must contain success field.');
     }
 
     @isTest

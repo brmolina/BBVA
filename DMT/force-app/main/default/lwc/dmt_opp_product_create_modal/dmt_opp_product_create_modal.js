@@ -25,15 +25,23 @@ export default class dmt_opp_product_create_modal extends LightningModal {
     }
 
     handleProductsToSend(event) {
-        this.productsToSend = event.detail.selectedCodesId || [];
+        const { data = {}, selectedCodesId = [] } = event.detail || {};
+
+        this.productsToSend = selectedCodesId.map(productId => ({
+            productId,
+            DMT_Commercial_Product__c: data.DMT_Commercial_Product__c || null,
+            DMT_Global_Product__c: data.DMT_Global_Product__c || null
+        }));
     }
 
     async handleSave() {
         this.isSaving = true;
+        console.log('handleSave: productsToSend', this.productsToSend);
         try {
             const result = await createProductsOpportunity({
                 products     : this.productsToSend,
-                opportunityId: this.recordId
+                opportunityId: this.recordId,
+                contextCode  : this.contextCode
             });
             if (result && result.created) {
                 this._toast('Products Created', 'Products were added successfully.', 'success');

@@ -1,4 +1,4 @@
-public with sharing class DMT_AsyncBatchJob implements Database.Batchable<DMT_AsyncPayload>, Database.AllowsCallouts, Database.Stateful {
+public without sharing class DMT_AsyncBatchJob implements Database.Batchable<DMT_AsyncPayload>, Database.AllowsCallouts, Database.Stateful {
     private List<DMT_AsyncPayload> payloads;
     private List<DMT_LogExceptionPayload> errorsCaughtInBatch = new List<DMT_LogExceptionPayload>();
 

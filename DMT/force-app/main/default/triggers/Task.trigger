@@ -36,12 +36,18 @@ trigger Task on Task (before insert, after insert, after delete, after update, b
 
     if (Trigger.isInsert && Trigger.isAfter)
     {
-        DTM_Task_Helper.processTask(Trigger.new, 'CREATE');
+        DTM_Task_Helper.processTask(Trigger.new, null, 'CREATE');
     }
 
     if (Trigger.isUpdate && Trigger.isAfter)
     {
-        DTM_Task_Helper.processTask(Trigger.new, 'MODIFY');
+        DTM_Task_Helper.processTask(Trigger.new, Trigger.oldMap, 'MODIFY');
+        if (byPass.CIB_skip_trigger__c) {
+            List<Task> dmtTasks = DES_RecordType_Utils.filter((List<SObject>) Trigger.new, 'Task', 'DMT_Step_Approval');
+            if (!dmtTasks.isEmpty()) {
+                ActivitiesUtils.updateLineFromTask(dmtTasks);
+            }
+        }
     }
     
 }

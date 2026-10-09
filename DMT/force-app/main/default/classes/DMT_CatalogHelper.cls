@@ -6,6 +6,13 @@ public with sharing class DMT_CatalogHelper {
 
     // Field and sort configuration for each taxonomy catalog
     private static final Map<String, Map<String, String>> CATALOG_FIELD_MAPPING = new Map<String, Map<String, String>>{
+        'A521' => new Map<String, String>{
+            'labelField'   => 'DMT_Name_EN__c',
+            'valueField'   => 'DMT_Value__c',
+            'codeField'    => 'DMT_Value__c',
+            'orderBy'      => 'DMT_Name_EN__c',
+            'orderByType'  => 'ASC'
+        },
         'C264' => new Map<String, String>{
             'labelField'   => 'DMT_Value__c',
             'valueField'   => 'DMT_Value__c',
@@ -78,6 +85,18 @@ public with sharing class DMT_CatalogHelper {
             'orderByType'  => 'ASC'
         },
         'C039' => new Map<String, String>{
+            'labelField'   => 'DMT_Name_EN__c',
+            'valueField'   => 'DMT_Value__c',
+            'orderBy'      => 'DMT_Name_EN__c',
+            'orderByType'  => 'ASC'
+        },
+        'CD07' => new Map<String, String>{
+            'labelField'   => 'DMT_Name_EN__c',
+            'valueField'   => 'DMT_Value__c',
+            'orderBy'      => 'DMT_Name_EN__c',
+            'orderByType'  => 'ASC'
+        },
+        'H006' => new Map<String, String>{
             'labelField'   => 'DMT_Name_EN__c',
             'valueField'   => 'DMT_Value__c',
             'orderBy'      => 'DMT_Name_EN__c',
@@ -160,6 +179,7 @@ public with sharing class DMT_CatalogHelper {
         Map<String, String> fieldConfig = CATALOG_FIELD_MAPPING.get(catalogCode);
         String labelFieldName = fieldConfig.get('labelField');
         String valueFieldName = fieldConfig.get('valueField');
+        String codeFieldName  = fieldConfig.get('codeField');
         String orderByField   = fieldConfig.get('orderBy');
         String orderByType    = fieldConfig.get('orderByType');
         String customType     = fieldConfig.get('customType');
@@ -172,9 +192,16 @@ public with sharing class DMT_CatalogHelper {
 
         List<Map<String, String>> values = new List<Map<String, String>>();
         for (DMT_Taxonomy_Values__c rec : records) {
+            String rawName = getFieldValue(rec, labelFieldName);
+            String displayLabel = rawName;
+            if (String.isNotBlank(codeFieldName)) {
+                String code = getFieldValue(rec, codeFieldName);
+                displayLabel = String.isNotBlank(code) ? code + ' / ' + rawName : rawName;
+            }
             values.add(new Map<String, String>{
-                'label' => getFieldValue(rec, labelFieldName),
-                'value' => getFieldValue(rec, valueFieldName)
+                'label' => displayLabel,
+                'value' => getFieldValue(rec, valueFieldName),
+                'name'  => rawName
             });
         }
         return values;

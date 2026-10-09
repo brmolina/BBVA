@@ -2,22 +2,6 @@
     <lightning-card>
         <div class="panel-shell">
 
-            <!-- ── Global loading overlay ── -->
-            <template lwc:if={showGlobalLoadingOverlay}>
-                <div class="loading-global-overlay" role="status" aria-live="polite">
-                    <div class="loading-box">
-                        <div class="spinner-wrap" aria-hidden="true">
-                            <div class="slds-spinner slds-spinner_medium slds-spinner_brand" role="status">
-                                <span class="slds-assistive-text">Loading</span>
-                                <div class="slds-spinner__dot-a"></div>
-                                <div class="slds-spinner__dot-b"></div>
-                            </div>
-                        </div>
-                        <p class="loading-text">{loadingMessage}</p>
-                    </div>
-                </div>
-            </template>
-
             <!-- ── Toolbar ── -->
             <div class="toolbar">
                 <!-- El resumen de seleccionados se oculta si el servicio no está disponible -->
@@ -40,33 +24,34 @@
                             </lightning-spinner>
                         </div>
                     </template>
-                    <lightning-combobox
-                        class="filter-combobox"
-                        name="filterClients"
-                        label="Select type of clients"
-                        value={filterClients}
-                        options={filterOptions}
-                        onchange={handleFilterChange}
-                        disabled={isFiltersDisabled}>
-                    </lightning-combobox>
-
-                    <div class="search-wrap">
-                        <lightning-input
-                            type="search"
-                            label="Search"
-                            placeholder="Search client"
-                            value={searchText}
-                            onchange={handleSearchChange}
-                            oninput={handleSearchChange}
+                    <template if:true={showFilters}>
+                        <lightning-combobox
+                            class="filter-combobox"
+                            name="filterClients"
+                            label="Select type of clients"
+                            value={filterClientsValue}
+                            options={filterOptions}
+                            onchange={handleFilterChange}
                             disabled={isFiltersDisabled}>
-                        </lightning-input>
-                    </div>
+                        </lightning-combobox>
+
+                        <div class="search-wrap">
+                            <lightning-input
+                                type="search"
+                                label="Search"
+                                placeholder="Search client"
+                                value={searchText}
+                                onchange={handleSearchChange}
+                                oninput={handleSearchChange}
+                                disabled={isFiltersDisabled}>
+                            </lightning-input>
+                        </div>
+                    </template>
                 </div>
             </div>
 
-            <!-- ── No clients message ── -->
-            <template lwc:if={showNoClients}>
-                <div class="table-message table-message--info">No clients found for this geography.</div>
+            <template lwc:if={showNoClientsForGeography}>
+                <div class="table-message table-message--info">{noClientsMessage}</div>
             </template>
 
             <!-- ── Table: always rendered so headers are always visible ── -->
@@ -74,22 +59,7 @@
                 <template lwc:if={isLoading}>
                     <div class="tbody-loading-overlay"></div>
                 </template>
-                <div class="table-frame" onscroll={handleTableScroll}>
-                    <template lwc:if={showTableLoadingOverlay}>
-                        <div class="loading-overlay">
-                            <div class="loading-box">
-                                <div class="spinner-wrap" aria-hidden="true">
-                                    <div class="slds-spinner slds-spinner_medium slds-spinner_brand" role="status">
-                                        <span class="slds-assistive-text">Loading</span>
-                                        <div class="slds-spinner__dot-a"></div>
-                                        <div class="slds-spinner__dot-b"></div>
-                                    </div>
-                                </div>
-                                <p class="loading-text">{loadingMessage}</p>
-                            </div>
-                        </div>
-                    </template>
-
+                <div class={tableFrameClass} onscroll={handleTableScroll}>
                     <table class="client-table" role="grid" aria-label="opportunity clients table">
                         <thead>
                             <tr>
@@ -100,6 +70,12 @@
                                 <template lwc:if={showCurrentRatingDate}>
                                     <th scope="col">Current Rating Tool Date</th>
                                 </template>
+                                <template lwc:if={showCurrentRatingDate}>
+                                    <th scope="col">Financial Statements Date</th>
+                                </template>
+                                <template lwc:if={showExpirationRatingDate}>
+                                    <th scope="col">Expiration Rating Date</th>
+                                </template>
                                 <template lwc:if={showExternalRating}>
                                     <th scope="col">External Rating (Foreign Curr)</th>
                                 </template>
@@ -107,7 +83,7 @@
                         </thead>
                         <tbody>
                             <!-- ── Service unavailable ── -->
-                            <template lwc:if={serviceUnavailable}>
+                            <template lwc:if={isServiceUnavailable}>
                                 <tr>
                                     <td colspan={totalColumns} class="service-unavailable-row">
                                         <div class="service-unavailable-message">
@@ -269,6 +245,12 @@
                                             </template>
                                             <template lwc:if={showCurrentRatingDate}>
                                                 <td>{client.currentRatingToolDate}</td>
+                                            </template>
+                                            <template lwc:if={showCurrentRatingDate}>
+                                                <td>{client.ffssRegulatoryRatingDate}</td>
+                                            </template>
+                                            <template lwc:if={showExpirationRatingDate}>
+                                                <td>{client.expirationRatingDate}</td>
                                             </template>
                                             <template lwc:if={showExternalRating}>
                                                 <td>{client.unifiedExtRatgLtFcType}</td>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__level_conc_sector_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Comments associated to concentration in the sector.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Comments associated to degree of concent</label>
+    <length>1000</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>2</visibleLines>
+</CustomField>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__rating_model_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Rating model tool identification (Empresas, Pymes y Otros) RD1 Ouput. Code that will identify the rating tool /model to be used. Es una agrupacion de varias herramientas  de rating aplicable, que permitira agrupar y diferenciar  los rating de Empresas de los rating de promotores, y de los rating para Instituciones publicas. O incluso podría aplicarse en un futuro como supracategoria de rating de empresas para diferencias subgrupos de empresas que utilizan modelos de rating semejantes.</description>
+    <label>Rating model ID</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>1</fullName>
+                <default>false</default>
+                <label>Enterprises rating</label>
+            </value>
+            <value>
+                <fullName>2</fullName>
+                <default>false</default>
+                <label>Small or Medium Size Companies rating</label>
+            </value>
+            <value>
+                <fullName>3</fullName>
+                <default>false</default>
+                <label>Corporate rating</label>
+            </value>
+            <value>
+                <fullName>4</fullName>
+                <default>false</default>
+                <label>Public Administration rating</label>
+            </value>
+            <value>
+                <fullName>5</fullName>
+                <default>false</default>
+                <label>Real Estate rating</label>
+            </value>
+            <value>
+                <fullName>6</fullName>
+                <default>false</default>
+                <label>Sovereign rating</label>
+            </value>
+            <value>
+                <fullName>7</fullName>
+                <default>false</default>
+                <label>Specialized lending rating</label>
+            </value>
+            <value>
+                <fullName>8</fullName>
+                <default>false</default>
+                <label>Joint ventures rating</label>
+            </value>
+            <value>
+                <fullName>9</fullName>
+                <default>false</default>
+                <label>Without sales rating</label>
+            </value>
+            <value>
+                <fullName>10</fullName>
+                <default>false</default>
+                <label>Financial Institutions</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

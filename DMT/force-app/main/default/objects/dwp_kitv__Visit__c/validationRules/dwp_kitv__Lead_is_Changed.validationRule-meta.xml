@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>dwp_kitv__Lead_is_Changed</fullName>
+    <active>true</active>
+    <description>Change Lead is not allowed.</description>
+    <errorConditionFormula>AND (ISCHANGED(dwp_kitv__lead_id__c),
+$Setup.dwp_kitv__Visit_validations_acc_cs__c.dwp_kitv__bypass__c = false,$Setup.dwp_kitv__Visit_validations_lead_cs__c.dwp_kitv__bypass__c = false)</errorConditionFormula>
+    <errorDisplayField>dwp_kitv__lead_id__c</errorDisplayField>
+    <errorMessage>Change Lead is not allowed.</errorMessage>
+</ValidationRule>

@@ -31,9 +31,14 @@ public with sharing class DMT_ApproverLookupController {
 
         String approverTypeName;
         Boolean onlyActive = false;
-
+        String entificFilter = 'ALL';
         switch on fieldApiName {
-            when 'DMT_Booking_Unit_Risk_Analyst__c', 'DMT_Approver__c' {
+            when 'DMT_Booking_Unit_Risk_Analyst__c' {
+                approverTypeName = 'Risk';
+                onlyActive = true;
+                entificFilter = appEntific;
+            }
+            when 'DMT_Approver__c' {
                 approverTypeName = 'Risk';
                 onlyActive = true;
             }
@@ -47,18 +52,36 @@ public with sharing class DMT_ApproverLookupController {
         }
 
         // Buscar Approvers cuyo nombre coincida O que tengan Approver Members que coincidan
-        List<DMT_Approver__c> approvers = [
-            SELECT Id, Name, DMT_ApproverType__r.Name, DMT_Entific__c,
-                   (SELECT Id, Name, DMT_User__r.Name
-                    FROM Approver_Members__r
-                    ORDER BY Name)
-            FROM DMT_Approver__c
-            WHERE  Name  LIKE :searchPattern
-            AND DMT_Is_Active__c = true
-            AND DMT_ApproverType__r.Name = :approverTypeName
-            ORDER BY Name
-            LIMIT :maxResults
-        ];system.debug('approvers'+ approvers.size());
+        List<DMT_Approver__c> approvers = new List<DMT_Approver__c>();
+        if( entificFilter == 'ALL') {
+            approvers = [
+                SELECT Id, Name, DMT_ApproverType__r.Name, DMT_Entific__c,
+                    (SELECT Id, Name, DMT_User__r.Name
+                        FROM Approver_Members__r
+                        ORDER BY Name)
+                FROM DMT_Approver__c
+                WHERE  Name  LIKE :searchPattern
+                AND DMT_Is_Active__c = true
+                AND DMT_ApproverType__r.Name = :approverTypeName
+                ORDER BY Name
+                LIMIT :maxResults
+            ];
+        } else {
+            approvers = [
+                SELECT Id, Name, DMT_ApproverType__r.Name, DMT_Entific__c,
+                    (SELECT Id, Name, DMT_User__r.Name
+                        FROM Approver_Members__r
+                        ORDER BY Name)
+                FROM DMT_Approver__c
+                WHERE  Name  LIKE :searchPattern
+                AND DMT_Is_Active__c = true
+                AND DMT_ApproverType__r.Name = :approverTypeName
+                AND DMT_Entific__c = :entificFilter
+                ORDER BY Name
+                LIMIT :maxResults
+            ];
+        }
+
 
         Set<Id> addedApproverIds = new Set<Id>();
         for (DMT_Approver__c a : approvers) {
@@ -66,8 +89,10 @@ public with sharing class DMT_ApproverLookupController {
             addedApproverIds.add(a.Id);
         }
 
+        List<DMT_Approver_Member__c> memberApprovers = new List<DMT_Approver_Member__c>();
+        if ( entificFilter == 'ALL') {
         // También buscar directamente en Approver Members
-        List<DMT_Approver_Member__c> memberApprovers = [
+        memberApprovers = [
             SELECT Id, Name, DMT_Approver__r.Id, DMT_Approver__r.Name,
                    DMT_Approver__r.DMT_ApproverType__r.Name, DMT_User__r.Name, DMT_Approver__r.DMT_Entific__c
             FROM DMT_Approver_Member__c
@@ -77,7 +102,21 @@ public with sharing class DMT_ApproverLookupController {
                 AND DMT_Approver__r.DMT_Is_Active__c = true
             ORDER BY Name
             LIMIT :maxResults
-        ];system.debug('memberApprovers'+ memberApprovers.size());
+        ];
+        } else {
+            memberApprovers = [
+            SELECT Id, Name, DMT_Approver__r.Id, DMT_Approver__r.Name,
+                   DMT_Approver__r.DMT_ApproverType__r.Name, DMT_User__r.Name, DMT_Approver__r.DMT_Entific__c
+            FROM DMT_Approver_Member__c
+            WHERE (DMT_User__r.Name LIKE :searchPattern)
+               AND DMT_Approver__r.Id NOT IN :addedApproverIds
+                AND DMT_Approver__r.DMT_ApproverType__r.Name = :approverTypeName
+                AND DMT_Approver__r.DMT_Is_Active__c = true
+                AND DMT_Approver__r.DMT_Entific__c =: entificFilter
+            ORDER BY Name
+            LIMIT :maxResults
+        ];
+        }
 
         // Procesar approvers directos
         /*for (DMT_Approver__c approver : approvers) {
@@ -128,7 +167,7 @@ public with sharing class DMT_ApproverLookupController {
     }
 
     // Método para crear el resultado del lookup
-    private static LookupResult createLookupResult(DMT_Approver__c approver) {
+    public static LookupResult createLookupResult(DMT_Approver__c approver) {
         LookupResult result = new LookupResult();
         result.id = approver.Id;
         result.name = approver.Name;
@@ -179,7 +218,7 @@ public with sharing class DMT_ApproverLookupController {
         List<LookupResult> results = new List<LookupResult>();
 
         List<DMT_Approver__c> approvers = [
-            SELECT Id, Name, DMT_ApproverType__r.Name,
+            SELECT Id, Name, DMT_Entific__c, DMT_ApproverType__r.Name,
                    (SELECT Id, Name, DMT_User__r.Name
                     FROM Approver_Members__r
                     ORDER BY Name)

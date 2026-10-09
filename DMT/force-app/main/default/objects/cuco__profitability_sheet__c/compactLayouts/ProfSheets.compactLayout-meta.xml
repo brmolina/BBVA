@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ProfSheets</fullName>
+    <fields>Name</fields>
+    <fields>cuco__gf_profitability_sheet_id__c</fields>
+    <fields>cuco__participant_id__c</fields>
+    <fields>cuco__gf_prftbly_sheet_start_date__c</fields>
+    <fields>cuco__gf_prftbly_sheet_end_date__c</fields>
+    <fields>cuco__gf_prftbly_sheet_stt_desc__c</fields>
+    <fields>OwnerId</fields>
+    <label>ProfSheets</label>
+</CompactLayout>

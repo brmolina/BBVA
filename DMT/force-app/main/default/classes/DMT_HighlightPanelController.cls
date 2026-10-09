@@ -5,44 +5,44 @@ public with sharing class DMT_HighlightPanelController {
         HighlightPanelConfig config = new HighlightPanelConfig();
         
         try {
-            System.debug('=== INICIANDO getHighlightConfig ===');
-            
+            System.debug('=== STARTING getHighlightConfig ===');
+
             if (String.isBlank(objectApiName) || String.isBlank(recordId)) {
                 throw new AuraHandledException('objectApiName y recordId son requeridos');
             }
-            
-            // 1. Obtener Record Type del registro
+
+            // 1. Get the record's Record Type
             Map<String, Object> recordTypeInfo = getRecordTypeInfo(objectApiName, recordId);
             System.debug('recordTypeInfo: ' + JSON.serialize(recordTypeInfo));
-            
+
             String recordTypeApiName = (String) recordTypeInfo.get('recordTypeApiName');
-            
-            // 2. Buscar configuración del Custom Metadata
+
+            // 2. Look up the Custom Metadata configuration
             DMT_HighlightPanel_Config__mdt metadataConfig = getMetadataConfig(objectApiName, recordTypeApiName);
-            System.debug('metadataConfig encontrado: ' + (metadataConfig != null));
-            
+            System.debug('metadataConfig found: ' + (metadataConfig != null));
+
             if (metadataConfig != null) {
-                // 3. Parsear la configuración del metadata
+                // 3. Parse the metadata configuration
                 config = parseMetadataConfig(metadataConfig);
                 config.recordTypeSpecific = metadataConfig.Record_Type_API_Name__c != null;
                 config.recordTypeApiName = metadataConfig.Record_Type_API_Name__c;
                 config.recordTypeId = (String) recordTypeInfo.get('recordTypeId');
             } else {
-                // 4. Configuración por defecto
+                // 4. Default configuration
                 config = getDefaultConfig(objectApiName);
                 config.recordTypeSpecific = false;
             }
-            
-            // 5. Obtener valores de los campos del registro
+
+            // 5. Get the record's field values
             Map<String, Object> fieldValues = getRecordFieldValues(config, objectApiName, recordId);
-            
-            // 6. Reemplazar placeholders en acciones {NombreCampo} → valor real
+
+            // 6. Replace placeholders in actions {FieldName} → actual value
             replaceActionPlaceholders(config, fieldValues);
-            
-            // 7. Aplicar condiciones de visibilidad y editabilidad
+
+            // 7. Apply visibility and editability conditions
             applyConditions(config, fieldValues);
-            
-            // 8. Información básica del registro
+
+            // 8. Basic record information
             config.recordInfo = new RecordInfo();
             config.recordInfo.recordId = recordId;
             config.recordInfo.objectApiName = objectApiName;
@@ -53,20 +53,20 @@ public with sharing class DMT_HighlightPanelController {
             Schema.DescribeSObjectResult describe = Schema.getGlobalDescribe().get(objectApiName).getDescribe();
             config.recordInfo.label = describe.getLabel();
             
-            System.debug('=== FINALIZANDO getHighlightConfig ===');
-            System.debug('Campos visibles: ' + config.visibleFields?.size());
-            System.debug('Acciones principales visibles: ' + config.visiblePrimaryActions?.size());
-            
+            System.debug('=== FINISHING getHighlightConfig ===');
+            System.debug('Visible fields: ' + config.visibleFields?.size());
+            System.debug('Visible primary actions: ' + config.visiblePrimaryActions?.size());
+
             return config;
-            
+
         } catch (Exception e) {
-            System.debug('ERROR en getHighlightConfig: ' + e.getMessage());
+            System.debug('ERROR in getHighlightConfig: ' + e.getMessage());
             System.debug('StackTrace: ' + e.getStackTraceString());
             throw new AuraHandledException('Error loading configuration: ' + e.getMessage());
         }
     }
     
-    // ===== MÉTODOS AUXILIARES =====
+    // ===== AUXILIARY METHODS =====
     
     public static Map<String, Object> getRecordTypeInfo(String objectApiName, String recordId) {
         Map<String, Object> result = new Map<String, Object>{
@@ -74,27 +74,29 @@ public with sharing class DMT_HighlightPanelController {
         };
         
         try {
-            Schema.DescribeSObjectResult objectDescribe = Schema.getGlobalDescribe().get(objectApiName)?.getDescribe();
-            if (objectDescribe == null || objectDescribe.getRecordTypeInfosByName().size() == 0) {
+            Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(objectApiName);
+            if (sObjectType == null || sObjectType.getDescribe().getRecordTypeInfosByName().size() == 0) {
                 return result;
             }
-            
-            String query = 'SELECT Id, RecordTypeId FROM ' + objectApiName + ' WHERE Id = :recordId LIMIT 1';
-            List<SObject> records = Database.query(query);
+
+            List<SObject> records = Database.query(
+                'SELECT Id, RecordTypeId FROM ' + sObjectType + ' WHERE Id = :recordId LIMIT 1',
+                AccessLevel.SYSTEM_MODE
+            );
             
             if (!records.isEmpty() && records[0].get('RecordTypeId') != null) {
                 String rtId = (String) records[0].get('RecordTypeId');
                 result.put('recordTypeId', rtId);
                 
                 if (String.isNotBlank(rtId)) {
-                    RecordType rt = [SELECT Id, DeveloperName FROM RecordType WHERE Id = :rtId LIMIT 1];
+                    RecordType rt = [SELECT Id, DeveloperName FROM RecordType WHERE Id = :rtId WITH SYSTEM_MODE LIMIT 1];
                     if (rt != null) {
                         result.put('recordTypeApiName', rt.DeveloperName);
                     }
                 }
             }
         } catch (Exception e) {
-            System.debug('Error en getRecordTypeInfo: ' + e.getMessage());
+            System.debug('Error in getRecordTypeInfo: ' + e.getMessage());
         }
         
         return result;
@@ -103,7 +105,7 @@ public with sharing class DMT_HighlightPanelController {
     public static DMT_HighlightPanel_Config__mdt getMetadataConfig(String objectApiName, String recordTypeApiName) {
         List<DMT_HighlightPanel_Config__mdt> configs = new List<DMT_HighlightPanel_Config__mdt>();
         
-        // 1. Primero buscar configuración específica para el Record Type
+        // 1. First look for a configuration specific to the Record Type
         if (String.isNotBlank(recordTypeApiName)) {
             configs = [
                 SELECT Id, DeveloperName, MasterLabel, 
@@ -116,15 +118,16 @@ public with sharing class DMT_HighlightPanelController {
                        Menu_Actions_JSON__c,
                        Metadata_Config__c
                 FROM DMT_HighlightPanel_Config__mdt 
-                WHERE Object_API_Name__c = :objectApiName 
+                WHERE Object_API_Name__c = :objectApiName
                 AND Record_Type_API_Name__c = :recordTypeApiName
+                WITH SYSTEM_MODE
                 LIMIT 1
             ];
             
             if (!configs.isEmpty()) return configs[0];
         }
         
-        // 2. Si no hay configuración específica, buscar configuración general del objeto
+        // 2. If there's no specific configuration, look for a general configuration for the object
         configs = [
             SELECT Id, DeveloperName, MasterLabel, 
                    Object_API_Name__c, Record_Type_API_Name__c,
@@ -136,8 +139,9 @@ public with sharing class DMT_HighlightPanelController {
                    Menu_Actions_JSON__c,
                    Metadata_Config__c
             FROM DMT_HighlightPanel_Config__mdt 
-            WHERE Object_API_Name__c = :objectApiName 
+            WHERE Object_API_Name__c = :objectApiName
             AND (Record_Type_API_Name__c = null OR Record_Type_API_Name__c = '')
+            WITH SYSTEM_MODE
             LIMIT 1
         ];
         
@@ -148,7 +152,7 @@ public with sharing class DMT_HighlightPanelController {
         HighlightPanelConfig config = new HighlightPanelConfig();
         
         try {
-            // 1. Configuración del icono
+            // 1. Icon configuration
             config.iconConfig = new IconConfig();
             config.iconConfig.type = String.isNotBlank(metadata.Icon_Type__c) ? metadata.Icon_Type__c : 'standard';
             config.iconConfig.name = metadata.Icon_Name__c;
@@ -163,16 +167,16 @@ public with sharing class DMT_HighlightPanelController {
                 config.iconConfig.customIcon.src = metadata.Custom_Icon_URL__c;
             }
             
-            // 2. Parsear campos desde JSON
+            // 2. Parse fields from JSON
             config.fieldsConfig = parseFieldConfigs(metadata.Fields_Configuration__c);
-            
-            // 3. Parsear acciones principales
+
+            // 3. Parse primary actions
             config.primaryActions = parseActionConfigs(metadata.Primary_Actions_JSON__c);
-            
-            // 4. Parsear acciones del menú
+
+            // 4. Parse menu actions
             config.menuActions = parseActionConfigs(metadata.Menu_Actions_JSON__c);
-            
-            // 5. Parsear metadata adicional
+
+            // 5. Parse additional metadata
             if (String.isNotBlank(metadata.Metadata_Config__c)) {
                 try {
                     config.metadata = (MetadataConfig) JSON.deserialize(metadata.Metadata_Config__c, MetadataConfig.class);
@@ -184,7 +188,7 @@ public with sharing class DMT_HighlightPanelController {
             }
             
         } catch (Exception e) {
-            System.debug('Error en parseMetadataConfig: ' + e.getMessage());
+            System.debug('Error in parseMetadataConfig: ' + e.getMessage());
             throw e;
         }
         
@@ -203,7 +207,7 @@ public with sharing class DMT_HighlightPanelController {
                 Map<String, Object> fieldMap = (Map<String, Object>) rawObj;
                 FieldConfig field = new FieldConfig();
                 
-                // Propiedades básicas
+                // Basic properties
                 field.type = (String) fieldMap.get('type');
                 field.label = (String) fieldMap.get('label');
                 field.value = (String) fieldMap.get('value');
@@ -211,8 +215,8 @@ public with sharing class DMT_HighlightPanelController {
                 field.isEditable = fieldMap.get('isEditable') != null ? (Boolean) fieldMap.get('isEditable') : false;
                 field.isVisible = fieldMap.get('isVisible') != null ? (Boolean) fieldMap.get('isVisible') : true;
                 field.badgeVariant = (String) fieldMap.get('badgeVariant');
-                
-                // Parsear icono si existe
+
+                // Parse icon if present
                 if (fieldMap.get('icon') != null) {
                     Map<String, Object> iconMap = (Map<String, Object>) fieldMap.get('icon');
                     field.icon = new FieldIcon();
@@ -220,27 +224,27 @@ public with sharing class DMT_HighlightPanelController {
                     field.icon.name = (String) iconMap.get('name');
                     field.icon.position = (String) iconMap.get('position');
                 }
-                
-                // Parsear acción si existe
+
+                // Parse action if present
                 if (fieldMap.get('action') != null) {
                     Map<String, Object> actionMap = (Map<String, Object>) fieldMap.get('action');
                     field.action = new FieldAction();
                     field.action.type = (String) actionMap.get('type');
                     field.action.name = (String) actionMap.get('name');
                     field.action.iconName = (String) actionMap.get('iconName');
-                    
+
                     if (actionMap.get('params') != null) {
                         field.action.params = (Map<String, Object>) actionMap.get('params');
                     }
                 }
-                
-                // Parsear condición de visibilidad si existe
+
+                // Parse visibility condition if present
                 if (fieldMap.get('visibilityCondition') != null) {
                     Map<String, Object> condMap = (Map<String, Object>) fieldMap.get('visibilityCondition');
                     field.visibilityCondition = parseConditionConfig(condMap);
                 }
-                
-                // Parsear condición de editabilidad si existe
+
+                // Parse editability condition if present
                 if (fieldMap.get('editabilityCondition') != null) {
                     Map<String, Object> condMap = (Map<String, Object>) fieldMap.get('editabilityCondition');
                     field.editabilityCondition = parseConditionConfig(condMap);
@@ -250,7 +254,7 @@ public with sharing class DMT_HighlightPanelController {
             }
             
         } catch (Exception e) {
-            System.debug('Error parseFieldConfigs: ' + e.getMessage());
+            System.debug('Error in parseFieldConfigs: ' + e.getMessage());
             throw new JSONException('Error parsing field configs: ' + e.getMessage());
         }
         
@@ -265,41 +269,68 @@ public with sharing class DMT_HighlightPanelController {
         condition.operator = (String) condMap.get('operator');
         condition.value = (String) condMap.get('value');
         condition.custompermission = (String) condMap.get('custompermission');
+        condition.systemPermission = (String) condMap.get('systemPermission');
+        condition.combineConditions = (String) condMap.get('combineConditions');
+        
+        System.debug('parseConditionConfig - fieldName: ' + condition.fieldName + ', combineConditions: ' + condition.combineConditions);
+        System.debug('Has conditions key: ' + condMap.containsKey('conditions') + ', value: ' + condMap.get('conditions'));
+        
+        // Parsear array de sub-condiciones recursivamente
+        if (condMap.get('conditions') != null) {
+            System.debug('Parsing sub-conditions array');
+            List<Object> conditionsList = (List<Object>) condMap.get('conditions');
+            condition.conditions = new List<ConditionConfig>();
+            System.debug('Sub-conditions count: ' + conditionsList.size());
+            for (Object subCondObj : conditionsList) {
+                Map<String, Object> subCondMap = (Map<String, Object>) subCondObj;
+                condition.conditions.add(parseConditionConfig(subCondMap));
+            }
+        }
+
         return condition;
     }
     
     public static List<ActionConfig> parseActionConfigs(String jsonString) {
         if (String.isBlank(jsonString)) return new List<ActionConfig>();
         
+        System.debug('parseActionConfigs - JSON String length: ' + jsonString.length());
+        System.debug('parseActionConfigs - First 500 chars: ' + jsonString.substring(0, Math.min(500, jsonString.length())));
+        
         List<ActionConfig> result = new List<ActionConfig>();
         
         try {
             List<Object> rawList = (List<Object>) JSON.deserializeUntyped(jsonString);
             
+            System.debug('parseActionConfigs - Deserialized ' + rawList.size() + ' actions');
+            
             for (Object rawObj : rawList) {
                 Map<String, Object> actionMap = (Map<String, Object>) rawObj;
                 ActionConfig action = new ActionConfig();
                 
-                // Propiedades básicas
+                System.debug('Processing action, keys: ' + actionMap.keySet());
+                
+                // Basic properties
                 action.label = (String) actionMap.get('label');
                 action.name = (String) actionMap.get('name');
                 action.variant = (String) actionMap.get('variant');
                 action.actionType = (String) actionMap.get('actionType');
                 action.disabled = actionMap.get('disabled') != null ? (Boolean) actionMap.get('disabled') : false;
-                
+
                 if (actionMap.get('actionConfig') != null) {
                     action.actionConfig = (Map<String, Object>) actionMap.get('actionConfig');
                 }
-                
-                // Parsear iconConfig si existe
+
+                // Parse iconConfig if present
                 if (actionMap.get('iconConfig') != null) {
                     Map<String, Object> iconMap = (Map<String, Object>) actionMap.get('iconConfig');
                     action.iconConfig = parseIconConfig(iconMap);
                 }
-                
-                // Parsear condiciones
+
+                // Parse conditions
                 if (actionMap.get('visibilityCondition') != null) {
                     Map<String, Object> condMap = (Map<String, Object>) actionMap.get('visibilityCondition');
+                    System.debug('Action: ' + action.name + ', visibilityCondition keys: ' + condMap.keySet());
+                    System.debug('Full visibilityCondition: ' + JSON.serialize(condMap));
                     action.visibilityCondition = parseConditionConfig(condMap);
                 }
                 
@@ -312,7 +343,7 @@ public with sharing class DMT_HighlightPanelController {
             }
             
         } catch (Exception e) {
-            System.debug('Error parseActionConfigs: ' + e.getMessage());
+            System.debug('Error in parseActionConfigs: ' + e.getMessage());
             throw new JSONException('Error parsing action configs: ' + e.getMessage());
         }
         
@@ -347,7 +378,7 @@ public with sharing class DMT_HighlightPanelController {
         return iconConfig;
     }
     
-    // ===== LÓGICA PRINCIPAL =====
+    // ===== MAIN LOGIC =====
     
     public static Map<String, Object> getRecordFieldValues(HighlightPanelConfig config, String objectApiName, String recordId) {
         Map<String, Object> allValues = new Map<String, Object>();
@@ -355,7 +386,7 @@ public with sharing class DMT_HighlightPanelController {
         try {
             Set<String> allFieldApiNames = new Set<String>();
             
-            // 1. Recolectar todos los campos de configuración
+            // 1. Collect all fields from the configuration
             if (config.fieldsConfig != null) {
                 for (FieldConfig field : config.fieldsConfig) {
                     if (String.isNotBlank(field.fieldApiName)) {
@@ -363,58 +394,64 @@ public with sharing class DMT_HighlightPanelController {
                     }system.debug('fields'+field.fieldApiName);
                 }
             }
-            
-            // 2. Recolectar campos para condiciones
+
+            // 2. Collect fields for conditions
             if (config.fieldsConfig != null) {
                 for (FieldConfig field : config.fieldsConfig) {
                     addConditionField(field.visibilityCondition, allFieldApiNames);
                     addConditionField(field.editabilityCondition, allFieldApiNames);
                 }
             }
-            
-            // 3. Campos para acciones principales
+
+            // 3. Fields for primary actions
             if (config.primaryActions != null) {
                 for (ActionConfig action : config.primaryActions) {
                     addConditionField(action.visibilityCondition, allFieldApiNames);
                     addConditionField(action.enablementCondition, allFieldApiNames);
                 }
             }
-            
-            // 4. Campos para acciones del menú
+
+            // 4. Fields for menu actions
             if (config.menuActions != null) {
                 for (ActionConfig action : config.menuActions) {
                     addConditionField(action.visibilityCondition, allFieldApiNames);
                     addConditionField(action.enablementCondition, allFieldApiNames);
                 }
             }
-            
-            // 5. Campos básicos imprescindibles
+
+            // 5. Essential basic fields
             allFieldApiNames.add('Id');
             allFieldApiNames.add('Name');
             allFieldApiNames.add('RecordTypeId');
-            
-            System.debug('Campos totales a consultar: ' + allFieldApiNames.size());
-            System.debug('Campos: ' + allFieldApiNames);
+
+            System.debug('Total fields to query: ' + allFieldApiNames.size());
+            System.debug('Fields: ' + allFieldApiNames);
             
             if (!allFieldApiNames.isEmpty()) {
-                String query = 'SELECT ' + String.join(new List<String>(allFieldApiNames), ', ') +
-                             ' FROM ' + objectApiName + ' WHERE Id = :recordId FOR UPDATE';
-                
-                System.debug('Query ejecutada: ' + query);
-                
-                List<SObject> records = Database.query(query);
+                Schema.SObjectType sObjectType = Schema.getGlobalDescribe().get(objectApiName);
+                if (sObjectType == null) {
+                    return allValues;
+                }
+
+                System.debug('Query object: ' + sObjectType + ' | fields: ' + allFieldApiNames);
+
+                List<SObject> records = Database.query(
+                    'SELECT ' + String.join(new List<String>(allFieldApiNames), ', ') +
+                    ' FROM ' + sObjectType + ' WHERE Id = :recordId FOR UPDATE',
+                    AccessLevel.SYSTEM_MODE
+                );
                 if (!records.isEmpty()) {
                     SObject record = records[0];
                     System.debug('allFieldApiNames: ' + allFieldApiNames);
-                    // Guardar todos los valores
+                    // Store all values
                     for (String fieldName : allFieldApiNames) {
                         try {
-                            // Soporta campos directos y rutas de relacion (ej: Owner.Name, Account.Name, Parent__r.Name)
+                            // Supports direct fields and relationship paths (e.g. Owner.Name, Account.Name, Parent__r.Name)
                             Object value = getFieldValueFromPath(record, fieldName);
                                     allValues.put(fieldName, value);
                             System.debug('Query fieldName: value: ' + fieldName + ' : ' + value);
-                            
-                            // Asignar valor al campo correspondiente
+
+                            // Assign the value to the corresponding field
                             if (config.fieldsConfig != null) {
                                 for (FieldConfig field : config.fieldsConfig) {
                                     if (field.fieldApiName == fieldName && value != null) {
@@ -423,17 +460,17 @@ public with sharing class DMT_HighlightPanelController {
                                     }
                                 }
                             }
-                            
+
                         } catch (Exception e) {
-                            System.debug('Error obteniendo campo ' + fieldName + ': ' + e.getMessage()  + e.getlinenumber());
+                            System.debug('Error retrieving field ' + fieldName + ': ' + e.getMessage()  + e.getlinenumber());
                             allValues.put(fieldName, null);
                         }
                     }
                 }
             }
-            
+
         } catch (Exception e) {
-            System.debug('Error getRecordFieldValues: ' + e.getMessage());
+            System.debug('Error in getRecordFieldValues: ' + e.getMessage());
             System.debug('StackTrace: ' + e.getStackTraceString());
         }
         
@@ -445,7 +482,7 @@ public with sharing class DMT_HighlightPanelController {
             return null;
         }
 
-        // Campo directo sin relacion
+        // Direct field, no relationship
         if (!fieldPath.contains('.')) {
             return record.get(fieldPath);
         }
@@ -453,7 +490,7 @@ public with sharing class DMT_HighlightPanelController {
         List<String> path = fieldPath.split('\\.');
         SObject current = record;
 
-        // Recorre cada relacion hasta el ultimo segmento (el campo final)
+        // Walk each relationship up to the last segment (the final field)
         for (Integer i = 0; i < path.size() - 1; i++) {
             if (current == null) {
                 return null;
@@ -475,22 +512,22 @@ public with sharing class DMT_HighlightPanelController {
             if (field.action != null && field.action.params != null) {
                 Map<String, Object> params = field.action.params;
                 
-                // Reemplazar placeholders del tipo {NombreCampo}
+                // Replace placeholders of the form {FieldName}
                 for (String paramKey : params.keySet()) {
                     Object paramValue = params.get(paramKey);
                     if (paramValue instanceof String) {
                         String strValue = (String) paramValue;
-                        
-                        // Verificar si es un placeholder {Campo}
+
+                        // Check whether it's a {Field} placeholder
                         if (strValue.startsWith('{') && strValue.endsWith('}')) {
                             String fieldName = strValue.substring(1, strValue.length() - 1);
-                            
+
                             if (fieldValues.containsKey(fieldName)) {
                                 Object actualValue = fieldValues.get(fieldName);
                                 if (actualValue != null) {
-                                    // Reemplazar el placeholder con el valor real
+                                    // Replace the placeholder with the actual value
                                     params.put(paramKey, String.valueOf(actualValue));
-                                    System.debug('Reemplazado ' + strValue + ' con: ' + actualValue);
+                                    System.debug('Replaced ' + strValue + ' with: ' + actualValue);
                                 }
                             }
                         }
@@ -501,13 +538,27 @@ public with sharing class DMT_HighlightPanelController {
     }
     
     public static void addConditionField(ConditionConfig condition, Set<String> fieldSet) {
-        if (condition != null && String.isNotBlank(condition.fieldName)) {
+        if (condition == null) return;
+        
+        System.debug('addConditionField - fieldName: ' + condition.fieldName + ', has sub-conditions: ' + (condition.conditions != null));
+        
+        // Agregar campo simple
+        if (String.isNotBlank(condition.fieldName)) {
             fieldSet.add(condition.fieldName);
+            System.debug('Added field: ' + condition.fieldName);
+        }
+        
+        // Agregar campos de sub-condiciones (recursivo)
+        if (condition.conditions != null) {
+            System.debug('Processing ' + condition.conditions.size() + ' sub-conditions');
+            for (ConditionConfig subCondition : condition.conditions) {
+                addConditionField(subCondition, fieldSet);
+            }
         }
     }
     
     public static void applyConditions(HighlightPanelConfig config, Map<String, Object> fieldValues) {
-        // Aplicar condiciones a campos
+        // Apply conditions to fields
         config.visibleFields = new List<FieldConfig>();
         if (config.fieldsConfig != null) {
             for (FieldConfig field : config.fieldsConfig) {
@@ -525,7 +576,7 @@ public with sharing class DMT_HighlightPanelController {
             }
         }
         
-        // Aplicar condiciones a acciones principales
+        // Apply conditions to primary actions
         config.visiblePrimaryActions = new List<ActionConfig>();
         if (config.primaryActions != null) {
             for (ActionConfig action : config.primaryActions) {
@@ -542,7 +593,7 @@ public with sharing class DMT_HighlightPanelController {
             }
         }
         
-        // Aplicar condiciones a acciones del menú
+        // Apply conditions to menu actions
         config.visibleMenuActions = new List<ActionConfig>();
         if (config.menuActions != null) {
             for (ActionConfig action : config.menuActions) {
@@ -562,13 +613,31 @@ public with sharing class DMT_HighlightPanelController {
     
     public static boolean evaluateCondition(ConditionConfig condition, Map<String, Object> fieldValues) {
         if (condition == null) {
-            return true; // Sin condición = siempre visible/habilitado
+            return true; // No condition = always visible/enabled
         }
-        
+
+        if (condition.conditions != null && !condition.conditions.isEmpty()) {
+            System.debug('Evaluating complex condition with ' + condition.conditions.size() + ' sub-conditions');
+            System.debug('CombineConditions: ' + condition.combineConditions);
+            List<Boolean> results = new List<Boolean>();
+            for (ConditionConfig sub : condition.conditions) {
+                Boolean subResult = evaluateCondition(sub, fieldValues);
+                System.debug('Sub-condition result: ' + subResult + ' for field: ' + sub.fieldName);
+                results.add(subResult);
+            }
+            Boolean finalResult = combineResults(results, condition.combineConditions);
+            System.debug('Combined result: ' + finalResult + ' for expression: ' + condition.combineConditions);
+            return finalResult;
+        }
+
         if (String.isNotBlank(condition.custompermission)) {
             String permissionName = String.valueOf(condition.custompermission).trim();
-            System.debug('Evaluando custom permission: ' + permissionName);
+            System.debug('Evaluating custom permission: ' + permissionName);
             return FeatureManagement.checkPermission(permissionName);
+        }
+
+        if (String.isNotBlank(condition.systemPermission)) {
+            return hasSystemPermission(condition.systemPermission.trim());
         }
 
         if (String.isBlank(condition.fieldName)) {
@@ -642,6 +711,34 @@ public with sharing class DMT_HighlightPanelController {
                 }
         }
     }
+
+    public static Boolean hasSystemPermission(String permissionApiName) {
+        if (String.isBlank(permissionApiName)) return true;
+
+        if (!Pattern.matches('^[A-Za-z0-9]+$', permissionApiName)) {
+            System.debug('systemPermission has an invalid format: ' + permissionApiName);
+            return false;
+        }
+
+        Schema.SObjectField permissionField = Schema.SObjectType.PermissionSet.fields.getMap().get(permissionApiName);
+        if (permissionField == null) {
+            return false;
+        }
+
+        Id userId = UserInfo.getUserId();
+
+        try {
+            return Database.countQuery(
+                'SELECT COUNT() FROM PermissionSetAssignment '
+                + 'WHERE AssigneeId = :userId '
+                + 'AND PermissionSet.' + permissionField + ' = true',
+                AccessLevel.SYSTEM_MODE
+            ) > 0;
+        } catch (Exception e) {
+            System.debug('Error evaluating systemPermission ' + permissionApiName + ': ' + e.getMessage());
+            return false;
+        }
+    }
     
     public static String formatFieldValue(String type, Object value) {
         if (value == null) return '';
@@ -669,6 +766,41 @@ public with sharing class DMT_HighlightPanelController {
                 return String.valueOf(value);
             }
         }
+    }
+
+    private static boolean combineResults(List<Boolean> results, String logic) {
+        if (String.isBlank(logic)) {
+            return !results.contains(false);
+        }
+        
+        String expr = logic.toUpperCase();
+        for (Integer i = 0; i < results.size(); i++) {
+            expr = expr.replace(String.valueOf(i + 1), results[i] ? 'T' : 'F');
+        }
+        
+        while (expr.contains('(')) {
+            Integer start = expr.lastIndexOf('(');
+            Integer endPos = expr.indexOf(')', start);
+            String sub = expr.substring(start + 1, endPos);
+            expr = expr.substring(0, start) + (evalExpr(sub) ? 'T' : 'F') + expr.substring(endPos + 1);
+        }        
+        return evalExpr(expr);
+    }
+
+    private static boolean evalExpr(String expr) {
+        if (expr.contains(' OR ')) {
+            for (String p : expr.split(' OR ')) {
+                if (evalExpr(p.trim())) return true;
+            }
+            return false;
+        }
+        if (expr.contains(' AND ')) {
+            for (String p : expr.split(' AND ')) {
+                if (!evalExpr(p.trim())) return false;
+            }
+            return true;
+        }
+        return expr == 'T';
     }
     
     public static HighlightPanelConfig getDefaultConfig(String objectApiName) {
@@ -777,6 +909,9 @@ public with sharing class DMT_HighlightPanelController {
         @AuraEnabled public String operator;
         @AuraEnabled public String value;
         @AuraEnabled public String custompermission;
+        @AuraEnabled public String systemPermission;
+        @AuraEnabled public List<ConditionConfig> conditions;
+        @AuraEnabled public String combineConditions;
     }
     
     public class MetadataConfig {

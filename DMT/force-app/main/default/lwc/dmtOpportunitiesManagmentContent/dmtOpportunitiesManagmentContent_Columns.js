@@ -74,7 +74,8 @@ export const columnsOpp = [
         type: "customIconText",
         label: "Status",
         sortable: "true",
-        hideDefaultActions: "true"
+        hideDefaultActions: "true",
+        fieldName: "StageName"
     },
     {
         sortable: "true",

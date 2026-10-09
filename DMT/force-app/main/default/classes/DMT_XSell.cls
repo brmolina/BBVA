@@ -34,7 +34,8 @@ public with sharing class DMT_XSell {
     @AuraEnabled(cacheable=true)
     public static List<Map<String, String>> getGeographyOptions(String entityCode) {
         List<Map<String, String>> options = new List<Map<String, String>>();
-        
+        Set<String> seenFinalValues = new Set<String>();
+        system.debug('entityCode: ' + entityCode);
         // If an entity code is passed (Opportunity), do the strict Relationship query exactly like the DataRaptor
         if (String.isNotBlank(entityCode)) {
             for (DMT_Taxonomy_Relationship__c rel : [
@@ -47,9 +48,14 @@ public with sharing class DMT_XSell {
                 WITH SYSTEM_MODE
                 ORDER BY DMT_Final_Taxonomy_Value__r.DMT_Value__c
             ]) {
+                String finalValue = rel.DMT_Final_Taxonomy_Value__r.DMT_Value__c;
+                if (String.isBlank(finalValue) || seenFinalValues.contains(finalValue)) {
+                    continue;
+                }
+                seenFinalValues.add(finalValue);
                 options.add(new Map<String, String>{
                     'label' => rel.DMT_Final_Taxonomy_Value__r.DMT_Name_EN__c,
-                    'value' => rel.DMT_Final_Taxonomy_Value__r.DMT_Value__c
+                    'value' => finalValue
                 });
             }
         } else {
@@ -57,7 +63,8 @@ public with sharing class DMT_XSell {
             for (DMT_Taxonomy_Values__c tax : [
                 SELECT DMT_Name__c, DMT_Value__c 
                 FROM DMT_Taxonomy_Values__c 
-                WHERE DMT_Catalog__c = 'H007' 
+                WHERE DMT_Catalog__c = 'H007'
+                  AND DMT_Active__c = true 
                 WITH SYSTEM_MODE
                 ORDER BY DMT_Value__c
             ]) {

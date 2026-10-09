@@ -4,12 +4,24 @@ export const generalInfoFields = [
         label: "Name",
         apiName: "DMT_TXT_ProductNameOLI__c",
         value: "",
-        size: "1-of-1",
+        size: "1-of-2",
         type: "text",
         isReadOnly: false,
         isHidden: false,
         isRequired: true,
         maxLength: 50
+    },
+    {
+        id: "DMT_Line_Oneoffdeal__c",
+        label: "Line / One Off Deal",
+        apiName: "DMT_Line_Oneoffdeal__c",
+        value: "",
+        size: "1-of-2",
+        type: "picklist",
+        isReadOnly: true,
+        isHidden: false,
+        isRequired: false,
+        options: []
     },
     {
         id: "gf_initial_date__c",
@@ -47,7 +59,7 @@ export const generalInfoFields = [
     },
     {
         id: "loan_purpose_desc__c",
-        label: "User of Proceeds",
+        label: "Use of Proceeds",
         apiName: "loan_purpose_desc__c",
         value: "",
         size: "1-of-2",
@@ -82,7 +94,8 @@ export const generalInfoFields = [
         isReadOnly: false,
         isHidden: false,
         isRequired: false,
-        maxLength: "500"
+        maxLength: "500",
+        showCharacterCounter: true
     }
     
 ];

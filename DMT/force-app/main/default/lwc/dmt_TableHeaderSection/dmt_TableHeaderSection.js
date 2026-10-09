@@ -10,7 +10,20 @@ export default class Dmt_TableHeaderSection extends LightningElement {
     @api context;                 // Context
     @api titletable;  // Title header
     @api customstyle;
+    @api nbcMark;      // Optional "(only for Global/Local NBC)" mark, appended after the title when set
+    @api unitLabel;   // Optional unit note, e.g. "(Figures in Thousands Eur)"
 
+    _currency = '';
+    showCurrency = false;
+
+    @api
+    get currency() {
+        return this._currency;
+    }
+    set currency(value) {
+        this._currency = value;
+        this.showCurrency = !!value;
+    }
 
 
 

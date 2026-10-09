@@ -5,6 +5,7 @@ import getFilteredComponentItemOptions from '@salesforce/apex/DMT_ItemController
 import LOCALE from '@salesforce/i18n/locale';
 
 import { MOCK_DATA_A, MOCK_DATA_B } from './mockData';
+import { normalizeHtmlToComponents } from './htmlVersionNormalizer';
 
 const USE_MOCK_DATA = false;
 
@@ -86,7 +87,21 @@ export default class DmtLineVersionsCompare extends LightningModal {
             const response = await getSnapshotEvaluationVersions({ requestStr: payload });
             const parsedResponse = JSON.parse(response);
             if (parsedResponse.success && parsedResponse.data.versions.length > 0) {
-                const bodyJson = JSON.parse(parsedResponse.data.versions[0].body);
+                const rawBody = parsedResponse.data.versions[0].body;
+                let bodyJson;
+                try {
+                    const parsed = JSON.parse(rawBody);
+                    // {"html":"..."} is the HTML-envelope format (new versions) — extract and normalize
+                    if (parsed && typeof parsed.html === 'string') {
+                        bodyJson = normalizeHtmlToComponents(parsed.html);
+                    } else {
+                        // Legacy pdfmake JSON format
+                        bodyJson = parsed;
+                    }
+                } catch (parseError) {
+                    // Fallback: raw HTML string (shouldn't occur with the envelope format)
+                    bodyJson = normalizeHtmlToComponents(rawBody);
+                }
                 this.jsonCacheMap.set(versionId, bodyJson);
                 console.log(`Fetched and cached version ${versionId}`);
             }
@@ -120,6 +135,10 @@ export default class DmtLineVersionsCompare extends LightningModal {
             // Calculate class string for HTML
             section.sectionClass = section.isOpen ? 'slds-section slds-is-open' : 'slds-section';
         }
+    }
+
+    handleClose() {
+        this.close();
     }
 
     // Getter to filter the view based on the Toggle
@@ -159,7 +178,7 @@ export default class DmtLineVersionsCompare extends LightningModal {
                         console.error('Failed to load data for one or both versions.');
                     }
                 } catch (error) {
-                    console.error('CRITICAL ERROR during snapshot comparison:', error);
+                    console.error('CRITICAL ERROR during snapshot comparison:', error?.message || error, '\nStack:', error?.stack);
                 } finally {
                     // This ALWAYS runs, preventing the infinite loading state
                     this.isLoading = false;
@@ -206,29 +225,36 @@ export default class DmtLineVersionsCompare extends LightningModal {
         // 2. Normalize Data
         const mapA = this.normalizeComponents(dataA.components);
         const mapB = this.normalizeComponents(dataB.components);
-        const rawOrderA = dataA.components ? dataA.components.filter(c => c.name !== 'Limit Visual').map(c => c.name) : [];
-        const rawOrderB = dataB.components ? dataB.components.filter(c => c.name !== 'Limit Visual').map(c => c.name) : [];
+        const rawOrderA = dataA.components ? dataA.components.filter(c => c.name != null && c.name.toLowerCase() !== 'limit visual').map(c => c.name) : [];
+        const rawOrderB = dataB.components ? dataB.components.filter(c => c.name != null && c.name.toLowerCase() !== 'limit visual').map(c => c.name) : [];
 
-        /* console.log('Components found in Version A:', JSON.stringify(Array.from(mapA.keys())));
-        console.log('Components found in Version B:', JSON.stringify(Array.from(mapB.keys()))); */
-        // 3. Master List
+        console.log('Components found in Version A:', JSON.stringify(Array.from(mapA.keys())));
+        console.log('Components found in Version B:', JSON.stringify(Array.from(mapB.keys())));
+        // 3. Master List — use lowercased validComponents so the Set keys stay consistent
+        const validLower = (this.validComponents || []).map(n => n.toLowerCase());
         const allSectionNames = new Set([
-            ...mapA.keys(), 
+            ...mapA.keys(),
             ...mapB.keys(),
-            ...(this.validComponents || [])
+            ...validLower
         ]);
 
         const sections = [];
 
-        allSectionNames.forEach(sectionName => {
-            const compA = mapA.get(sectionName);
-            const compB = mapB.get(sectionName);
+        allSectionNames.forEach(sectionKey => {
+            const compA = mapA.get(sectionKey);
+            const compB = mapB.get(sectionKey);
 
             // If empty in both, skip
             if (!compA && !compB) return;
 
+            // Resolve proper-case display name: prefer validComponents, then A, then B, then the key itself.
+            const displayName = (this.validComponents || []).find(n => n.toLowerCase() === sectionKey)
+                || (dataA.components || []).find(c => c.name.toLowerCase() === sectionKey)?.name
+                || (dataB.components || []).find(c => c.name.toLowerCase() === sectionKey)?.name
+                || sectionKey;
+
             const sectionResult = {
-                name: sectionName,
+                name: displayName,
                 isOpen: false, 
                 sectionClass: 'slds-section', 
                 isPresentBoth: !!(compA && compB),
@@ -247,7 +273,7 @@ export default class DmtLineVersionsCompare extends LightningModal {
 
             // CASE 1: Both Exist -> Check for 'Changed'
             if (compA && compB) {
-                sectionResult.rows = this.compareComponentContent(compA, compB, sectionName, isANewer, this.versionA, this.versionB);
+                sectionResult.rows = this.compareComponentContent(compA, compB, displayName, isANewer, this.versionA, this.versionB);
                 sectionResult.hasDifferences = sectionResult.rows.some(r => r.isDiff);
                 
                 if (sectionResult.hasDifferences) {
@@ -271,7 +297,7 @@ export default class DmtLineVersionsCompare extends LightningModal {
                 const color = isAdded ? '#27ae60' : '#c0392b'; // Green vs Red
                 const bg    = isAdded ? '#d5f5e3' : '#fadbd8';
 
-                console.groupCollapsed(`%c[DIFF: SECTION ${actionLabel}] ${sectionName}`, `color: ${color}; font-weight: bold; background: ${bg}; padding: 4px;`);
+                console.groupCollapsed(`%c[DIFF: SECTION ${actionLabel}] ${displayName}`, `color: ${color}; font-weight: bold; background: ${bg}; padding: 4px;`);
                 this.logEntireSection(compA); 
                 console.groupEnd();
                 sectionResult.hasDifferences = true;
@@ -344,13 +370,13 @@ export default class DmtLineVersionsCompare extends LightningModal {
     }
 
     // Helper: Turn JSON Array into Map<Name, Content>
+    // Keys are lowercased so old JSON uppercase names ("CLIENT") match new HTML names ("Client").
     normalizeComponents(componentsList) {
         const map = new Map();
         if (!componentsList) return map;
-        componentsList.forEach(comp => { 
-            // Ignore 'Limit Visual' completely
-            if (comp.name && comp.name !== 'Limit Visual') {
-                map.set(comp.name, comp.content); 
+        componentsList.forEach(comp => {
+            if (comp.name && comp.name.toLowerCase().trim() !== 'limit visual') {
+                map.set(comp.name.trim().toLowerCase(), comp.content);
             }
         });
         return map;
@@ -370,7 +396,7 @@ export default class DmtLineVersionsCompare extends LightningModal {
         const styleLogA = isANewer ? logStyleGreen : logStyleRed;
         const styleLogB = isANewer ? logStyleRed : logStyleGreen; */
 
-        const validTypes = ['values2', 'table', 'title'];
+        const validTypes = ['values2', 'dynamicGrid', 'table', 'title', 'text'];
         
         // FIX 2a: Ensure content is an array before filtering
         const safeContentA = Array.isArray(contentA) ? contentA : (contentA ? [contentA] : []);
@@ -391,8 +417,8 @@ export default class DmtLineVersionsCompare extends LightningModal {
                 continue;
             }
 
-            // --- TITLE ---
-            if (blockA.type === 'title') {
+            // --- TITLE / TEXT ---
+            if (blockA.type === 'title' || blockA.type === 'text') {
                 rows.push({
                     id: this.generateUniqueId(),
                     isTitle: true,
@@ -401,8 +427,8 @@ export default class DmtLineVersionsCompare extends LightningModal {
                 });
             }
 
-            // --- VALUES2 ---
-            else if (blockA.type === 'values2') {
+            // --- VALUES2 / DYNAMICGRID ---
+            else if (blockA.type === 'values2' || blockA.type === 'dynamicGrid') {
                 const flatMapA = this.flattenValues(blockA.body);
                 const flatMapB = this.flattenValues(blockB.body);
                 const allKeys = new Set([...flatMapA.keys(), ...flatMapB.keys()]);
@@ -511,8 +537,8 @@ export default class DmtLineVersionsCompare extends LightningModal {
             const lights = cleanCell.custom.map((item, index) => {
                 // Normalize color to Uppercase for easier matching
                 const color = (item.styles?.textColor || '').toUpperCase();
-                let colorClass = 'traffic-dot_default'; 
-                
+                let colorClass = 'traffic-dot_default';
+
                 if (color === '#BDBDBD') colorClass = 'traffic-dot_grey';
                 else if (color === '#F8CC52') colorClass = 'traffic-dot_yellow';
                 else if (color === '#FFFFFF') colorClass = 'traffic-dot_white';
@@ -521,11 +547,17 @@ export default class DmtLineVersionsCompare extends LightningModal {
                 else if (color === '#D73F52') colorClass = 'traffic-dot_red';
 
                 return {
-                    id: index, 
+                    id: index,
                     className: `traffic-dot ${colorClass}`,
                     char: item.content
                 };
             });
+
+            // All-white lights = "blank slate" (no active state) — treat as empty, same as no traffic light.
+            // Old pdfmake JSON stored white circles for NOPINTAR; new HTML stores nothing. Both mean the same.
+            if (lights.length > 0 && lights.every(l => l.className === 'traffic-dot traffic-dot_white')) {
+                return '';
+            }
 
             return {
                 isTrafficLight: true,
@@ -559,20 +591,21 @@ export default class DmtLineVersionsCompare extends LightningModal {
         blocks.forEach(block => {
             if (!block) return;
 
-            // --- TITLE LOGIC ---
-            if (block.type === 'title') {
+            // --- TITLE / TEXT LOGIC ---
+            if (block.type === 'title' || block.type === 'text') {
                 rows.push({
-                    id: this.generateUniqueId(), // FIX
+                    id: this.generateUniqueId(),
                     isTitle: true,
                     text: block.text,
                     class: 'slds-text-heading_small slds-p-top_small slds-p-bottom_xx-small slds-text-title_caps section-title'
                 });
             }
 
-            // --- VALUES2 LOGIC ---
-            else if (block.type === 'values2') {
+            // --- VALUES2 / DYNAMICGRID LOGIC ---
+            else if (block.type === 'values2' || block.type === 'dynamicGrid') {
                 const flatMap = this.flattenValues(block.body);
                 flatMap.forEach((val, key) => {
+                    if (!val) return; // skip fields with empty values in one-sided blocks — no data = no diff to show
                     rows.push({
                         id: this.generateUniqueId(), // FIX
                         label: key,
@@ -588,8 +621,10 @@ export default class DmtLineVersionsCompare extends LightningModal {
             
             // --- TABLE LOGIC ---
             else if (block.type === 'table') {
+                const safeBody = Array.isArray(block.body) ? block.body : [];
+                if (safeBody.length === 0) return; // empty table has nothing to show
                 let tableData = {
-                    id: this.generateUniqueId(), // FIX
+                    id: this.generateUniqueId(),
                     isWholeTable: true,
                     headers: [],
                     rows: [],
@@ -600,8 +635,8 @@ export default class DmtLineVersionsCompare extends LightningModal {
                     tableData.headers = block.head[0];
                 }
 
-                if (block.body) {
-                    block.body.forEach((row, idx) => {
+                if (safeBody.length > 0) {
+                    safeBody.forEach((row, idx) => {
                         
                         const cellsA = row.map(c => ({ 
                             key: this.generateUniqueId(), 
@@ -646,8 +681,9 @@ export default class DmtLineVersionsCompare extends LightningModal {
             if(!Array.isArray(row)) return; 
             row.forEach(item => {
                 if (item && item.name) {
-                    const key = item.name.trim().replace(/:$/, ''); 
-                    map.set(key, item.value);
+                    const key = item.name.trim().replace(/:$/, '');
+                    const val = (item.value === undefined || item.value === null) ? '' : String(item.value).trim();
+                    map.set(key, val);
                 }
             });
         });

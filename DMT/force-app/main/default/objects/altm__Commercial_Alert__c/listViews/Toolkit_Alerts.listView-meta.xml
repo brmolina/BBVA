@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Toolkit_Alerts</fullName>
+    <columns>NAME</columns>
+    <columns>altm__participant_id__c</columns>
+    <columns>altm__alert_stage_type__c</columns>
+    <columns>cstk__Toolkit__c</columns>
+    <columns>cstk__Alert_type__c</columns>
+    <columns>cstk__Year__c</columns>
+    <columns>altm__priority_alert_type__c</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>altm__alert_stage_type__c</field>
+        <operation>equals</operation>
+        <value>Pending,Unread,Matured</value>
+    </filters>
+    <filters>
+        <field>RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>altm__Commercial_Alert__c.Commercial_Task_Toolkit</value>
+    </filters>
+    <label>Toolkit Alerts</label>
+</ListView>

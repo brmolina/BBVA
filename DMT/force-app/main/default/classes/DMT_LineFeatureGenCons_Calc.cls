@@ -41,8 +41,8 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
 
         }
 
-        for(Local_Client__c c : DMT_Passport_Selector.getLocalclient(alphaCodeList)){
-            alphaCodeMap.put(c.Alpha_code__c, c.Id);
+       for(Account c : DMT_Passport_Selector.getLocalclient(alphaCodeList)){
+            alphaCodeMap.put(c.g_customer_id__c, c.Id);
         }
 
         for(Object c : clientsInGroups){
@@ -56,7 +56,7 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
                     DMT_Client_Rating_Date__c = null,
                     DMT_ClientStarCode__c = client.get('customerCounterpartiesCodesDesc') == null ? '' : (String)client.get('customerCounterpartiesCodesDesc'),
                     DMT_ClientContracts__c = client.get('operationMitigantDesc') == null ? '' : (String)client.get('operationMitigantDesc'),
-                    Local_Client_Child__c = client.get('customerId') == null ? null : alphaCodeMap.get((String)client.get('customerId'))
+                    g_customer_id__c = (client.get('customerId') != null && alphaCodeMap.containsKey((String)client.get('customerId'))) ? (String)client.get('customerId') : null
                 );
 
                 if(client.get('scaleLastUpdDate') != null){
@@ -82,7 +82,7 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
                             DMT_Client_Rating_Date__c = null,
                             DMT_ClientStarCode__c = client.get('customerCounterpartiesCodesDesc') == null ? '' : (String)client.get('customerCounterpartiesCodesDesc'),
                             DMT_ClientContracts__c = client.get('operationMitigantDesc') == null ? '' : (String)client.get('operationMitigantDesc'),
-                            Local_Client_Child__c = client.get('customerId') == null ? null : alphaCodeMap.get((String)client.get('customerId'))
+                            g_customer_id__c = (client.get('customerId') != null && alphaCodeMap.containsKey((String)client.get('customerId'))) ? (String)client.get('customerId') : null
                         );
 
                         if(client.get('scaleLastUpdDate') != null){
@@ -118,6 +118,9 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
             mapFeatureResult.add(isCurrentLine(clientsCodeList, line.Start_Date__c, line));
             mapFeatureResult.add(restricGreaterTerm(lineProductItems, riskLineDeri));
             mapFeatureResult.add(deriRestricNOFdDvp(lineProductItems, mapOpRestric));
+            if (line.Waiver__c == true) {
+                mapFeatureResult.add(waiverValidation(line, riskLineDeri, lineProductItems));
+            }
             mapFeatureResult.add(noSettlementAmount(lineProductItems, line));
             mapFeatureResult.add(startDate(line));
             mapFeatureResult.add(endDate(line));
@@ -140,6 +143,47 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
         }
 
         return mapFeatureResult;
+    }
+
+    public static DMT_Wrapper_Passport_Abs.FeatureGenConsiderations waiverValidation(
+        DMT_Line__c line,
+        List<DMT_Risk_Line_Term__c> riskLineDeri,
+        List<DMT_Line_Product_Item__c> lineProductItems
+    ) {
+        DMT_Wrapper_Passport_Abs.FeatureGenConsiderations waiverResult = new DMT_Wrapper_Passport_Abs.FeatureGenConsiderations();
+        waiverResult.state = DMT_Constants.FEATURE_GC_STATE_GREEN;
+        waiverResult.name = DMT_Constants.FEATURE_NAME_WAIVER;
+        waiverResult.message = DMT_Constants.WAIVER_GREENMESSAGE;
+
+        if (line.Waiver__c != true) {
+            return waiverResult;
+        }
+
+        Boolean hasDerivativesRisk = false;
+        if (riskLineDeri != null) {
+            for (DMT_Risk_Line_Term__c riskLine : riskLineDeri) {
+                if (riskLine.DMT_Risk_Type__c == DMT_Constants.RSK_DERIVATIVES) {
+                    hasDerivativesRisk = true;
+                    break;
+                }
+            }
+        }
+        Boolean hasActiveRestriction = false;
+        if (lineProductItems != null) {
+            for (DMT_Line_Product_Item__c productItem : lineProductItems) {
+                if (productItem.DMT_RestrictionActive__c == true) {
+                    hasActiveRestriction = true;
+                    break;
+                }
+            }
+        }
+
+        if (!hasDerivativesRisk || !hasActiveRestriction) {
+            waiverResult.state = DMT_Constants.FEATURE_GC_STATE_RED;
+            waiverResult.message = DMT_Constants.WAIVER_REDMESSAGE;
+        }
+
+        return waiverResult;
     }
 
     public static DMT_Wrapper_Passport_Abs.FeatureGenConsiderations amountHigher(List<DMT_Risk_Line_Term__c> riskLines, DMT_Line__c linelpi){
@@ -169,7 +213,7 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
         gdtClientResult.message = DMT_Constants.NO_GDT_CLIENT_GREENMESSAGE;
         List<String> clientCodeList = new List<String> ();
         for (Custom_Association_Client__c client : caClientList){
-            if(String.isBlank(client.Local_Client_Child__c)){
+            if(String.isBlank(client.g_customer_id__c)){
                 clientCodeList.add(client.Alpha_Code_Client__c);
             }
         }

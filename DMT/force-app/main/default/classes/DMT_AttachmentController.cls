@@ -101,25 +101,28 @@ public with sharing class DMT_AttachmentController {
             if (oppRecord.OwnerId == userId) {
                 hasAccessOwner = true;
             }
-            List<Group> listGr = [SELECT Id, Name  FROM Group WHERE Id = :oppRecord.OwnerId AND Type = 'Queue' LIMIT 1];
             List<DMT_TeamMember__c> members = new List<DMT_TeamMember__c>();
-            if(!listGr.isEmpty()){
-                members = [
+                 members = [
                 SELECT Id FROM DMT_TeamMember__c
                 WHERE Opportunity__c = :recordId AND User__c = :userId AND AccessLevel__c = 'Edit'
                 LIMIT 1
             ];
-            }
-            
 
-            User usr = [SELECT  id, Name,  DMT_User_Role__c  FROM User WHERE Id = :userId LIMIT 1];
+            userPermissionRole = DMT_Utils.hasWriteAccess();
+            hasGodLineAccess = DMT_Utils.checkLineGodUser();
+           
+            hasAccessMember = userPermissionRole;
 
-            if(usr.DMT_User_Role__c != null && usr.DMT_User_Role__c != ''){
-                hasAccessMember = !members.isEmpty() || hasAccessOwner;
+            if(!hasGodLineAccess){
+                if(userPermissionRole){
+                    hasAccessMember = !members.isEmpty() || hasAccessOwner;
+                }
             }else{
-                hasAccessMember = !members.isEmpty() || hasAccessOwner;
+                hasAccessMember = true;
             }
+
         }
+        
         return hasAccessMember;
     }
 
@@ -132,6 +135,9 @@ public with sharing class DMT_AttachmentController {
             validRoles.add(rolVal.DES_Role_Developer_Name__c);
         }
 
+        if(role == null || role == ''){
+            return false;
+        }
         List<String> userRoles = role.split(';');
 
         for(String roleUser : userRoles) {

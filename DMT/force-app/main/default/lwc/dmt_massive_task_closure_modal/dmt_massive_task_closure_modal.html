@@ -50,187 +50,131 @@
                     </div>
                 </template>
 
-                <div class="slds-m-bottom_medium">
-                    <div class="toolbar-row">
-                        <div class="info-col">
-                            <div class="bulk-result-info-fixed" aria-label="Information">
-                                <lightning-icon
-                                    icon-name="utility:info"
-                                    size="xx-small"
-                                    alternative-text="Information">
-                                </lightning-icon>
-                                <span>Changes apply to all cells</span>
-                            </div>
-                        </div>
-
-                        <div class="result-col">
-                            <div class="bulk-result-input">
-                                <div class="slds-form-element">
-                                    <label class="slds-form-element__label">Result</label>
-                                    <div class="slds-form-element__control">
-                                        <template lwc:if={isCloseForReviewMode}>
-                                            <div class="result-badge-button bulk-result-trigger" aria-label="Result fixed to No">
-                                                <span class="result-trigger-anchor">
-                                                    <span class="square-badge badge-error">No</span>
-                                                </span>
-                                            </div>
-                                        </template>
-                                        <template lwc:else>
-                                            <button
-                                                type="button"
-                                                class="result-badge-button bulk-result-trigger"
-                                                onclick={handleToggleBulkResultDropdown}
-                                                aria-label="Select result">
-                                                <span class="result-trigger-anchor">
-                                                    <template lwc:if={bulkResult}>
-                                                        <span class={bulkResultBadgeClass}>{bulkResultDisplay}</span>
-                                                    </template>
-                                                    <template lwc:else>
-                                                        <span class="slds-text-color_weak">Select result</span>
-                                                    </template>
-                                                </span>
-                                                <lightning-icon
-                                                    icon-name="utility:down"
-                                                    size="xx-small"
-                                                    class="slds-m-left_xx-small icon-gray">
-                                                </lightning-icon>
-                                            </button>
-
-                                            <template lwc:if={openBulkResultDropdown}>
-                                                <div class="bulk-result-dropdown" onclick={handleBulkResultDropdownPanelClick}>
-                                                    <ul class="slds-listbox slds-listbox_vertical" role="listbox">
-                                                        <li role="presentation">
-                                                            <button type="button" class="result-dropdown-option" data-value="Yes" onclick={handleBulkResultSelect}>
-                                                                <span class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_center">
-                                                                    <span class="slds-media__body"><span class="square-badge badge-success">Yes</span></span>
-                                                                </span>
-                                                            </button>
-                                                        </li>
-                                                        <li role="presentation">
-                                                            <button type="button" class="result-dropdown-option" data-value="No" onclick={handleBulkResultSelect}>
-                                                                <span class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_center">
-                                                                    <span class="slds-media__body"><span class="square-badge badge-error">No</span></span>
-                                                                </span>
-                                                            </button>
-                                                            </li>
-                                                        <li role="presentation">
-                                                            <button type="button" class="result-dropdown-option" data-value="N/A" onclick={handleBulkResultSelect}>
-                                                                <span class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_center">
-                                                                    <span class="slds-media__body"><span class="square-badge badge-na">N/A</span></span>
-                                                                </span>
-                                                            </button>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </template>
-                                        </template>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="comment-col">
-                            <div class="bulk-comment-input">
-                                <div class="slds-form-element" style="width: 100%;">
-                                    <label class="slds-form-element__label">Comment</label>
-                                    <div class="slds-form-element__control">
-                                        <button
-                                            type="button"
-                                            class="bulk-comment-trigger"
-                                            onclick={handleToggleBulkCommentEditor}
-                                            aria-label="Edit comment">
-                                            <span class="slds-truncate">
-                                                <template lwc:if={bulkComment}>
-                                                    {bulkComment}
-                                                </template>
-                                                <template lwc:else>
-                                                    <span class="slds-text-color_weak">Insert comment</span>
-                                                </template>
-                                            </span>
-                                        </button>
-
-                                        <template lwc:if={openBulkCommentEditor}>
-                                            <div class="bulk-comment-popover" onclick={handleBulkCommentEditorClick}>
-                                                <textarea
-                                                    class="slds-textarea native-comment-textarea"
-                                                    placeholder="Insert comment"
-                                                    oninput={handleBulkCommentChange}
-                                                    onchange={handleBulkCommentChange}>{bulkComment}</textarea>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                            <div class="approver-label-col">
-                                <div class="bulk-approver-label-input">
-                                    <div class="slds-form-element" style="width: 100%;">
-                                        <label class="slds-form-element__label">Approver Label</label>
-                                        <div class="slds-form-element__control">
-                                            <button
-                                                type="button"
-                                                class="bulk-comment-trigger"
-                                                onclick={handleToggleBulkApproverLabelEditor}
-                                                aria-label="Edit approver label">
-                                                <span class="slds-truncate">
-                                                    <template lwc:if={bulkApproverLabel}>
-                                                        {bulkApproverLabel}
-                                                    </template>
-                                                    <template lwc:else>
-                                                        <span class="slds-text-color_weak">Insert label</span>
-                                                    </template>
-                                                </span>
-                                            </button>
-                                            <template lwc:if={openBulkApproverLabelEditor}>
-                                                <div class="bulk-approver-label-popover" onclick={handleBulkApproverLabelEditorClick}>
-                                                    <input
-                                                        type="text"
-                                                        class="native-approver-input"
-                                                        placeholder="Insert approver label"
-                                                        value={bulkApproverLabel}
-                                                        oninput={handleBulkApproverLabelChange}
-                                                        onchange={handleBulkApproverLabelChange} />
-                                                </div>
-                                            </template>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        <div class="bulk-actions-col">
-                            <div class="bulk-actions-row">
-                                <lightning-button
-                                    label="Apply Changes"
-                                    variant="brand"
-                                    icon-name="utility:check"
-                                    class="slds-m-left_x-small"
-                                    onclick={applyBulkChanges}>
-                                </lightning-button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="table-scroll-wrapper">
                 <table class="slds-table slds-table_bordered slds-table_fixed-layout massive-closure-table">
                     <thead>
                         <tr class="slds-line-height_reset">
                             <template for:each={tableColumns} for:item="column" for:index="index">
                                 <th key={column.key} data-col-index={index} scope="col" class="resizable-header">
-                                    <button
-                                        type="button"
-                                        class="header-sort-button"
-                                        data-field={column.key}
-                                        onclick={handleSort}
-                                        title={column.label}>
-                                        <span class="slds-truncate header-label" title={column.label}>{column.label}</span>
-                                        <lightning-icon
-                                            icon-name={column.sortIcon}
-                                            size="xx-small"
-                                            alternative-text="Sort">
-                                        </lightning-icon>
-                                    </button>
+                                    <div class="column-header-actions">
+                                        <div class="header-title-group">
+                                            <span class="slds-truncate header-label" title={column.label}>{column.label}</span>
+                                            <template lwc:if={column.canBulkEdit}>
+                                                <lightning-button-icon
+                                                    icon-name="utility:edit_form"
+                                                    alternative-text="Bulk edit"
+                                                    title="Bulk edit"
+                                                    size="small"
+                                                    variant="bare"
+                                                    class="bulk-column-trigger"
+                                                    data-column-key={column.key}
+                                                    onclick={handleOpenBulkEditor}>
+                                                </lightning-button-icon>
+                                            </template>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            class="header-sort-button"
+                                            data-field={column.key}
+                                            onclick={handleSort}
+                                            title={column.sortTitle}>
+                                            <lightning-icon
+                                                icon-name={column.sortIcon}
+                                                size="xx-small"
+                                                alternative-text="Sort">
+                                            </lightning-icon>
+                                        </button>
+                                    </div>
+
+                                    <template lwc:if={column.isBulkEditorOpen}>
+                                        <section class="bulk-popover" role="dialog" onclick={handleBulkPopoverClick}>
+                                            <div class="bulk-popover-field-row">
+                                                <span class="bulk-popover-title">{column.label}</span>
+                                            </div>
+
+                                            <template lwc:if={column.isResultColumn}>
+                                                <div class="bulk-result-popover-input">
+                                                    <button
+                                                        type="button"
+                                                        class="result-badge-button bulk-result-trigger"
+                                                        onclick={handleToggleBulkResultDropdown}
+                                                        title="Select result">
+                                                        <span class="result-trigger-anchor">
+                                                            <template lwc:if={bulkResultDisplay}>
+                                                                <span class={bulkResultBadgeClass}>{bulkResultDisplay}</span>
+                                                            </template>
+                                                            <template lwc:else>
+                                                                <span class="slds-text-color_weak">Select...</span>
+                                                            </template>
+                                                        </span>
+
+                                                        <lightning-icon
+                                                            icon-name="utility:down"
+                                                            size="xx-small"
+                                                            class="slds-m-left_xx-small icon-gray">
+                                                        </lightning-icon>
+                                                    </button>
+
+                                                    <template lwc:if={openBulkResultDropdown}>
+                                                        <div class="bulk-result-dropdown" onclick={handleBulkResultDropdownPanelClick}>
+                                                            <ul>
+                                                                <template for:each={headerBulkResultOptions} for:item="option">
+                                                                    <li key={option.value}>
+                                                                        <button
+                                                                            type="button"
+                                                                            class="result-dropdown-option"
+                                                                            data-value={option.value}
+                                                                            onclick={handleBulkResultSelect}>
+                                                                            <span class="slds-media__body">
+                                                                                <span class={option.badgeClass}>{option.label}</span>
+                                                                            </span>
+                                                                        </button>
+                                                                    </li>
+                                                                </template>
+                                                            </ul>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </template>
+
+                                            <template lwc:if={column.isCommentColumn}>
+                                                <lightning-textarea
+                                                    variant="label-hidden"
+                                                    label={column.label}
+                                                    value={bulkComment}
+                                                    onchange={handleHeaderBulkCommentChange}>
+                                                </lightning-textarea>
+                                            </template>
+
+                                            <template lwc:if={column.isApproverLabelColumn}>
+                                                <lightning-input
+                                                    type="text"
+                                                    variant="label-hidden"
+                                                    label={column.label}
+                                                    value={bulkApproverLabel}
+                                                    onchange={handleHeaderBulkApproverLabelChange}>
+                                                </lightning-input>
+                                            </template>
+
+                                            <div class="bulk-popover-actions">
+                                                <lightning-button
+                                                    label="Cancel"
+                                                    variant="neutral"
+                                                    onclick={handleCloseBulkEditor}>
+                                                </lightning-button>
+
+                                                <lightning-button
+                                                    label="Apply"
+                                                    variant="brand"
+                                                    class="slds-m-left_x-small"
+                                                    data-column-key={column.key}
+                                                    onclick={handleApplyBulkEditor}>
+                                                </lightning-button>
+                                            </div>
+                                        </section>
+                                    </template>
+
                                     <template lwc:if={column.isResizable}>
                                         <button
                                             type="button"

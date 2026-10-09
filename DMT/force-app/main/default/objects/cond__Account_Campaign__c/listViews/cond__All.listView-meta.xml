@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>cond__All</fullName>
+    <columns>NAME</columns>
+    <columns>cond__priority_campaign_type__c</columns>
+    <columns>cond__campaign_start_date__c</columns>
+    <columns>cond__campaign_end_date__c</columns>
+    <columns>cond__solution_category_type__c</columns>
+    <columns>cond__solution_category_name__c</columns>
+    <columns>cond__user_audit_id__c</columns>
+    <columns>cond__data_source_name__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>All</label>
+</ListView>

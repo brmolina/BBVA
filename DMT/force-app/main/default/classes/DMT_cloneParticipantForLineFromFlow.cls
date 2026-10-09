@@ -73,14 +73,22 @@ public with sharing class DMT_cloneParticipantForLineFromFlow {
 
         try{
             Set<Id> clientIds = new Set<Id>();               
-                    if (!String.isBlank(accauntGroup)) {
-                        clientIds.add(accounId);
-                    } 
-                    else if (!String.isBlank(localClientGroup)) {
-                        List<Local_Client__c> mainAccounts = DMT_cloneParticipantForLine_Selector.getLocalClient(localClient);                      
-                        if (!mainAccounts.isEmpty()) {
-                            if (mainAccounts[0].Cib_Client__c != null) { clientIds.add(mainAccounts[0].Cib_Client__c);}
-                            if (mainAccounts[0].Cib_Client__r.DES_Main_Parent__c != null) {clientIds.add(mainAccounts[0].Cib_Client__r.DES_Main_Parent__c);}
+                    if (!String.isBlank(accauntGroup) && !String.isBlank(accounId)) {
+                        Account acc = [SELECT Id, DES_Group_Code__c, DES_Main_Parent__c, participant_id__c, RecordType.DeveloperName
+                                       FROM Account
+                                       WHERE Id = :accounId LIMIT 1];
+                        if (acc.DES_Group_Code__c != null) {
+                            clientIds.add(acc.Id);
+                        } else if (acc.RecordType.DeveloperName == 'Prospect_Subsidiary') {
+                            clientIds.add(acc.Id);
+                            if (acc.participant_id__c != null) { 
+                                clientIds.add(acc.participant_id__c); 
+                            }
+                        } else if (acc.DES_Main_Parent__c != null) {
+                            clientIds.add(acc.Id);
+                            if (acc.DES_Main_Parent__c != null) { 
+                                clientIds.add(acc.DES_Main_Parent__c); 
+                            }
                         }
                     }
                     List<DES_BBVA_Management_team__c> managementTeam = new List<DES_BBVA_Management_team__c>();
@@ -89,7 +97,6 @@ public with sharing class DMT_cloneParticipantForLineFromFlow {
                     }
                     if (!existingMembers.isEmpty()) { delete existingMembers;}
                     createCoverageTeamToTeamMbembers(managementTeam, newLineId);
-
 
         } catch (Exception e) {
             System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(),e.getStackTraceString(),e.getLineNumber(),e.getTypeName(),'DMT_cloneParticipantForLineFromFlow','hasADifferentGroup','DMT',''));

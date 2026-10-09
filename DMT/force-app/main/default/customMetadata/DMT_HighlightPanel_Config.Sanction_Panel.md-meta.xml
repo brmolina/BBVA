@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Sanction Panel</label>
+    <protected>false</protected>
+    <values>
+        <field>Custom_Icon_URL__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Fields_Configuration__c</field>
+        <value xsi:type="xsd:string">[
+  {
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;label&quot;: &quot;Cliente&quot;,
+    &quot;fieldApiName&quot;: &quot;Client__c&quot;,
+    &quot;isVisible&quot;: false
+  },
+ {
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;label&quot;: &quot;Cliente&quot;,
+    &quot;fieldApiName&quot;: &quot;Client__r.DMT_Client_Prospect_Name__c&quot;,
+    &quot;action&quot;: {
+      &quot;type&quot;: &quot;navigate&quot;,
+      &quot;params&quot;: {
+        &quot;recordId&quot;: &quot;{Client__c}&quot;,
+        &quot;objectApiName&quot;: &quot;Account&quot;
+      }
+    }
+  },
+  {
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;label&quot;: &quot;Record Type&quot;,
+    &quot;fieldApiName&quot;: &quot;DMT_RecordTypeName__c&quot;
+  },
+  {
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;label&quot;: &quot;Line ID&quot;,
+    &quot;fieldApiName&quot;: &quot;Line_Id__c&quot;
+  },
+  {
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;label&quot;: &quot;OpportunityID&quot;,
+    &quot;fieldApiName&quot;: &quot;DMT_Opportunity__c&quot;,
+    &quot;isVisible&quot;: false
+  },
+  {
+    &quot;type&quot;: &quot;text&quot;,
+    &quot;label&quot;: &quot;Opportunity&quot;,
+    &quot;fieldApiName&quot;: &quot;DMT_Opportunity__r.Name&quot;,
+    &quot;action&quot;: {
+      &quot;type&quot;: &quot;navigate&quot;,
+      &quot;params&quot;: {
+        &quot;recordId&quot;: &quot;{DMT_Opportunity__c}&quot;,
+        &quot;objectApiName&quot;: &quot;Opportunity&quot;
+      }
+    }
+  }
+
+]</value>
+    </values>
+    <values>
+        <field>Icon_Name__c</field>
+        <value xsi:type="xsd:string">DMTMarco_Line</value>
+    </values>
+    <values>
+        <field>Icon_Size__c</field>
+        <value xsi:type="xsd:string">small</value>
+    </values>
+    <values>
+        <field>Icon_Type__c</field>
+        <value xsi:type="xsd:string">staticresource</value>
+    </values>
+    <values>
+        <field>Menu_Actions_JSON__c</field>
+        <value xsi:type="xsd:string">[
+  {
+    &quot;label&quot;: &quot;Send to closed lost&quot;,
+    &quot;name&quot;: &quot;Send_to_closed_lost&quot;,
+    &quot;iconConfig&quot;: {
+      &quot;type&quot;: &quot;utility&quot;,
+      &quot;name&quot;: &quot;close&quot;
+    },
+    &quot;variant&quot;: &quot;neutral&quot;,
+    &quot;actionType&quot;: &quot;quickaction&quot;,
+    &quot;actionConfig&quot;: {
+      &quot;quickActionApiName&quot;: &quot;DMT_Line__c.Send_to_closed_lost&quot;
+    },
+    &quot;disabled&quot;: false,
+  &quot;visibilityCondition&quot;: {
+    &quot;combineConditions&quot;: &quot;1 AND 5 AND (2 OR 3 OR 4) AND 6&quot;,
+    &quot;conditions&quot;: [
+      {
+        &quot;fieldName&quot;: &quot;DMT_Cancel__c&quot;,
+        &quot;operator&quot;: &quot;equals&quot;,
+        &quot;value&quot;: &quot;false&quot;
+      },
+      {
+        &quot;fieldName&quot;: &quot;Status__c&quot;,
+        &quot;operator&quot;: &quot;equals&quot;,
+        &quot;value&quot;: &quot;Draft&quot;
+      },
+      {
+        &quot;fieldName&quot;: &quot;Status__c&quot;,
+        &quot;operator&quot;: &quot;equals&quot;,
+        &quot;value&quot;: &quot;Proposal&quot;
+      },
+      {
+        &quot;fieldName&quot;: &quot;Status__c&quot;,
+        &quot;operator&quot;: &quot;equals&quot;,
+        &quot;value&quot;: &quot;Approval&quot;
+      },
+      {
+        &quot;fieldName&quot;: &quot;DMT_IsErasable__c&quot;,
+        &quot;operator&quot;: &quot;equals&quot;,
+        &quot;value&quot;: &quot;false&quot;
+      },
+      {
+        &quot;fieldName&quot;: &quot;DMT_Deleted__c&quot;,
+        &quot;operator&quot;: &quot;equals&quot;,
+        &quot;value&quot;: &quot;false&quot;
+      }
+    ]
+  }
+  },
+  {
+    &quot;label&quot;: &quot;Clone&quot;,
+    &quot;name&quot;: &quot;Clone_Line&quot;,
+    &quot;iconConfig&quot;: {
+      &quot;type&quot;: &quot;utility&quot;,
+      &quot;name&quot;: &quot;file&quot;
+    },
+    &quot;variant&quot;: &quot;neutral&quot;,
+    &quot;actionType&quot;: &quot;quickaction&quot;,
+    &quot;actionConfig&quot;: {
+      &quot;quickActionApiName&quot;: &quot;DMT_Line__c.Clone_Line&quot;
+    },
+    &quot;disabled&quot;: false,
+  &quot;visibilityCondition&quot;: {
+    &quot;fieldName&quot;: &quot;DMT_Deleted__c&quot;,
+    &quot;operator&quot;: &quot;equals&quot;,
+    &quot;value&quot;: &quot;false&quot;
+  }
+  },
+  {
+    &quot;label&quot;: &quot;Delete&quot;,
+    &quot;name&quot;: &quot;DMT_DeleteLines&quot;,
+    &quot;iconConfig&quot;: {
+      &quot;type&quot;: &quot;utility&quot;,
+      &quot;name&quot;: &quot;record_delete&quot;
+    },
+    &quot;variant&quot;: &quot;destructive&quot;,
+    &quot;actionType&quot;: &quot;quickaction&quot;,
+    &quot;actionConfig&quot;: {
+      &quot;quickActionApiName&quot;: &quot;DMT_Line__c.DMT_DeleteLines&quot;
+    },
+    &quot;disabled&quot;: false,
+  &quot;visibilityCondition&quot;: {
+    &quot;combineConditions&quot;: &quot;1 AND 2&quot;,
+    &quot;conditions&quot;: [
+      {
+        &quot;fieldName&quot;: &quot;DMT_IsErasable__c&quot;,
+        &quot;operator&quot;: &quot;equals&quot;,
+        &quot;value&quot;: &quot;true&quot;
+      },
+      {
+        &quot;fieldName&quot;: &quot;DMT_Deleted__c&quot;,
+        &quot;operator&quot;: &quot;equals&quot;,
+        &quot;value&quot;: &quot;false&quot;
+      }
+    ]
+  }
+  },
+  {
+    &quot;label&quot;: &quot;True Delete&quot;,
+    &quot;name&quot;: &quot;DMT_True_Delete&quot;,
+    &quot;iconConfig&quot;: {
+      &quot;type&quot;: &quot;utility&quot;,
+      &quot;name&quot;: &quot;delete&quot;
+    },
+    &quot;variant&quot;: &quot;destructive&quot;,
+    &quot;actionType&quot;: &quot;quickaction&quot;,
+    &quot;actionConfig&quot;: {
+      &quot;quickActionApiName&quot;: &quot;DMT_Line__c.DMT_True_Delete&quot;
+    },
+    &quot;disabled&quot;: false,
+  &quot;visibilityCondition&quot;: {
+    &quot;combineConditions&quot;: &quot;1 AND 2&quot;,
+    &quot;conditions&quot;: [
+      {
+        &quot;custompermission&quot;: &quot;DMT_Line_God&quot;
+      },
+      {
+        &quot;fieldName&quot;: &quot;DMT_Deleted__c&quot;,
+        &quot;operator&quot;: &quot;equals&quot;,
+        &quot;value&quot;: &quot;false&quot;
+      }
+    ]
+  }
+  }
+]</value>
+    </values>
+    <values>
+        <field>Metadata_Config__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Object_API_Name__c</field>
+        <value xsi:type="xsd:string">DMT_Line__c</value>
+    </values>
+    <values>
+        <field>Primary_Actions_JSON__c</field>
+        <value xsi:type="xsd:string">[
+{
+  &quot;label&quot;: &quot;Help&quot;,
+  &quot;name&quot;: &quot;Help_LM&quot;,
+  &quot;iconConfig&quot;: {
+    &quot;type&quot;: &quot;utility&quot;,
+    &quot;name&quot;: &quot;question&quot;
+  },
+  &quot;variant&quot;: &quot;brand&quot;,
+  &quot;actionType&quot;: &quot;quickaction&quot;,
+  &quot;actionConfig&quot;: {
+    &quot;quickActionApiName&quot;: &quot;DMT_Line__c.Help_LM&quot;
+  },
+  &quot;disabled&quot;: false
+},
+{
+  &quot;label&quot;: &quot;Feedback&quot;,
+  &quot;name&quot;: &quot;Feedback&quot;,
+  &quot;variant&quot;: &quot;brand&quot;,
+  &quot;actionType&quot;: &quot;labelUrl&quot;
+},
+{
+&quot;label&quot;: &quot;Chatter&quot;,
+&quot;name&quot;: &quot;ChatterOpp&quot;,
+&quot;variant&quot;: &quot;brand&quot;,
+&quot;actionType&quot;: &quot;quickaction&quot;,
+&quot;iconConfig&quot;: {
+&quot;type&quot;: &quot;utility&quot;,
+&quot;name&quot;: &quot;chat&quot;
+},
+&quot;actionConfig&quot;: {
+&quot;quickActionApiName&quot;: &quot;DMT_Line__c.ChatterFeed&quot;
+},
+&quot;disabled&quot;: false,
+&quot;visibilityCondition&quot;: {
+&quot;systemPermission&quot;: &quot;PermissionsChatterEnabledForUser&quot;
+}
+},
+{
+  &quot;label&quot;: &quot;Deal Management&quot;,
+  &quot;name&quot;: &quot;Deal_Management_Line&quot;,
+  &quot;variant&quot;: &quot;neutral&quot;,
+  &quot;actionType&quot;: &quot;quickaction&quot;,
+  &quot;actionConfig&quot;: {
+    &quot;quickActionApiName&quot;: &quot;DMT_Line__c.Deal_Management_Line&quot;
+  },
+  &quot;disabled&quot;: false
+},
+{
+  &quot;label&quot;: &quot;Refresh&quot;,
+  &quot;name&quot;: &quot;DMT_RefreshSanction&quot;,
+  &quot;variant&quot;: &quot;neutral&quot;,
+  &quot;iconConfig&quot;: {
+    &quot;type&quot;: &quot;utility&quot;,
+    &quot;name&quot;: &quot;refresh&quot;
+  },
+  &quot;actionType&quot;: &quot;quickaction&quot;,
+  &quot;actionConfig&quot;: {
+    &quot;quickActionApiName&quot;: &quot;DMT_Line__c.DMT_RefreshSanction&quot;
+  },
+  &quot;disabled&quot;: false,
+  &quot;visibilityCondition&quot;: {
+    &quot;fieldName&quot;: &quot;DMT_RecordTypeName__c&quot;,
+    &quot;operator&quot;: &quot;equals&quot;,
+    &quot;value&quot;: &quot;Risk Approval&quot;
+  }
+}
+]</value>
+    </values>
+    <values>
+        <field>Record_Type_API_Name__c</field>
+        <value xsi:type="xsd:string">Sanction</value>
+    </values>
+    <values>
+        <field>Static_Resource_Name__c</field>
+        <value xsi:type="xsd:string">DMT_LineIcon</value>
+    </values>
+    <values>
+        <field>Static_Resource_Path__c</field>
+        <value xsi:type="xsd:string">?</value>
+    </values>
+</CustomMetadata>

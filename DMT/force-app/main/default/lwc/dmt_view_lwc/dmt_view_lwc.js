@@ -1,4 +1,6 @@
 import { LightningElement, api, wire, track } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
+import FORM_FACTOR from '@salesforce/client/formFactor';
 import { getRecord, getRecordUi, getFieldValue } from 'lightning/uiRecordApi';
 import getRecordId from '@salesforce/apex/DMT_ViewController.getRecordId';
 import getItemsToDisplay from '@salesforce/apex/DMT_ViewController.getItemsToDisplay';
@@ -15,7 +17,7 @@ import generateFinalPdf from '@salesforce/apex/DMT_PdfService.generateFinalPdf';
 import { publish, MessageContext } from 'lightning/messageService';
 import DMT_VIEW_DATA_CHANNEL from '@salesforce/messageChannel/DmtViewData__c';
 
-export default class Dmt_view_lwc extends LightningElement {
+export default class Dmt_view_lwc extends NavigationMixin(LightningElement) {
     // ---------------- Public/Tracked API ----------------
     @track downloadInProgress = false;
 
@@ -230,7 +232,6 @@ export default class Dmt_view_lwc extends LightningElement {
 
     tryInit() {
         if (this.isReady()) {
-            // No chaining here — just (re)run orchestrator debounced
             this.scheduleOrchestrate('tryInit');
         } else {
             console.log('[tryInit] Not ready yet — skipping orchestrator.');
@@ -252,7 +253,6 @@ export default class Dmt_view_lwc extends LightningElement {
     // Lifecycle
     // ----------------------------------------------------
     connectedCallback() {
-        // Infer object/type if provided via @api type
         if (this.viewType != null && this.viewType !== '') {
             switch (this.viewType) {
                 case 'Line_Treasury':
@@ -280,18 +280,14 @@ export default class Dmt_view_lwc extends LightningElement {
                     break;
             }
         } else {
-            // Default to Case/Opportunity if not explicitly set
             this.viewType = this.objectApiName == 'Case' ? 'Case' : 'Opportunity';
         }
 
         if ((this.recordOrLineId == null || this.recordOrLineId === '') && this.objectApiName != null && this.recordTypeApiName != null) {
-            // recordId missing, fetch it -> will call tryInit when ready
             this.getRecordId();
         } else if (this._selectedItems.length === 0 && this.recordOrLineId && this.objectApiName != null) {
-            // items missing, fetch them -> will call tryInit when ready
             this.getItemsToDisplay();
         } else {
-            // everything already ready, we can init directly
             this.tryInit();
         }
     }
@@ -335,7 +331,6 @@ export default class Dmt_view_lwc extends LightningElement {
         if (!this.recordOrLineId) return;
         if (this.prevRecordOrLineId === this.recordOrLineId) return;
 
-        // reset charts/features whenever record changes
         this.hasImage = false;
         this.featuresData = [];
         this._featuresSourceId = null;
@@ -346,9 +341,8 @@ export default class Dmt_view_lwc extends LightningElement {
 
         this.retryCount = 0;
 
-        this._startNewRender(); // cancel outstanding renders
+        this._startNewRender();
 
-        // fetch items if empty; updateItemsToDisplay() decides if init is needed
         if (!this._selectedItems || this._selectedItems.length === 0) {
             try {
                 await this.getItemsToDisplay();
@@ -393,29 +387,24 @@ export default class Dmt_view_lwc extends LightningElement {
             const myRun = ++this._runId;
             console.log(`[orchestrate] START (run ${myRun}) reason: ${reason}`);
 
-            // Pre-check: Are we ready to fetch/render?
             if (!this.isReady()) {
                 console.log('[orchestrate] Not ready, skipping pass.');
                 return;
             }
 
-            // 1 Ensure selected items are present
             if (!this._selectedItems || this._selectedItems.length === 0) {
                 await this.getItemsToDisplay();
-                if (myRun !== this._runId) return; // state changed mid-run
+                if (myRun !== this._runId) return;
             }
 
             const hasLimitVisual = this._selectedItems.some(i => i.component === 'Limit Visual');
             const hasProfitabilityVisual = this._selectedItems.some(i => i.component === 'Profitability Visual');
 
-            // 2 For Limit Visual we need currency
             if (hasLimitVisual && !this.currencyIsoCode) {
-                // wait for currency to arrive, retry later
                 this.scheduleOrchestrate('await-currency', 400);
                 return;
             }
 
-            // 3️ FEATURES fetch (only if record changed or never fetched)
             let features = this.featuresData;
             const recordStable = this._featuresSourceId === this.recordOrLineId;
             const shouldFetchFeatures = (hasLimitVisual || hasProfitabilityVisual) && (!recordStable || !features);
@@ -431,7 +420,6 @@ export default class Dmt_view_lwc extends LightningElement {
                 console.log(`[orchestrate] Features fetched, count: ${this.featuresData.length}`);
             }
 
-            // 4️ Build chart inputs
             let allLimits = null;
             let profitability = null;
             this.hasImage = false;
@@ -444,9 +432,8 @@ export default class Dmt_view_lwc extends LightningElement {
                 profitability = build.profitability;
             }
 
-            // 5 Images
             let imageData = null;
-           if (this.hasImage) {
+            if (this.hasImage) {
                 let dataToPass = this.recordTypeApiName === 'DMT_Opportunity' ? profitability : allLimits;
 
                 if (dataToPass) {
@@ -455,13 +442,12 @@ export default class Dmt_view_lwc extends LightningElement {
                 }
             }
 
-            // 6 Final render: always render if ready and state changed
             const stateChanged = !this._lastRenderedState ||
                 this._lastRenderedState.features !== this.featuresData ||
                 this._lastRenderedState.hasImage !== this.hasImage ||
                 this._lastRenderedState.imageData !== imageData;
 
-                console.log('stateChanged, ', stateChanged);
+            console.log('stateChanged, ', stateChanged);
             if (stateChanged) {
                 const token = this._startNewRender();
                 await this._fetchAndMaybeRender(token, imageData, !!this.hasImage, myRun);
@@ -481,9 +467,7 @@ export default class Dmt_view_lwc extends LightningElement {
         }
     }
 
-    // Fetch + render (single place that calls loadComponentsForView and paints)
     async _fetchAndMaybeRender(token, imageData, hasImage, myRun) {
-        // Build a signature to avoid duplicate renders
         const signature = JSON.stringify({
             id: this.recordOrLineId,
             items: this._selectedItems,
@@ -499,7 +483,7 @@ export default class Dmt_view_lwc extends LightningElement {
         }
 
         const result = await this.loadComponentsForView(token, imageData, hasImage);
-        if (myRun !== this._runId || result === null) return; // stale/aborted
+        if (myRun !== this._runId || result === null) return;
 
         let htmlToRender = '';
         if (result.error) {
@@ -513,7 +497,6 @@ export default class Dmt_view_lwc extends LightningElement {
             this.isRendered = true;
 
             if(this.publishToSibling) {
-                // 4. PUBLISH NATIVE LMS EVENT TO SIBLINGS
                 console.log('[dmt_view_lwc] Publishing payloads to LMS...');
                 publish(this.messageContext, DMT_VIEW_DATA_CHANNEL, {
                     htmlPayload: htmlToRender,
@@ -533,12 +516,10 @@ export default class Dmt_view_lwc extends LightningElement {
     // Build chart inputs (pure)
     // ----------------------------------------------------
     buildChartInputs(features) {
-        // Returns { allLimits, hasImage, profitability }
         let profitability = null;
         let hasImage = false;
         const allLimitsLocal = [];
 
-        //  Find the Profitability feature
         const profitabilityFeature = features.find(f => f.name.includes('Profitability') && f.profitability);
         if (profitabilityFeature) {
             console.log('isProfitability, ', JSON.stringify(profitabilityFeature));
@@ -546,7 +527,7 @@ export default class Dmt_view_lwc extends LightningElement {
             profitability = profitabilityFeature.profitability;
         }
         console.log('isProfitability, ', JSON.stringify(features));
-        // Subfeature charts (consumption limits)
+
         for (const key in features) {
             const f = features[key];
             if (f && f.consumptionLimits !== undefined) {
@@ -623,14 +604,12 @@ export default class Dmt_view_lwc extends LightningElement {
             let image64AllLocal = [];
 
             if (this.recordTypeApiName === 'DMT_Opportunity') {
-                // Profitability chart image
                 const chartComponent = this.template.querySelector('c-dmt_profitability_chart');
                 if (!chartComponent) {
                     console.error('[getImageB64] dmt_profitability_chart component not found in template!');
                     return '';
                 }
                 try {
-                    // If the child needs data, pass it here:
                     chartComponent.profitability = limit;
                     const result = await chartComponent.getChartImage(300, 100);
                     if (result) {
@@ -641,12 +620,10 @@ export default class Dmt_view_lwc extends LightningElement {
                     }
                 } catch (e) {
                     console.error('[getImageB64] error generating profitability chart image:', e.message);
-                    // Paint an inline error message; orchestrator will likely retry
                     this.vfPageUrl = `<div class="error-message">Error generating profitability chart image: ${e.message}</div>`;
                     this.loadIframe();
                 }
             } else {
-                // Subfeature charts images
                 const imageGenerator = this.template.querySelector('c-dmt_subfeature_chart');
                 if (!imageGenerator) {
                     console.error('[getImageB64] dmt_subfeature_chart component not found in template!');
@@ -669,11 +646,10 @@ export default class Dmt_view_lwc extends LightningElement {
                 const resolved = await Promise.all(promises);
                 console.log('resolved ', JSON.stringify(resolved)); 
                 resolved.forEach((res) => {
-                    if (res  && res !== null) {
+                    if (res && res !== null) {
                         console.log('res ', res);
                         image64AllLocal.push({ imgB64: res });
                     }
-                        
                 });
             }
             console.log('image64AllLocal ', JSON.stringify(image64AllLocal));
@@ -685,7 +661,7 @@ export default class Dmt_view_lwc extends LightningElement {
     }
 
     // ----------------------------------------------------
-    // Server HTML/PDF fetcher (returns instead of rendering)
+    // Server HTML/PDF fetcher
     // ----------------------------------------------------
     async loadComponentsForView(token = null, imageData = null, hasImage) {
         if (hasImage && !imageData) {
@@ -734,15 +710,12 @@ export default class Dmt_view_lwc extends LightningElement {
             errorMessage = parsedResult.error;
         }
 
-        // Validate error-only HTML
         let html = parsedResult?.HTML || '';
         if (this.validateResponseForErrors(html)) {
-            // if HTML is only error placeholders, apply our retry logic at the orchestrator level
-            // but this method remains a pure-return.
             html = '';
             if (this.retryCount < this.MAX_RETRIES) {
                 this.retryCount++;
-                errorMessage = 'Unable to load data after multiple attempts.'; // signal to orchestrator
+                errorMessage = 'Unable to load data after multiple attempts.';
             } else {
                 errorMessage = 'Unable to load data after multiple attempts.';
             }
@@ -763,16 +736,13 @@ export default class Dmt_view_lwc extends LightningElement {
     validateResponseForErrors(htmlString) {
         if (!htmlString) return false;
 
-        // If only one component, skip error validation
         if (this.itemsToDisplay && this.itemsToDisplay.length === 1) {
             return false;
         }
 
-        // Extract all <div> contents
         const divs = htmlString.match(/<div>(.*?)<\/div>/g) || [];
         const contents = divs.map(d => d.replace(/<\/?div>/g, '').trim());
 
-        // If we got at least one div, and all start with "Error:"
         const allErrors = contents.length > 0 && contents.every(c => c.startsWith('Error:'));
         return allErrors;
     }
@@ -781,7 +751,6 @@ export default class Dmt_view_lwc extends LightningElement {
     // DOM render integration
     // ----------------------------------------------------
     renderedCallback() {
-        // Keep itemsToDisplay synced with selectedItems if parent mutates it
         if (
             (this._selectedItems.length > 0 && this.itemsToDisplay.length > 0 && JSON.stringify(this._selectedItems) !== JSON.stringify(this.itemsToDisplay)) ||
             (this.prevRecordOrLineId !== this.recordOrLineId)
@@ -791,11 +760,9 @@ export default class Dmt_view_lwc extends LightningElement {
     }
 
     loadIframe() {
-        // Paint vfPageUrl into container
         const contentHtml = this.template.querySelector('.htmlContent');
         if (contentHtml) {
             contentHtml.innerHTML = this.vfPageUrl;
-            // Styling
             contentHtml.style.width = '100%';
             contentHtml.style.maxHeight = '53vh';
             contentHtml.style.overflowY = 'auto';
@@ -851,53 +818,49 @@ export default class Dmt_view_lwc extends LightningElement {
     }
 
     async downloadPdf() {
-        //await this.generatePdf(JSON.parse(this.jsonForPdf || '{}'));
         await this.generatePdf(this.htmlForPdf);
     }
 
     async generatePdf(rawHtml) {
+        const isMobile = FORM_FACTOR === 'Small' || FORM_FACTOR === 'Medium';
         try {
-/*              const pdfGenerator = this.template.querySelector('c-pdf-generator');
-            pdfGenerator.jsonData = rawHtml;
-            pdfGenerator.output = 'blob';
-            const pdfBlob = await pdfGenerator.generatePDF();
-            if (pdfBlob) {
-                const blobUrl = URL.createObjectURL(pdfBlob);
-                const a = document.createElement('a');
-                a.href = blobUrl;
-                a.download = 'DMT_ViewPDF.pdf';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.open(blobUrl, '_blank');
-                URL.revokeObjectURL(blobUrl);
-            } */ 
             if (!rawHtml) {
                 throw new Error('[PDF] No HTML provided.');
             }
             // ── TX 1: persistir imágenes ────────────────────────────
             console.log('[PDF] ⏳ TX1 — Persisting inline images...');
             const prep = await preparePdfAssets({ originalHtml: rawHtml });
-            console.log('[PDF] ✅ TX1 — Temp docs created:', prep.documentIds?.length || 0);
 
-            // ── TX 2: generar PDF (Documents ya commiteados) ────────
+            // ── TX 2: generar PDF ───────────────────────────────────
             console.log('[PDF] ⏳ TX2 — Generating PDF...');
-            const pdfBase64 = await generateFinalPdf({
+            const pdfResult = await generateFinalPdf({
                 finalHtml: prep.modifiedHtml,
-                docIds: prep.documentIds || []
+                docIds: prep.documentIds || [],
+                isMobile: isMobile
             });
-            console.info('[PDF] ✅ TX2 — PDF generated. Base64 size:', pdfBase64?.length || 0);
 
-            // ── Convertir base64 → Blob ─────────────────────────────
-            const byteChars = atob(pdfBase64);
-            const byteArray = new Uint8Array(byteChars.length);
-            for (let i = 0; i < byteChars.length; i++) {
-                byteArray[i] = byteChars.charCodeAt(i);
-            }
+            if (isMobile) {
+                // ── MÓVIL: Forzar descarga/apertura nativa vía servlet shepherd ──
+                if (pdfResult) {
+                    this[NavigationMixin.Navigate]({
+                        type: 'standard__webPage',
+                        attributes: {
+                            url: `/sfc/servlet.shepherd/document/download/${pdfResult}`
+                        }
+                    });
+                }
+            } else {
+                // ── DESKTOP: Lógica original con Blob y simulación de clic ──────────
+                const pdfBase64 = pdfResult;
+                const byteChars = atob(pdfBase64);
+                const byteArray = new Uint8Array(byteChars.length);
+                for (let i = 0; i < byteChars.length; i++) {
+                    byteArray[i] = byteChars.charCodeAt(i);
+                }
 
-            const pdfBlob = new Blob([byteArray], { type: 'application/pdf' });
-            console.log('[PDF] Final PDF Blob size (bytes):', pdfBlob.size); 
-            if (pdfBlob) {
+                const pdfBlob = new Blob([byteArray], { type: 'application/pdf' });
+                console.log('[PDF] Final PDF Blob size (bytes):', pdfBlob.size); 
+                if (pdfBlob) {
                     const blobUrl = URL.createObjectURL(pdfBlob);
                     const a = document.createElement('a');
                     a.href = blobUrl;
@@ -905,8 +868,16 @@ export default class Dmt_view_lwc extends LightningElement {
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
-                    window.open(blobUrl, '_blank');
+                    const previewLink = document.createElement('a');
+                    previewLink.href = blobUrl;
+                    previewLink.target = '_blank';
+                    previewLink.rel = 'noopener noreferrer';
+                    previewLink.style.visibility = 'hidden';
+                    document.body.appendChild(previewLink);
+                    previewLink.click();
+                    previewLink.remove();
                     URL.revokeObjectURL(blobUrl);
+                }
             }
         } catch (error) {
             console.error('Error in generatePdf:' + JSON.stringify(error));
@@ -914,10 +885,9 @@ export default class Dmt_view_lwc extends LightningElement {
         } finally {
             this.downloadInProgress = false;
             this.showDownloadPdf = false;
-            if (this.recordId) {
+            if (!isMobile && this.recordId) {
                 window.location.reload();
             }
         }
     }
-       
 }

@@ -219,6 +219,30 @@ public static void syncNewMoneyAndFinalTakeWithBbvaCommitment(List<OpportunityLi
     }
 }
 
+/**
+* @description Calculates the EUR counter-valuation of DMT_Deal_amount__c (using g_currency_id__c
+* as the original currency) and stores it in DMT_Deal_Amount_EUR__c, so Opportunity Reports can show
+* both the original amount/currency and its EUR equivalent without relying on the native
+* CurrencyIsoCode/multicurrency conversion (which cannot differ from the parent Opportunity's currency).
+* Called from before insert and before update; does not touch CurrencyIsoCode.
+* @param oliList Trigger.new records
+*/
+public static void calculateDealAmountEur(List<OpportunityLineItem> oliList) {
+    if (oliList == null || oliList.isEmpty()) {
+        return;
+    }
+
+    for (OpportunityLineItem oli : oliList) {
+        if (oli.DMT_Deal_amount__c == null || String.isBlank(oli.g_currency_id__c)) {
+            oli.DMT_Deal_Amount_EUR__c = null;
+            continue;
+        }
+
+        oli.DMT_Deal_Amount_EUR__c = DMT_Currency.convert(oli.DMT_Deal_amount__c, oli.g_currency_id__c, 'EUR');
+    }
+}
+
+
 public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, Map<Id, OpportunityLineItem> oldMap) {
     List<OpportunityLineItem> filteredList = new List<OpportunityLineItem>();
     Set<Id> oppIds = new Set<Id>();
@@ -289,6 +313,11 @@ public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, 
     private static Map<Id, Decimal> calculateOppAmountMap( Set<Id> oppIds,Map<Id, OpportunityLineItem> newRecords, Map<Id, OpportunityLineItem> oldRecords,List<OpportunityLineItem> allOliList,Map<Id, Opportunity> filteredOpps ) {
         Map<Id, Decimal> oppAmountMap = new Map<Id, Decimal>();
 
+        // Inicializar en 0 para que el update se dispare aunque no queden productos
+        for (Id oppId : oppIds) {
+            oppAmountMap.put(oppId, 0);
+        }
+
         for (OpportunityLineItem oli : allOliList) {
             Decimal amount = getDealAmountFromBbvaCommitment(oli);
             if (!oppAmountMap.containsKey(oli.OpportunityId)) {
@@ -299,6 +328,7 @@ public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, 
                 system.debug('**** a ESTA DIVISA: ' + oli.Opportunity.DMT_CurrencyText__c);
                 system.debug('**** TOTAL CAMBIO: ' + DMT_Currency.convert(amount,oli.g_currency_id__c, oli.Opportunity.DMT_CurrencyText__c));
                 Decimal convertedAmount = DMT_Currency.convert(amount,oli.g_currency_id__c, oli.Opportunity.DMT_CurrencyText__c);
+
                 if( convertedAmount == null ){
                    Map<Id, OpportunityLineItem> errorSource = newRecords != null ? newRecords : oldRecords;
                    OpportunityLineItem errorOli = errorSource != null ? errorSource.get(oli.Id) : null;
@@ -330,7 +360,10 @@ public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, 
             system.debug('*** SE VA A CONVERTIR - INSERT CONTEXT');
             for (OpportunityLineItem newOli : newRecords.values()) {
                 Decimal newAmount = getDealAmountFromBbvaCommitment(newOli);
-                if (newOli.OpportunityId != null && newAmount != null && newAmount != 0) {
+                Boolean hasDealAmount = newAmount != null && newAmount != 0;
+                Boolean hasNotionalAmount = newOli.bbva_prtcp_tranche_amount__c != null && newOli.bbva_prtcp_tranche_amount__c != 0;
+
+                if (newOli.OpportunityId != null && (hasDealAmount || hasNotionalAmount)) {
                     oppIds.add(newOli.OpportunityId);
                     mapOpliConditionById.put(newOli.Id, newOli);
                 }
@@ -339,12 +372,15 @@ public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, 
             system.debug('*** SE VA A CONVERTIR - UPDATE CONTEXT');
             for (OpportunityLineItem newOli : newRecords.values()) {
                 OpportunityLineItem oldOli = oldRecords.get(newOli.Id);
-                
+
                 Decimal newAmount = getDealAmountFromBbvaCommitment(newOli);
                 Decimal oldAmount = getDealAmountFromBbvaCommitment(oldOli);
-                
-                // Check if the field changed
-                if (newOli.OpportunityId != null && (newAmount != oldAmount || newOli.g_currency_id__c != oldOli.g_currency_id__c)) {
+
+                Boolean dealAmountChanged = newAmount != oldAmount;
+                Boolean currencyChanged = newOli.g_currency_id__c != oldOli.g_currency_id__c;
+                Boolean notionalChanged = newOli.bbva_prtcp_tranche_amount__c != oldOli.bbva_prtcp_tranche_amount__c;
+
+                if (newOli.OpportunityId != null && (dealAmountChanged || currencyChanged || notionalChanged)) {
                     system.debug('*** Cambia amount');
                     oppIds.add(newOli.OpportunityId);
                     mapOpliConditionById.put(newOli.Id, newOli);
@@ -395,6 +431,10 @@ public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, 
          System.debug('*** Mapa SIN divisas convertidas: '+ allOliList);
         Map<Id, Decimal> oppAmountMap = calculateOppAmountMap(oppIds, newRecords,oldRecords, allOliList.values(), filteredOpps);
         Map<Id, Decimal> oppNotionalConvertedMap = new Map<Id, Decimal>();
+        // Inicializar en 0 para que se actualice a 0 cuando no queden productos
+        for (Id oppId : oppIds) {
+            oppNotionalConvertedMap.put(oppId, 0);
+        }
         for (OpportunityLineItem oli : allOliList.values()) {
             if (!oppNotionalConvertedMap.containsKey(oli.OpportunityId)) {
                 oppNotionalConvertedMap.put(oli.OpportunityId, 0);
@@ -402,6 +442,7 @@ public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, 
             Decimal rawNotional = oli.bbva_prtcp_tranche_amount__c != null ? oli.bbva_prtcp_tranche_amount__c : 0;
             // Apply currency conversion to notional amount as well
             Decimal convertedNotional = DMT_Currency.convert(rawNotional, oli.g_currency_id__c, oli.Opportunity.DMT_CurrencyText__c);
+            
             if (convertedNotional == null) {
                 convertedNotional = rawNotional;
             }
@@ -451,30 +492,21 @@ public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, 
         }
 
         // ========================================================================
-        // 3. GATHER ELIGIBLE DATA & CHECK IF PRODUCT QUERY IS NEEDED
+        // 3. GATHER ELIGIBLE DATA AND GLOBAL PRODUCT TAXONOMY LOOKUPS
         // ========================================================================
-        Set<Id> prodIdsToQuery = new Set<Id>();
         List<OpportunityLineItem> eligibleOlis = new List<OpportunityLineItem>();
-        Set<String> productCodes = new Set<String>();
+        Set<Id> globalProductTaxonomyIds = new Set<Id>();
         for (OpportunityLineItem oli : newList) {
             if (oli.DMT_RiskTypeLocked__c || !validOppMap.containsKey(oli.OpportunityId)) {
                 System.debug(LoggingLevel.INFO, '--- SKIP: OLI ' + oli.Id + ' is Locked or has no valid Opportunity.');
                 continue;
             }
-            
-            if (String.isBlank(oli.ProductCode) && oli.Product2Id != null) {
-                System.debug(LoggingLevel.INFO, '--- OLI ' + oli.Id + ' requires Product query for Product2Id: ' + oli.Product2Id);
-                prodIdsToQuery.add(oli.Product2Id);
-            } else if (String.isNotBlank(oli.ProductCode)) {
-                System.debug(LoggingLevel.INFO, '--- OLI ' + oli.Id + ' has ProductCode: ' + oli.ProductCode);
-                productCodes.add(oli.ProductCode);
+
+            if (oli.DMT_Global_Product__c != null) {
+                globalProductTaxonomyIds.add(oli.DMT_Global_Product__c);
             }
 
             eligibleOlis.add(oli);
-        }
-        List<String> eligibleOliIds = new List<String>();
-        for (OpportunityLineItem eligibleOli : eligibleOlis) {
-            eligibleOliIds.add(String.valueOf(eligibleOli.Id));
         }
         if (eligibleOlis.isEmpty()) {
             System.debug(LoggingLevel.INFO, '--- ABORT: eligibleOlis is empty.');
@@ -482,28 +514,19 @@ public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, 
         }
 
         // ========================================================================
-        // 4. CONDITIONAL PRODUCT QUERY & TAXONOMY (D744)
+        // 4. QUERY THE TAXONOMY RECORD REFERENCED BY GLOBAL PRODUCT / GLOBAL MODEL
         // ========================================================================
-        Map<Id, Product2> prodMap = new Map<Id, Product2>();
-        if (!prodIdsToQuery.isEmpty()) {
-            prodMap = new Map<Id, Product2>([
-                SELECT Id, ProductCode FROM Product2 WHERE Id IN :prodIdsToQuery WITH SYSTEM_MODE
-            ]);
-            System.debug(LoggingLevel.INFO, '--- Product2 query returned ' + prodMap.size() + ' rows');
-            
-            for (Product2 p : prodMap.values()) {
-                System.debug(LoggingLevel.INFO,'--- Product2 ' + p.Id + ' has ProductCode: ' + p.ProductCode);
-                if (String.isNotBlank(p.ProductCode)) {
-                    productCodes.add(p.ProductCode);
-                }
-            }
-        }
-        if (productCodes.isEmpty()) {
-            System.debug(LoggingLevel.INFO,'--- ABORT: productCodes is empty after Product2 lookup. No taxonomy candidates.');
+        if (globalProductTaxonomyIds.isEmpty()) {
+            System.debug(LoggingLevel.INFO, '--- ABORT: no Global Product taxonomy lookup is populated.');
             return;
         }
 
-        Map<String, DMT_Taxonomy_Values__c> taxonomyByProdCode = getTaxonomyByProductCode(productCodes);
+        Map<Id, DMT_Taxonomy_Values__c> taxonomyByGlobalProductId = new Map<Id, DMT_Taxonomy_Values__c>([
+            SELECT Id, gf_catalog_atrb_val8_name__c
+            FROM DMT_Taxonomy_Values__c
+            WHERE Id IN :globalProductTaxonomyIds
+            WITH SYSTEM_MODE
+        ]);
 
         // ========================================================================
         // 5. IDENTIFY OLIs THAT REQUIRE A MITIGANT CHECK
@@ -511,16 +534,7 @@ public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, 
         Set<Id> oliIdsForMitigants = new Set<Id>();
         
         for (OpportunityLineItem oli : eligibleOlis) {
-            String currentProductCode = oli.ProductCode;
-            if (String.isBlank(currentProductCode) && prodMap.containsKey(oli.Product2Id)) {
-                currentProductCode = prodMap.get(oli.Product2Id).ProductCode;
-            }
-
-            if (String.isBlank(currentProductCode)) {
-                continue;
-            }
-
-            DMT_Taxonomy_Values__c tax = taxonomyByProdCode.get(currentProductCode);
+            DMT_Taxonomy_Values__c tax = taxonomyByGlobalProductId.get(oli.DMT_Global_Product__c);
             if (tax == null || String.isBlank(tax.gf_catalog_atrb_val8_name__c)) {
                 continue;
             }
@@ -536,7 +550,7 @@ public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, 
         // 6 & 7. CONDITIONAL MITIGANT QUERY & FINAL EVALUATION MATRIX
         // ========================================================================
         Map<Id, Integer> mitigantCountMap = getMitigantCountMap(oliIdsForMitigants);
-        applyRiskTypeEvaluation(eligibleOlis, prodMap, taxonomyByProdCode, mitigantCountMap);
+        applyRiskTypeEvaluation(eligibleOlis, taxonomyByGlobalProductId, mitigantCountMap);
     }
 
     // ========================================================================
@@ -563,21 +577,6 @@ public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, 
             unlockedMap.get(oli.OpportunityId).add(oli);
         }
         return unlockedMap;
-    }
-
-    private static Map<String, DMT_Taxonomy_Values__c> getTaxonomyByProductCode(Set<String> productCodes) {
-        Map<String, DMT_Taxonomy_Values__c> taxonomyMap = new Map<String, DMT_Taxonomy_Values__c>();
-        for (DMT_Taxonomy_Values__c tax : [
-            SELECT Id, DMT_Value__c, gf_catalog_atrb_val8_name__c
-            FROM DMT_Taxonomy_Values__c 
-            WHERE DMT_Catalog__c = 'D744' AND DMT_Value__c IN :productCodes AND DMT_Active__c = true WITH SYSTEM_MODE
-        ]) {
-            if (String.isNotBlank(tax.DMT_Value__c) && String.isNotBlank(tax.gf_catalog_atrb_val8_name__c)) {
-                taxonomyMap.put(tax.DMT_Value__c, tax);
-            }
-        }
-        System.debug(LoggingLevel.INFO, '--- getTaxonomyByProductCode returned ' + taxonomyMap.size() + ' items');
-        return taxonomyMap;
     }
 
     // HELPER 1: Centralize the days calculation to avoid duplicate code
@@ -609,21 +608,11 @@ public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, 
     }
 
     // HELPER 3: Isolate the Evaluation Matrix to drastically reduce the main method's complexity score
-    private static void applyRiskTypeEvaluation(List<OpportunityLineItem> eligibleOlis, Map<Id, Product2> prodMap, Map<String, DMT_Taxonomy_Values__c> taxonomyByProdCode, Map<Id, Integer> mitigantCountMap) {
+    private static void applyRiskTypeEvaluation(List<OpportunityLineItem> eligibleOlis, Map<Id, DMT_Taxonomy_Values__c> taxonomyByGlobalProductId, Map<Id, Integer> mitigantCountMap) {
         for (OpportunityLineItem oli : eligibleOlis) {
-            String currentProductCode = oli.ProductCode;
-            if (String.isBlank(currentProductCode) && prodMap.containsKey(oli.Product2Id)) {
-                currentProductCode = prodMap.get(oli.Product2Id).ProductCode;
-            }
-
-            if (String.isBlank(currentProductCode)) {
-                System.debug(LoggingLevel.INFO, '--- SKIP EVAL: currentProductCode blank for OLI ' + oli.Id);
-                continue;
-            }
-
-            DMT_Taxonomy_Values__c tax = taxonomyByProdCode.get(currentProductCode);
+            DMT_Taxonomy_Values__c tax = taxonomyByGlobalProductId.get(oli.DMT_Global_Product__c);
             if (tax == null || String.isBlank(tax.gf_catalog_atrb_val8_name__c)) {
-                System.debug(LoggingLevel.INFO, '--- SKIP EVAL: no taxonomy or missing gf_catalog_atrb_val8_name__c for ProductCode=' + currentProductCode + ' on OLI ' + oli.Id);
+                System.debug(LoggingLevel.INFO, '--- SKIP EVAL: no Global Product taxonomy or missing Attribute 8 for OLI ' + oli.Id);
                 continue;
             }
 
@@ -647,6 +636,89 @@ public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, 
             oli.DMT_Risk_Type__c = newRiskType;
         }
         System.debug('--- applyRiskTypeEvaluation finished');
+    }
+
+    /**
+     * Populates numeric/percent fields by parsing their corresponding String source fields.
+     * Currently maps:
+     *   DMT_TXT_Commitment_Fees__c (String) → DES_Commitment_Fees__c (Percent)
+     * Add new field pairs to the FIELD_SYNC_MAP to extend behaviour.
+     * Handles optional '%' suffix and comma/dot decimal separators.
+     * Called from before insert and before update.
+     *
+     * @param oliList  Trigger.new records
+     * @param oldMap   Trigger.oldMap (null on insert)
+     */
+    // Mapping: sourceTextField → targetDecimalField
+    private static final Map<String, String> FIELD_SYNC_MAP = new Map<String, String>{
+        'DMT_TXT_Commitment_Fees__c' => 'DES_Commitment_Fees__c',
+        'DMT_TXT_Extension_Duration_Fees__c' => 'DMT_Extension_Duration_Fees__c',
+        'DMT_TXT_Other_Fees_Accrual__c' => 'DES_Other_Fees__c'
+    };
+
+    public static void syncTextToDecimalFields(List<OpportunityLineItem> oliList, Map<Id, OpportunityLineItem> oldMap) {
+        if (oliList == null || oliList.isEmpty()) {
+            return;
+        }
+
+        Map<String, Schema.SObjectField> oliFieldMap = OpportunityLineItem.SObjectType.getDescribe().fields.getMap();
+
+        for (OpportunityLineItem oli : oliList) {
+            for (String sourceField : FIELD_SYNC_MAP.keySet()) {
+                String targetField = FIELD_SYNC_MAP.get(sourceField);
+
+                if (!oliFieldMap.containsKey(sourceField) || !oliFieldMap.containsKey(targetField)) {
+                    System.debug(LoggingLevel.WARN,'syncTextToDecimalFields: invalid field mapping ' + sourceField + ' -> ' + targetField);
+                    continue;
+                }
+
+                String newVal = (String) oli.get(sourceField);
+
+                // On update, skip pair if the source field has not changed
+                if (oldMap != null) {
+                    OpportunityLineItem oldOli = oldMap.get(oli.Id);
+                    if (oldOli != null && newVal == (String) oldOli.get(sourceField)) {
+                        continue;
+                    }
+                }
+
+                if (String.isBlank(newVal)) {
+                    oli.put(targetField, null);
+                    continue;
+                }
+
+                // Normalize: remove '%', replace common decimal separators with dots, trim whitespace
+                String raw = newVal.trim().replace('%', '').replace(',', '.').replace('/', '.').trim();
+
+                try {
+                    Decimal parsedValue = Decimal.valueOf(raw);
+
+                    // Validate the parsed value against the field's defined numeric range.
+                    // If it exceeds the range, Salesforce would throw an uncontrolled system
+                    // error. We intercept it here to show a clear, user-friendly message.
+                    Schema.DescribeFieldResult fieldDescribe = oliFieldMap.get(targetField).getDescribe();
+                    Integer fieldPrecision  = fieldDescribe.getPrecision();
+                    Integer fieldScale      = fieldDescribe.getScale();
+                    Integer integerDigits   = fieldPrecision - fieldScale;
+                    Decimal maxAllowed      = Decimal.valueOf(10).pow(integerDigits) - Decimal.valueOf(10).pow(-fieldScale);
+
+                    if (parsedValue > maxAllowed || parsedValue < -maxAllowed) {
+                        String fieldLabel = fieldDescribe.getLabel();
+                        oli.addError(
+                            'The value entered for "' + fieldLabel + '" (' + parsedValue.toPlainString() + ') ' +
+                            'exceeds the maximum allowed value. Please enter a number between ' +
+                            (-maxAllowed).toPlainString() + ' and ' + maxAllowed.toPlainString() + '.'
+                        );
+                        continue;
+                    }
+
+                    oli.put(targetField, parsedValue);
+                } catch (Exception e) {
+                    // If the value cannot be parsed, leave the target field unchanged
+                    System.debug(LoggingLevel.WARN,'syncTextToDecimalFields: could not parse ' + sourceField + ' value "' + newVal + '" for OLI Id=' + oli.Id + ' – ' + e.getMessage());
+                }
+            }
+        }
     }
 
     public static void calculateOpportunityDatesFromLineItems(List<OpportunityLineItem> newRecords, Map<Id, OpportunityLineItem> oldMap) {
@@ -735,5 +807,78 @@ public static void calculateGreenSocialBonds(List<OpportunityLineItem> oliList, 
                 System.debug(LoggingLevel.ERROR, 'DMT_OpportunityLineItemHandler.calculateOpportunityDatesFromLineItems update failed: ' + e.getMessage());
             }
         }
+    }
+    /**
+     * CIBGLOBALD-3748 Executed After Update. Dynamically verify that the opportunitiLineItems fields
+     * meet the necessary requirements to be submitted to Clan.
+     */
+    private static final Set<String> FIELDS_TO_CHECK = new Set<String>{
+        'CurrencyIsoCode',
+        'DMT_Deal_Amount_Tenors__c',
+        'ProductCode',
+        'Name',
+        'DMT_OldMoney_BBVA__c',
+        'DMT_NewMoney_BBVA__c',
+        'DMT_sustainable_deal_assessment__c',
+        'DMT_PER_Sustainability_Percentage__c',
+        'DMT_RateType__c',
+        'gf_payment_frequency__c',
+        'gf_amortization_type__c',
+        'DMT_Sustainable_Deal_Subtype__c',
+        'DMT_sustainable_deal_value__c'
+    };
+    /**
+     * CIBGLOBALD-3748 Executed After Update. Dynamically verify that the opportunitiLineItems fields
+     * meet the necessary requirements to be submitted to Clan.
+     */
+    public static void checkOpportunityLineItemChanges(List<OpportunityLineItem> newList, Map<Id, OpportunityLineItem> oldMap) {
+        
+        Set<Id> opportunityIds = new Set<Id>();
+        for (OpportunityLineItem oli : newList) {
+            OpportunityLineItem oldOli = oldMap.get(oli.Id);
+            if (hasChangedFields(oli, oldOli) && oli.OpportunityId != null) {
+                opportunityIds.add(oli.OpportunityId);
+            }
+        }
+
+        if (!opportunityIds.isEmpty()) {
+            Id dmtRecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
+            Map<Id, Opportunity> oppMap = new Map<Id, Opportunity>(
+                [
+                    SELECT Id,
+                        RecordTypeId,
+                        StageName,
+                        DMT_Product_Area__c
+                    FROM Opportunity
+                    WHERE Id IN :opportunityIds
+                ]
+            );
+            for (Opportunity opp : oppMap.values()) {
+                if (opp.RecordTypeId == dmtRecordTypeId
+                    && opp.StageName == 'Ready to close'
+                    && opp.DMT_Product_Area__c == 'IB&F') {
+
+                    System.debug('checkOpportunityLineItemChanges opp: ' + opp.Id);
+
+                    DMT_AsyncOrchestrator.enqueue(
+                        new DMT_DynamicMapperPayload(
+                            opp.Id,
+                            'DMT_Opportunity_RTC_To_Clan',
+                            opp.StageName
+                        )
+                    );
+                    DMT_AsyncOrchestrator.flush();
+                }
+            }
+        }
+    }
+
+    private static Boolean hasChangedFields(OpportunityLineItem newOli,OpportunityLineItem oldOli) {
+        for (String fieldName : FIELDS_TO_CHECK) {
+            if (newOli.get(fieldName) != oldOli.get(fieldName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

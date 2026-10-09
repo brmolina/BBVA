@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Validate_Name_Length</fullName>
+    <active>true</active>
+    <errorConditionFormula>LEN( Name ) &lt; 3</errorConditionFormula>
+    <errorDisplayField>Name</errorDisplayField>
+    <errorMessage>Use at least 3 characters</errorMessage>
+</ValidationRule>

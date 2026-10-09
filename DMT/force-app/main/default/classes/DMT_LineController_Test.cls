@@ -507,4 +507,67 @@ public class DMT_LineController_Test {
         }
     }
 
+    // CIBGLOBALD-3779 - covers getTypeOfRiskOptions(), including the dedup-by-DMT_Value__c branch.
+    @isTest
+    static void testGetTypeOfRiskOptions() {
+        insert new List<DMT_Taxonomy_Values__c>{
+            new DMT_Taxonomy_Values__c(DMT_Catalog__c = 'B444', DMT_Value__c = 'RSK1', DMT_Name_EN__c = 'Risk One'),
+            new DMT_Taxonomy_Values__c(DMT_Catalog__c = 'B444', DMT_Value__c = 'RSK2', DMT_Name_EN__c = 'Risk Two'),
+            // Duplicate DMT_Value__c — should be deduped, not returned twice.
+            new DMT_Taxonomy_Values__c(DMT_Catalog__c = 'B444', DMT_Value__c = 'RSK1', DMT_Name_EN__c = 'Risk One Duplicate')
+        };
+
+        Test.startTest();
+        List<DMT_LineController.TypeOfRiskOption> options = DMT_LineController.getTypeOfRiskOptions();
+        Test.stopTest();
+
+        Assert.areEqual(2, options.size(), 'Duplicate DMT_Value__c rows should be deduped');
+    }
+
+    // CIBGLOBALD-3779 - covers getCommitmentOptions(), including the dedup-by-DMT_Value__c branch.
+    @isTest
+    static void testGetCommitmentOptions() {
+        insert new List<DMT_Taxonomy_Values__c>{
+            new DMT_Taxonomy_Values__c(DMT_Catalog__c = 'H405', DMT_Value__c = 'COM', DMT_Name_EN__c = 'COMMITTED'),
+            new DMT_Taxonomy_Values__c(DMT_Catalog__c = 'H405', DMT_Value__c = 'UNC', DMT_Name_EN__c = 'UNCOMMITTED'),
+            // Duplicate DMT_Value__c — should be deduped, not returned twice.
+            new DMT_Taxonomy_Values__c(DMT_Catalog__c = 'H405', DMT_Value__c = 'COM', DMT_Name_EN__c = 'COMMITTED DUP')
+        };
+
+        Test.startTest();
+        List<DMT_LineController.CommitmentOption> options = DMT_LineController.getCommitmentOptions();
+        Test.stopTest();
+
+        Assert.areEqual(2, options.size(), 'Duplicate DMT_Value__c rows should be deduped');
+    }
+
+    // CIBGLOBALD-3779 - covers getCurrencyOptions(). CurrencyType is exempt from Apex test data
+    // isolation, so the org's own active currencies are visible without inserting test data.
+    @isTest
+    static void testGetCurrencyOptions() {
+        Test.startTest();
+        List<DMT_LineController.CurrencyOption> options = DMT_LineController.getCurrencyOptions();
+        Test.stopTest();
+
+        Assert.isNotNull(options, 'The options list should not be null');
+        Assert.isTrue(options.size() > 0, 'A multi-currency org should have at least one active currency');
+    }
+
+    // CIBGLOBALD-3779 - covers getEntificDisplayValue()'s three branches: blank input, no catalog
+    // match, and a real match.
+    @isTest
+    static void testGetEntificDisplayValue() {
+        insert new DMT_Taxonomy_Values__c(DMT_Catalog__c = 'C245', DMT_Value__c = 'ES', DMT_Name_EN__c = 'Spain');
+
+        Test.startTest();
+        String blankResult = DMT_LineController.getEntificDisplayValue('');
+        String noMatchResult = DMT_LineController.getEntificDisplayValue('ZZ');
+        String matchResult = DMT_LineController.getEntificDisplayValue('ES');
+        Test.stopTest();
+
+        Assert.isNull(blankResult, 'A blank geography code should return null');
+        Assert.areEqual('ZZ', noMatchResult, 'An unmatched code should be returned as-is');
+        Assert.areEqual('ES - Spain', matchResult, 'A matched code should return "code - name"');
+    }
+
 }

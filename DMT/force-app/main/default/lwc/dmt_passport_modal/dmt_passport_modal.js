@@ -16,6 +16,7 @@ export default class Dmt_passport_modal extends LightningModal  {
     @api showConditionDesc = false;
     @api associatedLineUrl;
     @api associatedLineLabel;
+    @api currencyId;
 
     handleOkay() {
         this.close('okay');

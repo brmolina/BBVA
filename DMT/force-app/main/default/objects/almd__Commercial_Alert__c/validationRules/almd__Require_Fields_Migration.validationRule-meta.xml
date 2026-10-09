@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>almd__Require_Fields_Migration</fullName>
+    <active>true</active>
+    <description>Validación para controlar que el campo Alert ID viene aprovisionado siempre.</description>
+    <errorConditionFormula>AND(
+ISNEW(),
+OR(ISBLANK(almd__commercial_alert_id__c ))
+)</errorConditionFormula>
+    <errorMessage>To create Commercial alerts, you must complete the Alert ID field first.</errorMessage>
+</ValidationRule>

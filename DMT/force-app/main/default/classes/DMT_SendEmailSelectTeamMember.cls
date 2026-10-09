@@ -18,8 +18,49 @@ public with sharing class DMT_SendEmailSelectTeamMember {
      * @return Map where key is User Id and value is Email.
      */
     public static Map<Id, String> getRecipientEmails(Id recordId, Schema.SObjectType recordType) {
+        return getRecipientEmails(recordId, recordType, false);
+    }
+
+    /**
+     * Returns recipient emails for the record owner plus:
+     *   - when isClosedWon=false: all team members in the relevant approver group (existing behaviour)
+     *   - when isClosedWon=true: only users who physically completed a task on related cases
+     *
+     * @param recordId Id of Opportunity or DMT_Line__c.
+     * @param recordType SObject type for the provided record.
+     * @param isClosedWon true restricts recipients to completed-task executors.
+     * @return Map where key is User Id and value is Email.
+     */
+    public static Map<Id, String> getRecipientEmails(Id recordId, Schema.SObjectType recordType, Boolean isClosedWon) {
+        if (isClosedWon == true) {
+            return buildRecipientsFromCompletedTasks(recordId, recordType);
+        }
         List<DMT_TeamMember__c> teamMembers = getTeamMembers(recordId, recordType);
         return buildRecipientEmails(teamMembers, recordId, recordType);
+    }
+
+    private static Map<Id, String> buildRecipientsFromCompletedTasks(Id recordId, Schema.SObjectType recordType) {
+        Map<Id, String> recipients = new Map<Id, String>();
+
+        List<Task> completedTasks = recordType == Opportunity.SObjectType
+            ? DMT_SendEmailService_Selector.getCompletedTasksByOpportunityId(recordId)
+            : DMT_SendEmailService_Selector.getCompletedTasksByLineId(recordId);
+
+        for (Task t : completedTasks) {
+            if (t.LastModifiedById != null
+                    && t.LastModifiedBy != null
+                    && t.LastModifiedBy.IsActive == true
+                    && String.isNotBlank(t.LastModifiedBy.Email)) {
+                recipients.put(t.LastModifiedById, t.LastModifiedBy.Email);
+            }
+        }
+
+        User owner = getRecordOwner(recordId, recordType);
+        if (owner != null && owner.Id != null && String.isNotBlank(owner.Email)) {
+            recipients.put(owner.Id, owner.Email);
+        }
+
+        return recipients;
     }
 
     private static List<DMT_TeamMember__c> getTeamMembers(Id recordId, Schema.SObjectType recordType) {
@@ -148,7 +189,7 @@ public with sharing class DMT_SendEmailSelectTeamMember {
             return null;
         }
 
-        List<User> owners = DMT_SendEmailService_Selector.getActiveUserById(ownerId);
+        List<User> owners = DMT_SendEmailService_Selector.getUserByIdOrCode(ownerId, null);
         return owners.isEmpty() ? null : owners[0];
     }
 }

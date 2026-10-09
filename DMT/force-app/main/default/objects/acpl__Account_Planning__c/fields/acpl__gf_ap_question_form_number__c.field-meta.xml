@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>acpl__gf_ap_question_form_number__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Number of questions</label>
+    <summaryForeignKey>acpl__AP_Question__c.acpl__gf_account_planning_id__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

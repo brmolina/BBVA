@@ -1,20 +1,16 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import getUnderwritingData from '@salesforce/apex/DMT_UnderwritingFormController.getUnderwritingData';
 import saveUnderwritingData from '@salesforce/apex/DMT_UnderwritingFormController.saveUnderwritingData';
+import getFormattedAmountsForCurrency
+    from '@salesforce/apex/DMT_OppInfoController.getFormattedAmountsForCurrency';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
+import { getRecord, getFieldValue, deleteRecord } from 'lightning/uiRecordApi';
+import SoldOrderModal from 'c/dmt_underwriting_sold_order_modal';
 import HAS_GUMS_FIELD from '@salesforce/schema/Opportunity.DMT_HasGUMSProduct__c';
 import STAGE_FIELD from '@salesforce/schema/Opportunity.StageName';
 import SYSTEMMODSTAMP_FIELD from '@salesforce/schema/Opportunity.SystemModstamp';
 import dataTableStyle from '@salesforce/resourceUrl/DMT_DataTableStyle';
 import { loadStyle } from 'lightning/platformResourceLoader';
-
-const FLOAT_FIELDS = [
-    'operation_underwriting_per__c',
-    'opening_fee_per__c',
-    'gf_est_fee_cust_sycr_bp_amount__c',
-    'SVA__c'
-];
 
 export default class Dmt_underwritingForm extends LightningElement {
     @api recordId;
@@ -25,8 +21,8 @@ export default class Dmt_underwritingForm extends LightningElement {
     @track hasGUMSProduct = false;
     @track showForm = false;
     @track underwritingValue = null;
-    @track isSaving = false;        
-    @track isEditing = false; 
+    @track isSaving = false;
+    @track isEditing = false;
     originalValues = [];
     originalUnderwritingValue = null;
     @track tableData = [];
@@ -37,6 +33,7 @@ export default class Dmt_underwritingForm extends LightningElement {
     @track stageName;
 
     @track dealAmountValue = null;
+    @track dealAmountLabel = 'Deal Amount';
     originalDealAmountValue = null;
 
     _lastModstamp = null;
@@ -44,176 +41,176 @@ export default class Dmt_underwritingForm extends LightningElement {
     get table() {
         return this.tableData;
     }
-    
+
     get columns() {
-        const isEdit = this.isEditing;
-        
         return [
             {
-                fieldName: isEdit ? 'gf_loan_br_ctpty_id__c' : 'counterpartyName',
+                fieldName: 'counterpartyName',
                 label: 'Loan Counterparty',
-                type: isEdit ? 'genericrecordpicker' : 'text',
+                type: 'text',
+                initialWidth: 180,
                 hideDefaultActions: true,
-                cellAttributes: { alignment: 'center' },
-                typeAttributes: {
-                    placeholder: 'Search Accounts...',
-                    fieldName: 'gf_loan_br_ctpty_id__c',
-                    value: { fieldName: 'gf_loan_br_ctpty_id__c' },
-                    label: { fieldName: 'counterpartyName' }, 
-                    options: { fieldName: 'counterpartyOptions' },
-                    context: { fieldName: 'Id' },
-                    disabled: false
-                }
+                cellAttributes: { alignment: 'center' }
             },
             {
-                fieldName:"gf_ctpty_sold_order_amount__c",
-                label:"Sold Order (amount in units)",
-                type: isEdit ? "custominputRow" : 'currency',
-                editable:false,
-                hideDefaultActions:true,
-                cellAttributes:{ alignment: 'center'},
-                typeAttributes:{
-                    currencyCode: { fieldName: 'Currency__c' },
-                    step: '0.001',
-                    inputValue: { fieldName: 'gf_ctpty_sold_order_amount__c' },
-                    fieldName: 'gf_ctpty_sold_order_amount__c',
-                    context: { fieldName: 'Id' }
-                }
+                fieldName: 'Currency__c',
+                label: 'Currency',
+                type: 'text',
+                initialWidth: 70,
+                editable: false,
+                hideDefaultActions: true,
+                cellAttributes: { alignment: 'center' }
             },
             {
-                fieldName:"gf_sold_ord_ctpty_setl_amount__c",
-                label:"Settled Amount (amount in units)",
-                type: isEdit ? "custominputRow" : 'currency',
-                editable:false,
-                hideDefaultActions:true,
-                cellAttributes:{ alignment: 'center'},
-                typeAttributes:{
-                    currencyCode: { fieldName: 'Currency__c' },
-                    step: '0.001',
-                    inputValue: { fieldName: 'gf_sold_ord_ctpty_setl_amount__c' },
-                    fieldName: 'gf_sold_ord_ctpty_setl_amount__c',
-                    context: { fieldName: 'Id' }
-                }
-            },
-            {
-                fieldName: "gf_sold_order_settled_ind_type__c",
-                label: "Settled Order",
-                type: isEdit ? "picklist" : "text",
+                fieldName: 'gf_ctpty_sold_order_amount__c',
+                label: 'Sold Order',
+                type: 'currency',
+                initialWidth: 85,
                 editable: false,
                 hideDefaultActions: true,
                 cellAttributes: { alignment: 'center' },
                 typeAttributes: {
-                    placeholder: 'Select..',
-                    options: { fieldName: 'soldOrderSettledOptions' },
-                    fieldName: 'gf_sold_order_settled_ind_type__c',
-                    value: { fieldName: 'gf_sold_order_settled_ind_type__c' },
-                    context: { fieldName: 'Id' }
-                  }
-            },            
-            {
-                fieldName:"Currency__c",
-                label:"Currency",
-                type: isEdit ? "picklist": "text",
-                editable:false,
-                initialWidth : 100,
-                hideDefaultActions:true,
-                cellAttributes:{ alignment: 'center'},
-                typeAttributes: {
-                    placeholder: 'Select..',
-                    options: { fieldName: 'currencyOptions' },
-                    fieldName: 'Currency__c',
-                    value: { fieldName: 'Currency__c' },
-                    context: { fieldName: 'Id' }
-                  }
+                    currencyCode: { fieldName: 'Currency__c' }
+                }
             },
-            { 
-                label: 'Fees Paid to the Market (BPS)',
+            {
+                fieldName: 'gf_sold_order_settled_ind_type__c',
+                label: 'Settled Order',
+                type: 'text',
+                initialWidth: 105,
+                editable: false,
+                hideDefaultActions: true,
+                cellAttributes: { alignment: 'center' }
+            },
+            {
+                fieldName: 'gf_sold_ord_ctpty_setl_amount__c',
+                label: 'Settled Amount',
+                type: 'currency',
+                initialWidth: 110,
+                editable: false,
+                hideDefaultActions: true,
+                cellAttributes: { alignment: 'center' },
+                typeAttributes: {
+                    currencyCode: { fieldName: 'Currency__c' }
+                }
+            },
+            {
+                fieldName: 'gf_bbva_assur_prtcp_per__c',
+                label: '% Underwriting',
+                type: 'percent-fixed',
+                initialWidth: 100,
+                editable: false,
+                hideDefaultActions: true,
+                cellAttributes: { alignment: 'center' },
+                typeAttributes: { step: '0.001' }
+            },
+            {
+                fieldName: 'gf_prort_setl_order_amount__c',
+                label: 'Pro-Rata Settled',
+                type: 'currency',
+                initialWidth: 125,
+                editable: false,
+                hideDefaultActions: true,
+                cellAttributes: { alignment: 'center' },
+                typeAttributes: {
+                    currencyCode: { fieldName: 'Currency__c' }
+                }
+            },
+            {
                 fieldName: 'gf_sold_orders_fees_bps_amount__c',
-                type: isEdit ? "custominputRow" : 'number',
-                hideDefaultActions:true,
-                cellAttributes:{ style: 'text-align: center;'},
+                label: 'Fees (BPS)',
+                type: 'number',
+                initialWidth: 95,
+                editable: false,
+                hideDefaultActions: true,
+                cellAttributes: { alignment: 'center' }
+            },
+            {
+                fieldName: 'gf_sold_order_fees_paid_amount__c',
+                label: 'Fees Amount',
+                type: 'currency',
+                initialWidth: 110,
+                editable: false,
+                hideDefaultActions: true,
+                cellAttributes: { alignment: 'center' },
                 typeAttributes: {
-                    aviableItem: {fieldName: 'aviableItem'},
-                    inputValue: { fieldName: 'gf_sold_orders_fees_bps_amount__c' },
-                    fieldName: 'gf_sold_orders_fees_bps_amount__c',
-                    context: { fieldName: 'Id' }
+                    currencyCode: { fieldName: 'Currency__c' }
                 }
             },
             {
-                fieldName:"gf_bbva_assur_prtcp_per__c",
-                label:"%Underwriting",
-                type: isEdit ? "custominputRow": 'percent-fixed',
-                editable:false,
-                hideDefaultActions:true,
-                cellAttributes:{ alignment: 'center'},
-                typeAttributes:{
-                    step: '0.001',
-                    aviableItem: {fieldName: true},
-                    inputValue: { fieldName: 'gf_bbva_assur_prtcp_per__c' },
-                    fieldName: 'gf_bbva_assur_prtcp_per__c',
-                    context: { fieldName: 'Id' },
-                    value: { fieldName: 'gf_bbva_assur_prtcp_per__c' }
-                }
-            },
-            {
-                type: 'button',
-                hideDefaultActions:true,
-                cellAttributes:{ alignment: 'center'},
-                initialWidth: 65,
-                typeAttributes:{ 
+                type: 'button-icon',
+                hideDefaultActions: true,
+                initialWidth: 30,
+                cellAttributes: { alignment: 'center' },
+                typeAttributes: {
                     iconName: 'utility:delete',
-                    label: ' ', 
-                    name: 'deleteRecord', 
-                    title: '', 
-                    disabled: {fieldName: 'deleteDisabled'},
-                    iconPosition: 'center', 
-                    value: 'test'
+                    name: 'deleteRecord',
+                    title: 'Delete Sold Order',
+                    alternativeText: 'Delete Sold Order',
+                    variant: 'bare',
+                    disabled: { fieldName: 'deleteDisabled' }
                 }
             },
             {
-                type: 'button',
-                hideDefaultActions:true,
-                cellAttributes:{ alignment: 'center'},
-                initialWidth: 65,
-                typeAttributes:{ 
+                type: 'button-icon',
+                hideDefaultActions: true,
+                initialWidth: 30,
+                cellAttributes: { alignment: 'center' },
+                typeAttributes: {
                     iconName: 'utility:edit',
-                    label: ' ', 
-                    name: 'editRecord', 
-                    title: '', 
-                    disabled: {fieldName: 'editRecordDisabled'},
-                    iconPosition: 'center', 
-                    value: 'test'
+                    name: 'editRecord',
+                    title: 'Edit Sold Order',
+                    alternativeText: 'Edit Sold Order',
+                    variant: 'bare',
+                    disabled: { fieldName: 'editRecordDisabled' }
                 }
             },
             {
-                type: 'button',
-                hideDefaultActions:true,
-                cellAttributes:{ alignment: 'center'},
-                initialWidth: 65,
-                typeAttributes:{ 
+                type: 'button-icon',
+                hideDefaultActions: true,
+                initialWidth: 40,
+                cellAttributes: { alignment: 'center' },
+                typeAttributes: {
                     iconName: 'utility:add',
-                    label: '', 
-                    name: 'addRecord', 
-                    title: '', 
-                    disabled: {fieldName: 'buttonDisabled'},
-                    iconPosition: 'center', 
-                    value: 'test'
+                    name: 'addRecord',
+                    title: 'Add Sold Order',
+                    alternativeText: 'Add Sold Order',
+                    variant: 'bare',
+                    disabled: { fieldName: 'buttonDisabled' }
                 }
             }
         ];
-    }     
-    
-        normalizeValue(field, value) {
-            if (value === '' || value === undefined || value === null) return null;
-            if (field?.type === 'number' || field?.type === 'text') {
-                const normalized = typeof value === 'string' 
-                    ? value.replace(',', '.') 
-                    : value;
-                const n = Number(normalized);
-                return isNaN(n) ? value : n;
-            }
+    }
+
+normalizeValue(field, value) {
+    if (value === '' || value === undefined || value === null) {
+        return null;
+    }
+
+    if (field?.type === 'number') {
+        if (typeof value === 'number') {
             return value;
         }
+
+        let normalized = value.trim().replace(/\s/g, '');
+
+        if (normalized.includes(',')) {
+            normalized = normalized
+                .replace(/\./g, '')
+                .replace(',', '.');
+        }
+
+        const numericValue = Number(normalized);
+
+        if (!Number.isFinite(numericValue)) {
+            throw new Error(`Invalid numeric value: ${value}`);
+        }
+
+        return numericValue;
+    }
+
+    return value;
+}
 
     connectedCallback() {
         loadStyle(this, dataTableStyle);
@@ -225,7 +222,7 @@ export default class Dmt_underwritingForm extends LightningElement {
         if (data) {
             const stage = getFieldValue(data, STAGE_FIELD);
             const modstamp = getFieldValue(data, SYSTEMMODSTAMP_FIELD);
-            this.stageName = stage; 
+            this.stageName = stage;
 
             this.showCustomTable = stage !== 'Draft' && stage !== 'Proposal';
 
@@ -249,7 +246,7 @@ export default class Dmt_underwritingForm extends LightningElement {
     }
 
     get showSoldOrdersTable() {
-        const stageOk = this.showCustomTable; 
+        const stageOk = this.showCustomTable;
         const underwritingOk = !!this.underwritingValue && this.underwritingValue !== 'No';
         return stageOk && underwritingOk;
     }
@@ -259,9 +256,6 @@ export default class Dmt_underwritingForm extends LightningElement {
             const data = await getUnderwritingData({ recordId: this.recordId });
             const opp = data.opportunity;
             const picklistValues = data.picklistValues;
-            this.counterpartyOptions = (data.soldOrderCounterpartyOptions || []).sort(
-                (a, b) => (a.label || '').localeCompare(b.label || '')
-              );
             this.currencyOptions = data.soldOrderCurrencyOptions || [];
             this.soldOrderSettledOptions = data.soldOrderSettledOptions || [];
 
@@ -270,25 +264,66 @@ export default class Dmt_underwritingForm extends LightningElement {
                 this.underwritingValue = opp.underwriting_agreement_type__c || null;
                 this.originalUnderwritingValue = this.underwritingValue;
 
-                this.dealAmountValue = opp.deal_total_amount__c ?? null;
-                this.originalDealAmountValue = this.dealAmountValue;
 
                 this.showForm = !!(this.underwritingValue && this.underwritingValue !== 'No');
 
+                let displayedDealAmount = opp.DMT_Opportunity_amount__c ?? null;
+
+                if (opp.DMT_CurrencyText__c) {
+                    try {
+                        const formattedAmounts = await getFormattedAmountsForCurrency({
+                            opportunityId: this.recordId,
+                            currencyText: opp.DMT_CurrencyText__c
+                        });
+
+                        displayedDealAmount =
+                            formattedAmounts?.DMT_Opportunity_amount__c ??
+                            displayedDealAmount;
+                    } catch (error) {
+                        console.error(
+                            '[dmt_underwritingForm] Error formatting Deal Amount:',
+                            error
+                        );
+                    }
+                }
+
+                this.dealAmountValue = displayedDealAmount;
+                this.originalDealAmountValue = displayedDealAmount;
+
+                const commitment = opp.bbva_prtcp_tranche_amount__c;
+                const dealAmount = opp.DMT_Opportunity_amount__c;
+
+                const amountToBeSold =
+                    commitment !== null &&
+                    commitment !== undefined &&
+                    dealAmount !== null &&
+                    dealAmount !== undefined
+                        ? Number(commitment) - Number(dealAmount)
+                        : null;
+
+                const amountCurrency = opp.DMT_CurrencyText__c || '';
+
+                const amountUnit = data.currencyLabel || 'Units';
+
+                const amountContext = [amountCurrency, amountUnit]
+                    .filter(Boolean)
+                    .join(' ');
+
+                this.dealAmountLabel = `Deal Amount (${amountContext})`;
+
                 const fieldList = [
                     { label: 'Amount to be sold (amount in units)', apiName: 'gf_current_be_sold_mk_amount__c', type: 'number', readOnly: true },
-                    { label: 'SVA', apiName: 'SVA__c', type: 'text', readOnly: false, step: 'any' },
-                    { label: '% Underwriting', apiName: 'bbva_participation_per__c', type: 'number', readOnly: false },
-                    { label: 'Underwriting fee (BPS)', apiName: 'operation_underwriting_per__c', type: 'text', readOnly: false, step: 'any' },
-                    { label: 'Underwriting fee (amounts in units)', apiName: 'underwriting_fee_amount__c', type: 'number', readOnly: true },
+                    { label: '% Underwriting', apiName: 'bbva_participation_per__c', type: 'number', readOnly: false, isPercentage: true, step: 'any' },
+                    { label: 'Underwriting fee (BPS)', apiName: 'operation_underwriting_per__c', type: 'number', readOnly: false, preserveDecimals: true },
+                    { label: 'Underwriting fee (amounts in units)', apiName: 'underwriting_fee_amount__c', type: 'number', readOnly: false },
                     { label: 'Upfront Fees Amount to be sold (amount in units)', apiName: 'gf_own_undwr_mk_rsk_fee_amount__c', type: 'number', readOnly: true },
                     { label: 'Available fees to the market to reach target hold', apiName: 'gf_upfront_undwr_fees_amount__c', type: 'number', readOnly: true },
                     { label: 'Total Fees paid to market (amount in units)', apiName: 'gf_tot_sold_order_fees_amount__c', type: 'number', readOnly: true },
-                    { label: 'Estimated fees paid to the market (BPS)', apiName: 'gf_est_fee_cust_sycr_bp_amount__c', type: 'text', readOnly: false, step: 'any'  },
-                    { label: 'Up front fees (BPS)', apiName: 'opening_fee_per__c', type: 'text', readOnly: false, step: 'any'  },
+                    { label: 'Estimated fees paid to the market (BPS)', apiName: 'gf_est_fee_cust_sycr_bp_amount__c', type: 'number', readOnly: false, preserveDecimals: true },
+                    { label: 'Up front fees (BPS)', apiName: 'opening_fee_per__c', type: 'number', readOnly: false, preserveDecimals: true },
                     { label: 'Risk Committee Approval', apiName: 'risk_committee_aprvl_ind_type__c', type: 'picklist', readOnly: false },
-                    { label: 'Contract Signature Date', apiName: 'signing_date__c', type: 'date', readOnly: false },
                     { label: 'Real time market risk (amount in units)', apiName: 'gf_mk_curr_rsk_synd_amount__c', type: 'number', readOnly: true },
+                    { label: 'SVA (Syndication Value Added)', apiName: 'SVA__c', type: 'number', readOnly: false, preserveDecimals: true },
                     { label: 'Amount of sold orders (amount in units)', apiName: 'gf_total_nominal_sold_amount__c', type: 'number', readOnly: true },
                     { label: 'Total settled amount (Amount in units)', apiName: 'gf_total_sold_ord_stl_amount__c', type: 'number', readOnly: true },
                     { label: 'Pending amount to be settled (amount in units)', apiName: 'gf_tl_sold_ord_not_stl_amount__c', type: 'number', readOnly: true },
@@ -304,34 +339,62 @@ export default class Dmt_underwritingForm extends LightningElement {
                     { label: 'Underwriting Committee Approval', apiName: 'oppy_undwr_cmtee_rspse_type__c', type: 'picklist', readOnly: false },
                     { label: 'Underwriting Approval Date', apiName: 'oppy_undwr_cmtee_approval_date__c', type: 'date', readOnly: false },
                     { label: 'Sell Down Commitment Date', apiName: 'oppy_product_ctrct_comt_date__c', type: 'date', readOnly: false },
-                    { label: 'Underwriting Committee Additional comments', apiName: 'gf_oppy_undwr_cmtee_comnt_desc__c', type: 'textarea', readOnly: false }
+                    { label: 'Underwriting Committee Additional comments', apiName: 'gf_oppy_undwr_cmtee_comnt_desc__c', type: 'textarea', readOnly: false },
+                    { label: 'BBVA Commitment', apiName: 'bbva_prtcp_tranche_amount__c', type: 'number', readOnly: true},
+                    { label: 'BBVA Final Take', apiName: 'syndicated_loan_drawn_amount__c', type: 'number', readOnly: true}
                 ];
 
 
+                const amountFieldApiNames = new Set([
+                    'gf_current_be_sold_mk_amount__c',
+                    'underwriting_fee_amount__c',
+                    'gf_own_undwr_mk_rsk_fee_amount__c',
+                    'gf_upfront_undwr_fees_amount__c',
+                    'gf_tot_sold_order_fees_amount__c',
+                    'gf_mk_curr_rsk_synd_amount__c',
+                    'SVA__c',
+                    'gf_total_nominal_sold_amount__c',
+                    'gf_total_sold_ord_stl_amount__c',
+                    'gf_tl_sold_ord_not_stl_amount__c',
+                    'gf_comt_not_settled_amount__c',
+                    'gf_prort_sale_ord_sum_amount__c',
+                    'gf_prort_setl_order_tl_amount__c',
+                    'bbva_prtcp_tranche_amount__c',
+                    'syndicated_loan_drawn_amount__c'
+                ]);
 
-            const fullFlatFields = fieldList.map(f => {
-                let value = opp[f.apiName];
-                if (FLOAT_FIELDS.includes(f.apiName) && value != null) {
-                    value = String(value).replace('.', ',');
-                }
+
+                const fullFlatFields = fieldList.map(f => {
+                const cleanLabel = f.label
+                    .replace(/\s*\(amounts? in units\)/gi, '')
+                    .trim();
+
                 return {
-                    label: f.label,
-                    apiName: f.apiName,
-                    value: value,
-                    type: f.type,
-                    readOnly: f.readOnly,
-                    isPicklist: f.type === 'picklist',
-                    isTextarea: f.type === 'textarea',
-                    options: f.type === 'picklist' ? picklistValues[f.apiName] : undefined
-                };
-            });
-
+                        label: amountFieldApiNames.has(f.apiName)
+                            ? `${cleanLabel} (${amountContext})`
+                            : f.label,
+                        apiName: f.apiName,
+                        value: f.apiName === 'gf_current_be_sold_mk_amount__c'
+                            ? amountToBeSold
+                            : opp[f.apiName],
+                        type: f.type,
+                        readOnly: f.readOnly,
+                        isPercentage: f.isPercentage,
+                        preserveDecimals: f.preserveDecimals === true,
+                        step: f.step,
+                        isPicklist: f.type === 'picklist',
+                        isTextarea: f.type === 'textarea',
+                        options: f.type === 'picklist'
+                            ? picklistValues[f.apiName]
+                            : undefined
+                    };
+                });
                 this.fields = fullFlatFields;
                 this.originalValues = JSON.parse(JSON.stringify(fullFlatFields));
 
-                const visible = this.applyUnderwritingFilter(this.fields);
+                const visible = this.fields;
                 this.rows = this.buildRows(visible);
-                
+
                 const soldOrders = data.soldOrders || [];
 
                 if (soldOrders.length > 0) {
@@ -342,7 +405,7 @@ export default class Dmt_underwritingForm extends LightningElement {
                         currencyOptions: this.currencyOptions || [],
                         soldOrderSettledOptions: this.soldOrderSettledOptions || [],
                         deleteDisabled: false,
-                        buttonDisabled: true,   
+                        buttonDisabled: true,
                         editRecordDisabled: false
                     }));
 
@@ -350,7 +413,7 @@ export default class Dmt_underwritingForm extends LightningElement {
                     this.tableData[this.tableData.length - 1].buttonDisabled = false;
                 } else {
                     this.tableData = [{
-                        Id: this.generateTempId(), 
+                        Id: this.generateTempId(),
                         gf_loan_br_ctpty_id__c: '',
                         counterpartyName: '',
                         counterpartyOptions: this.counterpartyOptions || [],
@@ -385,7 +448,7 @@ export default class Dmt_underwritingForm extends LightningElement {
         this.underwritingValue = event.detail.value || null;
         this.showForm = !!(this.underwritingValue && this.underwritingValue !== 'No');
         this.isEditing = true;
-        const visible = this.applyUnderwritingFilter(this.fields || []);
+        const visible = this.fields || [];
         this.rows = this.buildRows(visible);
     }
 
@@ -397,39 +460,20 @@ export default class Dmt_underwritingForm extends LightningElement {
         }));
     }
 
-
-
-
-
-        handleChange(event) {
-            const FLOAT_FIELDS = [
-                'operation_underwriting_per__c',
-                'opening_fee_per__c',
-                'gf_est_fee_cust_sycr_bp_amount__c',
-                'deal_total_amount__c'
-            ];
-            const { name, value } = event.target;
-            const normalizedInput = FLOAT_FIELDS.includes(name)
-                ? value.replace(',', '.')
-                : value;
-
-            if (name === 'deal_total_amount__c') {
-                this.dealAmountValue = normalizedInput; 
-                this.isEditing = true;
-                return;
-            }
-            this.fields = (this.fields || []).map(f => {
-                if (f.apiName !== name) return f;
-                return { 
-                    ...f, 
-                    value: FLOAT_FIELDS.includes(f.apiName) ? normalizedInput : value 
-                };
-            });
-            const visible = this.applyUnderwritingFilter(this.fields);
-            this.rows = this.buildRows(visible);
+    handleChange(event) {
+        const { name, value } = event.target;
+        if (name === 'DMT_Opportunity_amount__c') {
+            this.dealAmountValue = this.normalizeValue({ type: 'number' }, value);
             this.isEditing = true;
+            return;
         }
-    
+        this.fields = (this.fields || []).map(f =>
+            f.apiName === name ? { ...f, value } : f
+        );
+        const visible = this.fields;
+        this.rows = this.buildRows(visible);
+        this.isEditing = true;
+    }
 
     async handleSave() {
         this.isSaving = true;
@@ -451,53 +495,13 @@ export default class Dmt_underwritingForm extends LightningElement {
             }
             const currentDeal = this.normalizeValue({ type: 'number' }, this.dealAmountValue);
             const originalDeal = this.normalizeValue({ type: 'number' }, this.originalDealAmountValue);
-            if (currentDeal !== originalDeal) {
+            /*if (currentDeal !== originalDeal) {
                 changedFields['deal_total_amount__c'] = currentDeal;
-            }
+            }*/
 
             const cleanedFields = JSON.parse(JSON.stringify(changedFields));
-            const soldOrdersPayload = this.buildSoldOrdersPayload();
-            const idsToDelete = this.idListToDelete || [];
 
-            let errorMessages = [];
-
-            soldOrdersPayload.forEach((row, index) => {
-                let rowMissingFields = [];
-                const rowNumber = index + 1;
-
-                if (!row.gf_loan_br_ctpty_id__c) {
-                    rowMissingFields.push('Loan Counterparty');
-                } else {
-                    // Check if the selected ID exists in the allowed options (Subsidiaries)
-                    const isValidCounterparty = this.counterpartyOptions.some(opt => opt.value === row.gf_loan_br_ctpty_id__c);
-                    if (!isValidCounterparty) {
-                         errorMessages.push(`Row ${rowNumber}: The selected Loan Counterparty is not a valid 'Subsidiary'. Please select a new one.`);
-                    }
-                }
-                if (row.gf_ctpty_sold_order_amount__c === null || row.gf_ctpty_sold_order_amount__c === '' || row.gf_ctpty_sold_order_amount__c === undefined) {
-                    rowMissingFields.push('Sold Order Amount');
-                }
-                if (row.gf_sold_ord_ctpty_setl_amount__c === null || row.gf_sold_ord_ctpty_setl_amount__c === '' || row.gf_sold_ord_ctpty_setl_amount__c === undefined) {
-                    rowMissingFields.push('Settled Amount');
-                }
-
-                if (rowMissingFields.length > 0) {
-                    errorMessages.push(`Row ${rowNumber}: Missing ${rowMissingFields.join(', ')}`);
-                }
-            });
-
-            if (errorMessages.length > 0) {
-                this.dispatchEvent(new ShowToastEvent({
-                    title: 'Validation Error',
-                    message: errorMessages.join('\n'),
-                    variant: 'error',
-                    mode: 'sticky'
-                }));
-                this.isSaving = false; 
-                return;
-            }
-
-            if (Object.keys(cleanedFields).length === 0 && soldOrdersPayload.length === 0 && idsToDelete.length === 0) {
+            if (Object.keys(cleanedFields).length === 0) {
                 this.dispatchEvent(new ShowToastEvent({
                     title: 'No Changes', message: 'No fields have been modified.', variant: 'info'
                 }));
@@ -508,10 +512,10 @@ export default class Dmt_underwritingForm extends LightningElement {
             await saveUnderwritingData({
                 recordId: this.recordId,
                 updatedFields: cleanedFields,
-                soldOrders: soldOrdersPayload,
-                idsToDelete: idsToDelete
+                soldOrders: [],
+                idsToDelete: []
             });
-            
+
             this.originalUnderwritingValue = this.underwritingValue;
             this.originalDealAmountValue = this.dealAmountValue;
             this.originalValues = JSON.parse(JSON.stringify(this.rows.flatMap(row => row.fields)));
@@ -521,14 +525,6 @@ export default class Dmt_underwritingForm extends LightningElement {
             }));
 
             this.isEditing = false;
-            this.fields = this.fields.map(f => {
-                if (FLOAT_FIELDS.includes(f.apiName) && f.value != null) {
-                    return { ...f, value: String(f.value).replace('.', ',') };
-                }
-                return f;
-            });
-            const visible = this.applyUnderwritingFilter(this.fields);
-            this.rows = this.buildRows(visible);
             await this.loadData();
 
         } catch (error) {
@@ -551,61 +547,68 @@ export default class Dmt_underwritingForm extends LightningElement {
             console.error('Error reloading data on cancel', e);
         }
     }
-    
+
     enterEditMode() {
         this.notifyEditMode(true);
         this.isEditing = true;
     }
 
-    handleRecordPickerChange(event) {
-        event.stopPropagation();
-        const { context, value, label, fieldname } = event.detail.data;
-        
-        if (fieldname === 'gf_loan_br_ctpty_id__c') {
-          this.updateDataValues({
-            Id: context,
-            gf_loan_br_ctpty_id__c: value,
-            counterpartyName: label || ''
-          });
-        }
-    }
 
-    handleRowAction(event) {
+    async handleRowAction(event) {
         const action = event.detail.action;
         const row = event.detail.row;
-    
+
         if (!action || !row) {
             console.error('Row action event mal formado:', JSON.stringify(event.detail));
             return;
         }
-    
+
         switch (action.name) {
             case 'editRecord':
-                this.isEditing = true;
-                this.tableData = this.tableData.map(e => ({
-                    ...e,
-                    opportunity_id__c: this.recordId
-                }));
+                await this._openSoldOrderModal(row);
                 break;
-    
-            case 'deleteRecord':
-                this.isEditing = true;
-                if (!Array.isArray(this.idListToDelete)) {
-                    this.idListToDelete = [];
-                }
 
-                if (row.Id && row.Id.length >= 15 && !row.Id.startsWith('NEW_') && row.Id !== '0') {
-                    this.idListToDelete = [...this.idListToDelete, row.Id];
+            case 'addRecord':
+                await this._openSoldOrderModal(null);
+                break;
+
+            case 'deleteRecord': {
+                const isRealId = row.Id
+                    && !row.Id.startsWith('NEW_')
+                    && row.Id !== '0'
+                    && row.Id.length >= 15;
+
+                if (isRealId) {
+                    try {
+                        await deleteRecord(row.Id);
+                        this.dispatchEvent(new ShowToastEvent({
+                            title: 'Deleted',
+                            message: 'Sold Order deleted successfully.',
+                            variant: 'success'
+                        }));
+                    } catch (error) {
+                        this.dispatchEvent(new ShowToastEvent({
+                            title: 'Error deleting',
+                            message: error?.body?.message || 'Could not delete the Sold Order.',
+                            variant: 'error'
+                        }));
+                        return;
+                    }
                 }
 
                 this.tableData = this.tableData.filter(item => item.Id !== row.Id);
-    
+
                 if (this.tableData.length === 0) {
                     this.tableData = [{
                         Id: this.generateTempId(),
                         gf_loan_br_ctpty_id__c: '',
+                        counterpartyName: '',
+                        counterpartyOptions: this.counterpartyOptions || [],
+                        currencyOptions: this.currencyOptions || [],
+                        soldOrderSettledOptions: this.soldOrderSettledOptions || [],
                         gf_ctpty_sold_order_amount__c: '',
                         gf_sold_ord_ctpty_setl_amount__c: '',
+                        gf_sold_order_settled_ind_type__c: '',
                         Currency__c: '',
                         gf_sold_orders_fees_bps_amount__c: '',
                         gf_bbva_assur_prtcp_per__c: '',
@@ -615,136 +618,92 @@ export default class Dmt_underwritingForm extends LightningElement {
                         opportunity_id__c: this.recordId
                     }];
                 } else {
-                    this.tableData = this.tableData.map((r, index, arr) => ({
+                    this.tableData = this.tableData.map((r, idx, arr) => ({
                         ...r,
-                        buttonDisabled: index !== arr.length - 1
+                        buttonDisabled: idx !== arr.length - 1
                     }));
                 }
-                break;
-    
-            case 'addRecord':
-                this.isEditing = true;  
-                const current = Array.isArray(this.tableData) ? [...this.tableData] : [];
-                current.forEach(r => { r.buttonDisabled = true; });
-                
-                const newRow = {
-                    Id: this.generateTempId(),
-                    gf_loan_br_ctpty_id__c: '',
-                    gf_ctpty_sold_order_amount__c: '',
-                    gf_sold_ord_ctpty_setl_amount__c: '',
-                    Currency__c: '',
-                    gf_sold_orders_fees_bps_amount__c: '',
-                    gf_bbva_assur_prtcp_per__c: '',
-                    counterpartyOptions: this.counterpartyOptions || [],
-                    currencyOptions: this.currencyOptions || [],
-                    soldOrderSettledOptions: this.soldOrderSettledOptions || [],
-                    deleteDisabled: false,
-                    buttonDisabled: false,   
-                    editRecordDisabled: false,
-                    opportunity_id__c: this.recordId
-                };
-                
-                const index = current.findIndex(r => r.Id === row.Id);
-                if (index === -1) {
-                    current.push(newRow);
-                } else {
-                    current.splice(index + 1, 0, newRow);
+                if (isRealId) {
+                    await this.loadData();
                 }
-    
-                this.tableData = current;
                 break;
+            }
         }
-    }    
-
-    picklistChanged(event) {
-        event.stopPropagation();
-        let dataRecieved = event.detail.data;
-        let updatedItem;
-        if (dataRecieved.fieldname === 'gf_loan_br_ctpty_id__c' && dataRecieved.label) {
-            const updatedItem = {
-              Id: dataRecieved.context,
-              gf_loan_br_ctpty_id__c: dataRecieved.value,
-              counterpartyName: dataRecieved.label
-            };
-            this.updateDataValues(updatedItem);
-            return;
-        }else if( dataRecieved.fieldname === 'gf_ctpty_sold_order_amount__c'){
-            updatedItem = { Id: dataRecieved.context, gf_ctpty_sold_order_amount__c: dataRecieved.value };
-        }else if( dataRecieved.fieldname === 'gf_sold_ord_ctpty_setl_amount__c'){
-            updatedItem = { Id: dataRecieved.context, gf_sold_ord_ctpty_setl_amount__c: dataRecieved.value };
-        } else if (dataRecieved.fieldname === 'gf_sold_order_settled_ind_type__c') {
-            updatedItem = { Id: dataRecieved.context, gf_sold_order_settled_ind_type__c: dataRecieved.value };
-        }else if( dataRecieved.fieldname === 'Currency__c'){
-            updatedItem = { Id: dataRecieved.context, Currency__c: dataRecieved.value };
-        }else if( dataRecieved.fieldname === 'gf_sold_orders_fees_bps_amount__c'){
-            updatedItem = { Id: dataRecieved.context, gf_sold_orders_fees_bps_amount__c: dataRecieved.value };
-        }else{
-            updatedItem = { Id: dataRecieved.context, gf_bbva_assur_prtcp_per__c: dataRecieved.value };
-        }
-        this.updateDataValues(updatedItem);
     }
 
-    textInputChanged(event) {
-        event.stopPropagation();
-        let dataRecieved = event.detail.data;
-        let updatedItem;
-        updatedItem = { Id: dataRecieved.context};
-        updatedItem[dataRecieved.fieldname]= dataRecieved.value;
-        
-        this.updateDataValues(updatedItem);
-    }
-
-    handleChangeCell(event){
-        let dataRecieved = event.detail.draftValues;
-        let updatedItem;
-        updatedItem = { Id: dataRecieved[0].Id, gf_bbva_assur_prtcp_per__c: dataRecieved[0].gf_bbva_assur_prtcp_per__c };
-        this.updateDataValues(updatedItem);
-    }
-
-    buildSoldOrdersPayload() {
-        if (!Array.isArray(this.tableData)) {
-            return [];
-        }
-    
-        return this.tableData
-            .filter(row =>
-                row.gf_loan_br_ctpty_id__c ||
-                row.gf_ctpty_sold_order_amount__c ||
-                row.gf_sold_ord_ctpty_setl_amount__c ||
-                row.gf_sold_order_settled_ind_type__c ||
-                row.Currency__c ||
-                row.gf_sold_orders_fees_bps_amount__c ||
-                row.gf_bbva_assur_prtcp_per__c
-            )
-            .map(row => {
-                const isRealId = (id) => {
-                    // Regex checks for exactly 15 or 18 characters, alphanumeric only
-                    const sfIdRegex = /^[a-zA-Z0-9]{15}(?:[a-zA-Z0-9]{3})?$/;
-                    return id && sfIdRegex.test(id) && !id.startsWith('NEW_') && id !== '0';
-                };
-                return {
-                    Id: isRealId(row.Id) ? row.Id : null,
-                    gf_loan_br_ctpty_id__c: row.gf_loan_br_ctpty_id__c || null,
-                    gf_ctpty_sold_order_amount__c: row.gf_ctpty_sold_order_amount__c || null,
-                    gf_sold_ord_ctpty_setl_amount__c: row.gf_sold_ord_ctpty_setl_amount__c || null,
-                    gf_sold_order_settled_ind_type__c: row.gf_sold_order_settled_ind_type__c || null,
-                    Currency__c: row.Currency__c || null,
-                    gf_sold_orders_fees_bps_amount__c: row.gf_sold_orders_fees_bps_amount__c || null,
-                    gf_bbva_assur_prtcp_per__c: row.gf_bbva_assur_prtcp_per__c || null,
-                    opportunity_id__c: this.recordId
-                };
+    async _openSoldOrderModal(row) {
+        try {
+            const result = await SoldOrderModal.open({
+                size: 'medium',
+                record: row,
+                opportunityId: this.recordId,
+                currencyOptions: this.currencyOptions,
+                soldOrderSettledOptions: this.soldOrderSettledOptions
             });
+
+            if (!result) {
+                return;
+            }
+
+            this._updateTableFromSoldOrders(result);
+            // Refresca los campos resumen de la Opportunity
+            await this.loadData();
+
+            this.dispatchEvent(new ShowToastEvent({
+                title: row ? 'Updated' : 'Created',
+                message: row
+                    ? 'Sold Order updated successfully.'
+                    : 'Sold Order created successfully.',
+                variant: 'success'
+            }));
+
+        } catch (error) {
+            console.error('Error opening Sold Order modal:', error);
+            this.dispatchEvent(new ShowToastEvent({
+                title: 'Error',
+                message: error?.body?.message || error?.message || 'An error occurred.',
+                variant: 'error'
+            }));
+        }
     }
 
-    applyUnderwritingFilter(flatFields) {
-        if (this.underwritingValue === 'Yes') {
-            const stopApi = 'risk_committee_aprvl_ind_type__c';
-            const stopIndex = flatFields.findIndex(f => f.apiName === stopApi);
-            return stopIndex >= 0 ? flatFields.slice(0, stopIndex) : flatFields;
+    _updateTableFromSoldOrders(soldOrders) {
+        if (soldOrders && soldOrders.length > 0) {
+            this.tableData = soldOrders.map(so => ({
+                ...so,
+                counterpartyName        : so.gf_loan_br_ctpty_id__r?.Name || '',
+                counterpartyOptions     : this.counterpartyOptions || [],
+                currencyOptions         : this.currencyOptions || [],
+                soldOrderSettledOptions : this.soldOrderSettledOptions || [],
+                deleteDisabled          : false,
+                buttonDisabled          : true,
+                editRecordDisabled      : false
+            }));
+            this.tableData[this.tableData.length - 1].buttonDisabled = false;
+        } else {
+            this.tableData = [{
+                Id: this.generateTempId(),
+                gf_loan_br_ctpty_id__c: '',
+                counterpartyName: '',
+                counterpartyOptions     : this.counterpartyOptions || [],
+                currencyOptions         : this.currencyOptions || [],
+                soldOrderSettledOptions : this.soldOrderSettledOptions || [],
+                gf_ctpty_sold_order_amount__c: '',
+                gf_sold_ord_ctpty_setl_amount__c: '',
+                gf_sold_order_settled_ind_type__c: '',
+                Currency__c: '',
+                gf_sold_orders_fees_bps_amount__c: '',
+                gf_bbva_assur_prtcp_per__c: '',
+                deleteDisabled: false,
+                buttonDisabled: false,
+                editRecordDisabled: false,
+                opportunity_id__c: this.recordId
+            }];
         }
-        return flatFields;
     }
-      
+
+
+
     buildRows(flatFields) {
         const newRows = [];
         for (let i = 0; i < flatFields.length; i += 2) {
@@ -752,33 +711,18 @@ export default class Dmt_underwritingForm extends LightningElement {
         }
         return newRows;
     }
-    
-    updateDataValues(updateItem) {
-        if (!updateItem || !updateItem.Id) {
-            return;
-        }
-        this.isEditing = true;
-        let copyData = JSON.parse(JSON.stringify(this.tableData));
-    
-        const indexToUpdate = copyData.findIndex(item => item.Id === updateItem.Id);
-    
-        if (indexToUpdate !== -1) {
-            for (let key in updateItem) {
-                if (updateItem[key] !== undefined) {
-                    copyData[indexToUpdate][key] = updateItem[key];
-                }
-            }
-        }
-        if (copyData.length > 0) {
-            copyData = copyData.map((row, idx, arr) => ({
-                ...row,
-                buttonDisabled: idx !== arr.length - 1
-            }));
-        }
-        this.tableData = copyData;
-    }
+
 
     generateTempId() {
         return `NEW_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     }
+
+    handlePercentageKeyDown(event) {
+        if (
+            event.key.length === 1 && !/[0-9.,]/.test(event.key)
+        ) {
+            event.preventDefault();
+        }
+    }
+
 }

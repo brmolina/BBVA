@@ -1,13 +1,13 @@
 import { LightningElement, api } from 'lwc';
-import pubsub from 'omnistudio/pubsub';
 import dmt_cl_ProfMin_Text from '@salesforce/label/c.dmt_cl_ProfMin_Text';
 import dmt_cl_ProfRange from '@salesforce/label/c.dmt_cl_ProfRange';
 import getInitialOptions from '@salesforce/apex/DMT_ProfitabilityAxisSelectorController.getInitialOptions';
 
-const EVT_NAME = 'changedValuesAxis';
+const EVT_NAME = 'changedvaluesaxis';
 const DEFAULT_FIELD_TYPE = 'Decimal';
-const PUBSUB_CHANNEL = 'DMT_ProfitabilityTest_Child';
-const PUBSUB_EVENT = 'axisinputchange';
+// FlexCard retirado — dmt_profitabilityTestInput ahora dispara un CustomEvent directo
+// ('axisinputchange') en vez de usar el bus global omnistudio/pubsub (ver handleChildInputChange
+// / dmt_ProfitabilityAxisSelector.html).
 const AXIS_TYPES = { X: 'XAxis', Y: 'YAxis', CENTRAL: 'CentralAxis' };
 
 // Field value IDs for rating axes (O(1) lookup via Set)
@@ -17,6 +17,10 @@ const RATING_FIELD_VALUES = new Set(['2', '9']);
 const SPREAD_FEES_FIELD_VALUES = new Set(['3', '4', '7', '8']);
 const SPREAD_FEES_MULTIPLIER = 9;
 const SPREAD_FEES_MAX_THRESHOLD = 1000;
+
+// Field value ID and maximum scenario value for the Term axis
+const TERM_FIELD_VALUE = '1';
+const TERM_MAX_THRESHOLD = 50;
 
 // Field values filtered by opportunity data
 const SPREAD_DRAWN_VALUE = '4';
@@ -68,7 +72,6 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
   _nominalFbNew;
   _childInputValues = {};
   _childInputErrors = {};
-  _boundHandleChildInput;
   _changeJustHandled = false;
   _validationScheduled = false;
   _cachedParsedOppData = null;
@@ -82,11 +85,10 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
 
   connectedCallback() {
     this.loadInitialOptions();
-    this._subscribeToPubSub();
   }
 
   disconnectedCallback() {
-    this._unsubscribeFromPubSub();
+    // No-op: ya no hay suscripción a un bus global que dar de baja (ver Fase 3 del plan).
   }
 
   // ── Public API setters ──────────────────────────────────────────────────
@@ -105,12 +107,10 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
 
   @api
   set oppSelectedData(value) {
-    if (this._oppSelectedData !== value) {
-      const prev = this._oppSelectedData;
-      this._oppSelectedData = value;
-      this._cachedParsedOppData = this._parseOppDataValue(value);
-      if (prev != null) this.handleUndo();
-    }
+    // Main creates a new merged object on each render. Treat it as data only; real context
+    // changes are handled by the stable oppSelected and productSelected identifiers.
+    this._oppSelectedData = value;
+    this._cachedParsedOppData = value;
   }
   get oppSelectedData() {
     return this._oppSelectedData;
@@ -122,8 +122,7 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
       const prev = this._productSelected;
       this._productSelected = value;
       if (prev != null) {
-        this.handleChangeProduct();
-        this._refreshChildInputs();
+        this.handleUndo();
       }
     }
   }
@@ -133,7 +132,8 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
 
   @api
   set nominalAmountNew(value) {
-    const sanitized = this.isValidOmniValue(value) ? value : null;
+    // FlexCard retirado: ya no hace falta isValidOmniValue, Main pasa null/número directamente.
+    const sanitized = value ?? null;
     if (this._nominalAmountNew !== sanitized) {
       const prev = this._nominalAmountNew;
       this._nominalAmountNew = sanitized;
@@ -146,7 +146,7 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
 
   @api
   set nominalFbNew(value) {
-    const sanitized = this.isValidOmniValue(value) ? value : null;
+    const sanitized = value ?? null;
     if (this._nominalFbNew !== sanitized) {
       const prev = this._nominalFbNew;
       this._nominalFbNew = sanitized;
@@ -240,6 +240,7 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
           }))
         : [];
       this._resetOptions();
+      this.updateFilteredOptions();
       this._validateOptions();
     } catch (error) {
       console.error('Error loading initial options', error);
@@ -254,7 +255,7 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
     const value = event.detail.value;
     this._applyAxisSelection(name, value);
     this._changeJustHandled = true;
-    this.updateFilteredOptions();
+    this.updateFilteredOptions(name);
     this._dispatchChangeEvent();
   }
 
@@ -284,13 +285,18 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
     this._dispatchChangeEvent();
   }
 
+  @api
+  reset() {
+    this.handleUndo();
+  }
+
   handleChangeProduct() {
     this._dispatchChangeEvent();
   }
 
   // ── Combo-constraint filtering ─────────────────────────────────────────
 
-  updateFilteredOptions() {
+  updateFilteredOptions(changedAxis) {
     // Cache getters to avoid repeated JSON.parse inside _filterByOppData
     const masterX = this._effectiveMasterOptionsX;
     const masterY = this._effectiveMasterOptionsY;
@@ -312,6 +318,8 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
     const allowedC = new Set();
 
     for (const c of this.combos) {
+      // Calculate requires all three axes, so incomplete rows are not valid triplets.
+      if (!c.xId || !c.yId || !c.centerId) continue;
       const xMatch = !selXId || `${c.xId}` === `${selXId}`;
       const yMatch = !selYId || `${c.yId}` === `${selYId}`;
       const cMatch = !selCId || `${c.centerId}` === `${selCId}`;
@@ -320,39 +328,28 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
       if (xMatch && yMatch && c.centerId) allowedC.add(`${c.centerId}`);
     }
 
+    // Empty means that no active combination satisfies the selected facets.
     const filterByAllowed = (masterList, allowedSet) =>
-      allowedSet.size === 0
-        ? [...masterList]
-        : masterList.filter((opt) => allowedSet.has(`${opt.id}`));
+      masterList.filter((opt) => allowedSet.has(`${opt.id}`));
 
     this.optionsX = filterByAllowed(masterX, allowedX);
     this.optionsY = filterByAllowed(masterY, allowedY);
     this.optionsCentral = filterByAllowed(masterC, allowedC);
 
-    // Clear selections no longer in filtered options (skip if user is actively selecting)
-    this._clearInvalidSelection('xSelected', 'xSelectedLabel', this.optionsX, AXIS_TYPES.X);
-    this._clearInvalidSelection('ySelected', 'ySelectedLabel', this.optionsY, AXIS_TYPES.Y);
-    this._clearInvalidSelection('centralSelected', 'centralSelectedLabel', this.optionsCentral, AXIS_TYPES.CENTRAL);
-  }
-
-  // ── PubSub / Cross-validation ───────────────────────────────────────────
-
-  _subscribeToPubSub() {
-    this._boundHandleChildInput = this._handleChildInputChange.bind(this);
-    pubsub.register(PUBSUB_CHANNEL, {
-      [PUBSUB_EVENT]: this._boundHandleChildInput
-    });
-  }
-
-  _unsubscribeFromPubSub() {
-    if (this._boundHandleChildInput) {
-      pubsub.unregister(PUBSUB_CHANNEL, {
-        [PUBSUB_EVENT]: this._boundHandleChildInput
-      });
+    // Each axis is filtered only by the other two. If a stale value reaches the handler,
+    // reject the latest change instead of clearing previously valid selections.
+    if (changedAxis && this._clearInvalidAxisSelection(changedAxis)) {
+      this.updateFilteredOptions();
     }
   }
 
-  _handleChildInputChange(event) {
+  // ── Cross-validation de inputs hijos (dmt_profitabilityTestInput) ──────
+  // FlexCard retirado: dmt_profitabilityTestInput es hijo directo de este componente (ver su
+  // propio template) y ahora dispara un CustomEvent estándar `axisinputchange` (bubbles: true)
+  // en vez de usar el bus global omnistudio/pubsub. El listener se declara directamente en
+  // dmt_ProfitabilityAxisSelector.html (onaxisinputchange={handleChildInputChange}).
+
+  handleChildInputChange(event) {
     const { inputId, value, errors } = event?.detail || {};
     if (inputId) {
       this._childInputValues = { ...this._childInputValues, [inputId]: value };
@@ -448,6 +445,19 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
       }
     }
 
+    if (
+      !Number.isNaN(minNum) &&
+      !Number.isNaN(rangeNum) &&
+      `${selected}` === TERM_FIELD_VALUE &&
+      minNum + rangeNum * SPREAD_FEES_MULTIPLIER >= TERM_MAX_THRESHOLD
+    ) {
+      return (
+        'The values provided for ' +
+        selectedLabel +
+        ' axis are outside the allowed range. Please verify the data.'
+      );
+    }
+
     return '';
   }
 
@@ -514,15 +524,37 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
     }
   }
 
-  _clearInvalidSelection(selectedProp, labelProp, optionsList, axisType) {
+  _clearInvalidAxisSelection(axisType) {
+    const axisConfig = {
+      [AXIS_TYPES.X]: {
+        selectedProp: 'xSelected',
+        labelProp: 'xSelectedLabel',
+        options: this.optionsX
+      },
+      [AXIS_TYPES.Y]: {
+        selectedProp: 'ySelected',
+        labelProp: 'ySelectedLabel',
+        options: this.optionsY
+      },
+      [AXIS_TYPES.CENTRAL]: {
+        selectedProp: 'centralSelected',
+        labelProp: 'centralSelectedLabel',
+        options: this.optionsCentral
+      }
+    };
+    const config = axisConfig[axisType];
     if (
-      this[selectedProp] &&
-      !optionsList.find((o) => `${o.value}` === `${this[selectedProp]}`) &&
-      this.focusedControl !== axisType
+      !config ||
+      !this[config.selectedProp] ||
+      config.options.some(
+        (option) => `${option.value}` === `${this[config.selectedProp]}`
+      )
     ) {
-      this[selectedProp] = '';
-      this[labelProp] = '';
+      return false;
     }
+    this[config.selectedProp] = '';
+    this[config.labelProp] = '';
+    return true;
   }
 
   _refreshChildInputs() {
@@ -609,6 +641,12 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
       centralSelectedLabel: this.centralSelectedLabel,
       xFieldType: this.xFieldType,
       yFieldType: this.yFieldType,
+      // Min/range values entered on the child dmt_profitabilityTestInput instances, needed by
+      // Main to build the real calculate request (minX/maxX/minY/maxY).
+      xMin: this._childInputValues.xMin ?? '',
+      xRange: this._childInputValues.xRange ?? '',
+      yMin: this._childInputValues.yMin ?? '',
+      yRange: this._childInputValues.yRange ?? '',
       disabledCalculate: !(
         this.xSelected &&
         this.ySelected &&
@@ -645,29 +683,34 @@ export default class Dmt_ProfitabilityAxisSelector extends LightningElement {
   }
 
   _parseOppDataValue(data) {
-    if (!data) return null;
-    try {
-      return typeof data === 'string' ? JSON.parse(data) : data;
-    } catch (e) {
-      return null;
-    }
+    // FlexCard retirado: ya no llegan JSON strings desde OmniStudio, se deja comentado por
+    // trazabilidad histórica en vez de eliminarlo directamente.
+    // if (!data) return null;
+    // try {
+    //   return typeof data === 'string' ? JSON.parse(data) : data;
+    // } catch (e) {
+    //   return null;
+    // }
+    return data;
   }
 
-  isValidOmniValue(value) {
-    if (value === null || value === undefined) return false;
-
-    if (typeof value === 'string') {
-      const v = value.trim();
-      if (v === '' || v.toLowerCase() === 'null') return false;
-
-      // placeholder simple como {overridefields} o {oppData} -> devolver false
-      const placeholderRegex = /^\{\s*[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*\s*\}$/;
-      if (placeholderRegex.test(v)) return false;
-
-      return true;
-    } else if (typeof value === 'object') {
-      return true;
-    }
-    return false;
-  }
+  // FlexCard retirado (validaba JSON strings/placeholders sin resolver de OmniStudio) — se deja
+  // comentado por trazabilidad histórica en vez de eliminarlo directamente.
+  // isValidOmniValue(value) {
+  //   if (value === null || value === undefined) return false;
+  //
+  //   if (typeof value === 'string') {
+  //     const v = value.trim();
+  //     if (v === '' || v.toLowerCase() === 'null') return false;
+  //
+  //     // placeholder simple como {overridefields} o {oppData} -> devolver false
+  //     const placeholderRegex = /^\{\s*[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*\s*\}$/;
+  //     if (placeholderRegex.test(v)) return false;
+  //
+  //     return true;
+  //   } else if (typeof value === 'object') {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 }

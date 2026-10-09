@@ -1,4 +1,4 @@
-public with sharing  class DMT_View_Selector {
+public without sharing  class DMT_View_Selector {
 
     public static List<Task> getTaskApprover(String taskId, String recordOrLineId){
 
@@ -26,9 +26,10 @@ public with sharing  class DMT_View_Selector {
         return [SELECT Id, Name, Entific__c, DMT_Entity__c, DMT_DATE_Initial_Date__c, DMT_DATE_Maturity_Date__c, DMT_CUR_Notional_Amount__c, DMT_Opp_Id__c,DMT_ContingentCommitments__c,
                     CurrencyIsoCode, RecordTypeId,RecordType.DeveloperName, Amount, DMT_requested_passport__c, Deal_total_amount__c, Des_product_name__c, Owner.Name, DMT_branch_id_c__c,DMT_GlobalBanker__c,
                     DMT_Capital_Action__c, DMT_Tenor__c, DMT_Threshold_Type__c,DMT_Product_Area__c, DMT_Sanction__c, DMT_CurrencyText__c, CloseDate,StageName,IsWon,IsClosed,DMT_Opportunity_amount__c,
-                    bbva_prtcp_tranche_amount__c,
+                    bbva_prtcp_tranche_amount__c, DMT_Confidential__c ,
                     DMT_Booking_EFAN__c, DMT_SPPI_File_Uploaded__c, DMT_SPPI_Status__c, DMT_SPPI_User__c,
                     DMT_Financial_Sponsors__c, DMT_Structured_GTB__c, DMT_Credentials__c,
+                    DMT_Under_X_Selling_Monitoring__c, DMT_NewClient__c,
                     // parent Account fields
                         AccountId, Account.DES_Structure_Type__c, Account.g_customer_id__c, Account.Name, Account.DES_Client_Type__c, Account.DES_Main_Parent__c,
                         Account.Current_FY_Corp_Synd_Lending_amount__c, Account.Current_FY_Structured_Finance_amount__c,
@@ -285,7 +286,10 @@ public with sharing  class DMT_View_Selector {
         for (DMT_Line__c line : [
             SELECT Id,Line_Id__c,Name,Start_Date__c,End_Date__c,Client__r.Name,CurrencyIsoCode,Client__r.g_customer_id__c,FD_Amount__c,DvP_Amount__c,DMT_DerivativesAmount__c
             FROM DMT_Line__c
-            WHERE Client__r.g_customer_id__c IN :customAssociationClientsList
+            WHERE (
+                Client__r.g_customer_id__c IN :customAssociationClientsList
+                OR Client_Code__c IN :customAssociationClientsList
+            )
             AND Product__c = 'Treasury Line'
             AND Start_Date__c < :endDate
             AND End_Date__c >= :startDate
@@ -384,7 +388,7 @@ public with sharing  class DMT_View_Selector {
                 First_Breakclause_Date__c,RecordType.Name, RecordType.DeveloperName, RecordTypeId, DMT_GlobalBanker__c, Breakclause_Frequency__c, Waiver__c, DMT_Operation__c,
                 DMT_RAROEC_RORC_Proposal__c, DMT_Nominal__c, DMT_Comments__c, DMT_Franchise_L12M__c, DMT_Client_Rating_Date__c, DMT_ClientStarCode__c, DMT_Approver__c,
                 DMT_Approver__r.Name, DMT_Client_Use__c, DMT_ApproverGlobalBanker__c, DMT_Booking_Unit_Risk_Analyst__c, DMT_Booking_Unit_Risk_Analyst__r.Name,
-                DMT_ApproverGlobalBanker__r.Name, DMT_Additional_Restrictions__c, DMT_Client_Entific__c,g_line_commitment_level_type__c,Closed__c,Status__c, gf_min_rorc_wo_fcg_per__c, gf_min_raroec_wo_fcg_per__c, DMT_Individual_Disposal_Approval__c , DMT_Bussiness_Approved_Date__c, DMT_Bussiness_Approved_End_Date__c, DMT_Business_Approval_Term__c, 
+                DMT_ApproverGlobalBanker__r.Name, DMT_Additional_Restrictions__c, DMT_Client_Entific__c,g_line_commitment_level_type__c,Closed__c,Status__c, gf_min_rorc_wo_fcg_per__c, gf_min_raroec_wo_fcg_per__c, DMT_Individual_Disposal_Approval__c , DMT_Bussiness_Approved_Date__c, DMT_Business_Approved_End_Date__c, DMT_Business_Approval_Term_n__c, DMT_Risk_Approval_Term__c,
                 // CHILD LINE TEAM MEMBER
                 (
                     SELECT Full_Name_User__c, AccessLevel__c FROM Line_Team_Members__r
@@ -399,6 +403,10 @@ public with sharing  class DMT_View_Selector {
                     gf_min_rorc_wo_fcg_per__c, gf_revolvence_pd_days_number__c, g_multioperation_ind_type__c, DMT_Comments__c,
                     g_global_product_family_Id__c, g_global_product_subfamily_Id__c, g_global_product_category_Id__c, g_gbl_product_subcategory_Id__c,
                     DMT_Max_Date__c, DMT_Singular_Active__c, DMT_Singular_Operation__c, DMT_Product_Name__c, DMT_Term__c, DMT_Singular__c, g_line_commitment_level_type__c,
+                    // CIBGLOBALD-4117 - editable DVP/FD columns on the Singular-transaction table
+                    // (dmt_singular_treasury.js), tracked but not queried until now - found via a
+                    // field-drift audit.
+                    DMT_Singular_DvP__c, DMT_Singular_FD__c,
                     // CHILD CURRENCY PROVISIONS
                     (
                         SELECT g_currency_id__c, DMT_Risk_Line_Term__c FROM DMT_Currency_Provisions__r

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Prevent_Modify_When_Finalized</fullName>
+    <active>true</active>
+    <errorConditionFormula>NOT(ISNEW()) &amp;&amp;
+ISPICKVAL(PRIORVALUE(arce__Stage__c), &quot;Finalized&quot;) &amp;&amp;
+NOT($Setup.arce__Bypass__c.arce__Bypass_ValidationRules__c)</errorConditionFormula>
+    <errorMessage>Limit Advisor cannot be modified when is finalized</errorMessage>
+</ValidationRule>

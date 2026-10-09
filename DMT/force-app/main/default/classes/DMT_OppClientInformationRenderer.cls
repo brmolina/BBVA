@@ -1,4 +1,4 @@
-public with sharing class DMT_OppClientInformationRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_OppClientInformationRenderer implements DMT_ViewRenderer {
 
     // ====================================================================================================
     // HTML RENDERING
@@ -50,65 +50,6 @@ public with sharing class DMT_OppClientInformationRenderer implements DMT_ViewRe
         } catch (Exception e) {
             System.debug('Error in DMT_OppClientInformationRenderer renderHtml, ' + e.getMessage() + ' ' + e.getLineNumber());
             return '<div>Error: ' + e.getMessage() + ' - ' + e.getLineNumber() + '</div>';
-        }
-    }
-
-    // ====================================================================================================
-    // PDF RENDERING
-    // ====================================================================================================
-
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (
-            data == null ||
-            data.opportunity == null ||
-            data.oppClient == null ||
-            (data.opportunity.getPopulatedFieldsAsMap().isEmpty() && data.oppClient.getPopulatedFieldsAsMap().isEmpty())
-        ) {
-            return new Map<String, Object>();
-        }
-        
-        try {
-            List<Object> contentList = new List<Object>();
-            Map<String, Object> component = new Map<String, Object>();
-            String comparisonAccountName = data.oppAccountParentName;
-
-            contentList.add(DMT_Create_Pdf_Controller.createTitle(
-                'CLIENT INFORMATION' + (String.isNotBlank(comparisonAccountName) ? ' - ' + comparisonAccountName : '')
-            ));
-
-            contentList.add(DMT_Create_Pdf_Controller.createListText(
-                new List<String>{
-                    'Geographical Footprint',
-                    'Relationship Status',
-                    'Industry Overview'
-                },
-                new List<String>{
-                    DMT_FormattingUtils.checkNull(data.oppClient.Geographical_Footprint_desc__c),
-                    DMT_FormattingUtils.checkNull(data.oppClient.Relationship_Status_desc__c),
-                    DMT_FormattingUtils.checkNull(data.oppClient.Industry_Overview_desc__c)
-                },
-                'ONE'
-            ));
-
-            component.put('content', contentList);
-            component.put('name', 'Client Information');
-
-            System.debug('returning component: ' + JSON.serialize(component));
-            return component;
-
-        } catch (Exception e) {
-            System.debug('Error in DMT_OppClientInformationRenderer renderPdfJson, ' + e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(
-                e.getMessage(),
-                e.getStackTraceString(),
-                e.getLineNumber(),
-                e.getTypeName(),
-                'DMT_OppClientInformationRenderer',
-                'renderPdfJson',
-                'DMT',
-                ''
-            ));
-            return new Map<String, Object>();
         }
     }
 }

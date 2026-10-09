@@ -938,6 +938,7 @@ _pubsubHandlerObj = null;
         this.groupedData = [];
 
                 this.groupedData = this.groupedData.concat(this.customDatavalue);
+                this.groupedData = this.handleRatingExpiration();
                 if (1 === 0) {
                     this.fetchMore(data.pagination.page + 1, data.pagination.pageSize);
                 } else {
@@ -971,6 +972,7 @@ _pubsubHandlerObj = null;
         if (data) {
             if (data.success) {
                 this.groupedData = this.groupedData.concat(data.data);
+                this.groupedData = this.handleRatingExpiration();
                 this.filtergroupedData = [];
                 this.groupedData.forEach( client => {
                 let customerCode = client?.customerId;
@@ -1008,6 +1010,7 @@ _pubsubHandlerObj = null;
          fetchData(params).then( data => {
              if (data.success) {
                  this.groupedData = this.groupedData.concat(data.data);
+                 this.groupedData = this.handleRatingExpiration();
                 if (data.pagination.totalPages > data.pagination.page) {
                      this.fetchMore(data.pagination.page + 1, data.pagination.pageSize);
                  } else {

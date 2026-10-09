@@ -1,4 +1,4 @@
-public with sharing class DMT_LimitVisualRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_LimitVisualRenderer implements DMT_ViewRenderer {
     private static Map<Id, DMT_ViewRenderer> recordTypeRenderers = new Map<Id, DMT_ViewRenderer>();
 
     static {
@@ -11,9 +11,12 @@ public with sharing class DMT_LimitVisualRenderer implements DMT_ViewRenderer {
 
         recordTypeRenderers.put(treasuryId, new DMT_DefaultLimitVisualRenderer());
         recordTypeRenderers.put(otherId, new DMT_DefaultLimitVisualRenderer());
+        // DMT_Opportunity intentionally routes to DMT_DefaultLimitVisualRenderer (not DMT_OppProfitabilityLimitVisualRenderer):
+        // DMT_DefaultLimitVisualRenderer handles consumption limits for all record types and, for Opportunity,
+        // additionally appends the Profitability Visual by calling DMT_OppProfitabilityLimitVisualRenderer.renderHtml()
+        // statically at the end of its render pass. Routing Opportunity directly to DMT_OppProfitabilityLimitVisualRenderer
+        // would lose the consumption limits section entirely.
         recordTypeRenderers.put(dmtOpportunityId, new DMT_DefaultLimitVisualRenderer());
-
-        //recordTypeRenderers.put(dmtOpportunityId, new DMT_OppProfitabilityLimitVisualRenderer());
         recordTypeRenderers.put(sanctionId, new DMT_DefaultLimitVisualRenderer());
 
     }
@@ -31,22 +34,6 @@ public with sharing class DMT_LimitVisualRenderer implements DMT_ViewRenderer {
         } catch (Exception e){
             System.debug(e.getMessage());
             return '<div>Error: ' + e.getMessage() + '</div>';
-        }
-    }
-
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null) {
-            return new Map<String, Object>();
-        }
-        try {
-            DMT_ViewRenderer renderer = recordTypeRenderers.get(data.recordTypeId);
-            if (renderer == null) {
-                throw new IllegalArgumentException('No Limit Visual renderer for record type Id: ' + data.recordTypeId);
-            }
-            return renderer.renderPdfJson(data);
-        } catch (Exception e){
-            System.debug(e.getMessage());
-            return new Map<String, Object>();
         }
     }
 }

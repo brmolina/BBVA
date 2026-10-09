@@ -130,7 +130,9 @@
                     <span class="feature_error">
                         <c-dmt_helpericon icon-name="utility:warning" icon-size="small" text={feature.featureErrorMessage} icon-variant="error"></c-dmt_helpericon>
                     </span>
+                   
                 </template>
+                <c-dmt_missing-fields-popover title="Complete the fields" data={feature.fieldsRequired} onnotifytabfieldselect={handleFieldSelect}></c-dmt_missing-fields-popover>
             </td>
             <td class="slds-p-left_large slds-align-center" colspan="2"></td>
                 <template lwc:if={isbig}>

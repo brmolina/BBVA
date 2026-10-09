@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>bupl__solution_category_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Product</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>bupl__solution_category_id__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Cash Management</fullName>
+                <default>false</default>
+                <label>Cash Management</label>
+            </value>
+            <value>
+                <fullName>Client Resources</fullName>
+                <default>false</default>
+                <label>Client Resources</label>
+            </value>
+            <value>
+                <fullName>Credit</fullName>
+                <default>false</default>
+                <label>Credit</label>
+            </value>
+            <value>
+                <fullName>Equity</fullName>
+                <default>false</default>
+                <label>Equity</label>
+            </value>
+            <value>
+                <fullName>FX</fullName>
+                <default>false</default>
+                <label>FX</label>
+            </value>
+            <value>
+                <fullName>Rates</fullName>
+                <default>false</default>
+                <label>Rates</label>
+            </value>
+            <value>
+                <fullName>Securities Services</fullName>
+                <default>false</default>
+                <label>Securities Services</label>
+            </value>
+            <value>
+                <fullName>Working Capital</fullName>
+                <default>false</default>
+                <label>Working Capital</label>
+            </value>
+            <value>
+                <fullName>Corporate Syndicated Lending</fullName>
+                <default>false</default>
+                <label>Corporate Syndicated Lending</label>
+            </value>
+            <value>
+                <fullName>Structured Finance</fullName>
+                <default>false</default>
+                <label>Structured Finance</label>
+            </value>
+            <value>
+                <fullName>DCM</fullName>
+                <default>false</default>
+                <label>DCM</label>
+            </value>
+            <value>
+                <fullName>Portfolio Management &amp; Monitoring</fullName>
+                <default>false</default>
+                <label>Portfolio Management &amp; Monitoring</label>
+            </value>
+            <value>
+                <fullName>Trade Finance</fullName>
+                <default>false</default>
+                <label>Trade Finance</label>
+            </value>
+            <value>
+                <fullName>ECM</fullName>
+                <default>false</default>
+                <label>ECM</label>
+            </value>
+            <value>
+                <fullName>M&amp;A</fullName>
+                <default>false</default>
+                <label>M&amp;A</label>
+            </value>
+            <value>
+                <fullName>Others GM</fullName>
+                <default>false</default>
+                <label>Others GM</label>
+            </value>
+            <value>
+                <fullName>Others GF</fullName>
+                <default>false</default>
+                <label>Others GF</label>
+            </value>
+            <value>
+                <fullName>Others GTB</fullName>
+                <default>false</default>
+                <label>Others GTB</label>
+            </value>
+            <value>
+                <fullName>Others IBF</fullName>
+                <default>false</default>
+                <label>Others IBF</label>
+            </value>
+            <value>
+                <fullName>Structure Trade Finance</fullName>
+                <default>false</default>
+                <label>Structure Trade Finance</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Others</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>GM</controllingFieldValue>
+            <valueName>Credit</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GM</controllingFieldValue>
+            <valueName>Equity</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GM</controllingFieldValue>
+            <valueName>FX</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GM</controllingFieldValue>
+            <valueName>Rates</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GM</controllingFieldValue>
+            <valueName>Others GM</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GTB</controllingFieldValue>
+            <valueName>Cash Management</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GTB</controllingFieldValue>
+            <valueName>Client Resources</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GTB</controllingFieldValue>
+            <valueName>Securities Services</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GTB</controllingFieldValue>
+            <valueName>Working Capital</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GTB</controllingFieldValue>
+            <valueName>Trade Finance</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GTB</controllingFieldValue>
+            <valueName>Others GTB</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>Corporate Syndicated Lending</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>Structured Finance</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>DCM</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>Portfolio Management &amp; Monitoring</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>ECM</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>M&amp;A</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>Others IBF</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>IBF</controllingFieldValue>
+            <valueName>Structure Trade Finance</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

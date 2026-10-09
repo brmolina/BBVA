@@ -6,6 +6,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
           import pubsub from "omnistudio/pubsub";
           import { getRecord } from "lightning/uiRecordApi";
           
+          
           import data from "./definition";
           
           import styleDef from "./styleDefinition";
@@ -22,6 +23,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
+              
               @track Label={dmt_cl_TotalAmount:"Total Amount",
         dmt_cl_CounterpartyRisk_Text:"Counterparty Risk (Derivatives Risk Line)",
         dmt_cl_DerivativesMessage_Text:"Non-hedging derivatives will also be allocated under this limit and must in all cases be authorized by the Risk area that manages the FP (and, in the case of non-C&IB clients, must additionally have the approval of WR discipline).",
@@ -45,6 +47,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
           }
         
               connectedCallback() {
+                
                 super.connectedCallback();
                 this.setThemeClass(data);
                 this.setStyleDefinition(styleDef);
@@ -57,9 +60,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKE000000L9R2YAK"
+                  " card-0koKE000000L9taYAC"
                 );
-                this.loadCustomStylesheetAttachement("00PKE000001w2lb2AA");
+                this.loadCustomStylesheetAttachement("00PKE000002MxpG2AS");
                 
                 
               }
@@ -85,6 +88,12 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
         };
         this.pubsubChannel1 = interpolateWithRegex(`formLineEdit`,this._allMergeFields,this._regexPattern,"noparse");
         pubsub.register(this.pubsubChannel1,this.pubsubEvent[1]);
+
+        this.pubsubEvent[2] = {
+          [interpolateWithRegex(`errorChild`,this._allMergeFields,this._regexPattern,"noparse")]: this.handleEventAction.bind(this, data.events[15],15)
+        };
+        this.pubsubChannel2 = interpolateWithRegex(`risktTermParent`,this._allMergeFields,this._regexPattern,"noparse");
+        pubsub.register(this.pubsubChannel2,this.pubsubEvent[2]);
 
             this.customEventName0 = interpolateWithRegex(`tableRiskchange`,this._allMergeFields,this._regexPattern,"noparse");
             this.customEvent[0] = this.handleEventAction.bind(this, data.events[0],0);
@@ -163,6 +172,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               unregisterEvents(){
                 pubsub.unregister(this.pubsubChannel0,this.pubsubEvent[0]);
 pubsub.unregister(this.pubsubChannel1,this.pubsubEvent[1]);
+pubsub.unregister(this.pubsubChannel2,this.pubsubEvent[2]);
 
             this.template.removeEventListener(this.customEventName0,this.customEvent[0]);
 

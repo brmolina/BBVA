@@ -68,12 +68,21 @@ public with sharing class DMT_SendEmailService_Selector {
     }
 
     /**
-        * @description Retrieves an active user by Id.
-     * @param userId User Id.
-     * @return List with the active user record (max 1).
+    * @description Retrieves a user by Salesforce Id (active only) or by ID_User__c.
+     * @param userId Salesforce User Id.
+     * @param userCode External ID_User__c value.
+     * @return List with a single user record (max 1), or empty when no criteria is provided.
      */
-    public static List<User> getActiveUserById(Id userId) {
-        return [SELECT Id, Email FROM User WHERE Id = :userId AND IsActive = true WITH USER_MODE LIMIT 1];
+    public static List<User> getUserByIdOrCode(Id userId, String userCode) {
+        if (userId != null) {
+            return [SELECT Id, Email, Name FROM User WHERE Id = :userId AND IsActive = true WITH USER_MODE LIMIT 1];
+        }
+
+        if (String.isNotBlank(userCode)) {
+            return [SELECT Id, Email, Name FROM User WHERE ID_User__c = :userCode WITH USER_MODE LIMIT 1];
+        }
+
+        return new List<User>();
     }
 
     /**
@@ -127,5 +136,40 @@ public with sharing class DMT_SendEmailService_Selector {
         }
 
         return [ SELECT DMT_Sanction__c FROM Opportunity WHERE Id = :opportunityId WITH USER_MODE LIMIT 1];
+    }
+
+    /**
+     * @description Retrieves the org-wide email address matching the given display name.
+     * @param displayName Display name to look up.
+     * @return List with the matching OrgWideEmailAddress (max 1).
+     */
+    public static List<OrgWideEmailAddress> getOrgWideEmailByDisplayName(String displayName) {
+        return [SELECT Id FROM OrgWideEmailAddress WHERE DisplayName = :displayName LIMIT 1];
+    }
+
+    /**
+     * @description Retrieves completed tasks on cases linked to an opportunity.
+     * @param opportunityId Opportunity Id.
+     * @return List of completed tasks with last-modifier user details.
+     */
+    public static List<Task> getCompletedTasksByOpportunityId(Id opportunityId) {
+        return [SELECT LastModifiedById, LastModifiedBy.Email, LastModifiedBy.IsActive
+                FROM Task
+                WHERE Status = 'Finished'
+                AND WhatId IN (SELECT Id FROM Case WHERE opportunity_id__c = :opportunityId)
+                WITH SYSTEM_MODE];
+    }
+
+    /**
+     * @description Retrieves completed tasks on cases linked to a line.
+     * @param lineId DMT_Line__c Id.
+     * @return List of completed tasks with last-modifier user details.
+     */
+    public static List<Task> getCompletedTasksByLineId(Id lineId) {
+        return [SELECT LastModifiedById, LastModifiedBy.Email, LastModifiedBy.IsActive
+                FROM Task
+                WHERE Status = 'Finished'
+                AND WhatId IN (SELECT Id FROM Case WHERE DMT_Line__c = :lineId)
+                WITH SYSTEM_MODE];
     }
 }

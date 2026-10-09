@@ -198,60 +198,6 @@ public class DMT_ProcessFlowRenderersTest {
                      'Should contain subitem approver');
     }
 
-
-    @IsTest
-    public static void testApprovalRenderPdfJson_NullData() {
-        DMT_DefaultApprovalProcessFlowRenderer renderer = new DMT_DefaultApprovalProcessFlowRenderer();
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(null);
-        Test.stopTest();
-
-        System.assert(result.isEmpty(),
-                     'Should return empty map for null data');
-    }
-
-    @IsTest
-    public static void testApprovalRenderPdfJson_EmptyParticipantList() {
-        DMT_DefaultApprovalProcessFlowRenderer renderer = new DMT_DefaultApprovalProcessFlowRenderer();
-        DMT_ViewController.LineDataWrapper data = createTestDataWrapper(true, 'approval', false, false);
-        data.participantList = new List<DMT_TeamMember__c>();
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assert(result.isEmpty(),
-                     'Should return empty map when participantList is empty');
-    }
-
-    @IsTest
-    public static void testApprovalRenderPdfJson_WithApprovalStepsNoSubitems() {
-        DMT_DefaultApprovalProcessFlowRenderer renderer = new DMT_DefaultApprovalProcessFlowRenderer();
-        DMT_ViewController.LineDataWrapper data = createTestDataWrapper(true, 'approval', false, false);
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assert(!result.isEmpty(),
-                     'Should not return empty map when there are approval steps');
-        System.assert('approval process flow'.equalsIgnoreCase((String) result.get('name')), 'Should have correct component name.');
-    }
-
-    @IsTest
-    public static void testApprovalRenderPdfJson_WithApprovalStepsAndSubitems() {
-        DMT_DefaultApprovalProcessFlowRenderer renderer = new DMT_DefaultApprovalProcessFlowRenderer();
-        DMT_ViewController.LineDataWrapper data = createTestDataWrapper(true, 'approval', false, true);
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assert(!result.isEmpty(),
-                     'Should not return empty map when there are approval steps with subitems');
-    }
-
     // ============ TESTS PARA DMT_SanctionOppApprovalProcessRenderer ============
     // (Sanction Line view: Approval Process for the Line's child Opportunity)
 
@@ -330,59 +276,6 @@ public class DMT_ProcessFlowRenderersTest {
                      'Should contain subitem approver');
     }
 
-    @IsTest
-    public static void testSanctionOppApprovalRenderPdfJson_NullData() {
-        DMT_SanctionOppApprovalProcessRenderer renderer = new DMT_SanctionOppApprovalProcessRenderer();
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(null);
-        Test.stopTest();
-
-        System.assert(result.isEmpty(),
-                     'Should return empty map for null data');
-    }
-
-    @IsTest
-    public static void testSanctionOppApprovalRenderPdfJson_EmptySteps() {
-        DMT_SanctionOppApprovalProcessRenderer renderer = new DMT_SanctionOppApprovalProcessRenderer();
-        DMT_ViewController.LineDataWrapper data = createSanctionOppTestDataWrapper(false, false, false);
-        data.sanctionOppAllsteps = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assert(result.isEmpty(),
-                     'Should return empty map when sanctionOppAllsteps is empty');
-    }
-
-    @IsTest
-    public static void testSanctionOppApprovalRenderPdfJson_WithApprovalStepsNoSubitems() {
-        DMT_SanctionOppApprovalProcessRenderer renderer = new DMT_SanctionOppApprovalProcessRenderer();
-        DMT_ViewController.LineDataWrapper data = createSanctionOppTestDataWrapper(true, false, false);
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assert(!result.isEmpty(),
-                     'Should not return empty map when there are approval steps');
-        System.assert('approval process flow'.equalsIgnoreCase((String) result.get('name')), 'Should have correct component name.');
-    }
-
-    @IsTest
-    public static void testSanctionOppApprovalRenderPdfJson_WithApprovalStepsAndSubitems() {
-        DMT_SanctionOppApprovalProcessRenderer renderer = new DMT_SanctionOppApprovalProcessRenderer();
-        DMT_ViewController.LineDataWrapper data = createSanctionOppTestDataWrapper(true, false, true);
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assert(!result.isEmpty(),
-                     'Should not return empty map when there are approval steps with subitems');
-    }
-
     // ============ TESTS PARA DMT_DefaultPassportProcessFlowRenderer ============
 
     @IsTest
@@ -449,71 +342,42 @@ public class DMT_ProcessFlowRenderersTest {
                      'Should contain subitem approver');
     }
 
+    // ============ TESTS PARA DMT_SanctionOppPassportProcessRenderer ============
 
     @IsTest
-    public static void testPassportRenderPdfJson_NullData() {
-        DMT_DefaultPassportProcessFlowRenderer renderer = new DMT_DefaultPassportProcessFlowRenderer();
+    public static void testSanctionOppPassportRenderer_AllPaths() {
+        DMT_SanctionOppPassportProcessRenderer r = new DMT_SanctionOppPassportProcessRenderer();
 
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(null);
-        Test.stopTest();
+        // null / empty guards
+        System.assert(r.renderHtml(null).containsIgnoreCase('Validation process not provided'));
+        DMT_ViewController.LineDataWrapper empty = new DMT_ViewController.LineDataWrapper();
+        System.assert(r.renderHtml(empty).containsIgnoreCase('Validation process not provided'));
 
-        System.assert(result.isEmpty(),
-                     'Should return empty map for null data');
-    }
+        // no matching passport-type steps → no-info message (only non-passport/non-null types)
+        DMT_ViewController.LineDataWrapper noPassport = new DMT_ViewController.LineDataWrapper();
+        noPassport.sanctionOppAllsteps = new List<DMT_Case_Steps_Controller.WRAPPER_Step>{
+            createWrapperStep(3, 'documentation', 'Doc Upload', 'Clerk', 'Done', 'Upload', 'clerk@test.com', '', '', '', false)
+        };
+        System.assert(r.renderHtml(noPassport).containsIgnoreCase('There is no information about the validation process'));
 
-    @IsTest
-    public static void testPassportRenderPdfJson_EmptyParticipantList() {
-        DMT_DefaultPassportProcessFlowRenderer renderer = new DMT_DefaultPassportProcessFlowRenderer();
-        DMT_ViewController.LineDataWrapper data = createTestDataWrapper(true, 'passport', false, false);
-        data.participantList = new List<DMT_TeamMember__c>();
+        // passport steps without subitems
+        DMT_ViewController.LineDataWrapper noSub = createTestDataWrapper(true, 'passport', false, false);
+        noSub.sanctionOppAllsteps = noSub.allsteps;
+        noSub.allsteps = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
+        String htmlNoSub = r.renderHtml(noSub);
+        System.assert(htmlNoSub.containsIgnoreCase('Document Validation'));
+        System.assert(htmlNoSub.containsIgnoreCase('Jane Smith'));
 
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
+        // passport steps with subitems
+        DMT_ViewController.LineDataWrapper withSub = createTestDataWrapper(true, 'passport', false, true);
+        withSub.sanctionOppAllsteps = withSub.allsteps;
+        withSub.allsteps = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
+        String htmlSub = r.renderHtml(withSub);
+        System.assert(htmlSub.containsIgnoreCase('Security Officer'));
+        System.assert(htmlSub.containsIgnoreCase('Subitem Approver'));
 
-        System.assert(result.isEmpty(),
-                     'Should return empty map when participantList is empty');
-    }
-
-    @IsTest
-    public static void testPassportRenderPdfJson_WithPassportStepsNoSubitems() {
-        DMT_DefaultPassportProcessFlowRenderer renderer = new DMT_DefaultPassportProcessFlowRenderer();
-        DMT_ViewController.LineDataWrapper data = createTestDataWrapper(true, 'passport', false, false);
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assert(!result.isEmpty(), 'Should not return empty map when there are validation steps');
-        System.assert(((String) result.get('name')).containsIgnoreCase('validation process flow'), 'Should have correct component name');
-    }
-
-    @IsTest
-    public static void testPassportRenderPdfJson_WithPassportStepsAndSubitems() {
-        DMT_DefaultPassportProcessFlowRenderer renderer = new DMT_DefaultPassportProcessFlowRenderer();
-        DMT_ViewController.LineDataWrapper data = createTestDataWrapper(true, 'passport', false, true);
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assert(!result.isEmpty(),
-                     'Should not return empty map when there are validation steps with subitems');
-    }
-
-    @IsTest
-    public static void testPassportRenderPdfJson_OnlyNonPassportSteps() {
-        DMT_DefaultPassportProcessFlowRenderer renderer = new DMT_DefaultPassportProcessFlowRenderer();
-        DMT_ViewController.LineDataWrapper data = createTestDataWrapper(false, 'passport', true, false);
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        // Debería procesar steps con null featureType
-        System.assert(!result.isEmpty(),
-                     'Should process steps with null featureType');
+        // renderPdfJson always returns empty map
+        System.assert(r.renderPdfJson(noSub).isEmpty());
     }
 
     // ============ TESTS DE EXCEPCIONES ============
@@ -548,90 +412,6 @@ public class DMT_ProcessFlowRenderersTest {
                      'Should process normally without errors');
     }
 
-    @IsTest
-    public static void testApprovalRenderPdfJson_ExceptionHandling() {
-        DMT_DefaultApprovalProcessFlowRenderer renderer = new DMT_DefaultApprovalProcessFlowRenderer();
-        DMT_ViewController.LineDataWrapper data = createTestDataWrapper(true, 'approval', false, false);
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assert(result != null, 'Should return a result (empty or with data)');
-    }
-
-    @IsTest
-    public static void testPassportRenderPdfJson_ExceptionHandling() {
-        DMT_DefaultPassportProcessFlowRenderer renderer = new DMT_DefaultPassportProcessFlowRenderer();
-        DMT_ViewController.LineDataWrapper data = createTestDataWrapper(true, 'passport', false, false);
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assert(result != null, 'Should return a result (empty or with data)');
-    }
-
-    // ============ TESTS DE CAMINOS ESPECIALES ============
-
-    @IsTest
-    public static void testApprovalFeatureWithoutNameButWithSubitem() {
-        DMT_DefaultApprovalProcessFlowRenderer renderer = new DMT_DefaultApprovalProcessFlowRenderer();
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.participantList = new List<DMT_TeamMember__c>{ new DMT_TeamMember__c(Name = 'Test') };
-        data.allsteps = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
-
-        DMT_Case_Steps_Controller.WRAPPER_Step parentStep = new DMT_Case_Steps_Controller.WRAPPER_Step();
-        parentStep.featureType = 'approval';
-        parentStep.featureName = null;
-
-        DMT_Case_Steps_Controller.WRAPPER_Step childStep = createWrapperStep(
-            1, 'approval', 'Child Approval',
-            'Child Approver', 'Pending', 'Child Task',
-            'child@test.com', '2024-01-01', '', '',
-            false
-        );
-        parentStep.subitems = new List<DMT_Case_Steps_Controller.WRAPPER_Step>{ childStep };
-
-        data.allsteps.add(parentStep);
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assert(!result.isEmpty(),
-                     'Should process step without name but with subitem');
-    }
-
-    @IsTest
-    public static void testPassportFeatureWithoutNameButWithSubitem() {
-        DMT_DefaultPassportProcessFlowRenderer renderer = new DMT_DefaultPassportProcessFlowRenderer();
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.participantList = new List<DMT_TeamMember__c>{ new DMT_TeamMember__c(Name = 'Test') };
-        data.allsteps = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
-
-        DMT_Case_Steps_Controller.WRAPPER_Step parentStep = new DMT_Case_Steps_Controller.WRAPPER_Step();
-        parentStep.featureType = 'passport';
-        parentStep.featureName = null;
-
-        DMT_Case_Steps_Controller.WRAPPER_Step childStep = createWrapperStep(
-            1, 'passport', 'Child Validation',
-            'Child Approver', 'Pending', 'Child Task',
-            'child@test.com', '2024-01-01', '', '',
-            false
-        );
-        parentStep.subitems = new List<DMT_Case_Steps_Controller.WRAPPER_Step>{ childStep };
-
-        data.allsteps.add(parentStep);
-
-        Test.startTest();
-        Map<String, Object> result = renderer.renderPdfJson(data);
-        Test.stopTest();
-
-        System.assert(!result.isEmpty(),
-                     'Should process step without name but with subitem');
-    }
-
     // ============ TEST DE COBERTURA COMPLETA ============
 
     @IsTest
@@ -648,15 +428,6 @@ public class DMT_ProcessFlowRenderersTest {
         String html2 = approvalRenderer.renderHtml(data1);
         System.assert(html2.containsIgnoreCase('not provided'));
 
-        // renderPdfJson paths
-        Map<String, Object> pdf1 = approvalRenderer.renderPdfJson(null);
-        System.assert(pdf1.isEmpty());
-
-        DMT_ViewController.LineDataWrapper data2 = new DMT_ViewController.LineDataWrapper();
-        data2.participantList = new List<DMT_TeamMember__c>();
-        Map<String, Object> pdf2 = approvalRenderer.renderPdfJson(data2);
-        System.assert(pdf2.isEmpty());
-
         // Test Passport Renderer paths
         DMT_DefaultPassportProcessFlowRenderer passportRenderer = new DMT_DefaultPassportProcessFlowRenderer();
 
@@ -668,14 +439,5 @@ public class DMT_ProcessFlowRenderersTest {
         data3.allsteps = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
         String html4 = passportRenderer.renderHtml(data3);
         System.assert(html4.containsIgnoreCase('not provided'));
-
-        // renderPdfJson paths
-        Map<String, Object> pdf3 = passportRenderer.renderPdfJson(null);
-        System.assert(pdf3.isEmpty());
-
-        DMT_ViewController.LineDataWrapper data4 = new DMT_ViewController.LineDataWrapper();
-        data4.participantList = new List<DMT_TeamMember__c>();
-        Map<String, Object> pdf4 = passportRenderer.renderPdfJson(data4);
-        System.assert(pdf4.isEmpty());
     }
 }

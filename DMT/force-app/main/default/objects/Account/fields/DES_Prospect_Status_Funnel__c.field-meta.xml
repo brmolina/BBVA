@@ -11,9 +11,9 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>Identify</fullName>
+                <fullName>Identified</fullName>
                 <default>false</default>
-                <label>Identify</label>
+                <label>Identified</label>
             </value>
             <value>
                 <fullName>Industry validated</fullName>
@@ -39,6 +39,16 @@
                 <fullName>Discarded</fullName>
                 <default>false</default>
                 <label>Discarded</label>
+            </value>
+            <value>
+                <fullName>Merged</fullName>
+                <default>false</default>
+                <label>Merged</label>
+            </value>
+            <value>
+                <fullName>Closed</fullName>
+                <default>false</default>
+                <label>Closed</label>
             </value>
         </valueSetDefinition>
     </valueSet>

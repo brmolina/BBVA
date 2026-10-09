@@ -15,7 +15,7 @@ export default class Dmt_call_passport extends LightningElement {
         fetchData(params).then( data => {
             if (data.success) {
                 this.groupedData = this.groupedData.concat(data.data);
-                if (data.pagination.totalPages > data.pagination.page) {
+                if (data.pagination && data.pagination.totalPages > data.pagination.page) {
                     this.handleFetchMore(params);
                 } else {
                     this.showSpinnerPassport = false;

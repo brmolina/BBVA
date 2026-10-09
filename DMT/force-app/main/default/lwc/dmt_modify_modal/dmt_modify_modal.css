@@ -123,16 +123,33 @@
     margin-top: 0.15rem;
 }
 
+.amount-cell-edit-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    width: 100%;
+}
+
+.amount-cell-edit-wrapper lightning-input {
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
 .column-header-actions {
     display: inline-flex;
     align-items: center;
-    gap: 0.2rem;
+    gap: 0.35rem;
 }
 
 .bulk-column-trigger {
-    --slds-c-button-color-border: transparent;
-    --slds-c-button-color-background: transparent;
-    --slds-c-button-text-color: #0176d3;
+    --slds-c-button-text-color-hover: #014486;
+    --slds-c-button-radius-border: 0.25rem;
+    flex-shrink: 0;
+}
+
+.bulk-column-trigger:hover {
+    transform: scale(1.05);
 }
 
 .bulk-popover {
@@ -253,8 +270,58 @@
     gap: 0.45rem 0.75rem;
 }
 
+.cell-currency-label {
+    display: block;
+    font-size: 0.58rem;
+    color: #706e6b;
+    font-weight: 600;
+    text-align: right;
+    padding-top: 0.05rem;
+    line-height: 1;
+}
+
 @media (max-width: 48rem) {
     .edit-table {
         width: 100%;
     }
+}
+
+.client-code-badge {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: #706e6b;
+    margin-top: 0.15rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-decoration: none;
+    text-align: center;
+}
+
+.client-custom-badge {
+    color: #706e6b;
+    cursor: help;
+    border-bottom: 1px dotted #aaa;
+    text-decoration: none;
+}
+
+.client-name-list {
+    display: block;
+    max-width: 100%;
+    margin-top: 0.15rem;
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: #706e6b;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-decoration: none;
+    text-align: center;
+}
+
+.client-divider {
+    width: 55%;
+    margin: 0.25rem auto 0.1rem;
+    border-top: 1px solid #e0e0e0;
 }

@@ -1,7 +1,9 @@
 import { api } from "lwc";
 import LightningModal from "lightning/modal";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
-import pubsub from "omnistudio/pubsub";
+import getOpportunityCreationParameters from "@salesforce/apex/DMT_CreateOpportunityService.getOpportunityCreationParameters";
+import refreshEntityOptions from "@salesforce/apex/DMT_CreateOpportunityService.refreshEntityOptions";
+import createOpportunity from "@salesforce/apex/DMT_CreateOpportunityService.createOpportunity";
 
 // Labels (DO NOT TOUCH)
 import DMT_Name from "@salesforce/label/c.dmt_cl_NameLine";
@@ -12,6 +14,7 @@ import DMT_Country from "@salesforce/label/c.dmt_cl_Country";
 import DMT_TaxPayer from "@salesforce/label/c.dmt_cl_Tax_Payer";
 import DMT_permissionErrorMessage from "@salesforce/label/c.dmt_cl_Entific_Error";
 import DMT_Entific from "@salesforce/label/c.dmt_cl_Entific_Label";
+import DMT_weblink_label from "@salesforce/label/c.DMT_weblink_label";
 import DMT_LoadingText from "@salesforce/label/c.GDT_Loading";
 import DMT_AccountText from "@salesforce/label/c.Account";
 import DMT_SelectLineTypetext from "@salesforce/label/c.dmt_cl_SelectLineType_Text";
@@ -30,7 +33,6 @@ import DMT_OpportunityCreatedSuccessfullyText from "@salesforce/label/c.DMT_Oppo
 import DMT_IdOpportunityNotReturnedText from "@salesforce/label/c.DMT_IdOpportunityNotReturnedText";
 import DTM_NewOpportunityText from "@salesforce/label/c.DTM_NewOpportunityText";
 
-import DMT_weblink_label from "@salesforce/label/c.DMT_weblink_label";
 
 
 // =========================================================
@@ -39,29 +41,21 @@ import DMT_weblink_label from "@salesforce/label/c.DMT_weblink_label";
 const CLIENT_TYPE_CUSTOMER = "Subsidiary";
 const CLIENT_TYPE_GROUP = "CIB Group";
 const CLIENT_TYPE_SUBGROUP = "Subgroup";
+const CLIENT_TYPE_SINGLE_CLIENT_LABEL = "Single client";
+const CLIENT_TYPE_MULTI_CLIENT_LABEL = "Multi-client";
 const NAME_MAX_LEN = 50;
+const RECORD_TYPE_NAME = "DMT_Opportunity";
 
 const ERROR_TITLE = DMT_UnexpectedErrorText;
 const ERROR_FALLBACK_MESSAGE = DMT_ErrorContactAdministratorText
-
-const RESULT_OK = "OK";
-
-// Actions (payload.action)
-const ACTION_GET_OPPORTUNITY_INFO = "GET_OPPORTUNITY_INFO";
-const ACTION_CREATE_NEW_OPPORTUNITY = "CREATE_NEW_OPPORTUNITY";
-const ACTION_REFRESH_ENTITY = "REFRESH_ENTITY";
-const ACTION_REFRESH_DATA = "REFRESH_DATA";
-
-// PubSub Configuration
-const PUBSUB_CHANNEL = "DMT_MarcoGeneral";
-const PUBSUB_EVENT_REQUEST = "OpportunityManagement";
-const PUBSUB_EVENT_RESPONSE = "OpportunityResponse";
 
 export default class dmtNewOpportunityModal extends LightningModal {
   // =========================================================
   // Public API
   // =========================================================
-
+  @api clientId;
+  @api groupId;
+  @api taxPayer = "";
 
   labels = {
     DMT_permissionErrorMessage, DMT_Entific,
@@ -70,8 +64,8 @@ export default class dmtNewOpportunityModal extends LightningModal {
     DMT_ClientCode,
     DMT_GroupCode,
     DMT_Country,
-    DMT_weblink_label,
     DMT_TaxPayer,
+    DMT_weblink_label,
     DMT_LoadingText,
     DMT_AccountText,
     DMT_SelectLineTypetext,
@@ -93,12 +87,10 @@ export default class dmtNewOpportunityModal extends LightningModal {
   // State (filled by IP refresh)
   // =========================================================
   companyName = "";
-  clientId = "";
   clientType = "";
   clientCode = "";
   country = "";
   isProspect = "";
-  taxPayer = "";
   groupCode = "";
   clientsByGroup = [];
 
@@ -134,16 +126,6 @@ export default class dmtNewOpportunityModal extends LightningModal {
    */
   lastIp = null;
 
-  // PubSub internal state
-  _pubsubRegistered = false;
-  _pubsubHandler = null;
-
-  /**
-   * Used to route PubSub responses to the correct handler.
-   * (We have multiple actions sharing the same response event.)
-   */
-  _pendingAction = null;
-
   // =========================================================
   // Helpers
   // =========================================================
@@ -163,9 +145,11 @@ export default class dmtNewOpportunityModal extends LightningModal {
   /**
    * The backend provides only a raw picklist value (no label/value list).
    * lightning-combobox can only display a selected value if that value exists in `options`,
-   * so we inject the received raw value into the options as { label: v, value: v }.
+   * so we inject the received raw value into the options as { label, value: v }.
+   * `label` defaults to the raw value but callers can pass a friendlier display label
+   * (e.g. the RecordType DeveloperName 'DMT_Opportunity' displayed as 'DMT Opportunity').
    */
-  normalizePicklistValue(rawValue, optionsPropName) {
+  normalizePicklistValue(rawValue, optionsPropName, label) {
     const v = this.safeStr(rawValue).trim();
     if (!v) return "";
 
@@ -173,7 +157,7 @@ export default class dmtNewOpportunityModal extends LightningModal {
     const exists = current.some((o) => o?.value === v);
 
     if (!exists) {
-      this[optionsPropName] = [...current, { label: v, value: v }];
+      this[optionsPropName] = [...current, { label: label || v, value: v }];
     }
 
     return v;
@@ -210,7 +194,7 @@ export default class dmtNewOpportunityModal extends LightningModal {
       (
         needsEntificEntity &&
         (!this.entific || !this.entity)
-      )
+    )
     );
   }
 
@@ -236,22 +220,26 @@ export default class dmtNewOpportunityModal extends LightningModal {
   get showTaxPayer() {
     return this.isSubsidiary && !this.isProspect;
   }
-  
-  get showEntity() {
-    return (this.isSubsidiary || this.isGroup) || this.isNonDisclosed;
+
+  get clientTypeLabel() {
+    if (this.isSubsidiary) {
+      return CLIENT_TYPE_SINGLE_CLIENT_LABEL;
+    }
+
+    if (this.isGroup) {
+      return CLIENT_TYPE_MULTI_CLIENT_LABEL;
+    }
+
+    return this.clientType;
   }
-  
+
   // =========================================================
   // Global flags
   // =========================================================
-  
+
   //Returns if the Account is a Susbsidiary, including Clients and Prospects
   get isSubsidiary() {
     return this.clientType === CLIENT_TYPE_CUSTOMER;
-  }
-
-  get isNonDisclosed() {
-    return this.groupCode === "GXXXXXXXXXXXXXX";
   }
 
   //Returns if the Account is a Group, including Clients and Prospects
@@ -272,148 +260,43 @@ export default class dmtNewOpportunityModal extends LightningModal {
     return this.isProspect && !this.isSubsidiary;
   }
 
+  get isNonDisclosed() {
+    return this.groupCode === "GXXXXXXXXXXXXXX";
+  }
+
   // =========================================================
   // Lifecycle
   // =========================================================
   connectedCallback() {
     /**
-     * Force initial loading state before firing any PubSub request.
+     * Force initial loading state before the first Apex call.
      * Without this, the first render may happen before `isLoading` becomes true.
      */
     this.isLoading = true;
-
-    // Bind once to avoid creating multiple handler references across reconnects
-    this._pubsubHandler =
-      this._pubsubHandler || this.handlePubSubResponse.bind(this);
-
-    this.registerPubSubListener();
     this.loadInitialData();
-  }
-
-  disconnectedCallback() {
-    // Clean up PubSub to avoid leaking listeners when the modal is destroyed
-    this.unregisterPubSubListener();
-  }
-
-  // =========================================================
-  // PubSub
-  // =========================================================
-  registerPubSubListener() {
-    if (this._pubsubRegistered || !pubsub) return;
-
-    try {
-      pubsub.register(PUBSUB_CHANNEL, {
-        [PUBSUB_EVENT_RESPONSE]: this._pubsubHandler
-      });
-      this._pubsubRegistered = true;
-    } catch (error) {
-      console.error("Error registering PubSub listener:", error);
-      this.handleError(error, this.labels.DMT_FailedRegisterEventListenerText);
-    }
-  }
-
-  unregisterPubSubListener() {
-    if (!this._pubsubRegistered || !pubsub) return;
-
-    try {
-      pubsub.unregister(PUBSUB_CHANNEL, {
-        [PUBSUB_EVENT_RESPONSE]: this._pubsubHandler
-      });
-      this._pubsubRegistered = false;
-    } catch (error) {
-      console.error("Error unregistering PubSub listener:", error);
-    }
-  }
-
-  firePubSubEvent(payload) {
-    // Centralized PubSub fire with consistent error handling
-    if (!pubsub) {
-      console.error("PubSub module not available");
-      this.handleError(new Error(this.labels.DMT_PubSubNotLoadedText));
-      return;
-    }
-
-    try {
-      pubsub.fire(PUBSUB_CHANNEL, PUBSUB_EVENT_REQUEST, payload);
-    } catch (error) {
-      console.error("Error firing PubSub event:", error);
-      this.handleError(error, this.labels.DMT_FailedComunicationWithServerText);
-    }
-  }
-
-  handlePubSubResponse(response) {
-    /**
-     * The backend responds through a single PubSub event, so we extract the specific
-     * payload node and then route it using `_pendingAction`.
-     */
-    const opportunityResponse = response?.OpportunityResponse;
-    this.taxPayer = response?.taxpayerId;
-    this.clientsByGroup = response?.clientsByGroup;
-    this.companyName = this.safeStr(response?.selectedClientName);
-    opportunityResponse.clientsByGroup = response?.clientsByGroup || [];
-
-    if (!opportunityResponse) {
-      const errorMsg =
-        response?.error || response?.message || ERROR_FALLBACK_MESSAGE;
-      this.handleError(new Error(errorMsg));
-      return;
-    }
-
-    this.processResponse(opportunityResponse);
-
-    if (opportunityResponse.refreshBoolean ) {
-      this.handlerRefreshEntity(opportunityResponse);
-      return; 
-    }
-  }
-
-  processResponse(data) {
-    /**
-     * Response router: `_pendingAction` tells us which request is currently waiting.
-     * We always clear `_pendingAction` in finally to prevent stale routing.
-     */
-    try {
-      switch (this._pendingAction) {
-        case ACTION_GET_OPPORTUNITY_INFO:
-          this.handleBootstrapDataResponse(data);
-          break;
-
-        case ACTION_CREATE_NEW_OPPORTUNITY:
-          this.handleCreateNewOpportunityResponse(data);
-          break;
-
-        case ACTION_REFRESH_ENTITY:
-          this.handlerRefreshEntity(data);
-          break;
-
-        default:
-          this.isLoading = false;
-      }
-    } finally {
-      this._pendingAction = null;
-    }
   }
 
   // =========================================================
   // Initial load
   // =========================================================
-  loadInitialData() {
+  async loadInitialData() {
     // Bootstrap request: fetch everything needed to hydrate the modal UI
     this.isLoading = true;
-    this._pendingAction = ACTION_GET_OPPORTUNITY_INFO;
-
-    this.firePubSubEvent({
-      action: ACTION_GET_OPPORTUNITY_INFO,
-    });
+    try {
+      const result = await getOpportunityCreationParameters({
+        clientId: this.clientId,
+        groupId: this.groupId,
+        recordTypeName: RECORD_TYPE_NAME
+      });
+      await this.applyRefreshPayload(result);
+    } catch (error) {
+      this.handleError(error);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
-  handleBootstrapDataResponse(data) {
-    // Hydrate component state from the IP payload and release the spinner
-    this.applyRefreshPayload(data);
-    this.isLoading = false;
-  }
-
-  applyRefreshPayload(refresh) {
+  async applyRefreshPayload(refresh) {
     if (!refresh) return;
 
     /**
@@ -422,40 +305,49 @@ export default class dmtNewOpportunityModal extends LightningModal {
      */
     this.lastIp = refresh;
     const ip = refresh;
+
     this.entificDisabled = ip.entificDisabled !== false;
-    this.entityDisabled = ip.entityDisabled !== false;  
+    this.entityDisabled = ip.entityDisabled !== false;
     this.hasBookingGeography = this.boolOrNull(ip.hasBookingGeography);
 
     this.isProspect = ip.isProspect === true;
-    //this.companyName = this.safeStr(ip.ClientName);
-    this.clientId = this.safeStr(ip.clientId);
+    this.companyName = this.safeStr(ip.ClientName);
+    this.clientId = this.safeStr(ip.clientId) || this.clientId;
     this.clientType = this.safeStr(ip.DES_Client_Type__c);
     this.clientCode = this.safeStr(ip.clientCode);
     this.country = this.safeStr(ip.BookingGeography);
+    this.taxPayer = this.safeStr(ip.taxpayerId) || this.taxPayer;
     this.groupCode = this.safeStr(ip.groupCode);
     const ipName = this.safeStr(ip.oppName);
 
     this.opportunityType = this.normalizePicklistValue(
       ip.RecordTypeName,
-      "opportunityTypeOptions"
+      "opportunityTypeOptions",
+      this.safeStr(ip.RecordTypeName).replace(/_/g, " ")
     );
     this.name = this.normalizeName(ipName);
 
+    // The bootstrap payload exposes the booking-geography options as `count` (array of
+    // {value,label} taxonomy rows) and the selected value as `BookingGeography` — NOT
+    // `entificOptions`/`entificOpp` (those keys don't exist on the Apex response). The
+    // selected entity comes back as `oppEntity`, not `entityOpp`.
+    const bookingGeographyOptions = Array.isArray(ip.count)
+      ? ip.count.map(o => ({ value: o.value, label: `${o.value} - ${o.label}` }))
+      : [];
+
     if (this.isSubsidiary) {
       if (this.isNonDisclosed) {
-        this.entificOptions = Array.isArray(ip.entificOptions)
-          ? ip.entificOptions.map(o => ({ value: o.value, label: `${o.value} - ${o.label}` }))
-          : [];
-        this.entific = this.normalizePicklistValue(ip.entificOpp, "entificOptions");
-        this.entity = this.normalizePicklistValue(ip.entityOpp, "entityOptions");
+        this.entificOptions = bookingGeographyOptions;
+        this.entific = this.normalizePicklistValue(ip.BookingGeography, "entificOptions");
+        this.entity = this.normalizePicklistValue(ip.oppEntity, "entityOptions");
         this.entificDisabled = false;
         this.entityDisabled = false;
 
         this._initialEntific = this.entific;
         this._initialEntity = this.entity;
       } else {
-        this.entific = this.normalizePicklistValue(ip.entificOpp, "entificOptions");
-        this.entity = this.normalizePicklistValue(ip.entityOpp, "entityOptions");
+      this.entific = this.normalizePicklistValue(ip.BookingGeography, "entificOptions");
+      this.entity = this.normalizePicklistValue(ip.oppEntity, "entityOptions");
       }
 
     } else {
@@ -463,19 +355,14 @@ export default class dmtNewOpportunityModal extends LightningModal {
       this.clientsByGroup = Array.isArray(ip.clientsByGroup) ? ip.clientsByGroup : [];
       const uniqueCountries = [...new Set(this.clientsByGroup.map(c => c.country))];
 
-      this.entificOptions = Array.isArray(ip.entificOptions)
-        ? ip.entificOptions
-          .filter(o => uniqueCountries.includes(o.value))
-          .map(o => ({
-            value: o.value,
-            label: `${o.value} - ${o.label}`
-          }))
-        : [];
+      this.entificOptions = bookingGeographyOptions.filter(o => uniqueCountries.includes(o.value));
+
+     
 
       let finalEntific = "";
 
-      if (this.entificOptions.some(o => o.value === ip.entificOpp)) {
-        finalEntific = ip.entificOpp;
+      if (this.entificOptions.some(o => o.value === ip.BookingGeography)) {
+        finalEntific = ip.BookingGeography;
       } else {
         finalEntific = this.entificOptions.length > 0
           ? this.entificOptions[0].value
@@ -493,7 +380,7 @@ export default class dmtNewOpportunityModal extends LightningModal {
         return;
       }
 
-      const entificChanged = finalEntific !== ip.entificOpp;
+      const entificChanged = finalEntific !== ip.BookingGeography;
 
       if (!entificChanged) {
         this.entityOptions = Array.isArray(ip.entityOptions)
@@ -503,7 +390,7 @@ export default class dmtNewOpportunityModal extends LightningModal {
           }))
           : [];
 
-        this.entity = this.normalizePicklistValue(ip.entityOpp, "entityOptions");
+        this.entity = this.normalizePicklistValue(ip.oppEntity, "entityOptions");
 
       } else {
         this.entity = "";
@@ -512,54 +399,26 @@ export default class dmtNewOpportunityModal extends LightningModal {
 
         if (finalEntific) {
           this.isLoading = true;
-          this._pendingAction = ACTION_REFRESH_ENTITY;
-
-          this.firePubSubEvent({
-            action: ACTION_REFRESH_ENTITY,
-            entific: finalEntific
-          });
+          try {
+            const options = await refreshEntityOptions({ entific: finalEntific });
+            this.applyEntityOptions(options);
+          } catch (error) {
+            this.handleError(error);
+          } finally {
+            this.isLoading = false;
+          }
         }
       }
 
-      
+
     }
   }
 
-  // =========================================================
-  // Create Opportunity response
-  // =========================================================
-  handleCreateNewOpportunityResponse(data) {
-    /**
-     * This integration returns `error` as a status string.
-     * We treat anything different from OK as a blocking error.
-     */
-    const resultError = data?.error;
-    if (resultError && resultError !== RESULT_OK) {
-      this.handleError(new Error(resultError || ERROR_FALLBACK_MESSAGE));
-      return;
-    }
-
-    const newId = data?.IPResult?.createdId;
-    if (newId) {
-      window.open(`/${newId}`, "_blank");
-
-      // Optional refresh hook for the host console after creation
-      this._pendingAction = ACTION_REFRESH_DATA;
-      this.firePubSubEvent({ action: ACTION_REFRESH_DATA });
-
-      this.toastEvent(this.labels.DMT_Successtext, this.labels.DMT_OpportunityCreatedSuccessfullyText, "success");
-      this.close();
-      return;
-    }
-
-    this.handleError(new Error(this.labels.DMT_IdOpportunityNotReturnedText));    
-  }
-
-  handlerRefreshEntity(data) {
+  applyEntityOptions(rawOptions) {
     this.entity = "";
 
-    const options = Array.isArray(data?.entityOptions)
-      ? data.entityOptions.map(o => ({
+    const options = Array.isArray(rawOptions)
+      ? rawOptions.map(o => ({
         value: o.value,
         label: `${o.value} - ${o.label}`
       }))
@@ -571,8 +430,6 @@ export default class dmtNewOpportunityModal extends LightningModal {
       this.entity = this.entityOptions[0].value;
     }
     this.entityDisabled = this.entityOptions.length === 0;
-
-    this.isLoading = false;
   }
 
   // =========================================================
@@ -590,7 +447,7 @@ export default class dmtNewOpportunityModal extends LightningModal {
     this.opportunityType = event.detail.value;
   }
 
-  handleEntificChange(event) {
+  async handleEntificChange(event) {
     this.entific = event.detail.value;
 
     if (!this.isSubsidiary || this.isNonDisclosed) {
@@ -599,19 +456,20 @@ export default class dmtNewOpportunityModal extends LightningModal {
         this.entity = this._initialEntity;
         return;
       }
-      
+
       this.entity = "";
       this.entityOptions = [];
       this.entityDisabled = true;
-      const payload = {
-        action: ACTION_REFRESH_ENTITY,
-        entific: this.entific
-      };
 
       this.isLoading = true;
-      this._pendingAction = ACTION_REFRESH_ENTITY;
-
-      this.firePubSubEvent(payload);
+      try {
+        const options = await refreshEntityOptions({ entific: this.entific });
+        this.applyEntityOptions(options);
+      } catch (error) {
+        this.handleError(error);
+      } finally {
+        this.isLoading = false;
+      }
     }
 
   }
@@ -621,13 +479,13 @@ export default class dmtNewOpportunityModal extends LightningModal {
   }
 
   // =========================================================
-  // Save & Edit: Create New Opportunity (PubSub)
+  // Save & Edit: Create New Opportunity (Apex)
   // =========================================================
-  handleSaveAndEdit() {
+  async handleSaveAndEdit() {
     if (this.isSaveDisabled) return;
 
     /**
-     * Build payload using both UI selections and immutable fields from the bootstrap IP.
+     * Build the Apex call using both UI selections and immutable fields from the bootstrap IP.
      * This ensures the server receives the full context needed to create the record.
      */
     const ip = this.lastIp || {};
@@ -639,28 +497,40 @@ export default class dmtNewOpportunityModal extends LightningModal {
       entityToSend = this.entity ? this.entity.trim().substring(0, 6) : "";
     }
 
-    const payload = {
-      action: ACTION_CREATE_NEW_OPPORTUNITY,
-      RecordTypeName: "DMT_Opportunity",
-      Name: this.name,
-      StartDate: ip.StartDate,
-      EndDate: ip.EndDate,
-      ClientId: this.clientId,
-      BookingGeography: this.isNonDisclosed ? this.entific : ip.BookingGeography,
-      generalClientCode: ip.generalClientCode,
-      groupCode: ip.groupCode,
-      oppEntity: entityToSend,
-      Segment: ip.Segment,
-      ClientName: this.companyName,
-      entific: this.entific,
-      clientType: this.clientType,
-      clientsByGroup: this.clientsByGroup
-    };
-
     this.isLoading = true;
-    this._pendingAction = ACTION_CREATE_NEW_OPPORTUNITY;
 
-    this.firePubSubEvent(payload);
+    try {
+      const payload = {
+        recordTypeName: "DMT_Opportunity",
+        name: this.name,
+        startDate: ip.StartDate,
+        endDate: ip.EndDate,
+        clientId: this.clientId,
+        clientType: this.clientType,
+        bookingGeography: this.entific || ip.BookingGeography,
+        oppEntity: entityToSend,
+        segment: ip.Segment,
+        groupCode: ip.groupCode,
+        clientsByGroup: this.clientsByGroup,
+        isDummyOpp: false
+      };
+
+      const result = await createOpportunity(payload);
+
+      const newId = result?.createdId;
+      if (!newId) {
+        this.handleError(new Error(this.labels.DMT_IdOpportunityNotReturnedText));
+        return;
+      }
+
+      window.open(`/${newId}`, "_blank");
+      this.toastEvent(this.labels.DMT_Successtext, this.labels.DMT_OpportunityCreatedSuccessfullyText, "success");
+      this.close(newId);
+    } catch (error) {
+      this.handleError(error);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   // =========================================================
@@ -672,7 +542,7 @@ export default class dmtNewOpportunityModal extends LightningModal {
 
   handleError(error, customTitle = ERROR_TITLE) {
     // Centralized error handler: always releases loading state and clears pending action
-    console.error("Modal error:", JSON.stringify(error));
+
     const msg =
       error?.message ||
       error?.body?.message ||

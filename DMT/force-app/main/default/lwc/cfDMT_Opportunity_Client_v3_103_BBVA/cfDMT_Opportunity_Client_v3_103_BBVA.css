@@ -1,0 +1,33 @@
+/* .slds-button, .slds-p-horizontal_x-smalL{
+    background-color: #f3f3f3;
+    width: -webkit-fill-available;
+    height:2.8rem;
+} */
+.slds-modal_medium, .slds-modal__container{
+        margin: 0 auto !important;
+        /*width: 55% !important;*/
+        width: fit-content !important;
+        max-width: 60rem !important;
+        min-width: 50rem !important;
+
+}
+
+.slds-p-around_medium, .slds-p-around--medium{
+        padding: 0;
+        border-radius: 0.25rem;
+}
+
+.slds-modal__content{
+        padding: 0;
+        border-radius: 0.25rem;
+}
+
+.slds-modal__container{
+margin: 0 auto;
+    width: fit-content;
+    max-width: 60rem;
+    min-width: 50rem;
+}
+.slds-icon-text-info .slds-form-element__icon {
+    padding-top:0 !important; 
+}

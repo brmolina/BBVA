@@ -1,5 +1,27 @@
 public with sharing class DMT_Profitability_utils {
 
+    private static final String RWA_ENABLED_KEY = 'enabled';
+    private static final String RWA_EXPLANATION_ID_KEY = 'explanationId';
+    private static final String RWA_ENTIFIC_KEY = 'entific';
+    private static final String RWA_BASE_URL_KEY = 'baseUrl';
+    private static final String RWA_BASE_URL_INTEGRATED = 'https://calculadoraholding-int.work-03.nextgen.igrupobbva/index.html';
+    private static final String RWA_BASE_URL_PRODUCTION = 'https://calculadoraholding.live-03.nextgen.igrupobbva/index.html';
+
+    private static Boolean isIntegratedOrg() {
+        Boolean isSandboxOrg = false;
+
+        try {
+            Organization orgInfo = [SELECT IsSandbox FROM Organization LIMIT 1];
+            isSandboxOrg = orgInfo.IsSandbox;
+        } catch (Exception ex) {
+            // Fallback if Organization query is not available in some execution contexts.
+            String orgDomain = URL.getOrgDomainUrl().toExternalForm().toLowerCase();
+            isSandboxOrg = orgDomain.contains('--');
+        }
+
+        return isSandboxOrg;
+    }
+
     @AuraEnabled(cacheable=true)
     public static List<Map<String, Object>> getProductDetailsByIds(List<String> productIds, String oppId) {
         List<Map<String, Object>> results = new List<Map<String, Object>>();
@@ -138,28 +160,124 @@ public with sharing class DMT_Profitability_utils {
         return result;
     }
 
-
     @AuraEnabled(cacheable=true)
     public static Map<String, Object> getRwaRegLinkInfo(String oppId) {
-        Map<String, Object> result = new Map<String, Object>{
-            'enabled' => false,
-            'explanationId' => ''
+        String rwaBaseUrl = isIntegratedOrg() ? RWA_BASE_URL_INTEGRATED : RWA_BASE_URL_PRODUCTION;
+
+        Map<String, Object> response = new Map<String, Object>{
+            RWA_ENABLED_KEY => false,
+            RWA_EXPLANATION_ID_KEY => '',
+            RWA_ENTIFIC_KEY => '',
+            RWA_BASE_URL_KEY => rwaBaseUrl
         };
+
         if (String.isBlank(oppId)) {
+            return response;
+        }
+
+        Opportunity opp = [
+            SELECT Id, DMT_branch_id_c__c, Entific__c, DMT_Opp_Id__c
+            FROM Opportunity
+            WHERE Id = :oppId
+            LIMIT 1
+        ];
+
+        if (String.isBlank(opp.DMT_branch_id_c__c)) {
+            return response;
+        }
+
+        String opportunityBranch = opp.DMT_branch_id_c__c.trim().toUpperCase();
+
+        for (DMT_Taxonomy_Value_link__mdt taxonomyValue : [
+            SELECT MasterLabel, with_link__c
+            FROM DMT_Taxonomy_Value_link__mdt
+            WHERE with_link__c = true
+        ]) {
+            if (String.isBlank(taxonomyValue.MasterLabel)) {
+                continue;
+            }
+
+            String branchLabel = taxonomyValue.MasterLabel.trim().toUpperCase();
+            if (branchLabel != opportunityBranch) {
+                continue;
+            }
+
+            response.put(RWA_ENABLED_KEY, true);
+            response.put(RWA_EXPLANATION_ID_KEY, String.isBlank(opp.DMT_Opp_Id__c) ? '' : opp.DMT_Opp_Id__c.trim());
+            response.put(RWA_ENTIFIC_KEY, String.isBlank(opp.Entific__c) ? '' : opp.Entific__c.trim());
+            return response;
+        }
+
+        return response;
+    }
+
+    @AuraEnabled
+    public static Map<String, Object> callExternalOrchestrators(String oppId) {
+        Map<String, Object> result = new Map<String, Object>{
+            'success' => false,
+            'statusCode' => 0,
+            'message' => 'Unable to execute external orchestrators service.'
+        };
+
+        if (String.isBlank(oppId)) {
+            result.put('message', 'Opportunity Id is required.');
             return result;
         }
-        Opportunity opp = DMT_Opportunity_Selector.getOpportunity(oppId);
-        if (opp == null || String.isBlank(opp.DMT_branch_id_c__c)) {
+
+        Opportunity opp = [
+            SELECT Id, DMT_Opp_Id__c
+            FROM Opportunity
+            WHERE Id = :oppId
+            LIMIT 1
+        ];
+
+        if (String.isBlank(opp.DMT_Opp_Id__c)) {
+            result.put('message', 'Opportunity external Id (DMT_Opp_Id__c) is empty.');
             return result;
         }
-        String branchId = opp.DMT_branch_id_c__c;
-        String developerName = branchId.replace('-', '_');
-        DMT_Taxonomy_Value_link__mdt record = DMT_Taxonomy_Value_link__mdt.getInstance(developerName);
-        if (record != null && record.with_link__c == true) {
-            result.put('enabled', true);
-            result.put('explanationId', opp.DMT_Opp_Id__c != null ? opp.DMT_Opp_Id__c : '');
-            result.put('entific', opp.Entific__c != null ? opp.Entific__c : '');
+
+        Map<String, Object> request = new Map<String, Object>{
+            'aprsType' => 'APRS',
+            'opportunityId' => opp.DMT_Opp_Id__c
+        };
+
+        HttpResponse response = DMT_Utils.callService('DMTO_ExternalOrchestrators', request);
+        Integer statusCode = response != null ? response.getStatusCode() : 0;
+
+        result.put('statusCode', statusCode);
+        result.put('responseBody', response != null ? response.getBody() : null);
+
+        if (statusCode >= 200 && statusCode < 300) {
+            result.put('success', true);
+            result.put('message', 'External orchestrators service executed successfully.');
+        } else {
+            result.put('message', 'External orchestrators service failed with status code ' + statusCode + '.');
         }
+
+        return result;
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static Map<String, Map<String, Object>> getUnderlyingDetailsByIds(List<String> underlyingIds) {
+        Map<String, Map<String, Object>> result = new Map<String, Map<String, Object>>();
+
+        if (underlyingIds == null || underlyingIds.isEmpty()) {
+            return result;
+        }
+
+        for (DMT_Underlying__c ul : [
+            SELECT Id, Name, DMT_Drawn_Reference_Amount__c, DMT_Undrawn_Reference_Amount__c
+            FROM DMT_Underlying__c
+            WHERE Id IN :underlyingIds
+        ]) {
+            result.put(ul.Id, new Map<String, Object>{
+                'Id'        => ul.Id,
+                'Name'      => ul.Name,
+                'nominalDb' => ul.DMT_Drawn_Reference_Amount__c,
+                'nominalFb' => ul.DMT_Undrawn_Reference_Amount__c
+            });
+        }
+
         return result;
     }
 

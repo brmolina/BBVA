@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Arc_Gen_Is_Last_Modifier__c</fullName>
+    <deprecated>false</deprecated>
+    <formula>$User.Id = LastModifiedById</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Is Last Modifier</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

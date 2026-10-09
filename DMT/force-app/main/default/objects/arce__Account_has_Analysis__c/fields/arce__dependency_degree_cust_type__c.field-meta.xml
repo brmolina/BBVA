@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__dependency_degree_cust_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Degree of dependency of the company / group with its clients</description>
+    <label>Dependency degree on customers</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>1</fullName>
+                <default>false</default>
+                <label>High: Unique / irreplaceable customers</label>
+            </value>
+            <value>
+                <fullName>2</fullName>
+                <default>false</default>
+                <label>Media: Few customers / difficult substitution</label>
+            </value>
+            <value>
+                <fullName>3</fullName>
+                <default>false</default>
+                <label>Low: Many customers / easy replacement</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

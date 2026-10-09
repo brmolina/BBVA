@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Client_Info_Edit_Prospects</fullName>
-    <active>true</active>
+    <active>false</active>
     <errorConditionFormula>AND(
   $Permission.Client_Info_Prospects ,
 

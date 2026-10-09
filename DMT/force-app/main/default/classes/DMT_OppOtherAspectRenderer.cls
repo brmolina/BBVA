@@ -1,4 +1,4 @@
-public with sharing class DMT_OppOtherAspectRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_OppOtherAspectRenderer implements DMT_ViewRenderer {
 
     String debtLabel = 'Debt Funds (Mn)';
     String equityLabel = 'Equity Funds (Mn)';
@@ -134,112 +134,6 @@ public with sharing class DMT_OppOtherAspectRenderer implements DMT_ViewRenderer
         html += '</table></div>&nbsp;</br>';
         return html;
     }
-    private List<Object> buildPdfOtherAspects(DMT_ViewController.LineDataWrapper data) {
-        List<Object> result = new List<Object>();
-        Map<String, Object> oaTitle = DMT_Create_Pdf_Controller.createTitle('Other Aspects');
-        oaTitle.put('type', 'text');
-        ((Map<String, Object>) oaTitle.get('style')).put('fontSize', 14);
-        ((Map<String, Object>) oaTitle.get('style')).put('textColor', '#004481');
-        result.add(oaTitle);
-
-        result.add(DMT_Create_Pdf_Controller.createListText(
-            new List<String>{'Applicable jurisdiction', 'Security Package', 'Rating Scenarios', 'Other relevant issues'},
-            new List<String>{DMT_FormattingUtils.checkNull(data.oppClient.DMT_Applicable_Jurisdiction__c), DMT_FormattingUtils.checkNull(data.oppClient.DMT_Security_Package__c),
-                            DMT_FormattingUtils.checkNull(data.oppClient.DMT_Rating_Scenarios__c), DMT_FormattingUtils.checkNull(data.oppClient.DMT_Other_Relevant_Issues__c)},
-            'ONE'));
-        return result;
-    }
-
-    private List<Object> buildPdfGlobalStructures(DMT_ViewController.LineDataWrapper data) {
-        buildGlobalStructuresData(data);
-        List<Object> result = new List<Object>();
-
-        Map<String, Object> gsTitle = DMT_Create_Pdf_Controller.createTitle('Global Structures');
-        gsTitle.put('type', 'text');
-        ((Map<String, Object>) gsTitle.get('style')).put('fontSize', 14);
-        ((Map<String, Object>) gsTitle.get('style')).put('textColor', '#004481');
-        result.add(gsTitle);
-
-        List<Object> leftColumnItems = new List<Object>();
-        List<Object> rightColumnItems = new List<Object>();
-
-        // Left Column: Debt (Always render)
-        leftColumnItems.add(new Map<String, Object>{
-            'content' => createGlobalStructureTable(debtRecords, debtLabel, debtSum, '48%'),
-            'margin' => new Map<String, Object>{ 'bottom' => 0 } // Reset margin
-        });
-
-        // Left Column: Equity (Always render)
-        leftColumnItems.add(new Map<String, Object>{
-            'content' => createGlobalStructureTable(equityRecords, equityLabel, equitySum, '48%'),
-            'margin' => new Map<String, Object>{ 'bottom' => 0 }
-        });
-
-        // Right Column: Uses (Always render)
-        rightColumnItems.add(new Map<String, Object>{
-            'content' => createGlobalStructureTable(usesRecords, usesLabel, usesSum, '48%'),
-            'margin' => new Map<String, Object>{ 'bottom' => 0 }
-        });
-
-        Map<String, Object> leftCell = new Map<String, Object>{
-            'content' => '', 'type' => 'custom', 'custom' => leftColumnItems, 'styles' => new Map<String, Object>{ 'valign' => 'top', 'cellWidth' => '50%' }
-        };
-        Map<String, Object> rightCell = new Map<String, Object>{
-            'content' => '', 'type' => 'custom', 'custom' => rightColumnItems, 'styles' => new Map<String, Object>{ 'valign' => 'top', 'cellWidth' => '50%' }
-        };
-
-        Map<String, Object> masterTable = DMT_Create_Pdf_Controller.createTableObj(new List<List<Object>>(), new List<List<Object>>{ new List<Object>{ leftCell, rightCell } });
-        masterTable.put('theme', 'plain');
-        masterTable.put('columnStyles', new Map<String, Object>{ '0' => new Map<String, Object>{ 'cellWidth' => '50%' }, '1' => new Map<String, Object>{ 'cellWidth' => '50%' } });
-
-        result.add(masterTable);
-        result.add(new Map<String, Object>{ 'type' => 'lineBreak' });
-        return result;
-    }
-
-    private List<Object> buildPdfBankingPoolStructure(DMT_ViewController.LineDataWrapper data) {
-        List<Object> result = new List<Object>();
-
-        Map<String, DMT_Banking_Pool_Structure__c> tierMap = new Map<String, DMT_Banking_Pool_Structure__c>();
-        for (DMT_Banking_Pool_Structure__c row : data.bankingPoolStructures) {
-            String key = String.isNotBlank(row.Name) ? row.Name.trim() : null;
-            if (String.isNotBlank(key)) {
-                tierMap.put(key.trim(), row);
-            }
-        }
-
-        Map<String, Object> title = DMT_Create_Pdf_Controller.createTitle('Banking Pool Structure');
-        title.put('type', 'text');
-        ((Map<String, Object>) title.get('style')).put('fontSize', 14);
-        ((Map<String, Object>) title.get('style')).put('textColor', '#004481');
-        result.add(title);
-
-        List<Object> titleSection = DMT_Create_Pdf_Controller.createTitleSection('Banking Pool Structure');
-        result.add(titleSection[0]);
-        result.add(titleSection[1]);
-
-        List<List<String>> head = new List<List<String>>{
-            new List<String>{'', 'Ticket (Mn)', 'Fees', 'Margin', 'Nº banks'}
-        };
-
-        List<List<String>> body = new List<List<String>>();
-        List<String> tiers = new List<String>{'Tier 1', 'Tier 2', 'Tier 3', 'Tier 4 or above'};
-
-        for (String tier : tiers) {
-            DMT_Banking_Pool_Structure__c row = tierMap.get(tier);
-
-            body.add(new List<String>{
-                tier,
-                DMT_FormattingUtils.checkNull(row != null ? row.DMT_Ticket__c : null),
-                DMT_FormattingUtils.checkNull(row != null ? row.DMT_Fees__c : null),
-                DMT_FormattingUtils.checkNull(row != null ? row.DMT_Margin__c : null),
-                DMT_FormattingUtils.checkNull(row != null ? row.DMT_N_Banks__c : null)
-            });
-        }
-
-        result.add(DMT_Create_Pdf_Controller.createTable(head, body));
-        return result;
-    }
 
     private void buildGlobalStructuresData(DMT_ViewController.LineDataWrapper data) {
         if (globalStructureDataBuilt) return;
@@ -306,45 +200,6 @@ public with sharing class DMT_OppOtherAspectRenderer implements DMT_ViewRenderer
             new Map<String, Object>{ 'header' => 'Funds', 'dataKey' => '1' }
         });
         return tableConfig;
-    }
-
-
-
-
-
-    // ====================================================================================================
-    // PDF RENDERING
-    // ====================================================================================================
-
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null || (data.opportunity.getPopulatedFieldsAsMap().isEmpty() && data.oppClient.getPopulatedFieldsAsMap().isEmpty())) {
-            return new Map<String, Object>();
-        }
-
-        try {
-            List<Object> contentList = new List<Object>();
-            Map<String, Object> component = new Map<String, Object>();
-
-            // Promoted Main Title
-            contentList.add(DMT_Create_Pdf_Controller.createTitle('OTHER ASPECTS'));
-
-            contentList.addAll(buildPdfOtherAspects(data));
-            contentList.addAll(buildPdfGlobalStructures(data));
-            contentList.addAll(buildPdfBankingPoolStructure(data));
-
-            contentList.add(DMT_Create_Pdf_Controller.createListText(new List<String>{'Competition for the deal'}, new List<String>{DMT_FormattingUtils.checkNull(data.oppClient.DMT_Competition_Deal__c)}, 'ONE'));
-
-            component.put('content', contentList);
-            component.put('name', 'Other Aspects');
-
-            System.debug('returning component: ' + JSON.serialize(component));
-            return component;
-
-        } catch (Exception e) {
-            System.debug('Error in DMT_OppOtherAspectRenderer renderPdfJson, ' + e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(), 'DMT_OppOtherAspectRenderer', 'renderPdfJson', 'DMT', ''));
-            return new Map<String, Object>();
-        }
     }
 
     private Boolean isTechnicalName(String value, Id recordId) {

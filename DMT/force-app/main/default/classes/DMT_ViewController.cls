@@ -99,6 +99,16 @@ public without sharing class DMT_ViewController {
         public String roleType;               // entity_role_type__c
         public String subLimit;              // DMT_Sub_Limit__c
 
+        // --- CIBGLOBALD-4117: Line-type deal's own fee fields (dmt_opp_product_details_line_description_fields.js) -
+        // distinct from commitmentFees/extensionDurationFees/otherFees above, which back the
+        // One-Off Deal layout's own fields instead. Found untracked and unrendered via a field-drift audit.
+        // All five are Text fields (the DMT_TXT_ prefix), not Number, despite backing bps values.
+        public String lineCommitmentFees;         // DMT_TXT_Commitment_Fees__c
+        public String lineExtensionDurationFees;  // DMT_TXT_Extension_Duration_Fees__c
+        public String lineOtherFeesAccrual;       // DMT_TXT_Other_Fees_Accrual__c
+        public String lineOtherFeesNonAccrual;    // DMT_TXT_Other_Fees_NonAccrual__c
+        public String utilisationFee;             // DMT_Utilisation_Fee__c
+
         // --- NEW: Underlyings (populated via bulk query after main loop) ---
         public List<DMT_Underlying__c> oppUnderlyingsRestriction = new List<DMT_Underlying__c>();
         public List<DMT_Underlying__c> oppUnderlyingsProfitability = new List<DMT_Underlying__c>();
@@ -159,15 +169,19 @@ public without sharing class DMT_ViewController {
         public List<DMT_TeamMember__c> participantList = new List<DMT_TeamMember__c>();
         public List<DMT_Risk_Line_Term__c> riskLineList = new List<DMT_Risk_Line_Term__c>();
         public List<DMT_Line_Product_Item__c> lineProductList = new List<DMT_Line_Product_Item__c>();
+        // Sourced from Passport__c.DMT_Passport_Save__c's JSON (getFeatures() below), not this
+        // wrapper's own SOQL - not a trackable SObject field for renderers that read it.
         public List<Map<String, Object>> featuresList = new List<Map<String, Object>>();
+        // Same source as featuresList, via DMT_Case_Steps_Controller.
         public List<DMT_Case_Steps_Controller.WRAPPER_Step> steps = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
         public List<DMT_Case_Steps_Controller.WRAPPER_Step> allsteps = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
 
+        // Sanction Line's own features/steps - same source as featuresList above.
         public List<Map<String, Object>> sanctionFeaturesList = new List<Map<String, Object>>();
         public List<DMT_Case_Steps_Controller.WRAPPER_Step> sanctionSteps = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
         public List<DMT_Case_Steps_Controller.WRAPPER_Step> sanctionAllsteps = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
 
-        // Sanction Line view: features/steps belonging to its child Opportunity (Opportunity.DMT_Sanction__c)
+        // Sanction Line view: features/steps belonging to its child Opportunity (Opportunity.DMT_Sanction__c).
         public List<Map<String, Object>> sanctionOppFeaturesList = new List<Map<String, Object>>();
         public List<DMT_Case_Steps_Controller.WRAPPER_Step> sanctionOppSteps = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
         public List<DMT_Case_Steps_Controller.WRAPPER_Step> sanctionOppAllsteps = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
@@ -192,13 +206,19 @@ public without sharing class DMT_ViewController {
         public String oppBookingGeography;
         public String oppBookingEFAN;
 
+        // Plain relationship read (data.line.Custom_Association__r.g_customer_id__c) - not callout-sourced.
         public String mainHolderCustomerId;
+        // Callout-sourced (DMT_HPG_Utils via getMonoHolderDataFromService below) - never written to
+        // any Salesforce field. Not the same as MainHolderProductsWrapper's own currentRatingToolDate
+        // below, which is persisted-field-sourced.
         public String ratingMonoHolder;
         public Boolean isSubsidiary = false;
         public Date currentRatingToolDate;
+        // Plain SOQL read (DMT_View_Selector.getAccountVisitsByAccountId) - not callout-sourced.
         public Date  lastVisitClient;
 
-        // Key is constructed like LineId_groupPriorityId (string), so use String as key
+        // Key is constructed like LineId_groupPriorityId (string), so use String as key. Built purely
+        // from already-queried relationship data - not callout-sourced.
         public Map<String, List<MainHolderProductsWrapper>> mainHolderProductsWrapperMap= new Map<String, List<MainHolderProductsWrapper>>();
         public List<DMT_Banking_Pool_Structure__c> bankingPoolStructures = new List<DMT_Banking_Pool_Structure__c>();
         public Boolean forceException = false;
@@ -208,11 +228,16 @@ public without sharing class DMT_ViewController {
         // Business Plan records from DMT_Opportunity_Business_Plan__c (year + geography model)
         public List<DMT_Opportunity_Business_Plan__c> businessPlanRecords = new List<DMT_Opportunity_Business_Plan__c>();
 
-        // Pre-loaded profitability data (populated in loadRelatedData for Opportunity type)
+        // Derived from featuresList's 'profitability' key via DMT_Profitability_utils - same
+        // "not a trackable SObject field" caveat as featuresList above.
         public List<Map<String, Object>> profitabilityProductDetailsList = new List<Map<String, Object>>();
         public Map<String, Map<String, Object>> profitabilityNominalAmountsMap = new Map<String, Map<String, Object>>();
         public Map<String, Map<String, Object>> profitabilityNominalAmountsConvertedMap = new Map<String, Map<String, Object>>();
+        // Callout-sourced (DMT_HPG_Utils.getGroupFromClientAccount) - never written to any Salesforce field.
         public String clientGroupName = null;
+        // Sourced from ComponentNBC_Controller.preloadToolkitInfo() -> cstk.Toolkit_Service.getNbcInfo()
+        // (managed package - whether this is a live callout or reads already-synced CSTK data isn't
+        // confirmed from source alone).
         public ToolkitDataWrapper toolkitData = new ToolkitDataWrapper();
     }
 
@@ -620,7 +645,10 @@ public without sharing class DMT_ViewController {
                         try {
                             Map<String, Object> groupData = DMT_HPG_Utils.getGroupFromClientAccount(data.opportunity.AccountId);
                             String groupName = groupData.get('groupName') != null ? (String)groupData.get('groupName') : '';
-                            String accountName = data.opportunity.Account.Name != null ? data.opportunity.Account.Name : '';
+                            // CIBGLOBALD - Main Holder must come from the Multiholder Custom Association
+                            // model (Custom_Association_Opportunity__c), not directly from Opportunity.AccountId.
+                            String fallbackAccountName = data.opportunity.Account.Name != null ? data.opportunity.Account.Name : '';
+                            String accountName = DMT_HPG_Utils.getMainHolderName(data.opportunity.Id, fallbackAccountName);
                             data.clientGroupName = groupName + ' - ' + accountName;
                         } catch (Exception e) {
                             System.debug('Error pre-fetching client group name for Sanction version view: ' + e.getMessage());
@@ -673,7 +701,10 @@ public without sharing class DMT_ViewController {
                 try {
                     Map<String, Object> groupData = DMT_HPG_Utils.getGroupFromClientAccount(data.opportunity.AccountId);
                     String groupName = groupData.get('groupName') != null ? (String)groupData.get('groupName') : '';
-                    String accountName = data.opportunity.Account.Name != null ? data.opportunity.Account.Name : '';
+                    // CIBGLOBALD - Main Holder must come from the Multiholder Custom Association
+                    // model (Custom_Association_Opportunity__c), not directly from Opportunity.AccountId.
+                    String fallbackAccountName = data.opportunity.Account.Name != null ? data.opportunity.Account.Name : '';
+                    String accountName = DMT_HPG_Utils.getMainHolderName(data.opportunity.Id, fallbackAccountName);
                     data.clientGroupName = groupName + ' - ' + accountName;
                 } catch (Exception e) {
                     System.debug('Error pre-fetching client group name: ' + e.getMessage());
@@ -895,6 +926,13 @@ public without sharing class DMT_ViewController {
                         oppProduct.commitmentFees = oppItem.DES_Commitment_Fees__c;
                         oppProduct.otherFees = oppItem.DES_Other_Fees__c;
                         oppProduct.expectedFinalTakeBBVA = oppItem.syndicated_loan_drawn_amount__c;
+                        // CIBGLOBALD-4117 - Line-type deal's own fee fields, distinct from the
+                        // One-Off Deal fields above - found untracked/unrendered via a field-drift audit.
+                        oppProduct.lineCommitmentFees = oppItem.DMT_TXT_Commitment_Fees__c;
+                        oppProduct.lineExtensionDurationFees = oppItem.DMT_TXT_Extension_Duration_Fees__c;
+                        oppProduct.lineOtherFeesAccrual = oppItem.DMT_TXT_Other_Fees_Accrual__c;
+                        oppProduct.lineOtherFeesNonAccrual = oppItem.DMT_TXT_Other_Fees_NonAccrual__c;
+                        oppProduct.utilisationFee = oppItem.DMT_Utilisation_Fee__c;
 
                         //Funding / Cost of Funding
                         oppProduct.currencyIsoCode = oppItem.CurrencyIsoCode;
@@ -1686,5 +1724,66 @@ public without sharing class DMT_ViewController {
         } catch (Exception e) {
             throw new AuraHandledException('Error deleting native snapshots: ' + e.getMessage());
         }
+    }
+
+    @AuraEnabled(cacheable=false)
+    public static Map<Id, String> getCoverageTeamRoles(Id recordId) {
+        Map<Id, String> rolesByUserId = new Map<Id, String>();
+        if (recordId == null) {
+            return rolesByUserId;
+        }
+
+        Id accountId;
+        SObjectType sType = recordId.getSObjectType();
+        if (sType == DMT_Line__c.SObjectType) {
+            List<DMT_Line__c> lines = [SELECT Client__c FROM DMT_Line__c WHERE Id = :recordId WITH SYSTEM_MODE LIMIT 1];
+            accountId = lines.isEmpty() ? null : lines[0].Client__c;
+        } else if (sType == Opportunity.SObjectType) {
+            List<Opportunity> opps = [SELECT AccountId FROM Opportunity WHERE Id = :recordId WITH SYSTEM_MODE LIMIT 1];
+            accountId = opps.isEmpty() ? null : opps[0].AccountId;
+        }
+        if (accountId == null) {
+            return rolesByUserId;
+        }
+
+        List<Account> clients = [
+            SELECT Id, DES_Main_Parent__c, RecordType.DeveloperName
+            FROM Account
+            WHERE Id = :accountId
+            WITH SYSTEM_MODE
+            LIMIT 1
+        ];
+        if (clients.isEmpty()) {
+            return rolesByUserId;
+        }
+        Account client = clients[0];
+        Id coverageTeamAccountId = client.Id;
+        Boolean isSubsidiary = client.RecordType.DeveloperName == 'Subsidiary'
+            || client.RecordType.DeveloperName == 'DES_Subsidiary_Commercial_Client'
+            || client.RecordType.DeveloperName == 'Prospect_Subsidiary';
+        if (isSubsidiary && client.DES_Main_Parent__c != null) {
+            coverageTeamAccountId = client.DES_Main_Parent__c;
+        }
+
+        Map<Id, Set<String>> rolesSetByUser = new Map<Id, Set<String>>();
+        for (DES_BBVA_Management_team__c member : [
+            SELECT DES_User__c, DES_Member_Role__c
+            FROM DES_BBVA_Management_team__c
+            WHERE DES_Client__c = :coverageTeamAccountId
+            AND DES_User__c != null
+            AND DES_Member_Role__c != null
+            WITH SYSTEM_MODE
+            ORDER BY DES_Member_Role__c
+        ]) {
+            if (!rolesSetByUser.containsKey(member.DES_User__c)) {
+                rolesSetByUser.put(member.DES_User__c, new Set<String>());
+            }
+            rolesSetByUser.get(member.DES_User__c).add(member.DES_Member_Role__c);
+        }
+
+        for (Id userId : rolesSetByUser.keySet()) {
+            rolesByUserId.put(userId, String.join(new List<String>(rolesSetByUser.get(userId)), ', '));
+        }
+        return rolesByUserId;
     }
 }

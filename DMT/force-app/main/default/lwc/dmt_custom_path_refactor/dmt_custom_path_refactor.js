@@ -5,8 +5,6 @@ import { getPicklistValues } from 'lightning/uiObjectInfoApi'
 import { getRecord, updateRecord } from 'lightning/uiRecordApi'
 import { loadStyle } from 'lightning/platformResourceLoader'
 
-import previewCompareTasksFromCase from '@salesforce/apex/DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase'
-
 import DMT_Styles from '@salesforce/resourceUrl/DMT_Styles'
 import DMT_LINE_OBJECT from '@salesforce/schema/DMT_Line__c'
 import STATUS_FIELD from '@salesforce/schema/DMT_Line__c.Status__c'
@@ -14,6 +12,7 @@ import ID_FIELD from '@salesforce/schema/DMT_Line__c.Id'
 import WON_LOST_FIELD from '@salesforce/schema/DMT_Line__c.Closed__c'
 import GEOGRAPHY_FIELD from '@salesforce/schema/DMT_Line__c.Booking_Geography__c'
 import DATETOPROPOSAL_FIELD from '@salesforce/schema/DMT_Line__c.DMT_DateToProposal__c'
+import previewCompareTasksFromCase from '@salesforce/apex/DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase'
 
 const EVENT_SET = 'Set'
 const ERROR_INVALID_STYLE = 'Error loading static resource styles.'
@@ -164,13 +163,13 @@ export default class dmt_custom_path extends LightningElement {
       this.isLoading = false
       return
     } else if (nextStage === 'Proposal' && this.dateToProposal) {
-      previewCompareTasksFromCase({ lineId: this.recordId }).then(result => {
+      previewCompareTasksFromCase({ recordId: this.recordId }).then(result => {
         this.isLoading = false
         if (result.length == 0) {
           this.dispatchEvent(
             new ShowToastEvent({
-              title: 'Vuelta a Proposal correcta',
-              message: 'No existen tareas así que no se reabre ninguna',
+              title: 'Returned to Proposal',
+              message: 'No tasks exist, so none will be reopened.',
               variant: 'success',
               mode: 'sticky'
             })

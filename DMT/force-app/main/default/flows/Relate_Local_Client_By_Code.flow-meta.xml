@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>add Currency of line</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>clientName</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK({!Get_Local_Client.Id}), &quot;Client Not Found In GDT&quot;, {!Get_Local_Client.Name})</expression>
+    </formulas>
+    <interviewLabel>Relate Local Client By Code {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Relate Local Client By Code</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Local_Client</name>
+        <label>Get Local Client</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Update_Custom_Association_Client</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Alpha_code__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Alpha_Code_Client__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Local_Client__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Custom_Association_Client</name>
+        <label>Update Custom Association Client</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <inputAssignments>
+            <field>CurrencyIsoCode</field>
+            <value>
+                <elementReference>$Record.Custom_Association__r.DMT_Line__r.CurrencyIsoCode</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Local_Client_Child__c</field>
+            <value>
+                <elementReference>Get_Local_Client.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Name</field>
+            <value>
+                <elementReference>clientName</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>g_entific_id__c</field>
+            <value>
+                <elementReference>$Record.Custom_Association__r.DMT_Line__r.Booking_Geography__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Local_Client</targetReference>
+        </connector>
+        <object>Custom_Association_Client__c</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

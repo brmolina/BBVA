@@ -1,0 +1,285 @@
+<template>
+    <template if:true={showModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container modal-container">
+                <header class="slds-modal__header">
+                    <lightning-button-icon
+                        icon-name="utility:close"
+                        alternative-text="Close"
+                        variant="bare"
+                        class="slds-modal__close close-button"
+                        onclick={handleClose}>
+                    </lightning-button-icon>
+                    <h2 class="slds-text-heading_medium">DMT notification settings</h2>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium">
+                    
+                    <p class="intro-text slds-text-body_small slds-m-bottom_medium">
+                        Select which notifications you want to receive:
+                    </p>
+
+                    <div class="slds-m-bottom_medium">
+                        
+                        <h3 class="slds-text-heading_small slds-m-bottom_small">Task Assigned</h3>
+
+                        <div class="toggle-row slds-m-bottom_x-small">
+                            <lightning-input
+                                type="toggle"
+                                variant="label-hidden"
+                                checked={isTaskAssignedNotify}
+                                data-section="taskAssigned"
+                                data-mode="notify"
+                                onchange={handleModeToggle}
+                                message-toggle-active=""
+                                message-toggle-inactive="">
+                            </lightning-input>
+                            <span class="toggle-label slds-text-body_small">Notify me when this happens</span>
+                        </div>
+
+                        
+                        <div class="toggle-row slds-m-bottom_x-small" if:true={showScheduleOptions}>
+                            <lightning-input
+                                type="toggle"
+                                variant="label-hidden"
+                                checked={isTaskAssignedSchedule}
+                                disabled
+                                data-section="taskAssigned"
+                                data-mode="schedule"
+                                onchange={handleModeToggle}
+                                message-toggle-active=""
+                                message-toggle-inactive="">
+                            </lightning-input>
+                            <span class="toggle-label slds-text-body_small">Schedule summary</span>
+
+                            <template if:true={isTaskAssignedSchedule}>
+                                <div class="schedule-inline">
+                                    <lightning-input
+                                        type="date"
+                                        label="Date"
+                                        value={taskAssignedDate}
+                                        data-section="taskAssigned"
+                                        onchange={handleDateChange}>
+                                    </lightning-input>
+
+                                    <lightning-input
+                                        type="time"
+                                        label="Hour"
+                                        value={taskAssignedHour}
+                                        data-section="taskAssigned"
+                                        onchange={handleHourChange}>
+                                    </lightning-input>
+
+                                    <lightning-combobox
+                                        label="Frequency"
+                                        value={taskAssignedFrequency}
+                                        options={frequencyOptions}
+                                        data-section="taskAssigned"
+                                        onchange={handleFrequencyChange}>
+                                    </lightning-combobox>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="slds-m-bottom_medium">
+                        
+                        <h3 class="slds-text-heading_small slds-m-bottom_small">Closed Won Line/Opportunity</h3>
+
+                        <div class="toggle-row slds-m-bottom_x-small">
+                            <lightning-input
+                                type="toggle"
+                                variant="label-hidden"
+                                checked={isCloseWonLineNotify}
+                                data-section="closeWonLine"
+                                data-mode="notify"
+                                onchange={handleModeToggle}
+                                message-toggle-active=""
+                                message-toggle-inactive="">
+                            </lightning-input>
+                            <span class="toggle-label slds-text-body_small">Notify me when this happens</span>
+                        </div>
+
+                        
+                        <div class="toggle-row slds-m-bottom_x-small" if:true={showScheduleOptions}>
+                            <lightning-input
+                                type="toggle"
+                                variant="label-hidden"
+                                checked={isCloseWonLineSchedule}
+                                disabled
+                                data-section="closeWonLine"
+                                data-mode="schedule"
+                                onchange={handleModeToggle}
+                                message-toggle-active=""
+                                message-toggle-inactive="">
+                            </lightning-input>
+                            <span class="toggle-label slds-text-body_small">Schedule summary</span>
+
+                            <template if:true={isCloseWonLineSchedule}>
+                                <div class="schedule-inline">
+                                    <lightning-input
+                                        type="date"
+                                        label="Date"
+                                        value={closeWonLineDate}
+                                        data-section="closeWonLine"
+                                        onchange={handleDateChange}>
+                                    </lightning-input>
+
+                                    <lightning-input
+                                        type="time"
+                                        label="Hour"
+                                        value={closeWonLineHour}
+                                        data-section="closeWonLine"
+                                        onchange={handleHourChange}>
+                                    </lightning-input>
+
+                                    <lightning-combobox
+                                        label="Frequency"
+                                        value={closeWonLineFrequency}
+                                        options={frequencyOptions}
+                                        data-section="closeWonLine"
+                                        onchange={handleFrequencyChange}>
+                                    </lightning-combobox>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- CAMBIO: nueva sección Closed Lost -->
+                    <div class="slds-m-bottom_medium">
+                        <h3 class="slds-text-heading_small slds-m-bottom_small">Closed Lost Line/Opportunity</h3>
+
+                        <div class="toggle-row slds-m-bottom_x-small">
+                            <lightning-input
+                                type="toggle"
+                                variant="label-hidden"
+                                checked={isCloseLostLineNotify}
+                                data-section="closeLostLine"
+                                data-mode="notify"
+                                onchange={handleModeToggle}
+                                message-toggle-active=""
+                                message-toggle-inactive="">
+                            </lightning-input>
+                            <span class="toggle-label slds-text-body_small">Notify me when this happens</span>
+                        </div>
+
+                        <div class="toggle-row slds-m-bottom_x-small" if:true={showScheduleOptions}>
+                            <lightning-input
+                                type="toggle"
+                                variant="label-hidden"
+                                checked={isCloseLostLineSchedule}
+                                disabled
+                                data-section="closeLostLine"
+                                data-mode="schedule"
+                                onchange={handleModeToggle}
+                                message-toggle-active=""
+                                message-toggle-inactive="">
+                            </lightning-input>
+                            <span class="toggle-label slds-text-body_small">Schedule summary</span>
+
+                            <template if:true={isCloseLostLineSchedule}>
+                                <div class="schedule-inline">
+                                    <lightning-input
+                                        type="date"
+                                        label="Date"
+                                        value={closeLostLineDate}
+                                        data-section="closeLostLine"
+                                        onchange={handleDateChange}>
+                                    </lightning-input>
+
+                                    <lightning-input
+                                        type="time"
+                                        label="Hour"
+                                        value={closeLostLineHour}
+                                        data-section="closeLostLine"
+                                        onchange={handleHourChange}>
+                                    </lightning-input>
+
+                                    <lightning-combobox
+                                        label="Frequency"
+                                        value={closeLostLineFrequency}
+                                        options={frequencyOptions}
+                                        data-section="closeLostLine"
+                                        onchange={handleFrequencyChange}>
+                                    </lightning-combobox>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                   
+
+                    <div>
+                        
+                        <h3 class="slds-text-heading_small slds-m-bottom_small">Line/Opportunity back to draft</h3>
+
+                        <div class="toggle-row slds-m-bottom_x-small">
+                            <lightning-input
+                                type="toggle"
+                                variant="label-hidden"
+                                checked={isReviewNotify}
+                                data-section="review"
+                                data-mode="notify"
+                                onchange={handleModeToggle}
+                                message-toggle-active=""
+                                message-toggle-inactive="">
+                            </lightning-input>
+                            <span class="toggle-label slds-text-body_small">Notify me when this happens</span>
+                        </div>
+
+                       
+                        <div class="toggle-row slds-m-bottom_x-small" if:true={showScheduleOptions}>
+                            <lightning-input
+                                type="toggle"
+                                variant="label-hidden"
+                                checked={isReviewSchedule}
+                                disabled
+                                data-section="review"
+                                data-mode="schedule"
+                                onchange={handleModeToggle}
+                                message-toggle-active=""
+                                message-toggle-inactive="">
+                            </lightning-input>
+                            <span class="toggle-label slds-text-body_small">Schedule summary</span>
+
+                            <template if:true={isReviewSchedule}>
+                                <div class="schedule-inline">
+                                    <lightning-input
+                                        type="date"
+                                        label="Date"
+                                        value={reviewDate}
+                                        data-section="review"
+                                        onchange={handleDateChange}>
+                                    </lightning-input>
+
+                                    <lightning-input
+                                        type="time"
+                                        label="Hour"
+                                        value={reviewHour}
+                                        data-section="review"
+                                        onchange={handleHourChange}>
+                                    </lightning-input>
+
+                                    <lightning-combobox
+                                        label="Frequency"
+                                        value={reviewFrequency}
+                                        options={frequencyOptions}
+                                        data-section="review"
+                                        onchange={handleFrequencyChange}>
+                                    </lightning-combobox>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="slds-modal__footer slds-grid slds-grid_align-center">
+                    <div class="footer-actions">
+                        <lightning-button label="Cancel" onclick={handleClose}></lightning-button>
+                        <lightning-button variant="brand" label="Apply" onclick={handleApplyModify}></lightning-button>
+                    </div>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

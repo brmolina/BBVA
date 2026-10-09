@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__anlys_wkfl_return_reason_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Reasons given when the ARCE has been returned</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>WF Return Reasons/Comments</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>TextArea</type>
+</CustomField>

@@ -1,0 +1,257 @@
+<template>
+    <div class="slds-is-relative" style="min-height: 80vh;">
+
+        <!-- ── Spinner global ─────────────────────────────────────────────── -->
+        <template if:true={showLoadingState}>
+            <div class="component-loading" role="status" aria-live="polite">
+                <div class="loading-panel">
+                    <div class="loading-spinner">
+                        <lightning-spinner
+                            alternative-text={loadingText}
+                            size="medium"
+                            variant="brand">
+                        </lightning-spinner>
+                    </div>
+                    <div class="loading-text">{loadingText}</div>
+                </div>
+            </div>
+        </template>
+
+        <!-- ── Main content with products ─────────────────────────────────── -->
+        <template lwc:if={hasProducts}>
+            <div style="min-height: 500px; display: flex; flex-direction: column;">
+
+                <div class="slds-grid slds-grid_align-end slds-p-top_small">
+                    <template if:true={showAddCategory}>
+                        <lightning-button
+                            label="Add Category"
+                            icon-name="utility:add"
+                            onclick={handleAddCategory}
+                            disabled={disableTopButtons}
+                            class="slds-m-right_medium">
+                        </lightning-button>
+                    </template>
+
+                    <template if:true={showDefaultAddProduct}>
+                        <lightning-button
+                            label="Add Product"
+                            icon-name="utility:add"
+                            onclick={handleAddProduct}
+                            disabled={disableTopButtons}>
+                        </lightning-button>
+                    </template>
+
+                    <template if:true={showOpportunityAddButtons}>
+                        <lightning-button
+                            label="Add One-off Deal"
+                            icon-name="utility:add"
+                            onclick={handleAddOneOffProduct}
+                            disabled={disableTopButtons}
+                            class="slds-m-right_small">
+                        </lightning-button>
+                        <lightning-button
+                            label="Add Line"
+                            icon-name="utility:add"
+                            onclick={handleAddLineProduct}
+                            disabled={disableTopButtons}>
+                        </lightning-button>
+                    </template>
+                </div>
+
+                <c-dmt_product_tabs_container
+                    class="slds-p-top_small"
+                    config={tabsConfig}
+                    active-tab-id={selectedRiskId}
+                    ontabchange={handleTabChange}>
+
+                    <template if:true={selectedRiskId}>
+                        <div class="slds-grid slds-grid_align-end slds-p-vertical_xx-small">
+                            <lightning-button-group>
+                                <lightning-button
+                                    label="Clone"
+                                    onclick={handleClone}
+                                    disabled={buttonDisabled}>
+                                </lightning-button>
+                                <lightning-button
+                                    label="Delete"
+                                    onclick={handleDelete}
+                                    disabled={buttonDisabled}>
+                                </lightning-button>
+                            </lightning-button-group>
+                        </div>
+
+                        <div class="spinner-container">
+                            <c-dmt-product-sanction-fields
+                                lwc:ref="sanctionFields"
+                                risk-id={selectedRiskId}
+                                line-id={recordId}
+                                line-business-id={lineBusinessId}
+                                line-type={lineType}
+                                line-client-type={lineClientType}
+                                client-id={lineClientId}
+                                group-code={lineGroupCode}
+                                group-account={lineGroupAccount}
+                                risk-priority-id={selectedRiskPriorityId}
+                                entific={entific}
+                                line-status={lineStatus}
+                                field-configs={selectedFieldConfigs}
+                                can-edit={hasAccess}
+                                hide-inline-footer
+                                onrecordsaved={handleRecordSaved}
+                                oneditmodechange={handleEditModeChange}
+                                onsavingchange={handleChildSavingChange}
+                                oncanceledit={handleCancelEdit}>
+                            </c-dmt-product-sanction-fields>
+
+                        </div>
+                    </template>
+                </c-dmt_product_tabs_container>
+            </div>
+        </template>
+
+            <!-- Empty state: only when there are really no products -->
+            <template if:true={showEmptyState}>
+                <div class="slds-p-around_large slds-align_absolute-center">
+                    <div class="slds-grid slds-grid_vertical slds-align_absolute-center slds-m-top_large">
+                        <p class="slds-text-body_regular slds-m-bottom_medium">
+                            No products available yet.
+                        </p>
+                        <div class="slds-grid slds-grid_align-center">
+                            <template if:true={showDefaultAddProduct}>
+                                <lightning-button
+                                    label="Add Product"
+                                    icon-name="utility:add"
+                                    onclick={handleAddProduct}
+                                    disabled={disableTopButtons}
+                                    class="slds-m-right_small">
+                                </lightning-button>
+                            </template>
+
+                            <template if:true={showOpportunityAddButtons}>
+                                <lightning-button
+                                    label="Add One-off Deal"
+                                    icon-name="utility:add"
+                                    onclick={handleAddOneOffProduct}
+                                    disabled={disableTopButtons}
+                                    class="slds-m-right_small">
+                                </lightning-button>
+                                <lightning-button
+                                    label="Add Line"
+                                    icon-name="utility:add"
+                                    onclick={handleAddLineProduct}
+                                    disabled={disableTopButtons}
+                                    class="slds-m-right_small">
+                                </lightning-button>
+                            </template>
+                            <template if:true={showAddCategory}>
+                                <lightning-button
+                                    label="Add Category"
+                                    icon-name="utility:add"
+                                    onclick={handleAddCategory}
+                                    disabled={disableTopButtons}>
+                                </lightning-button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        <!-- ── Modal: Add Category ────────────────────────────────────────── -->
+        <template if:true={showCategoryModal}>
+            <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open category-modal">
+                <div class="slds-modal__container category-modal-container">
+                    <c-dmt_category_otherlines
+                        line-id={recordId}
+                        oncancel={handleCloseCategoryModal}
+                        onclosemodal={handleCloseCategoryModal}
+                        onreloadparent={handleCategoryReload}>
+                    </c-dmt_category_otherlines>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <template if:true={showAddProductModal}>
+            <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container slds-modal_large">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">{addProductModalTitle}</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium modal-scroll" id="add-product-modal-content">
+                        <template if:true={addProductSaving}>
+                            <div class="modal-loading" role="status" aria-live="polite">
+                                <div class="loading-panel">
+                                    <div class="loading-spinner">
+                                        <lightning-spinner alternative-text="Saving products" size="medium"></lightning-spinner>
+                                    </div>
+                                    <div class="loading-text">Saving products...</div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <div class="add-product-body">
+                            <div class="add-product-toolbar">
+                                <div class="add-product-search">
+                                    <lightning-input
+                                        type="search"
+                                        label="Search product"
+                                        value={addProductSearch}
+                                        onchange={handleAddProductSearchChange}>
+                                    </lightning-input>
+                                </div>
+                                <div class="add-product-info">
+                                    <c-dmt_opp-info-box
+                                        metadata-record-name="lineAddProduct"
+                                        info-text="Check product equivalence">
+                                    </c-dmt_opp-info-box>
+                                </div>
+                            </div>
+
+                            <div class="add-product-list">
+                                <c-dmt_multipleproducts_otherline
+                                    line-id={recordId}
+                                    context-code={addProductContextCode}
+                                    search-product={addProductSearch}
+                                    onproductstosend={handleAddProductsToSend}>
+                                </c-dmt_multipleproducts_otherline>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer add-product-footer">
+                        <lightning-button
+                            variant="neutral"
+                            class="slds-m-right_small"
+                            label="Cancel"
+                            onclick={handleCloseAddProductModal}>
+                        </lightning-button>
+                        <lightning-button
+                            variant="brand"
+                            label="Save"
+                            disabled={disableAddProductSave}
+                            onclick={handleSaveAddProduct}>
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <template if:true={editMode}>
+            <div class="edit-footer slds-docked-form-footer">
+                <lightning-button
+                    variant="neutral"
+                    class="slds-m-right_small"
+                    label="Cancel"
+                    onclick={handleCancelEditFromFooter}
+                    disabled={childSaving}>
+                </lightning-button>
+                <lightning-button
+                    variant="brand"
+                    label="Save"
+                    onclick={handleSaveEdit}
+                    disabled={childSaving}>
+                </lightning-button>
+            </div>
+        </template>
+
+    </div>
+</template>

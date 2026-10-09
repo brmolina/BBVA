@@ -61,3 +61,20 @@ th {
 .slds-table{
 zoom: 93%
 }
+
+.summary-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.id-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.id-label-underlying {
+    padding-left: 1.25rem;
+}

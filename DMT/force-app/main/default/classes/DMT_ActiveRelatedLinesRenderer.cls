@@ -1,4 +1,4 @@
-public with sharing class DMT_ActiveRelatedLinesRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_ActiveRelatedLinesRenderer implements DMT_ViewRenderer {
     private static Map<Id, DMT_ViewRenderer> recordTypeRenderers = new Map<Id, DMT_ViewRenderer>();
 
     static {
@@ -26,22 +26,4 @@ public with sharing class DMT_ActiveRelatedLinesRenderer implements DMT_ViewRend
             return '<div>Error: ' + e.getMessage() + '</div>';
         }
     }
-
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null) {
-            return new Map<String,Object>();
-        }
-        try {
-            DMT_ViewRenderer renderer = recordTypeRenderers.get(data.recordTypeId);
-            if (renderer == null) {
-                throw new IllegalArgumentException('No Active Related Lines for record type Id: ' + data.recordTypeId);
-            }
-            return renderer.renderPdfJson(data);
-        }catch (Exception e){
-            System.debug(e.getMessage());
-            return new Map<String, Object>();
-        }
-    }
-
-
 }

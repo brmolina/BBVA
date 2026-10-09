@@ -1,0 +1,226 @@
+.panel-shell {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    position: relative;
+    min-width: 0;
+    max-width: 100%;
+    overflow: visible;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.selection-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #eef4fb;
+    border: 1px solid #c5d7ec;
+    border-radius: 0.4rem;
+    padding: 0.2rem 0.45rem;
+    white-space: nowrap;
+}
+
+.selection-summary__label {
+    font-size: 0.72rem;
+    color: #16325c;
+    font-weight: 600;
+}
+
+.selection-summary__count {
+    min-width: 1.1rem;
+    text-align: center;
+    border-radius: 999px;
+    background: #16325c;
+    color: #fff;
+    font-size: 0.68rem;
+    line-height: 1.1;
+    font-weight: 700;
+    padding: 0.08rem 0.3rem;
+}
+
+.table-message {
+    border-radius: 0.35rem;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.78rem;
+    border: 1px solid transparent;
+}
+
+.table-message--error {
+    background: #fef1f1;
+    border-color: #f1b9c0;
+    color: #8e030f;
+}
+
+.table-frame {
+    position: relative;
+    border: 1px solid #d8dde6;
+    border-radius: 0.5rem;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    background: #fff;
+    min-height: 12rem;
+    max-height: 28rem;
+}
+
+.loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgb(15 30 52 / 0.22);
+    z-index: 30;
+}
+
+.loading-box {
+    display: grid;
+    justify-items: center;
+    gap: 0.9rem;
+    padding: 1.1rem 1.35rem;
+    border: 1px solid #b9cbe2;
+    border-radius: 0.5rem;
+    background: #fff;
+    box-shadow: 0 10px 24px rgb(9 30 66 / 0.22);
+    position: relative;
+    z-index: 31;
+}
+
+.spinner-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2.5rem;
+    height: 2.5rem;
+    overflow: visible;
+}
+
+.spinner-wrap .slds-spinner {
+    position: relative;
+    inset: auto;
+    margin: 0;
+}
+
+.loading-text {
+    margin: 0;
+    font-size: 0.88rem;
+    color: #16325c;
+    font-weight: 700;
+    text-align: center;
+}
+
+.client-table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: auto;
+}
+
+.client-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #f3f6fa;
+    color: #3e4b5c;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    font-size: 0.7rem;
+    border-bottom: 1px solid #d8dde6;
+    padding: 0.65rem 0.75rem;
+    white-space: normal;
+    line-height: 1.18;
+    max-width: 9rem;
+}
+
+.client-table tbody td {
+    border-bottom: 1px solid #eef2f7;
+    padding: 0.45rem 0.75rem;
+    vertical-align: top;
+    font-size: 0.8125rem;
+}
+
+.client-table tbody tr:hover {
+    background: #f9fbfe;
+}
+
+.selected-row {
+    background: #cfe3ff;
+}
+
+.selected-row td {
+    border-bottom-color: #b8d4fb;
+}
+
+.name-col {
+    min-width: 16rem;
+    max-width: 24rem;
+}
+
+.name-link {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: #0176d3;
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.name-link:hover,
+.name-link:focus {
+    text-decoration: underline;
+}
+
+.secondary-text {
+    margin-top: 0.15rem;
+    color: #607286;
+    font-size: 0.72rem;
+    overflow-wrap: anywhere;
+}
+
+.empty-row {
+    color: #607286;
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.footer-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    border-top: 1px solid #d8dde6;
+    padding-top: 0.75rem;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+@media (max-width: 48rem) {
+    .toolbar,
+    .footer-area {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .actions {
+        justify-content: stretch;
+    }
+}

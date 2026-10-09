@@ -30,7 +30,7 @@ public with sharing class DMT_DynamicIntMetadataService {
      */
     public static Map<String, Object> getIntegrationConfig(String metadataName) {
         try {
-            String query = 'SELECT DeveloperName, DMT_JSON_Template__c, DMT_Integration__c, DMT_MetadataIntegration__c ' +
+            String query = 'SELECT DeveloperName, DMT_JSON_Template__c, DMT_Response_Template__c, DMT_Integration__c, DMT_MetadataIntegration__c ' +
                            'FROM DMT_Dynamic_Int__mdt ' +
                            'WHERE DeveloperName = :metadataName ' +
                            'LIMIT 1';
@@ -45,6 +45,7 @@ public with sharing class DMT_DynamicIntMetadataService {
 
             Map<String, Object> result = new Map<String, Object>();
             result.put('jsonTemplate',        config.DMT_JSON_Template__c);
+            result.put('responseTemplate',     config.DMT_Response_Template__c);
             result.put('developerName',        config.DeveloperName);
             result.put('integrationType',      config.DMT_Integration__c);
             result.put('metadataIntegration',  config.DMT_MetadataIntegration__c);
@@ -146,6 +147,16 @@ public with sharing class DMT_DynamicIntMetadataService {
     public static String getJsonTemplate(String metadataName) {
         Map<String, Object> config = getIntegrationConfig(metadataName);
         return (String) config.get('jsonTemplate');
+    }
+
+    /**
+     * @description Obtiene el JSON template de response de una configuración
+     * @param metadataName Nombre del registro en el custom metadata
+     * @return String con el JSON template de response, o null si no está configurado
+     */
+    public static String getResponseTemplate(String metadataName) {
+        Map<String, Object> config = getIntegrationConfig(metadataName);
+        return (String) config.get('responseTemplate');
     }
     
     /**

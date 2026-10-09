@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>cuco__gf_pa_mgmt_status_type_name__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Status</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>cuco__gf_pa_mgmt_stage_type_name__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Analysis</fullName>
+                <default>false</default>
+                <label>Analysis</label>
+            </value>
+            <value>
+                <fullName>Sent for Price Approval</fullName>
+                <default>false</default>
+                <label>Sent for Price Approval</label>
+            </value>
+            <value>
+                <fullName>Price Authorized</fullName>
+                <default>false</default>
+                <label>Price Authorized</label>
+            </value>
+            <value>
+                <fullName>Price Returned</fullName>
+                <default>false</default>
+                <label>Price Returned</label>
+            </value>
+            <value>
+                <fullName>Restudy</fullName>
+                <default>false</default>
+                <label>Restudy</label>
+            </value>
+            <value>
+                <fullName>Sent for Formalization</fullName>
+                <default>false</default>
+                <label>Sent for Formalization</label>
+            </value>
+            <value>
+                <fullName>Formalized</fullName>
+                <default>false</default>
+                <label>Formalized</label>
+            </value>
+            <value>
+                <fullName>Dismissed</fullName>
+                <default>false</default>
+                <label>Dismissed</label>
+            </value>
+            <value>
+                <fullName>Price Approved</fullName>
+                <default>false</default>
+                <label>Price Approved</label>
+            </value>
+            <value>
+                <fullName>Formalization Returned</fullName>
+                <default>false</default>
+                <label>Formalization Returned</label>
+            </value>
+            <value>
+                <fullName>Pending Send for Manual Formalization</fullName>
+                <default>false</default>
+                <label>Pending Send for Manual Formalization</label>
+            </value>
+            <value>
+                <fullName>Sent for Price Approval Top</fullName>
+                <default>false</default>
+                <label>Sent for Price Approval Top</label>
+            </value>
+            <value>
+                <fullName>Price Preauthorized</fullName>
+                <default>false</default>
+                <label>Price Preauthorized</label>
+            </value>
+            <value>
+                <fullName>Price Approval</fullName>
+                <default>false</default>
+                <label>Price Approval</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Analysis</controllingFieldValue>
+            <valueName>Analysis</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Analysis</controllingFieldValue>
+            <valueName>Restudy</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Formalization</controllingFieldValue>
+            <valueName>Sent for Formalization</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Formalization</controllingFieldValue>
+            <valueName>Formalization Returned</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Formalization</controllingFieldValue>
+            <valueName>Pending Send for Manual Formalization</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Formalized</controllingFieldValue>
+            <valueName>Formalized</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Dismissed</controllingFieldValue>
+            <valueName>Dismissed</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

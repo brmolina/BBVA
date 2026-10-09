@@ -9,3 +9,8 @@
 .textAreaBody {
     --sds-c-textarea-sizing-min-height:125px;
 }
+
+.textarea-counter {
+    margin-top: 0.25rem;
+    text-align: right;
+}

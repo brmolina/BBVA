@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Deal_Amount_EUR__c</fullName>
+    <description>EUR equivalent of DMT_Deal_amount__c, calculated from g_currency_id__c using DMT_Currency.convert(). Used for Reports so amounts and their EUR counter-valuation can be shown without relying on the native CurrencyIsoCode/multicurrency conversion.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Contravaloración en EUR del importe original (DMT_Deal_amount__c), calculada automáticamente a partir de g_currency_id__c.</inlineHelpText>
+    <label>Deal Amount (EUR)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

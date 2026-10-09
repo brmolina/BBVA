@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>almd__Required_Fields_Commercial_Tasks</fullName>
+    <active>true</active>
+    <description>Campos obligatorios en el fichero de carga para tareas comerciales</description>
+    <errorConditionFormula>AND(
+ISNEW(),
+ISBLANK( almd__data_source_name__c ),
+  OR(
+    RecordType.DeveloperName = &apos;Commercial_Task&apos;,
+    RecordType.DeveloperName = &apos;Commercial_Task_No_Auth&apos;
+    )
+)</errorConditionFormula>
+    <errorMessage>To create this Commercial Task you must complete the Source field first.</errorMessage>
+</ValidationRule>

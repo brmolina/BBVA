@@ -37,7 +37,8 @@ public with sharing class DES_Constants {
     // Account — Prospect Status Funnel values  (PROSPECT_STATUS_FUNNEL_)
     // ──────────────────────────────────────────────────────────────────────────
 
-    /** Prospect Status Funnel - Identify. */
-    public static final String PROSPECT_STATUS_FUNNEL_IDENTIFY = 'Identify';
+    /** Prospect Status Funnel values. */
+    public static final String PROSPECT_STATUS_FUNNEL_IDENTIFIED = 'Identified';
+    public static final String PROSPECT_STATUS_FUNNEL_DISCARDED = 'Discarded';
     
 }

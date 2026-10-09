@@ -1,0 +1,125 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+/* ── Layout principal en fila ── */
+.main-wrapper {
+    height: 100%;
+    width: 100%;
+    flex-wrap: nowrap;      /* que no salten a otra línea */
+    align-items: stretch;   /* ambas columnas misma altura */
+}
+
+/* ── Columna sidebar ── */
+.sidebar-col {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* ── Columna contenido ── */
+.content-col {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    margin-left: 10px;
+}
+.sidebar {
+    width: 4%;
+}
+.content {
+    width: 95%;
+}
+
+/* ── Tarjeta de tabs ── */
+.tabs-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.header-section {
+    flex: 0 0 auto;
+}
+
+.tabset-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.tabs-root {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.slds-tabs_default__nav {
+    flex: 0 0 auto;
+}
+
+.slds-tabs_default__content.slds-show {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    animation: fadeInUp 0.3s ease-out;
+
+}
+
+/* Animación para el contenido de las pestañas */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* Animación de entrada para botones de acción */
+@keyframes buttonSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(15px); 
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Aplicamos la animación a los grupos de botones que aparecen condicionalmente */
+.header-section lightning-button-group,
+.header-section lightning-button {
+    display: inline-block;
+    animation: buttonSlideIn 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Añade esto a tu CSS */
+.sidebar-col, .content-col {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+    will-change: width, flex; 
+}
+
+.slds-tabs_default__item.slds-is-active {
+    color: #4194f9; 
+}
+.spinnerOverlay {
+  position: absolute;
+  inset: 0;                 
+  display: flex;
+  align-items: center;      
+  justify-content: center; 
+  z-index: 190;
+}
+.illustrator-custom{
+    margin-bottom: 1rem !important;
+}

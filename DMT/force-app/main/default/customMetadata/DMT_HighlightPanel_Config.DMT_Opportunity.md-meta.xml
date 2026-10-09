@@ -18,7 +18,7 @@
 {
 &quot;type&quot;: &quot;text&quot;,
 &quot;label&quot;: &quot;Client/Prospect&quot;,
-&quot;fieldApiName&quot;: &quot;Account.Name&quot;,
+&quot;fieldApiName&quot;: &quot;Account.DMT_Client_Prospect_Name__c&quot;,
 &quot;action&quot;: {
 &quot;type&quot;: &quot;navigate&quot;,
 &quot;params&quot;: {
@@ -135,7 +135,22 @@
 &quot;quickActionApiName&quot;: &quot;Opportunity.DMT_DeleteOpportunity&quot;
 },
 &quot;disabled&quot;: false
-}]</value>
+},
+{
+&quot;label&quot;: &quot;Send to GTB TEST&quot;,
+&quot;iconConfig&quot;: {
+      &quot;type&quot;: &quot;utility&quot;,
+      &quot;name&quot;: &quot;file&quot;
+    },
+&quot;name&quot;: &quot;Test_sendToClan&quot;,
+&quot;variant&quot;: &quot;neutral&quot;,
+&quot;actionType&quot;: &quot;quickaction&quot;,
+&quot;actionConfig&quot;: {
+&quot;quickActionApiName&quot;: &quot;Opportunity.Test_sendToClan&quot;
+},
+&quot;disabled&quot;: false
+}
+]</value>
     </values>
     <values>
         <field>Metadata_Config__c</field>
@@ -163,6 +178,12 @@
 }
 },
 {
+&quot;label&quot;: &quot;Feedback&quot;,
+&quot;name&quot;: &quot;Feedback&quot;,
+&quot;variant&quot;: &quot;brand&quot;,
+&quot;actionType&quot;: &quot;labelUrl&quot;
+},
+{
 &quot;label&quot;: &quot;Chatter&quot;,
 &quot;name&quot;: &quot;ChatterOpp&quot;,
 &quot;variant&quot;: &quot;brand&quot;,
@@ -174,7 +195,10 @@
 &quot;actionConfig&quot;: {
 &quot;quickActionApiName&quot;: &quot;Opportunity.ChatterFeed&quot;
 },
-&quot;disabled&quot;: false
+&quot;disabled&quot;: false,
+&quot;visibilityCondition&quot;: {
+&quot;systemPermission&quot;: &quot;PermissionsChatterEnabledForUser&quot;
+}
 },
 {
 &quot;label&quot;: &quot;Deal Management&quot;,

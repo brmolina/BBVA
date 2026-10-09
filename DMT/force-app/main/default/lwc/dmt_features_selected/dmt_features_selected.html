@@ -1,5 +1,6 @@
 <template>
     <div class="parentDiv" style="margin-top: 20px;">
+        <div class="features-border">
         <lightning-card title={labelFeatures} icon-name="standard:table">
             <template if:true={isDataLoaded}>
                 <div
@@ -21,5 +22,6 @@
                     style="position: absolute; inset: 0;"></lightning-spinner>
             </template>
         </lightning-card>
+        </div>
     </div>
 </template>

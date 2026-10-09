@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DESCountryOfManagementProspectSubsidiary</fullName>
+    <active>true</active>
+    <description>In Prospect Subsidiary, Country of Management is required in order to change the status beyond Identified</description>
+    <errorConditionFormula>AND(
+    NOT($Setup.CIB_Bypass__c.CIB_DES_DataMigration__c),
+    RecordType.DeveloperName = &quot;Prospect_Subsidiary&quot;,
+    ISPICKVAL(DES_Country_of_Management_OLD__c, &quot;&quot;),
+    NOT(
+							OR(
+											ISPICKVAL(DES_Prospect_Status_Funnel__c, &quot;Identified&quot;),
+							    ISPICKVAL(DES_Prospect_Status_Funnel__c, &quot;Discarded&quot;)
+							)
+				)
+)</errorConditionFormula>
+    <errorMessage>Country of Management must be completed before changing the status beyond Identified</errorMessage>
+</ValidationRule>

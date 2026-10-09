@@ -5207,6 +5207,16 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Opportunity.DMT_Booking_System_Code__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_Credentials__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Opportunity.Description</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -6568,6 +6578,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>OpportunityLineItem.DES_Volume_in_Amounts__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_Sub_Limit__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

@@ -24,6 +24,9 @@ public without sharing class DES_ProspectStructureBuilder {
     private static final String KEY_SUBGROUP_NAME = 'subgroupName';
     private static final String KEY_SUPRAGROUP_CODE = 'supragroupId';
     private static final String KEY_SUPRAGROUP_NAME = 'supragroupName';
+    
+    @TestVisible private static Integer testForcedStatusCode;
+    @TestVisible private static String testForcedResponseBody;
 
     public static void  handleProspectIntegration(DES_ProspectStructurePayload payload) {
         if (payload == null || String.isBlank(payload.serviceName)) {
@@ -50,7 +53,7 @@ public without sharing class DES_ProspectStructureBuilder {
         
         // Dont call service if no groupId, because it will not be returned in Global Position service
         if (String.isBlank(s.groupCode)) {
-            System.debug(LoggingLevel.WARN, 'No se llama al servicio: postCreateProspect, porque groupId es null o vacío');
+            System.debug(LoggingLevel.WARN, 'Service not called: postCreateProspect, because groupId is null or empty');
             return;
         }
         
@@ -78,6 +81,10 @@ public without sharing class DES_ProspectStructureBuilder {
         requestMap.put('payload', JSON.serialize(payload));
         
         HttpResponse response = DMT_HPG_Utils.callService(payloadWrapper.serviceName, requestMap);
+        if (Test.isRunningTest() && testForcedStatusCode != null) {
+            response.setStatusCode(testForcedStatusCode);
+            response.setBody(testForcedResponseBody);
+        }
         System.debug('Response: ' + response);
         switch  on response.getStatusCode(){
             when 200, 201{
@@ -87,13 +94,33 @@ public without sharing class DES_ProspectStructureBuilder {
                 update new Account(Id = payloadWrapper.account.Id, DMT_Prospect_HPG_Sync__c = true);
             }
             when else{
-                System.debug('Response: ' + response.getBody());
+                String responseBody = String.valueOf(response.getBody());
+                System.debug('Response: ' + responseBody);
                 res.success = false;
-                res.errorMessage = String.valueOf(response.getBody());
+                res.errorMessage = responseBody;
 
-                if (payloadWrapper.retryCount < MAX_RETRIES && !Test.isRunningTest()) {
-                    System.debug('Encolando reintento ' + (payloadWrapper.retryCount + 1) + ' de ' + MAX_RETRIES);
-                    DMT_AsyncOrchestrator.enqueue(new DES_ProspectStructurePayload(payloadWrapper.account, payloadWrapper.serviceName, payloadWrapper.retryCount + 1));
+                // Detect duplicate error in HPG and mark as synced to avoid reprocessing
+                if (isDuplicateError(responseBody)) {
+                    System.debug('Duplicate detected - Auto-correcting sync flag');
+                    
+                    // Mark as synced in database (already exists in HPG)
+                    update new Account(Id = payloadWrapper.account.Id, DMT_Prospect_HPG_Sync__c = true);
+
+                    // Only enqueue PUT in UPDATE context when relevant fields changed
+                    // In INSERT context, do NOT enqueue PUT (new data shouldn't overwrite existing HPG data)
+                    if (payloadWrapper.oldAccount != null && DES_DMT_ProspectUtils.hasRelevantFieldChanges(payloadWrapper.account, payloadWrapper.oldAccount)) {
+                        System.debug('Duplicate in UPDATE - Enqueuing PUT because relevant fields changed');
+                        DMT_AsyncOrchestrator.enqueue(new DES_ProspectStructurePayload(payloadWrapper.account, payloadWrapper.oldAccount, 'DES_PutEditProspect'));
+                    }
+                // Real service failure - retry only on gateway timeout
+                } else {
+                    if (response.getStatusCode() == 504) {
+                        res.success = false;
+                        if (payloadWrapper.retryCount < MAX_RETRIES && !Test.isRunningTest()) {
+                            System.debug('Enqueuing retry ' + (payloadWrapper.retryCount + 1) + ' of ' + MAX_RETRIES);
+                            DMT_AsyncOrchestrator.enqueue(new DES_ProspectStructurePayload(payloadWrapper.account, payloadWrapper.oldAccount, payloadWrapper.serviceName, payloadWrapper.retryCount + 1));
+                        }
+                    }
                 }
             }
         }
@@ -106,7 +133,7 @@ public without sharing class DES_ProspectStructureBuilder {
         
         // Dont call service if no groupId, because it will not be returned in Global Position service
         if (String.isBlank(s.groupCode)) {
-            System.debug(LoggingLevel.WARN, 'No se llama al servicio: putEditProspect, porque groupId es null o vacío');
+            System.debug(LoggingLevel.WARN, 'Service not called: putEditProspect, because groupId is null or empty');
             return;
         }
         
@@ -134,6 +161,10 @@ public without sharing class DES_ProspectStructureBuilder {
         requestMap.put('payload', JSON.serialize(payload));
         
         HttpResponse response = DMT_HPG_Utils.callService(payloadWrapper.serviceName, requestMap);
+        if (Test.isRunningTest() && testForcedStatusCode != null) {
+            response.setStatusCode(testForcedStatusCode);
+            response.setBody(testForcedResponseBody);
+        }
         System.debug('Response: ' + response);
         switch  on response.getStatusCode(){
             when 200, 201, 204{
@@ -141,12 +172,10 @@ public without sharing class DES_ProspectStructureBuilder {
                 res.success = true;
             }
             when else{
-                System.debug('Response: ' + response.getBody());
                 res.success = false;
-                res.errorMessage = String.valueOf(response.getBody());
-                if (payloadWrapper.retryCount < MAX_RETRIES && !Test.isRunningTest()) {
-                    System.debug('Encolando reintento ' + (payloadWrapper.retryCount + 1) + ' de ' + MAX_RETRIES);
-                    DMT_AsyncOrchestrator.enqueue(new DES_ProspectStructurePayload(payloadWrapper.account, payloadWrapper.serviceName, payloadWrapper.retryCount + 1));
+                if ((response.getStatusCode() == 504)) {
+                    System.debug('Enqueuing retry ' + (payloadWrapper.retryCount + 1) + ' of ' + MAX_RETRIES);
+                    DMT_AsyncOrchestrator.enqueue(new DES_ProspectStructurePayload(payloadWrapper.account, payloadWrapper.oldAccount, payloadWrapper.serviceName, payloadWrapper.retryCount + 1));
                 }
             }
         }
@@ -174,6 +203,7 @@ public without sharing class DES_ProspectStructureBuilder {
             } else {
                 // Parent is not a Prospect
                 prospectGroupStructure = DMT_HPG_Utils.buildClientGroupStructure(parentGroup.Id);
+                System.debug('log::prospectGroupStructure: ' + prospectGroupStructure);
                 if (!prospectGroupStructure.isEmpty()) {
                     groupProspectInd = 'N';
                     if (parentGroup.DES_Structure_Type__c == TYPE_SUBGROUP) {
@@ -237,6 +267,11 @@ public without sharing class DES_ProspectStructureBuilder {
         return (acc.Name != null && acc.g_customer_id__c != null)
             ? acc.Name
             : '';
+    }
+
+    private static Boolean isDuplicateError(String responseBody) {
+        return String.isNotBlank(responseBody) && 
+            (responseBody.contains('00000016#CUSTOMER ALREADY EXISTS') || responseBody.contains('00000017#GROUP ALREADY EXISTS'));
     }
     
     /**

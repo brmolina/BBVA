@@ -3,17 +3,44 @@
     <template lwc:if={withCurrency}>
         <lightning-layout  horizontal-align="spread" style="align-items: flex-end;" class="slds-m-around_medium">
             <lightning-layout-item size="10">
-                <lightning-input 
-                    type="number"
-                    label={label}
-                    step={step}
-                    value={value}
-                    onkeydown={handleKeyDown}
-                    onblur={handleInputblur}
-                    pattern={pattern}
-                    required={required}
-                    field-level-help={helpTextMessage}
-                ></lightning-input>
+                <template lwc:if={compactLabel}>
+                    <div class="currency-label" title={label}>
+                        <span>{label}</span>
+                        <template lwc:if={helpTextMessage}>
+                            <lightning-helptext content={helpTextMessage}></lightning-helptext>
+                        </template>
+                    </div>
+                    <lightning-input 
+                        type={inputType}
+                        label={label}
+                        variant="label-hidden"
+                        step={step}
+                        value={displayValue}
+                        disabled={disabled}
+                        onkeydown={handleKeyDown}
+                        onfocus={handleInputFocus}
+                        onchange={handleInputChange}
+                        onblur={handleInputblur}
+                        pattern={pattern}
+                        required={required}
+                    ></lightning-input>
+                </template>
+                <template lwc:else>
+                    <lightning-input 
+                        type={inputType}
+                        label={label}
+                        step={step}
+                        value={displayValue}
+                        disabled={disabled}
+                        onkeydown={handleKeyDown}
+                        onfocus={handleInputFocus}
+                        onchange={handleInputChange}
+                        onblur={handleInputblur}
+                        pattern={pattern}
+                        required={required}
+                        field-level-help={helpTextMessage}
+                    ></lightning-input>
+                </template>
             </lightning-layout-item>
             <lightning-layout-item  size="2" class="slds-m-left_medium slds-m-right_medium" style="margin-bottom: 0.55rem;">
                 <span>{currencyIsoCode}</span>
@@ -22,17 +49,44 @@
     </template>
     <template lwc:else>
         <lightning-layout horizontal-align="spread" style="display: contents">
-            <lightning-input 
-                    type="number"
+            <template lwc:if={compactLabel}>
+                <div class="currency-label" title={label}>
+                    <span>{label}</span>
+                    <template lwc:if={helpTextMessage}>
+                        <lightning-helptext content={helpTextMessage}></lightning-helptext>
+                    </template>
+                </div>
+                <lightning-input 
+                    type={inputType}
+                    label={label}
+                    variant="label-hidden"
+                    step={step}
+                    value={displayValue}
+                    disabled={disabled}
+                    onkeydown={handleKeyDown}
+                    onfocus={handleInputFocus}
+                    onchange={handleInputChange}
+                    onblur={handleInputblur}
+                    pattern={pattern}
+                    required={required}
+                ></lightning-input>
+            </template>
+            <template lwc:else>
+                <lightning-input 
+                    type={inputType}
                     label={label}
                     step={step}
-                    value={value}
+                    value={displayValue}
+                    disabled={disabled}
                     onkeydown={handleKeyDown}
+                    onfocus={handleInputFocus}
+                    onchange={handleInputChange}
                     onblur={handleInputblur}
                     pattern={pattern}
                     required={required}
                     field-level-help={helpTextMessage}
-            ></lightning-input>
+                ></lightning-input>
+            </template>
         </lightning-layout>
     </template>
 

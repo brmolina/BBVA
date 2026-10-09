@@ -443,7 +443,7 @@ public with sharing class DMT_Passport_Handler_test {
         line.DMT_Opportunity__c = opp.Id;
         update line;
 
-        opp = [SELECT Id, DMT_Sanction__c, DMT_Sanction__r.Id,DMT_Sanction__r.DMT_Bussiness_Approved_Date__c,DMT_Sanction__r.Start_Date__c,DMT_Sanction__r.End_Date__c,DMT_Sanction__r.DMT_Individual_Disposal_Approval__c,DMT_Sanction__r.DMT_Bussiness_Approved_End_Date__c, DMT_Sanction__r.Line_Id__c, DMT_Sanction__r.DMT_Opportunity__c, (SELECT Id, DMT_Associated_Line_Product__r.gf_group_priority_line_id__c, gf_group_priority_opportunity_id__c FROM OpportunityLineItems)
+        opp = [SELECT Id, DMT_Sanction__c, DMT_Sanction__r.Id,DMT_Sanction__r.DMT_Bussiness_Approved_Date__c,DMT_Sanction__r.Start_Date__c,DMT_Sanction__r.End_Date__c,DMT_Sanction__r.DMT_Individual_Disposal_Approval__c,DMT_Sanction__r.DMT_Business_Approved_End_Date__c,DMT_Sanction__r.Line_Id__c, DMT_Sanction__r.DMT_Opportunity__c, (SELECT Id, DMT_Associated_Line_Product__r.gf_group_priority_line_id__c, gf_group_priority_opportunity_id__c FROM OpportunityLineItems)
             FROM Opportunity
             WHERE Id = :opp.Id
         ];
@@ -482,7 +482,7 @@ public with sharing class DMT_Passport_Handler_test {
         );
         insert opp;
 
-        opp = [SELECT Id, DMT_Sanction__c, DMT_Sanction__r.Id,DMT_Sanction__r.DMT_Bussiness_Approved_Date__c,DMT_Sanction__r.Start_Date__c,DMT_Sanction__r.End_Date__c,DMT_Sanction__r.DMT_Individual_Disposal_Approval__c,DMT_Sanction__r.DMT_Bussiness_Approved_End_Date__c, DMT_Sanction__r.Line_Id__c, DMT_Sanction__r.DMT_Opportunity__c, (SELECT Id, DMT_Associated_Line_Product__r.gf_group_priority_line_id__c, gf_group_priority_opportunity_id__c FROM OpportunityLineItems)
+        opp = [SELECT Id, DMT_Sanction__c, DMT_Sanction__r.Id,DMT_Sanction__r.DMT_Bussiness_Approved_Date__c,DMT_Sanction__r.Start_Date__c,DMT_Sanction__r.End_Date__c,DMT_Sanction__r.DMT_Individual_Disposal_Approval__c,DMT_Sanction__r.DMT_Business_Approved_End_Date__c,DMT_Sanction__r.Line_Id__c, DMT_Sanction__r.DMT_Opportunity__c, (SELECT Id, DMT_Associated_Line_Product__r.gf_group_priority_line_id__c, gf_group_priority_opportunity_id__c FROM OpportunityLineItems)
             FROM Opportunity
             WHERE Id = :opp.Id
         ];
@@ -622,10 +622,11 @@ public with sharing class DMT_Passport_Handler_test {
     }
 
     @isTest
-    private static void testGetMainHolderAccountId_withAssocAndLocalClient() {
+    private static void testGetMainHolderAccountId_withAssocAndCustomerId() {
         Opportunity opp = [SELECT Id, AccountId FROM Opportunity WHERE DMT_Opp_Id__c = '00001' LIMIT 1];
         Account acc = [SELECT Id FROM Account WHERE Id = :opp.AccountId LIMIT 1];
         acc.DES_Structure_Type__c = 'Subsidiary';
+        acc.g_customer_id__c = 'TEST123';
         update acc;
 
         Custom_Association_Opportunity__c assoc = new Custom_Association_Opportunity__c(
@@ -640,8 +641,8 @@ public with sharing class DMT_Passport_Handler_test {
         Test.stopTest();
 
         Assert.isNotNull(result, 'Result map should not be null');
-        Assert.isNotNull(result.get('AccountId'), 'AccountId should be populated via local client path');
-        Assert.areEqual('Subsidiary', (String) result.get('ClientType'), 'ClientType should match DES_Client_Type__c on account');
+        Assert.isNotNull(result.get('AccountId'), 'AccountId should be populated via Account.g_customer_id__c');
+        Assert.areEqual('Subsidiary', (String) result.get('ClientType'), 'ClientType should match DES_Client_Type__c on account found via g_customer_id__c');
     }
 
 }

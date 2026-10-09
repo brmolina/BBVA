@@ -95,9 +95,20 @@ export default class dmt_product_tabs_container extends LightningElement {
     _buildAmountLabel(record) {
         const cfg = this._config;
         const rawAmount = this._safeRead(record, cfg.amountField);
-        const amount = rawAmount !== '' ? rawAmount : '0';
+        const safeValue = rawAmount !== '' ? rawAmount : '0';
+        const normalizedValue = String(safeValue).replace(/\s/g, '');
+        const parsedValue = normalizedValue.includes(',')
+            ? normalizedValue.replace(/\./g, '').replace(',', '.')
+            : normalizedValue;
+        const numericValue = Number(parsedValue);
+        const formattedAmount = Number.isFinite(numericValue)
+            ? new Intl.NumberFormat('es-ES', {
+                minimumFractionDigits: Number.isInteger(numericValue) ? 0 : 2,
+                maximumFractionDigits: 2
+            }).format(numericValue)
+            : safeValue;
         const currency = this._safeRead(record, cfg.currencyField);
-        return currency ? `${amount} ${currency}` : amount;
+        return currency ? `${formattedAmount} ${currency}` : formattedAmount;
     }
 
     /**

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>dwp_kitv__BBVA_Team</fullName>
+    <fields>dwp_kitv__gf_sf_external_cust_mail_desc__c</fields>
+    <label>BBVA Team</label>
+</CompactLayout>

@@ -190,12 +190,9 @@ public with sharing class ActivitiesUtils {
     Map<Id, User> mapUser = new Map<Id, User>();
     Map<String, User> mapConsolidatedLineUser = new Map<String, User>();
     Map<Id, String> mapTaskType = new Map<Id, String>();
-    //29/04/25 - Se añade cambio solicitado en CIBGLOBALD-1191 [INI]
-    //Se generan unas listas con los codigos de analista para en base al codigo rellenar un campo u otro
-    List<String> localAnalystCodes = new List<String>{'6','8'};
-    List<String> globalAnalystCodes = new List<String>{'7','8'};
-    String taskTypeName;
-    //29/04/25 - Se añade cambio solicitado en CIBGLOBALD-1191 [FIN]
+    // CIBGLOBALD-3690
+    Map<Id, String> mapCaseScope = new Map<Id, String>();
+    Map<Id, String> mapLineScope = new Map<Id, String>();
     // Consultar las tareas con su tipo de tarea
     Set<Id> taskIds = new Set<Id>();
     for (Task t : tasks) {
@@ -205,21 +202,19 @@ public with sharing class ActivitiesUtils {
         for (Task t : [
           //29/04/25 - Se añade cambio solicitado en CIBGLOBALD-1191 [INI]
             SELECT Id, WhatId, Status, LastModifiedById, DMT_Task_Type__c,
-                   DMT_Task_Type__r.Name, DMT_Task_Type__r.DMT_External_Id__c
+                   DMT_Task_Type__r.Name, DMT_Task_Type__r.DMT_Scope__c
             FROM Task
             WHERE Id IN :taskIds
         ]) {
-          //Se asigna el valor del codigo unico en base al tipo de tarea
-            taskTypeName = t.DMT_Task_Type__r != null ? t.DMT_Task_Type__r.DMT_External_Id__c : null;
-            System.debug('User:' + t.WhatId + ' Status: ' + t.Status + ' TypeName: ' + taskTypeName);
+            String taskScope = t.DMT_Task_Type__r != null ? t.DMT_Task_Type__r.DMT_Scope__c : null;
+            System.debug('User:' + t.WhatId + ' Status: ' + t.Status + ' Scope: ' + taskScope);
 
-            if (t.WhatId != null && (t.Status == 'Completed' || t.Status == 'Finished')&&
-                taskTypeName != null &&
-                (localAnalystCodes.contains(taskTypeName) || globalAnalystCodes.contains(taskTypeName) || Test.isRunningTest())) {
-                //29/04/25 - Se añade cambio solicitado en CIBGLOBALD-1191 [FIN]
-                  idCasos.add(t.WhatId);
+            if (t.WhatId != null && (t.Status == 'Completed' || t.Status == 'Finished') &&
+                String.isNotBlank(taskScope)) {
+                idCasos.add(t.WhatId);
                 idUsers.add(t.LastModifiedById);
                 mapCaseUser.put(t.WhatId, t.LastModifiedById);
+                mapCaseScope.put(t.WhatId, taskScope);
             }
         }
     }
@@ -233,8 +228,10 @@ public with sharing class ActivitiesUtils {
     if (!idCasos.isEmpty()) {
         for (Case caso : [SELECT Id, DMT_Line__c FROM Case WHERE Id IN :idCasos]) {
             if (caso.DMT_Line__c != null) {
-                idLines.add(Id.valueOf(caso.DMT_Line__c));
-                mapLineUser.put(Id.valueOf(caso.DMT_Line__c), mapCaseUser.get(caso.Id));
+                Id lineIdVal = Id.valueOf(caso.DMT_Line__c);
+                idLines.add(lineIdVal);
+                mapLineUser.put(lineIdVal, mapCaseUser.get(caso.Id));
+                mapLineScope.put(lineIdVal, mapCaseScope.get(caso.Id));
             }
         }
     }
@@ -247,18 +244,16 @@ public with sharing class ActivitiesUtils {
             FROM DMT_Line__c WHERE Id IN :idLines
         ]) {
             Id userId = mapLineUser.get(line.Id);
+            String lineScope = mapLineScope.get(line.Id);
             if (userId != null && mapUser.containsKey(userId)) {
                 User user = mapUser.get(userId);
-                //line.DMT_Global_Risk_Analyst_User__c = user.Id;
-                //Codigos de tarea Local
-                if(localAnalystCodes.contains(taskTypeName) || Test.isRunningTest()){
-                  line.DMT_Local_Risk_Analyst__c = user.Name;
-                  line.DMT_Local_Risk_Analyst_User__c = user.Id;
+                if (lineScope == 'Local' || lineScope == 'Global y Local') {
+                    line.DMT_Local_Risk_Analyst__c = user.Name;
+                    line.DMT_Local_Risk_Analyst_User__c = user.Id;
                 }
-                //Se rellenan los datos también para Global risk, estos son los codigos de tarea global
-                if(globalAnalystCodes.contains(taskTypeName) ){
-                  line.DMT_Global_Risk_Analyst__c =  user.Name;
-                  line.DMT_Global_Risk_Analyst_User__c = user.Id;
+                if (lineScope == 'Global' || lineScope == 'Global y Local') {
+                    line.DMT_Global_Risk_Analyst__c = user.Name;
+                    line.DMT_Global_Risk_Analyst_User__c = user.Id;
                 }
                 //29/04/25 - Se añade cambio solicitado en CIBGLOBALD-1191 [FIN]
                 mapConsolidatedLineUser.put(line.Line_Id__c, user);

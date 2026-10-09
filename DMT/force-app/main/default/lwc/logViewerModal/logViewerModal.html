@@ -1,0 +1,19 @@
+<template>
+    <lightning-modal-header label="Apex Log Details"></lightning-modal-header>
+    
+    <lightning-modal-body>
+        <div class="slds-box slds-theme_shade" 
+             style="white-space: pre-wrap; font-family: monospace; font-size: 0.85rem; background-color: #f3f2f2; min-height: 200px;">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </template>
+            <template if:false={isLoading}>
+                {content}
+            </template>
+        </div>
+    </lightning-modal-body>
+
+    <lightning-modal-footer>
+        <lightning-button label="Close" onclick={handleClose}></lightning-button>
+    </lightning-modal-footer>
+</template>

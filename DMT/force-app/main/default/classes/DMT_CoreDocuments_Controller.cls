@@ -41,6 +41,7 @@ public with sharing class DMT_CoreDocuments_Controller {
     @AuraEnabled
     public static void updateFileMetadataWithObjectCode(String fileId, String fileName, String docType, String folderId, String objectCode) {
         try {
+            System.debug('*** updateFileMetadataWithObjectCode called with fileId: ' + fileId + ', fileName: ' + fileName + ', docType: ' + docType + ', folderId: ' + folderId + ', objectCode: ' + objectCode);
             DES_CoreDocuments.UpdateFileMetadataRequest req = new DES_CoreDocuments.UpdateFileMetadataRequest();
             req.fileId = fileId;
             req.fileName = fileName;
@@ -247,6 +248,36 @@ public with sharing class DMT_CoreDocuments_Controller {
             ];
         } catch (Exception e) {
             throw new AuraHandledException('Error fetching Task details: ' + e.getMessage());
+        }
+    }
+
+    /** JIRA 4332
+     * @description Whether documents can be deleted for the given Opportunity/DMT_Line__c/Case,
+     *              based on the record reaching a final state (Closed Won / Closed Case).
+     */
+    @AuraEnabled(cacheable=true)
+    public static Boolean isDocumentDeletionAllowed(Id recordId) {
+        if (recordId == null) {
+            return false;
+        }
+        try {
+            Schema.SObjectType sType = recordId.getSObjectType();
+            if (sType == DMT_Line__c.SObjectType) {
+                DMT_Line__c line = [SELECT Status__c, DMT_Status_Completed__c FROM DMT_Line__c WHERE Id = :recordId WITH SYSTEM_MODE LIMIT 1];
+                return !(line.Status__c == 'Closed' && line.DMT_Status_Completed__c == 'Closed Won');
+            }
+            if (sType == Opportunity.SObjectType) {
+                Opportunity opp = [SELECT StageName FROM Opportunity WHERE Id = :recordId WITH SYSTEM_MODE LIMIT 1];
+                return opp.StageName != 'Closed Won';
+            }
+            if (sType == Case.SObjectType) {
+                Case caseRecord = [SELECT IsClosed FROM Case WHERE Id = :recordId WITH SYSTEM_MODE LIMIT 1];
+                return !caseRecord.IsClosed;
+            }
+            return true;
+        } catch (Exception e) {
+            DES_Exception_Utils.logException(e,'DMT_CoreDocuments_Controller', 'isDocumentDeletionAllowed', 'DMT', '');
+            return false;
         }
     }
 

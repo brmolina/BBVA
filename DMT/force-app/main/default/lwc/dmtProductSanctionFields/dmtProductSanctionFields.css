@@ -1,0 +1,87 @@
+:host {
+    display: block;
+}
+
+.sanction-fields {
+    position: relative;
+    padding: 0;
+}
+
+.sanction-fields.has-fixed-footer {
+    padding-bottom: 4.25rem;
+}
+
+.details-container {
+    padding: 0;
+}
+
+.clients-container {
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    background: #ffffff;
+    padding: 0.75rem;
+}
+
+.clients-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.footer-buttons {
+    position: sticky;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    margin-top: 0.75rem;
+    background: #ecebea;
+    border-top: 1px solid #d8dde6;
+    min-height: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.footer-buttons__inner {
+    padding: 0.5rem 0.75rem;
+}
+
+.save-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    background: rgba(255, 255, 255, 0.78);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: all;
+}
+
+.save-overlay__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 11rem;
+    min-height: 6rem;
+    padding: 1rem 1.25rem;
+    border-radius: 0.25rem;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+}
+
+.save-overlay__spinner {
+    position: relative;
+    width: 2rem;
+    height: 2rem;
+    margin-bottom: 1rem;
+}
+
+.save-overlay__text {
+    font-size: 0.95rem;
+    color: #3e3e3c;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: center;
+}

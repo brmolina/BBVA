@@ -24,6 +24,7 @@ import USER_NAME_FIELD from '@salesforce/schema/User.Name';
 
 import getAttachments from '@salesforce/apex/DMT_AttachmentController.getAttachments';
 import getAttachmentBase64 from '@salesforce/apex/DMT_AttachmentController.getAttachmentBase64';
+import hasEditAccess from '@salesforce/apex/DMT_AttachmentController.hasEditAccess';
 
 import getDocuments from '@salesforce/apex/DMT_CoreDocuments_Controller.getDocuments';
 import getDownloadHeaders from '@salesforce/apex/DMT_CoreDocuments_Controller.getDownloadHeaders';
@@ -34,6 +35,8 @@ import updateFileMetadataWithObjectCode from '@salesforce/apex/DMT_CoreDocuments
 import getCatalogsDescriptions from '@salesforce/apex/DMT_CoreDocuments_Controller.getCatalogsDescriptions';
 import appendTaxonomyValue from '@salesforce/apex/DMT_CoreDocuments_Controller.appendTaxonomyValue';
 import triggerPassportUpdate from '@salesforce/apex/DMT_CoreDocuments_Controller.triggerPassportUpdate';
+import isDocumentDeletionAllowed from '@salesforce/apex/DMT_CoreDocuments_Controller.isDocumentDeletionAllowed';
+import LightningConfirm from 'lightning/confirm';
 
 const VALID_MIME_TYPES = {
     'application/pdf': true,
@@ -45,7 +48,11 @@ const VALID_MIME_TYPES = {
     'text/plain': true,
     'image/jpeg': true,
     'image/png': true,
-    'image/gif': true
+    'image/gif': true,
+    'application/vnd.ms-office': true,
+    'application/x-msword': true,
+    'application/x-zip-compressed': true,
+    'application/zip': true
 };
 
 const COLUMNS = [
@@ -76,7 +83,21 @@ const COLUMNS = [
     },
     {label: 'Owner',fieldName: 'ownerName', type: 'text', cellAttributes: { style: 'text-align: center;' },initialWidth: 240 },
     {label: 'Upload Date', fieldName: 'uploadDate', type: 'text', cellAttributes: { style: 'text-align: center;' },initialWidth: 120},
-    {label: 'Document Type', fieldName: 'documentTypeLabel', type: 'text', cellAttributes: { style: 'text-align: center;' }, initialWidth: 365 }
+    {label: 'Document Type', fieldName: 'documentTypeLabel', type: 'text', cellAttributes: { style: 'text-align: center;' }, initialWidth: 365 },
+    {
+        label: '',
+        type: 'button-icon',
+        initialWidth: 70,
+        cellAttributes: { style: 'text-align: center;' },
+        typeAttributes: {
+            iconName: 'utility:delete',
+            title: 'Delete document',
+            name: 'delete',
+            variant: 'border-filled',
+            alternativeText: 'Delete document',
+            disabled: { fieldName: 'deleteDisabled' }
+        }
+    }
 
 ];
 
@@ -112,8 +133,22 @@ export default class dmt_document_manager_for_core_document extends LightningEle
     @track entific; // Global variable for filtering taxonomy
     @track recordTypeDevName; // Global variable to pass to Apex
     @track clientId; // Global variable to pass to Passport Payload
+    @track canDeleteDocuments = false; // False while the related record is in a final state (Closed Won / closed Case)
 
     _lastLoadedLineId = null; // Guard: tracks the lineId already loaded to prevent redundant service calls
+    _hasEditAccess = false;
+
+    @wire(hasEditAccess, { recordId: '$recordId' })
+    wiredHasEditAccess({ error, data }) {
+        if (data !== undefined) {
+            this._hasEditAccess = data;
+            this.combineAllFiles();
+        } else if (error) {
+            console.error('Error checking edit access:', error);
+            this._hasEditAccess = false;
+            this.combineAllFiles();
+        }
+    }
 
     @wire(CurrentPageReference)
     getStateParameters(currentPageReference) {
@@ -139,6 +174,17 @@ export default class dmt_document_manager_for_core_document extends LightningEle
     wiredUser({ error, data }) {
         if (data) {
             this.currentUserName = getFieldValue(data, USER_NAME_FIELD);
+        }
+    }
+
+    @wire(isDocumentDeletionAllowed, { recordId: '$recordId' })
+    wiredDeletionAllowed({ error, data }) {
+        if (data !== undefined) {
+            this.canDeleteDocuments = data;
+            this.combineAllFiles();
+        } else if (error) {
+            console.error('Error checking document deletion permission:', error);
+            this.canDeleteDocuments = false;
         }
     }
             //Detect object type from recordId
@@ -268,7 +314,10 @@ export default class dmt_document_manager_for_core_document extends LightningEle
         ];
 
         // Se agregan las opciones dinámicas extraídas desde DMT_Taxonomy_Values__c y se ordenan alfabéticamente
-        const allOptions = [...baseOptions, ...this.taxonomyOptions];
+        // Se excluye CO-OF-00242 de la UI porque no debe mostrarse como tipo seleccionable.
+        const filteredBaseOptions = baseOptions.filter(opt => opt.value !== 'CO-OF-00242');
+        const filteredTaxonomyOptions = (this.taxonomyOptions || []).filter(opt => opt.value !== 'CO-OF-00242');
+        const allOptions = [...filteredBaseOptions, ...filteredTaxonomyOptions];
         return allOptions.sort((a, b) => a.label.localeCompare(b.label));
     }
 
@@ -348,6 +397,9 @@ export default class dmt_document_manager_for_core_document extends LightningEle
                                 // --- NEW MAPPING LOGIC ---
                                 // Prioritize the specific objectCode (Taxonomy), fallback to documentType (Base Code)
                                 const targetCode = child.objectCode || child.documentType;
+                                if (targetCode === 'CO-OF-00242') {
+                                    return null;
+                                }
                                 const docTypeEntry = this.docTypeOptions.find(dt => dt.value === targetCode);
                                 
                                 let cleanName = originalName;
@@ -398,7 +450,7 @@ export default class dmt_document_manager_for_core_document extends LightningEle
                                     ...this.getActionIconAndTitle(child.objectName)
                                 };
                             });
-                            allFiles = [...allFiles, ...folderFiles];
+                            allFiles = [...allFiles, ...folderFiles.filter(file => file !== null)];
                         }
                     });
                 }
@@ -427,17 +479,20 @@ export default class dmt_document_manager_for_core_document extends LightningEle
     }
 
     get isUploadDisabled() {
-        return false;
+        console.log('this._hasEditAccess --> ', this._hasEditAccess);
+        return !this._hasEditAccess;
     }
 
     // --- DRAG AND DROP ---
 
     handleDragOver(event) {
+        if (!this._hasEditAccess) return; // Prevent drag if user lacks edit access
         event.preventDefault();
         this.isDragging = true;
     }
 
     handleDragLeave(event) {
+        if (!this._hasEditAccess) return; // Prevent drag if user lacks edit access
         event.preventDefault();
         this.isDragging = false;
     }
@@ -446,6 +501,7 @@ export default class dmt_document_manager_for_core_document extends LightningEle
         event.preventDefault();
         this.isDragging = false;
 
+        if (!this._hasEditAccess) return; // Prevent drop if user lacks edit access
         if (!this.lineId) {
             this.showToast('Error', 'Opportunity does not have an ID', 'error');
             return;
@@ -506,6 +562,8 @@ export default class dmt_document_manager_for_core_document extends LightningEle
     }
 
     async handleModalUpload() {
+        console.log('🔵 [UPLOAD BUTTON CLICKED] handleModalUpload() invoked at', new Date().toLocaleTimeString());
+    
         if (!this.selectedFile || !this.selectedDocType) return;
 
         this.isModalOpen = false;
@@ -660,6 +718,11 @@ export default class dmt_document_manager_for_core_document extends LightningEle
         const actionName = event.detail.action.name;
         const row = event.detail.row;
 
+        if (actionName === 'delete') {
+            //await this.handleDeleteDocument(row);
+            return;
+        }
+
         if (actionName === 'download') {
             try {
                 let fileName = row.cleanName || row.name;
@@ -678,7 +741,9 @@ export default class dmt_document_manager_for_core_document extends LightningEle
                         try {
                             const payload = await downloadFileBase64({ contentLocator: row.contentLocator });
                             if (payload && payload.base64Data) {
+                                console.log(`Downloading file: ${fileName}, MIME type received: ${payload.contentType}`);
                                 const blob = this.base64ToBlob(payload.base64Data, payload.contentType);
+                                console.log(`Blob created with type: ${blob.type}`);
                                 this.downloadBlob(blob, fileName);
                                 downloadSuccess = true;
                             } else {
@@ -686,6 +751,7 @@ export default class dmt_document_manager_for_core_document extends LightningEle
                             }
                         } catch (error) {
                             console.error('Error in Core document download:', error);
+                            console.error('Full error details:', JSON.stringify(error));
                             this.showToast('Error', `Failed to download file: ${error.message}`, 'error');
                         }
                     }
@@ -797,7 +863,15 @@ export default class dmt_document_manager_for_core_document extends LightningEle
 
     downloadBlob(blob, fileName) {
         try {
-            const blobUrl = URL.createObjectURL(blob);
+            // LWS requires application/octet-stream for URL.createObjectURL
+            // Recreate blob with safe MIME type if needed
+            let downloadBlob = blob;
+            if (blob.type && blob.type !== 'application/octet-stream' && blob.type !== 'application/pdf') {
+                console.log(`Recreating blob with safe MIME type. Original: ${blob.type}`);
+                downloadBlob = new Blob([blob], { type: 'application/octet-stream' });
+            }
+            
+            const blobUrl = URL.createObjectURL(downloadBlob);
             const link = document.createElement('a');
             link.href = blobUrl;
             link.download = fileName;
@@ -851,10 +925,29 @@ export default class dmt_document_manager_for_core_document extends LightningEle
             throw new Error('Invalid base64 data: expected non-empty string');
         }
 
-        // Normalize MIME type with whitelist
-        const mimeType = VALID_MIME_TYPES[contentType] ? contentType : 'application/octet-stream';
-        if (!VALID_MIME_TYPES[contentType] && contentType) {
-            console.warn(`Unsupported MIME type "${contentType}", using application/octet-stream`);
+        // Determine MIME type with fallback strategy
+        let mimeType = 'application/octet-stream'; // Default safe MIME type
+        
+        // If contentType is provided and valid, use it
+        if (contentType && VALID_MIME_TYPES[contentType]) {
+            mimeType = contentType;
+        } else if (contentType) {
+            // Map common MIME type variations to valid ones
+            const mimeTypeMap = {
+                'application/word': 'application/msword',
+                'application/x-msword': 'application/msword',
+                'application/vnd.ms-word': 'application/msword',
+                'application/vnd.ms-office': 'application/octet-stream',
+                'application/x-zip': 'application/zip',
+                'application/x-zip-compressed': 'application/zip'
+            };
+            
+            if (mimeTypeMap[contentType]) {
+                mimeType = mimeTypeMap[contentType];
+            } else {
+                console.warn(`Unknown MIME type "${contentType}", using application/octet-stream`);
+                mimeType = 'application/octet-stream';
+            }
         }
 
         try {
@@ -867,6 +960,38 @@ export default class dmt_document_manager_for_core_document extends LightningEle
             console.error(`Base64 conversion failed: ${msg}`);
             throw new Error(`Failed to process file data: ${msg}`);
         }
+    }
+
+    // --- DELETE ---
+
+    async handleDeleteDocument(row) {
+        if (row.isAttachment || !this.canDeleteDocuments || !this._hasEditAccess) {
+            return; // Icon is disabled in this case; guard against programmatic/stale invocations
+        }
+        const fileLabel = row.cleanName || row.name;
+        const confirmed = await LightningConfirm.open({
+            message: `Are you sure you want to delete "${fileLabel}"? This action cannot be undone.`,
+            variant: 'header',
+            label: 'Confirm document deletion',
+            theme: 'warning'
+        });
+        if (!confirmed) {
+            return;
+        }
+        //JIRA 4332
+        /*try {
+            await deleteDocument({
+                recordId: this.recordId,
+                fileId: row.id,
+                contentLocator: row.contentLocator
+            });
+            this.showToast('Success', `Document "${fileLabel}" deleted successfully`, 'success');
+            // Only refresh from CoreDocuments after a confirmed deletion — never remove the row locally
+            await this.loadDocuments();
+        } catch (error) {
+            const msg = error.body ? error.body.message : error.message;
+            this.showToast('Error', `Could not delete the document: ${msg}`, 'error');
+        }*/
     }
 
     formatFileNameWithDate(originalName) {
@@ -887,8 +1012,13 @@ export default class dmt_document_manager_for_core_document extends LightningEle
         return `${baseName}__${dateStamp}__${safeUserName}${extension}`;
     }
     combineAllFiles() {
-        // Combinamos ambos arrays
-        const rawList = [...this.attachments, ...this.coreFiles];
+        // Combinamos ambos arrays. Delete only applies to CoreDocuments files, not Salesforce Attachments.
+        const rawList = [...this.attachments, ...this.coreFiles].map(file => ({
+            ...file,
+            deleteDisabled: file.isAttachment
+                || !this.canDeleteDocuments
+                || !this._hasEditAccess
+        }));
     
         // Ordenamos por fecha (Descendente: más nuevo arriba)
         this.combinedFiles = rawList.sort((a, b) => {

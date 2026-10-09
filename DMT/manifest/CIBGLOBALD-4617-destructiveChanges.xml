@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- CIBGLOBALD-4617. Removes the Change Data Capture channel member for Passport__c: the Passport
+         LWCs (dmt_passport, dmt_passport_opportunity) no longer subscribe to /data/Passport__ChangeEvent,
+         a PASSPORT event on the filtered DMT_Task__e replaces it. Deploy this AFTER the Apex and LWCs of
+         CIBGLOBALD-4617 are live in the target org, never before: until then the old LWCs still subscribe. -->
+    <types>
+        <members>ChangeEvents_Passport_ChangeEvent</members>
+        <name>PlatformEventChannelMember</name>
+    </types>
+    <version>65.0</version>
+</Package>

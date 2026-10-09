@@ -24,22 +24,9 @@
                             <value>Account.Plan_Visit_call_flow</value>
                         </valueListItems>
                         <valueListItems>
-                            <value>Account.New_Opportunity_Flow</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>Account.Merge</value>
-                            <visibilityRule>
-                                <criteria>
-                                    <leftValue>{!Record.RecordType.Name}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>Prospect Subsidiary</rightValue>
-                                </criteria>
-                            </visibilityRule>
-                        </valueListItems>
-                        <valueListItems>
                             <value>Account.Deal_Management_2</value>
                             <visibilityRule>
-                                <booleanFilter>(1 OR 2) AND 3</booleanFilter>
+                                <booleanFilter>(1 OR 2) AND (3 OR 4 OR 5 OR 6 OR 7 OR 8)</booleanFilter>
                                 <criteria>
                                     <leftValue>{!$User.Profile.Name}</leftValue>
                                     <operator>EQUAL</operator>
@@ -52,8 +39,46 @@
                                 </criteria>
                                 <criteria>
                                     <leftValue>{!Record.DES_Prospect_Status_Funnel__c}</leftValue>
-                                    <operator>NE</operator>
-                                    <rightValue>Identify</rightValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>Industry validated</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.DES_Prospect_Status_Funnel__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>ESG admission</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.DES_Prospect_Status_Funnel__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>Pre-rating</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.DES_Prospect_Status_Funnel__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>Onboarding</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.DES_Prospect_Status_Funnel__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>Merged</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue>{!Record.DES_Prospect_Status_Funnel__c}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>Closed</rightValue>
+                                </criteria>
+                            </visibilityRule>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>Account.New_Opportunity_Flow</value>
+                        </valueListItems>
+                        <valueListItems>
+                            <value>Account.Merge</value>
+                            <visibilityRule>
+                                <criteria>
+                                    <leftValue>{!Record.RecordType.Name}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>Prospect Subsidiary</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
@@ -113,16 +138,6 @@
                         </valueListItems>
                         <valueListItems>
                             <value>Global.LogACall</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>Account.ARCE</value>
-                            <visibilityRule>
-                                <criteria>
-                                    <leftValue>{!$User.DES_ARCE_Can_Edit__c}</leftValue>
-                                    <operator>EQUAL</operator>
-                                    <rightValue>true</rightValue>
-                                </criteria>
-                            </visibilityRule>
                         </valueListItems>
                     </valueList>
                 </componentInstanceProperties>
@@ -714,16 +729,8 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentInstanceProperties>
-                    <name>hideUpdateButton</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>variant</name>
-                    <value>linear</value>
-                </componentInstanceProperties>
-                <componentName>runtime_sales_pathassistant:pathAssistant</componentName>
-                <identifier>runtime_sales_pathassistant_pathAssistant</identifier>
+                <componentName>des_prospect_path</componentName>
+                <identifier>c_des_prospect_path</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>

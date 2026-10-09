@@ -1,6 +1,6 @@
 public with sharing class DMT_BussinessPlanController_Client {
     @AuraEnabled(cacheable=false)
-    public static List<Account> getBussinessPlan(String recordId) {
+    public static List<DMT_Client_Financials__c> getBussinessPlan(String recordId) {
             return [
                     SELECT 
                         Past2_FY_Corp_Synd_Lending_amount__c,
@@ -75,8 +75,8 @@ public with sharing class DMT_BussinessPlanController_Client {
                         gf_kpi_trans_fees_ly_amount__c,
                         gf_kpi_trans_fees_cyr_amount__c,
                         gf_kpi_trans_fees_nxy_amount__c
-                    FROM Account 
-                    WHERE Id =: recordId
+                    FROM DMT_Client_Financials__c
+                    WHERE Account__c =: recordId
                     WITH USER_MODE
                     ];
     }

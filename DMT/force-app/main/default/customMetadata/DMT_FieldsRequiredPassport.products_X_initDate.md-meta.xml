@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>initDate</label>
+    <protected>false</protected>
+    <values>
+        <field>Field_Api_Name__c</field>
+        <value xsi:type="xsd:string">initDate</value>
+    </values>
+    <values>
+        <field>Field_Label__c</field>
+        <value xsi:type="xsd:string">Fecha de Inicio</value>
+    </values>
+    <values>
+        <field>Section_Name__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Service_Path__c</field>
+        <value xsi:type="xsd:string">products[*].initDate</value>
+    </values>
+    <values>
+        <field>Tab_Name__c</field>
+        <value xsi:type="xsd:string">products</value>
+    </values>
+</CustomMetadata>

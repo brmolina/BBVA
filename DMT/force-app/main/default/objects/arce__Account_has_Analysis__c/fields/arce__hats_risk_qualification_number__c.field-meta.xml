@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__hats_risk_qualification_number__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Once the rating model is applied, the score assigned to the variable Hats qualification.</description>
+    <externalId>false</externalId>
+    <label>Hats qualification score</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

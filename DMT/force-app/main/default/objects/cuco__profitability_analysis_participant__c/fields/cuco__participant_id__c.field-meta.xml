@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>cuco__participant_id__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Client related to the profitability analysis</description>
+    <label>Participant</label>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Profitability Analysis Participants</relationshipLabel>
+    <relationshipName>Profitability_Analysis_Participants</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

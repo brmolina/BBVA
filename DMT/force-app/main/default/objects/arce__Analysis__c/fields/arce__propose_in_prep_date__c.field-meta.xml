@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__propose_in_prep_date__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Date of propose in preparation</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Propose in preparation date</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Date</type>
+</CustomField>

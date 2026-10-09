@@ -1,16 +1,16 @@
 <template>
     <template if:true={tableData}>
         <c-dmt_-table-header-section
-        titletable={labels.TITLE_TABLE}
+        titletable={tablename}
         showcopypaste="true"
         rowscopypaste={tableData}
         tablecolumnscopypaste={columnstablecopypaste}
-        context="derivatives"
+        context={context}
         isreadonlyuser={isReadOnlyUser}
         ></c-dmt_-table-header-section>
         <c-custom-data-table 
             key-field="Id" 
-            style="position:relative;z-index: 2"
+            style="position:relative;z-index: 2;"
             data={tableData} 
             columns={columns} 
             onpicklistchanged={picklistChanged} 

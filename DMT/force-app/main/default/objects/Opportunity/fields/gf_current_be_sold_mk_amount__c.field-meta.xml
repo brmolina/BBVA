@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>gf_current_be_sold_mk_amount__c</fullName>
-    <formula>IF((gf_mk_curr_rsk_synd_amount__c - gf_total_nominal_sold_amount__c) &gt; 0, gf_mk_curr_rsk_synd_amount__c - gf_total_nominal_sold_amount__c, 0)</formula>
+    <formula>MAX(
+    0,
+    BLANKVALUE(bbva_prtcp_tranche_amount__c, 0) -
+    BLANKVALUE(deal_total_amount__c, 0)
+)</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <label>To be sold</label>
     <precision>18</precision>

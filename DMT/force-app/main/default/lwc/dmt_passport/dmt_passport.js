@@ -41,6 +41,9 @@ const CUSTOMER_STRG = 'Customer';
 import { CurrentPageReference } from 'lightning/navigation';
 import hasLineGodPermission from '@salesforce/customPermission/DMT_Line_God';
 
+// CIBGLOBALD-4617 - refresh once on return if the tab was hidden longer than this (events are not delivered while unsubscribed)
+const CATCH_UP_AFTER_HIDDEN_MS = 30000;
+
 export default class Dmt_passport extends LightningElement {
 
   myPayload = [];
@@ -71,6 +74,7 @@ export default class Dmt_passport extends LightningElement {
   _hasInitialized = false;
   _isStale = false;
   _showSpinner = true;
+  _pendingSync = null;     
   @track messageError;
   userPermission = false;
   lastDate;
@@ -106,11 +110,13 @@ export default class Dmt_passport extends LightningElement {
   statusRefreshInProgress = false;
 
 
-  //Change Data Capture
-  channelNamePassport = '/data/Passport__ChangeEvent';
-  subscriptionPassport = {}; // holds subscription, used for unsubscribe
+  // CIBGLOBALD-4617 - single filtered channel. DMT_Task__e is published only for DMT approval Task
+  // changes and for Passport JSON / Obsolete changes, keyed by Line / Opportunity Id.
+  // The Passport__ChangeEvent subscription was removed.
   channelNameTask = '/event/DMT_Task__e';
-  subscriptionTask = {}; // holds subscription, used for unsubscribe
+  subscriptionTask = null; // holds subscription, used for unsubscribe
+  hiddenAt = null; // timestamp of the moment the tab became hidden
+  visibilityHandler;
 
   wiredLineResult; // holds the line information
   wiredPassportResult;
@@ -198,8 +204,8 @@ export default class Dmt_passport extends LightningElement {
   }
 
   disconnectedCallback() {
-    unsubscribe(this.subscriptionPassport, () => console.log('Unsubscribed to change events Passport.'));
-    unsubscribe(this.subscriptionTask, () => console.log('Unsubscribed to change events Task.'));
+    document.removeEventListener('visibilitychange', this.visibilityHandler);
+    this.unsubscribeFromTaskChannel();
     pubsub.unregister('callPassportLWC', this.handleEventObj);
     unregisterRefreshContainer(this.refreshContainerID);
   }
@@ -210,11 +216,24 @@ export default class Dmt_passport extends LightningElement {
     });
   }
 
+  relatedRiksList;
+
   @wire(getRelatedListRecords, {
       parentRecordId: "$lineId",
       relatedListId: 'Risk_Line_Terms__r',
       fields: ['DMT_Risk_Line_Term__c.Id']
-    }) relatedRiksList;
+  })
+  wiredRelatedRisks(result) {
+      this.relatedRiksList = result;
+      const { data, error } = result;
+      if (!data && !error) return;
+
+      if (this._pendingSync) {
+          const origin = this._pendingSync;
+          this._pendingSync = null;
+          this.executeSafeSync(origin);
+      }
+  }
 
   @wire(getRecord, { recordId: "$passportId", fields: [OBSOLETED_FIELD, JSON_FIELD] })
   wiredRecordPassport(result) {
@@ -322,6 +341,15 @@ export default class Dmt_passport extends LightningElement {
   // Add a parameter to decide if we show the toast or stay silent
   validateIntegrity(isSilent = true) {
       if (this.recordType === 'OtherProducts') {
+          const risksNotResolved = (this.relatedRiksList?.data === undefined && !this.relatedRiksList?.error);
+          const lineNotResolved  = (this.amountLine === undefined && this.lastLvlLine === undefined);
+
+          if (risksNotResolved || lineNotResolved) {
+              this._pendingSync = this._lastOrigin;
+              this._showSpinner = false;
+              return false;   // abortamos SIN tocar wrapper ni showfeaturesTable
+          }
+
           const hasNoAmount = (this.amountLine === null || this.amountLine === undefined);
           const hasNoRisk = (this.lastLvlLine === null || this.lastLvlLine === undefined);
           const hasNoProducts = !this.relatedRiksList?.data?.records?.length;
@@ -369,11 +397,10 @@ export default class Dmt_passport extends LightningElement {
           console.log('[ORCHESTRATOR] Aborted: Data Integrity check failed..');
           return;
       }
-      if (origin === 'PASSPORT_UPDATED') {
+      if (origin === 'PASSPORT_UPDATED' || origin === 'TASK_UPDATED') {
+          console.log('[DEBUG-REFRESH] executeSafeSync(' + origin + ') - calling proccessPayload to rebuild feature buffer / traffic lights.');
           await this.proccessPayload(this.rawPayload);
-          return;
-      }
-      if (origin === 'TASK_UPDATED') {
+          console.log('[DEBUG-REFRESH] executeSafeSync(' + origin + ') - proccessPayload finished. this.wrapper feature count:', this.wrapper?.length);
           return;
       }
 
@@ -1007,78 +1034,98 @@ export default class Dmt_passport extends LightningElement {
   }
 
   // Called by connectedCallback()
+  // CIBGLOBALD-4617 - subscribes only to the filtered DMT_Task__e channel, and only while the tab is
+  // visible: a hidden tab would otherwise keep consuming event deliveries for nothing.
   registerSubscribe() {
-    const changeEventPassportCallback = changeEventPassport => {
-      this.processChangePassportEvent(changeEventPassport);
-    };
+    if (document.visibilityState !== 'hidden') {
+      this.subscribeToTaskChannel();
+    } else {
+      // Loaded in a background tab: remember it, so the first time it becomes visible it catches up
+      this.hiddenAt = Date.now();
+    }
 
-    const changeEventTaskCallback = changeEventTask => {
-      this.processChangeTaskEvent(changeEventTask);
-    };
-
-    // Sets up subscription and callback for change events
-    subscribe(this.channelNamePassport, -1, changeEventPassportCallback).then(subscription => {
-      this.subscriptionPassport = subscription;
-    });
-    subscribe(this.channelNameTask, -1, changeEventTaskCallback).then(subscription => {
-      this.subscriptionTask = subscription;
-    });
+    this.visibilityHandler = () => this.handleVisibilityChange();
+    document.addEventListener('visibilitychange', this.visibilityHandler);
 
     getRecordNotifyChange([{ recordId: this.passportId }]);
   }
 
-  // Called by registerSubscribe()
-  processChangePassportEvent(changeEvent) {
-    try {
-      const recordIds = changeEvent.data.payload.ChangeEventHeader.recordIds; // avoid deconstruction
-      if(recordIds.includes(this.passportId)){
-          getRecordNotifyChange([{ recordId: this.passportId }]); // Refresh all components
-          console.warn('[CDC] Passport changed. Forcing Wire Refresh.');
-
-          // This forces the wire to go back to the server and get the JSON updated by the Trigger
-          refreshApex(this.wiredPassportResult);
-
-          if (this.opportunityId) {
-            getRecordNotifyChange([{ recordId: this.opportunityId }]);
-          } else if (this.lineId) {
-            getRecordNotifyChange([{ recordId: this.lineId }]);
-          }
-      }
-    } catch (err) {
-      this.handleError(error);
+  subscribeToTaskChannel() {
+    if (this.subscriptionTask) {
+      return; // already subscribed
     }
+    this.subscriptionTask = {}; // placeholder so a second call while subscribing is ignored
+    subscribe(this.channelNameTask, -1, changeEventTask => {
+      this.processChangeTaskEvent(changeEventTask);
+    }).then(subscription => {
+      this.subscriptionTask = subscription;
+    }).catch(error => {
+      this.subscriptionTask = null;
+      console.error('Task channel subscription failed', JSON.stringify(error));
+    });
   }
 
+  unsubscribeFromTaskChannel() {
+    if (this.subscriptionTask && this.subscriptionTask.id !== undefined) {
+      unsubscribe(this.subscriptionTask, () => {});
+    }
+    this.subscriptionTask = null;
+  }
+
+  handleVisibilityChange() {
+    if (document.visibilityState === 'hidden') {
+      this.hiddenAt = Date.now();
+      this.unsubscribeFromTaskChannel();
+      return;
+    }
+
+    this.subscribeToTaskChannel();
+    // Events published while the tab was hidden were not delivered: catch up with one refresh
+    if (this.hiddenAt && Date.now() - this.hiddenAt > CATCH_UP_AFTER_HIDDEN_MS) {
+      this.refreshFromBackend();
+    }
+    this.hiddenAt = null;
+  }
+
+  // Re-reads the Passport record (JSON + Obsolete flag) and the Tasks / traffic lights
+  refreshFromBackend() {
+    refreshApex(this.wiredPassportResult);
+    refreshApex(this.wiredInformationPassportResult).then(() => {
+      if (this.rawPayload) {
+        this.executeSafeSync('TASK_UPDATED');
+      }
+    });
+  }
+
+  // CIBGLOBALD-4617 - DMT_Task__e payload: records__c = Line / Opportunity Ids, Operation__c =
+  // CREATE | MODIFY | MODIFY_MULTI (approval Tasks) or PASSPORT (Passport JSON / Obsolete changed).
+  // Matching on the record Id also catches brand-new replacement Tasks (e.g. a reopened Case).
   processChangeTaskEvent(changeEvent) {
     try {
       const recordIds = changeEvent.data.payload.records__c.split(',');
       const operation = changeEvent.data.payload.Operation__c;
+      const isRelatedRecord = (this.lineId && recordIds.includes(this.lineId))
+        || (this.opportunityId && recordIds.includes(this.opportunityId));
+      if (!isRelatedRecord) {
+        return;
+      }
 
-   //   if(operation === 'CREATE'){
-        refreshApex(this.wiredInformationPassportResult).then(result => {
-          this.searchTask(recordIds);
-        });
-   //   }
-      this.searchTask(recordIds);
+      if (operation === 'PASSPORT') {
+        // Forces the wire to go back to the server for the JSON / Obsolete flag the backend updated
+        getRecordNotifyChange([{ recordId: this.passportId }]);
+        refreshApex(this.wiredPassportResult);
+        return;
+      }
 
-    } catch (err) {
+      refreshApex(this.wiredInformationPassportResult).then(() => {
+        if (this.rawPayload) {
+          // Safely rebuilds the buffer, checks the server and renders the traffic lights
+          this.executeSafeSync('TASK_UPDATED');
+        }
+      });
+    } catch (error) {
       this.handleError(error);
     }
-  }
-
-  searchTask(recordIds) {
-      // 1. Check if any of the updated tasks belong to this passport
-      const isRelatedTask = this.tasksId.some(t => recordIds.includes(t));
-      
-      if (isRelatedTask) {
-          // 2. Refresh the wire to get latest IDs, then run the Orchestrator
-          refreshApex(this.wiredInformationPassportResult).then(() => {
-              if (this.rawPayload) {
-                  // This safely rebuilds the buffer, checks the server, and renders the UI
-                  this.executeSafeSync('TASK_UPDATED');
-              }
-          });
-      }
   }
 
   @api
@@ -1115,6 +1162,7 @@ export default class Dmt_passport extends LightningElement {
           }).then(async (response) => {
               let result = JSON.parse(response);
               if (result.result && result.payload) {
+                  this.messageError = '';
                   refreshApex(this.wiredPassportResult);
                   refreshApex(this.wiredLineResult);
 
@@ -1124,6 +1172,7 @@ export default class Dmt_passport extends LightningElement {
                   await this.proccessPayload(result.payload);
 
               } else if (result.result) {
+                  this.messageError = '';
                   // Fallback if for some reason payload wasn't returned
                   this._isStale = false;
                   await this.proccessPayload(this.rawPayload);

@@ -9,21 +9,25 @@ import customInputRowTemplate from "./customInputRow.html";
 import customNumberRowTemplate from "./customNumberRow.html";
 import customDateRowTemplate from "./customDateRow.html";
 import customIconTextTemplate from "./customIconText.html";
+import conditionalLinkTemplate from "./conditionalLink.html";
 
 export default class CustomDataTable extends LightningDatatable {
     _hasRendered = false;
     @api overflow = false;
 
+    @api autoVerticalScroll = false;
+
     static customTypes = {
         picklist: { template: DatatablePicklistTemplate, typeAttributes: ['label', 'placeholder', 'options', 'value', 'context', 'fieldName', 'readonlyAttr', 'optionslimit', 'isDisabled', 'showReadOnlyWarning', 'requieresValueRecoPick'] },
         searchcombobox: { template: SearchComboboxTemplate, typeAttributes: ['pickListOrdered', 'selectedSearchlabel', 'selectedSearchvalue', 'context', 'readonlyAttr', 'fieldName', 'isDisabled', 'requieresValueRecoPick'] },
         customselectRow: { template: customSelectRowTemplate, typeAttributes: ['aviableItem', 'checkedItem', 'fieldName', 'context'] },
-        custominputRow: { template: customInputRowTemplate, typeAttributes: ['aviableItem', 'inputValue', 'fieldName', 'context', 'suffix', 'validateNegative'] },
-        customnumberRow: { template: customNumberRowTemplate, typeAttributes: ['aviableItem', 'numberValue', 'fieldName', 'context', 'min', 'max', 'step', 'placeholder', 'formatter', 'disabled', 'readonlyAttr', 'validateNegative'] },
+        custominputRow: { template: customInputRowTemplate, typeAttributes: ['aviableItem', 'inputValue', 'fieldName', 'context', 'suffix', 'validateNegative','fieldlabel'] },
+        customnumberRow: { template: customNumberRowTemplate, typeAttributes: ['aviableItem', 'numberValue', 'fieldName', 'context', 'min', 'max', 'step', 'placeholder', 'formatter', 'disabled', 'readonlyAttr', 'validateNegative','fieldlabel'] },
         customdateRow: { template: customDateRowTemplate, typeAttributes: ['aviableItem', 'dateValue', 'fieldName', 'context', 'maxDate', 'minDate', 'lockDate'] },
         recordpicker: { template: recordPickerTemplate, typeAttributes: ['value', 'fieldName', 'context', 'matchingInfo', 'displayInfo', 'disabled', 'filter'] },
         customIconText: { template: customIconTextTemplate, typeAttributes: ['value', 'iconName', 'textColor', 'tooltip', 'iconPosition', 'iconVariant', 'iconColor'] },
-        genericrecordpicker: { template: genericRecordPickerTemplate, typeAttributes: ['value', 'label', 'fieldName', 'context', 'placeholder', 'disabled', 'options'] }
+        conditionalLink: { template: conditionalLinkTemplate, typeAttributes: ['label', 'target', 'tooltip', 'hasAccess'] },
+        genericrecordpicker: { template: genericRecordPickerTemplate, typeAttributes: ['value', 'label', 'fieldName', 'context', 'placeholder', 'disabled', 'options', 'showSubLabel'] }
     };
 
     renderedCallback() {
@@ -41,6 +45,12 @@ export default class CustomDataTable extends LightningDatatable {
         } else {
             this.setOverflow();
         }
+        }
+
+        if (this.autoVerticalScroll) {
+            requestAnimationFrame(() => {
+                this.adjustVerticalScroll();
+            });
         }
     }
 
@@ -65,6 +75,86 @@ setOverflow() {
             if (currentOverflowY !== 'visible') {
                 scrollYContainer.style.setProperty('overflow', 'visible', 'important');
             }
+        }
+    }
+    adjustVerticalScroll() {
+        const outerContainer =
+            this.template.querySelector('.dt-outer-container');
+
+        const headerContainer =
+            this.template.querySelector(
+                '.slds-table_header-fixed_container.slds-scrollable_x'
+            );
+
+        const scrollYContainer =
+            this.template.querySelector('.slds-scrollable_y');
+
+        if (outerContainer) {
+            outerContainer.style.setProperty(
+                'height',
+                'auto',
+                'important'
+            );
+        }
+
+        if (headerContainer) {
+            headerContainer.style.setProperty(
+                'height',
+                'auto',
+                'important'
+            );
+        }
+
+        if (scrollYContainer) {
+            scrollYContainer.style.setProperty(
+                'height',
+                'auto',
+                'important'
+            );
+            scrollYContainer.style.setProperty(
+                'max-height',
+                'none',
+                'important'
+            );
+            scrollYContainer.style.setProperty(
+                'overflow-y',
+                'hidden',
+                'important'
+            );
+
+            requestAnimationFrame(() => {
+                const computedRem = parseFloat(
+                    getComputedStyle(document.documentElement).fontSize || '16'
+                );
+                const maxHeightPx = 30 * computedRem;
+
+                const needsScroll =
+                    scrollYContainer.scrollHeight > maxHeightPx;
+
+                if (needsScroll) {
+                    scrollYContainer.style.setProperty(
+                        'max-height',
+                        '30rem',
+                        'important'
+                    );
+                    scrollYContainer.style.setProperty(
+                        'overflow-y',
+                        'auto',
+                        'important'
+                    );
+                } else {
+                    scrollYContainer.style.setProperty(
+                        'max-height',
+                        'none',
+                        'important'
+                    );
+                    scrollYContainer.style.setProperty(
+                        'overflow-y',
+                        'hidden',
+                        'important'
+                    );
+                }
+            });
         }
     }
 }

@@ -1,0 +1,43 @@
+<template>
+    <lightning-card title="Live Audit Log" icon-name="standard:dashboard">
+        <div slot="actions" class="slds-grid slds-grid_vertical-align-center">
+            <lightning-input
+                type="search"
+                variant="label-hidden"
+                placeholder="Search logs..."
+                onchange={handleSearchChange}
+                class="slds-m-right_small">
+            </lightning-input>
+
+            <lightning-button-icon
+                icon-name="utility:refresh"
+                variant="border-filled"
+                alternative-text="Refresh"
+                onclick={handleRefresh}>
+            </lightning-button-icon>
+        </div>
+
+        <div class="slds-p-around_none" style="height: 400px; position:relative;">
+            <div if:true={isLoading} class="slds-spinner_container">
+                <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+            </div>
+
+            <lightning-datatable
+                key-field="Id"
+                data={filteredData}
+                columns={columns}
+                hide-checkbox-column
+                show-row-number-column>
+            </lightning-datatable>
+        </div>
+
+        <div slot="footer" class="slds-grid slds-grid_align-center">
+            <lightning-button
+                label="Load More Records"
+                icon-name="utility:add"
+                onclick={handleLoadMore}
+                disabled={isNextDisabled}>
+            </lightning-button>
+        </div>
+    </lightning-card>
+</template>

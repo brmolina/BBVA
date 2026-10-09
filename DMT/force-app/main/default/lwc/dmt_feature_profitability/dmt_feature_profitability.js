@@ -19,6 +19,7 @@ export default class Dmt_feature_profitability extends NavigationMixin(Lightning
     @track featureTasksHistory;
     @track currentTask;
 
+ 
     @api
     get feature() {
         return this._feature;

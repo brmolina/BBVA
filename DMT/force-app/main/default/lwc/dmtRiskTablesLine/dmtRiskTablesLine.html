@@ -1,0 +1,377 @@
+<template>
+    <!-- Loading spinner -->
+    <template lwc:if={isLoading}>
+        <div class="slds-is-relative" style="min-height: 200px;">
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </div>
+    </template>
+
+    <template lwc:else>
+        <div style="position: relative;">
+        <template lwc:if={isSaving}>
+            <div style="position: absolute; inset: 0; z-index: 10000; background: rgba(255, 255, 255, 0.45);">
+                <lightning-spinner alternative-text="Saving" size="medium"></lightning-spinner>
+            </div>
+        </template>
+        <div class="slds-grid slds-wrap" >
+
+            <!-- ═══════════════════════════════════════════════════════════════
+                 SECTION: TREASURY & SETTLEMENT FORM (dmt_form_renderer)
+                 ═══════════════════════════════════════════════════════════════ -->
+            <div class="slds-col slds-size_12-of-12 slds-card slds-p-left_small slds-m-bottom_x-small">
+                <c-dmt_form_renderer
+                    fields={formFields}
+                    is-edit-mode={editMode}
+                    onfieldchange={handleFormFieldChange}
+                    oneditmodechange={handleFormEditModeChange}>
+                </c-dmt_form_renderer>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════════
+                 SECTION: TOTAL AMOUNT + COUNTERPARTY RISK TABLE
+                 ═══════════════════════════════════════════════════════════════ -->
+            <div class="slds-col slds-size_12-of-12 slds-p-around_x-small" >
+                <div class="slds-grid slds-wrap" >
+                    <!-- Total Amount input -->
+                    <div class="slds-col slds-size_2-of-12 slds-p-right_small slds-m-bottom_xx-small">
+                        <c-dmt_currency-input
+                            label={totalAmountLabel}
+                            value={derivativesTotalAmount}
+                            currency-iso-code={currencyIsoCode}
+                            event-name="updatedderivativesamount"
+                            object-type="Line"
+                            disabled={isEditDisabled}
+                            compact-label
+                            format-on-blur
+                            help-text-message="If the value of the field is changed, the values in the table risk line will be recalculated"
+                            onupdatedderivativesamount={handleDerivativesAmountChange}>
+                        </c-dmt_currency-input>
+                    </div>
+                    <!-- Counterparty Risk table -->
+                    <div class="slds-col slds-size_10-of-12 slds-p-around_x-small" >
+                        <template lwc:if={showRiskTables}>
+                        <c-dmt_risk_limit_table
+                            currency={currency}
+                            tabletype="Derivatives"
+                            line-id={recordId}
+                            default-limit={defaultLimitDerivatives}
+                            table={derivatives}
+                            totalamount={derivativesTotalAmount}
+                            booking-geography-line={bookingGeography}
+                            conversion-label={conversionLabel}
+                            is-read-only-user={isReadOnlyUser}
+                            columnstablecopypaste={columnsCopy}
+                            refresh-counter={tableRefreshCounter}
+                            ontableriskchange={handleTableRiskChange}
+                            ontableriskinit={handleTableRiskChange}
+                            onriskamountchange={handleRiskAmountChange}
+                            onsendrowsevent={handleSendRowsEvent}
+                            oncalculateguidance={handleTableRiskChange}
+                            oneditstart={handleDerivativesTableEditStart}>
+                        </c-dmt_risk_limit_table>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════════
+                 SECTION: DERIVATIVES MESSAGE
+                 ═══════════════════════════════════════════════════════════════ -->
+            <div class="slds-col slds-size_12-of-12 slds-p-around_x-small">
+                <h5 class="pageDescription"><strong>{derivativesMessage}</strong></h5>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════════
+                 SECTION: SINGULAR TREASURY (geography rule: singularTreasury)  → Show only for CO, AR
+                 ═════════════════════════════════════════════════════════════ -->
+            <template lwc:if={showSingularTreasury}>
+                <div class="slds-col slds-size_12-of-12 slds-p-around_x-small slds-m-vertical_small">
+                    <c-dmt_singular_treasury
+                        table-data-name={singularCon}
+                        booking-geography-line={bookingGeography}
+                        columnstablecopypaste={columnsCopyTransaction}
+                        is-read-only-user={isReadOnlyUser}
+                        refresh-counter={tableRefreshCounter}
+                        ontablesingularcon={handleSingularChange}
+                        onsendrowsevent={handleSendRowsEvent}>
+                    </c-dmt_singular_treasury>
+                </div>
+            </template>
+
+            <!-- ═══════════════════════════════════════════════════════════════
+                 SECTION: PRODUCT RESTRICTIONS TABLE (geography rule: productRestrictions)
+                 ═════════════════════════════════════════════════════════════ -->
+            <template lwc:if={showProductRestrictions}>
+                <div class="slds-col slds-size_12-of-12">
+                    <template lwc:if={showRiskTables}>
+                        <c-product-restric-table
+                            table-data-name={tableRestric}
+                            max-tenor-options-name={maxTenorOptions}
+                            fd-amount={fdAmountRestric}
+                            dvp-amount={dvpAmountRestric}
+                            booking-geography-line={bookingGeography}
+                            booking-geography={bookingGeography}
+                            client-code={mainBorrowerCountry}
+                            columnstablecopypaste={restricCopy}
+                            is-read-only-user={isReadOnlyUser}
+                            ontableproductchanges={handleTableProductChanges}
+                            onsendrowsevent={handleSendRowsEvent}
+                            tablename="TITLE_TABLE"
+                            currency-code={currency}>
+                        </c-product-restric-table>
+                    </template>
+                </div>
+            </template>
+
+             <!-- ═══════════════════════════════════════════════════════════════
+                 SECTION: DERIVATIVES RESTRICTIONS TABLE (geography rule: Only for MX)
+                 ═════════════════════════════════════════════════════════════ -->
+            <template lwc:if={showDerivativesRestrictions}>
+                <div class="slds-col slds-size_12-of-12">
+                    <template lwc:if={showRiskTables}>
+                        <c-product-restric-table
+                            table-data-name={tableDerivativesProducts}
+                            max-tenor-options-name={maxTenorOptions}
+                            fd-amount={fdAmountRestric}
+                            dvp-amount={dvpAmountRestric}
+                            booking-geography-line={bookingGeography}
+                            client-code={mainBorrowerCountry}
+                            booking-geography={bookingGeography}
+                            columnstablecopypaste={restricCopy}
+                            is-read-only-user={isReadOnlyUser}
+                            ontableproductchanges={handleTableDerivativesChanges}
+                            onsendrowsevent={handleSendRowsEvent}
+                            tablename="DERIVATIVES_RESTRICTIONS_LABEL"
+                            currency-code={currency}>
+                        </c-product-restric-table>
+                    </template>
+                </div>
+            </template>
+
+            <!-- ═══════════════════════════════════════════════════════════════
+                 SECTION: TEXT FIELDS (Additional Restrictions / Comments)
+                 ═══════════════════════════════════════════════════════════════ -->
+            <div class="slds-col slds-size_12-of-12 slds-p-horizontal_medium slds-m-vertical_medium">
+                <c-dmt_textfield
+                    record-id={recordId}
+                    field-type="textarea"
+                    field-name="DMT_Additional_Restrictions__c"
+                    label="Additional Products (those not included in the table above)"
+                    max-length="500"
+                    object-api-name="DMT_Line__c"
+                    disabled={isEditDisabled}
+                    ontextfieldchange={handleTextfieldChange}>
+                </c-dmt_textfield>
+            </div>
+
+            <div class="slds-col slds-size_12-of-12 slds-p-horizontal_medium slds-m-vertical_medium">
+                <c-dmt_textfield
+                    record-id={recordId}
+                    field-type="textarea"
+                    field-name="DMT_Comments__c"
+                    label="Comments"
+                    max-length="500"
+                    object-api-name="DMT_Line__c"
+                    disabled={isEditDisabled}
+                    ontextfieldchange={handleTextfieldChange}>
+                </c-dmt_textfield>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════════
+                 SECTION: DEPOS RISK TABLE (geography rule: deposTable → hidden for CO, AR)
+                 ═══════════════════════════════════════════════════════════════ -->
+            <template lwc:if={showDeposTable}>
+                <div class="slds-col slds-size_12-of-12 slds-p-around_x-small">
+                    <div class="slds-grid slds-wrap">
+                        <!-- Depos Risk table -->
+                        <div class="slds-col slds-size_12-of-12 slds-p-around_x-small">
+                            <template lwc:if={showRiskTables}>
+                            <c-dmt_risk_limit_table
+                                currency={currency}
+                                tabletype="Depos"
+                                line-id={recordId}
+                                default-limit={defaultLimitDepos}
+                                table={depos}
+                                totalamount={deposTotalAmount}
+                                booking-geography-line={bookingGeography}
+                                conversion-label={conversionLabel}
+                                is-read-only-user={isReadOnlyUser}
+                                columnstablecopypaste={columnsCopy}
+                                refresh-counter={tableRefreshCounter}
+                                ontableriskchange={handleTableRiskChange}
+                                ontableriskinit={handleTableRiskChange}
+                                onriskamountchange={handleRiskAmountChange}
+                                onsendrowsevent={handleSendRowsEvent}
+                                oncalculateguidance={handleTableRiskChange}>
+                            </c-dmt_risk_limit_table>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Spacer -->
+            <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
+
+            <!-- ═══════════════════════════════════════════════════════════════
+                 SECTION: DEPOS RESTRICTIONS TABLE (geography rule: Only for MX)
+                 ═════════════════════════════════════════════════════════════ -->
+            <template lwc:if={showDerivativesRestrictions}>
+                <div class="slds-col slds-size_12-of-12">
+                    <template lwc:if={showRiskTables}>
+                        <c-product-restric-table
+                            table-data-name={tableDeposProducts}
+                            max-tenor-options-name={maxTenorOptions}
+                            fd-amount={fdAmountRestric}
+                            dvp-amount={dvpAmountRestric}
+                            booking-geography-line={bookingGeography}
+                            client-code={mainBorrowerCountry}
+                            columnstablecopypaste={restricCopy}
+                            is-read-only-user={isReadOnlyUser}
+                            ontableproductchanges={handleTableDeposChanges}
+                            onsendrowsevent={handleSendRowsEvent}
+                            tablename="DEPOS_RESTRICTIONS_LABEL"
+                            currency-code={currency}>
+                        </c-product-restric-table>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Spacer -->
+            <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
+
+            <!-- ═════════════════════════════════════════════════════════════
+                 SECTION: EQUITIES TABLE (geography rule: equitiesTable → hidden for CO, PE, AR, MX)
+                 ═══════════════════════════════════════════════════════════════ -->
+            <template lwc:if={showEquitiesTable}>
+                <div class="slds-col slds-size_12-of-12 slds-p-around_x-small">
+                    <div class="slds-grid slds-wrap">
+                        <!-- Equities Risk table -->
+                        <div class="slds-col slds-size_12-of-12 slds-p-around_x-small">
+                            <template lwc:if={showRiskTables}>
+                            <c-dmt_risk_limit_table
+                                currency={currency}
+                                tabletype="Equities"
+                                line-id={recordId}
+                                default-limit={defaultLimitEquities}
+                                table={equities}
+                                totalamount={equitiesTotalAmount}
+                                conversion-label={conversionLabel}
+                                is-read-only-user={isReadOnlyUser}
+                                columnstablecopypaste={columnsCopy}
+                                refresh-counter={tableRefreshCounter}
+                                ontableriskchange={handleTableRiskChange}
+                                ontableriskinit={handleTableRiskChange}
+                                onriskamountchange={handleRiskAmountChange}
+                                onsendrowsevent={handleSendRowsEvent}
+                                oncalculateguidance={handleTableRiskChange}>
+                            </c-dmt_risk_limit_table>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+
+             <!-- Spacer -->
+            <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
+
+
+            <!-- ═══════════════════════════════════════════════════════════════
+                 SECTION: REPOS RISK TABLE (geography rule: ONLY FOR MX)
+                 ═══════════════════════════════════════════════════════════════ -->
+           <template lwc:if={showReposTable}>
+                <div class="slds-col slds-size_12-of-12 slds-p-around_x-small">
+                    <div class="slds-grid slds-wrap">
+                        <!-- Repos Risk table -->
+                        <div class="slds-col slds-size_12-of-12 slds-p-around_x-small">
+                            <template lwc:if={showRiskTables}>
+                            <c-dmt_risk_limit_table
+                                currency={currency}
+                                tabletype="Repos"
+                                line-id={recordId}
+                                default-limit={defaultLimitRepos}
+                                table={repos}
+                                totalamount={reposTotalAmount}
+                                conversion-label={conversionLabel}
+                                is-read-only-user={isReadOnlyUser}
+                                columnstablecopypaste={columnsCopy}
+                                refresh-counter={tableRefreshCounter}
+                                ontableriskchange={handleTableRiskChange}
+                                ontableriskinit={handleTableRiskChange}
+                                onriskamountchange={handleRiskAmountChange}
+                                onsendrowsevent={handleSendRowsEvent}
+                                oncalculateguidance={handleTableRiskChange}>
+                            </c-dmt_risk_limit_table>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Spacer -->
+            <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
+
+             <!-- ═══════════════════════════════════════════════════════════════
+                 SECTION: REPOS RESTRICTIONS TABLE (geography rule: Only for MX)
+                 ═════════════════════════════════════════════════════════════ -->
+            <template lwc:if={showDerivativesRestrictions}>
+                <div class="slds-col slds-size_12-of-12">
+                    <template lwc:if={showRiskTables}>
+                        <c-product-restric-table
+                            table-data-name={tableReposProducts}
+                            max-tenor-options-name={maxTenorOptions}
+                            fd-amount={fdAmountRestric}
+                            dvp-amount={dvpAmountRestric}
+                            booking-geography-line={bookingGeography}
+                            client-code={mainBorrowerCountry}
+                            columnstablecopypaste={restricCopy}
+                            is-read-only-user={isReadOnlyUser}
+                            ontableproductchanges={handleTableReposChanges}
+                            onsendrowsevent={handleSendRowsEvent}
+                            tablename="REPOS_RESTRICTIONS_LABEL"
+                            currency-code={currency}>
+                        </c-product-restric-table>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Spacer -->
+            <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
+
+            <!-- ═══════════════════════════════════════════════════════════════
+                 SECTION: FOOTER (Save / Cancel) — conditional on editMode
+                 ═══════════════════════════════════════════════════════════════ -->
+            <template lwc:if={editMode}>
+                <!-- Error popover -->
+                <template lwc:if={showPopover}>
+                    <div class="slds-col slds-size_12-of-12 slds-m-bottom_small">
+                        <c-dmt_show-popover
+                            header="We hit a snag."
+                            message-title="Review the errors on this page."
+                            message={popoverMessage}
+                            show-popover="true"
+                            variant="error">
+                        </c-dmt_show-popover>
+                    </div>
+                </template>
+
+                <div class="slds-col slds-size_12-of-12 slds-docked-form-footer slds-text-align_center slds-p-around_xx-small slds-m-top_large footer-bar">
+                    <lightning-button
+                        variant="neutral"
+                        label="Cancel"
+                        onclick={handleCancel}
+                        class="slds-m-right_small">
+                    </lightning-button>
+                    <lightning-button
+                        variant="brand"
+                        label="Save"
+                        onclick={handleSave}
+                        disabled={isSaving}>
+                    </lightning-button>
+                </div>
+            </template>
+        </div>
+        </div>
+    </template>
+</template>

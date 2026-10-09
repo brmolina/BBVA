@@ -7,10 +7,11 @@ import DMT_STAGE_NAME_FIELD from '@salesforce/schema/Opportunity.StageName';
 import DMT_CURRENCY_FIELD from '@salesforce/schema/Opportunity.DMT_CurrencyText__c';
 import DMT_OPP_USER_LOCK_FIELD from '@salesforce/schema/Opportunity.DMT_Opp_User_Lock__c';
 import DMT_CONFIDENTIAL_FIELD from '@salesforce/schema/Opportunity.DMT_Confidential__c';
+import DMT_CLAN_CALL_CODE_FIELD from '@salesforce/schema/Opportunity.DMT_Clan_Call_Code__c';
+import DMT_CLAN_STATUS_FIELD from '@salesforce/schema/Opportunity.DMT_Clan_File_Status__c';
+
 import USER_ID from '@salesforce/user/Id';
 import getOppLockUser from '@salesforce/apex/DMT_Opportunity_Utils.getOppLockUser';
-import pubsub from 'omnistudio/pubsub';
-
 // Labels
 import DMT_LABEL_TOAST_RECORD_LOCKED from '@salesforce/label/c.DMT_Label_Toast_Record_Locked';
 import DMT_LABEL_TOAST_ERROR from '@salesforce/label/c.DMT_Label_Toast_Error';
@@ -25,7 +26,9 @@ const FIELDS = [
     DMT_STAGE_NAME_FIELD,
     DMT_CURRENCY_FIELD,
     DMT_OPP_USER_LOCK_FIELD,
-    DMT_CONFIDENTIAL_FIELD
+    DMT_CONFIDENTIAL_FIELD,
+    DMT_CLAN_CALL_CODE_FIELD,
+    DMT_CLAN_STATUS_FIELD
 ];
 
 export default class Dmt_opp_custom_page extends LightningElement {
@@ -67,6 +70,14 @@ export default class Dmt_opp_custom_page extends LightningElement {
     _isReleasingLock = false;
     _confidentialModalShown = false;
     isConfidential = false;
+    showClanErrorModal = false;
+    _clanErrorModalShown = false;
+    clanErrorMessage = '';
+
+
+
+
+    fieldWarningPassport = {};
 
     @wire(CurrentPageReference)
     wiredPageRef(pageRef) {
@@ -87,33 +98,21 @@ export default class Dmt_opp_custom_page extends LightningElement {
 
     _boundBeforeUnload = this.handleBeforeUnload.bind(this);
     _boundPageHide = this.handlePageHide.bind(this);
-    _boundFlexCardSaveConfidential = this.handleFlexCardSaveConfidential.bind(this);
 
     connectedCallback() {
         window.addEventListener('beforeunload', this._boundBeforeUnload);
 
         window.addEventListener('pagehide', this._boundPageHide);
-        pubsub.register('DMT_Opportunity_Info_Tab_Details', {
-            saveEventConfidential: this._boundFlexCardSaveConfidential
-        });
     }
 
     disconnectedCallback() {
         window.removeEventListener('beforeunload', this._boundBeforeUnload);
         window.removeEventListener('pagehide', this._boundPageHide);
-        pubsub.unregister('DMT_Opportunity_Info_Tab_Details', {
-            saveEventConfidential: this._boundFlexCardSaveConfidential
-        });
         if (this.isEditing) {
             // Best-effort: free the lock when the component is destroyed.
             this.releaseRecordLock();
         }
     }
-
-    handleFlexCardSaveConfidential(message) {
-        if (message.confidential) this.isConfidential = message.confidential;
-    }
-
 
     handlePageHide(event) {
         if (event && event.persisted) {
@@ -186,8 +185,17 @@ export default class Dmt_opp_custom_page extends LightningElement {
         const newStatus = getFieldValue(data, DMT_STAGE_NAME_FIELD);
         const newCurrency = getFieldValue(data, DMT_CURRENCY_FIELD);
         const newUserLock = getFieldValue(data, DMT_OPP_USER_LOCK_FIELD);
+        const clanStatus = getFieldValue(data, DMT_CLAN_CALL_CODE_FIELD);
+        const clanErrorMessage = getFieldValue(data, DMT_CLAN_STATUS_FIELD);
+
 
         this.isConfidential = getFieldValue(data, DMT_CONFIDENTIAL_FIELD) === true;
+        if (clanStatus === 'ERROR' && !this._clanErrorModalShown) {
+            this.clanErrorMessage = clanErrorMessage || 'An error occurred while creating or updating the Clan file. Please contact your administrator';
+            this.showClanErrorModal = true;
+            this._clanErrorModalShown = true;
+        }
+
 
         if (!this._hasInitialized) {
             this.prevOppStatus = newStatus;
@@ -318,4 +326,21 @@ export default class Dmt_opp_custom_page extends LightningElement {
     handleCloseConfidentialModal() {
         this.showConfidentialModal = false;
     }
+
+    handleSaveConfidential(event) {
+        this.isConfidential = event.detail.confidential;
+    }
+
+    // Prepared handler for the real Passport FlexCard event once available.
+    // Expects event.detail to be the per-tab { tabId: [fieldApiName, ...] } JSON.
+    handlePassportFieldsWarning(event) {
+        this.fieldWarningPassport = event.detail?.fieldsRequired || {};
+        console.log('this.fieldWarningPassport', JSON.stringify(this.fieldWarningPassport));
+    }
+
+
+    handleCloseClanErrorModal() {
+        this.showClanErrorModal = false;
+    }
+
 }

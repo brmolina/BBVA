@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Main_Holder_Name__c</fullName>
+    <description>Denormalized Main Holder display name for the Opportunity (Grupo y Main Holder en Opportunity tras migración Multiholder). For Multiholder Opportunities this is the client flagged via Custom_Association_Opportunity__c.g_customer_id__c; for non-Multiholder Opportunities it is the Opportunity&apos;s own Account name. Populated automatically (DMT_OpportunityGroupHolderService) so Reports and other processes can read it directly without needing the full Multiholder structure.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <label>Main Holder Name</label>
+    <length>255</length>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

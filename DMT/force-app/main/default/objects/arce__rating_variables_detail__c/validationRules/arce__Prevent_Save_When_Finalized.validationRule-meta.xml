@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Prevent_Save_When_Finalized</fullName>
+    <active>true</active>
+    <errorConditionFormula>ISPICKVAL(arce__account_has_analysis_id__r.arce__Analysis__r.arce__Stage__c, &quot;3&quot;) &amp;&amp;
+NOT($Setup.arce__Bypass__c.arce__Bypass_ValidationRules__c)</errorConditionFormula>
+    <errorMessage>Rating variables detail cannot be created or modified when ARCE is finalized</errorMessage>
+</ValidationRule>

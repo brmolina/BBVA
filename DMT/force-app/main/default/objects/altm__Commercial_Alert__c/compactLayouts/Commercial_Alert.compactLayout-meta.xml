@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Commercial_Alert</fullName>
+    <fields>Name</fields>
+    <fields>altm__participant_id__c</fields>
+    <fields>altm__commercial_product_type__c</fields>
+    <fields>altm__alert_stage_type__c</fields>
+    <fields>altm__priority_alert_type__c</fields>
+    <fields>altm__commercial_alert_end_date__c</fields>
+    <fields>OwnerId</fields>
+    <label>Commercial Alert</label>
+</CompactLayout>

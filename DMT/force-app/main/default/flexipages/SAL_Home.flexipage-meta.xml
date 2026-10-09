@@ -15,6 +15,10 @@
                     <name>pageName</name>
                     <value>FollowedRecords</value>
                 </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>showLabel</name>
+                    <value>true</value>
+                </componentInstanceProperties>
                 <componentName>flexipage:visualforcePage</componentName>
                 <identifier>flexipage_visualforcePage</identifier>
             </componentInstance>

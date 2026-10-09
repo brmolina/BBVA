@@ -13,7 +13,7 @@
 *
 * ────────────────────────────────────────────────────────────────────
 */
-public with sharing class DMT_Line_TriggerHandler extends DMT_TriggerHandler {
+public without sharing class DMT_Line_TriggerHandler extends DMT_TriggerHandler {
 
     private List<DMT_Line__c> lstNew;
     private Map<Id,DMT_Line__c> mapNew;
@@ -44,6 +44,12 @@ public with sharing class DMT_Line_TriggerHandler extends DMT_TriggerHandler {
         lineHelper.syncCustomAssociationName(lstNew);
         lineHelper.handleCancelChange(lstNew, mapOld);
         lineHelper.updatePassport_LineStatusChanged(lstNew, mapOld);
+        lineHelper.enqueueRecalculateApprovals(lstNew, mapOld);
+        lineHelper.restartApprovalTasksOnLineResubmission(lstNew, mapOld);
+        lineHelper.enqueueAutoWorkflowOnStatusChange(lstNew, mapOld);
+
+        DMT_CloseWonNotificationService.sendCloseWonLineNotifications(lstNew, mapOld);
+        DMT_CloseWonNotificationService.sendDraftLineNotifications(lstNew, mapOld);
 
         //after all after update methods
         DMT_AsyncOrchestrator.flush();
@@ -53,16 +59,20 @@ public with sharing class DMT_Line_TriggerHandler extends DMT_TriggerHandler {
         System.debug('DMT_Line_TriggerHandler beforeUpdate');
         DMT_Line_Helper lineHelper = new DMT_Line_Helper();
         lineHelper.avoidPassingApproval(lstNew, mapOld, Trigger.size);
+        lineHelper.blockReadyToCloseWithProspectInMultiholder(lstNew, mapOld);
         lineHelper.fillFields(lstNew, mapOld);
         lineHelper.updateLastModifiedByHuman(lstNew);
         lineHelper.updateStartDateOnClosedWon(lstNew, mapOld);
+        lineHelper.setDestinationSystemOnClosedWon(lstNew, mapOld);   
         lineHelper.validateRiskLineTermContinuity(lstNew, mapOld);
+        lineHelper.syncApprovalTermAndEndDate(lstNew, mapOld);
     }
 
     public override void beforeInsert() {
         System.debug('DMT_Line_TriggerHandler beforeInsert');
         DMT_Line_Helper lineHelper = new DMT_Line_Helper();
         lineHelper.fillFields(lstNew);
+        lineHelper.syncApprovalTermAndEndDate(lstNew, null);
     }
 
     // @Future (callout=true)

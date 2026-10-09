@@ -24,7 +24,22 @@ export default class Dmt_TreeViewDM extends NavigationMixin(LightningElement) {
     @api clientid;
     @api searchdate;
     @api groupname;
-    @api groupcode;
+
+    _groupcode;
+    @api
+    get groupcode() {
+        return this._groupcode;
+    }
+    set groupcode(value) {
+        if (this._groupcode === value) {
+            return;
+        }
+        this._groupcode = value;
+        // CIBGLOBALD-4344 - A new group context resets the exposure filter back to its default
+        // and re-arms the With-Exposure-empty fallback for that new context.
+        this._userChangedFilter = false;
+        this.filterValue = 'Y';
+    }
 
     /* ----- Internal state ----- */
     iconMarcoGCE = DMTMarco_GCE_icon;
@@ -32,6 +47,9 @@ export default class Dmt_TreeViewDM extends NavigationMixin(LightningElement) {
     isExpanded = true;
     searchValue = '';
     filterValue = 'Y';
+    // CIBGLOBALD-4344 - True once the user has deliberately picked a filter option, so the
+    // With-Exposure-empty fallback stops overriding their explicit choice.
+    _userChangedFilter = false;
 
     label = {
         goToGCEText,
@@ -84,7 +102,20 @@ export default class Dmt_TreeViewDM extends NavigationMixin(LightningElement) {
     }
 
     handleFilterChange(event) {
+        this._userChangedFilter = true;
         this.filterValue = event.detail.value;
+    }
+
+    /**
+     * CIBGLOBALD-4344 - Raised by c-dmt_-main-client-selection-table when a full "With Exposure"
+     * fetch comes back with zero clients. Only acts on the default/initial load — if the user has
+     * already deliberately picked a filter themselves, their choice is respected even if empty.
+     */
+    handleExposureFallback() {
+        if (this._userChangedFilter) {
+            return;
+        }
+        this.filterValue = 'Y/N';
     }
 
     /* ----- Template helpers ----- */

@@ -26,19 +26,19 @@
                 <label>Carlos Zuloaga - Conditioned</label>
             </value>
             <value>
-                <fullName>Beatriz Roa - Supportive</fullName>
+                <fullName>Industrials TBD - Supportive</fullName>
                 <default>false</default>
-                <label>Beatriz Roa - Supportive</label>
+                <label>Industrials TBD - Supportive</label>
             </value>
             <value>
-                <fullName>Beatriz Roa - Not Supportiv</fullName>
+                <fullName>Industrials TBD - Not Supportive</fullName>
                 <default>false</default>
-                <label>Beatriz Roa - Not Supportiv</label>
+                <label>Industrials TBD - Not Supportive</label>
             </value>
             <value>
-                <fullName>Beatriz Roa - Conditioned</fullName>
+                <fullName>Industrials TBD - Conditioned</fullName>
                 <default>false</default>
-                <label>Beatriz Roa - Conditioned</label>
+                <label>Industrials TBD - Conditioned</label>
             </value>
             <value>
                 <fullName>Iñigo Leivar - Supportive</fullName>
@@ -46,9 +46,9 @@
                 <label>Iñigo Leivar - Supportive</label>
             </value>
             <value>
-                <fullName>Iñigo Leivar - Not Supportiv</fullName>
+                <fullName>Iñigo Leivar - Not Supportive</fullName>
                 <default>false</default>
-                <label>Iñigo Leivar - Not Supportiv</label>
+                <label>Iñigo Leivar - Not Supportive</label>
             </value>
             <value>
                 <fullName>Iñigo Leivar - Conditioned</fullName>
@@ -56,19 +56,19 @@
                 <label>Iñigo Leivar - Conditioned</label>
             </value>
             <value>
-                <fullName>Ksenia Nekrasova - Supportive</fullName>
+                <fullName>Ksenia Nekrasova / Manuel Franch - Supportive</fullName>
                 <default>false</default>
-                <label>Ksenia Nekrasova - Supportive</label>
+                <label>Ksenia Nekrasova / Manuel Franch - Supportive</label>
             </value>
             <value>
-                <fullName>Ksenia Nekrasova - Not Supportiv</fullName>
+                <fullName>Ksenia Nekrasova / Manuel Franch - Not Supportive</fullName>
                 <default>false</default>
-                <label>Ksenia Nekrasova - Not Supportiv</label>
+                <label>Ksenia Nekrasova / Manuel Franch - Not Supportive</label>
             </value>
             <value>
-                <fullName>Ksenia Nekrasova - Conditioned</fullName>
+                <fullName>Ksenia Nekrasova / Manuel Franch - Conditioned</fullName>
                 <default>false</default>
-                <label>Ksenia Nekrasova - Conditioned</label>
+                <label>Ksenia Nekrasova / Manuel Franch - Conditioned</label>
             </value>
             <value>
                 <fullName>Iván Poza - Supportive</fullName>
@@ -76,9 +76,9 @@
                 <label>Iván Poza - Supportive</label>
             </value>
             <value>
-                <fullName>Iván Poza - Not Supportiv</fullName>
+                <fullName>Iván Poza - Not Supportive</fullName>
                 <default>false</default>
-                <label>Iván Poza - Not Supportiv</label>
+                <label>Iván Poza - Not Supportive</label>
             </value>
             <value>
                 <fullName>Iván Poza - Conditioned</fullName>
@@ -91,9 +91,9 @@
                 <label>Gonzalo Fernandez-Turegano - Supportive</label>
             </value>
             <value>
-                <fullName>Gonzalo Fernandez-Turegano - Not Supportiv</fullName>
+                <fullName>Gonzalo Fernandez-Turegano - Not Supportive</fullName>
                 <default>false</default>
-                <label>Gonzalo Fernandez-Turegano - Not Supportiv</label>
+                <label>Gonzalo Fernandez-Turegano - Not Supportive</label>
             </value>
             <value>
                 <fullName>Gonzalo Fernandez-Turegano - Conditioned</fullName>
@@ -106,9 +106,9 @@
                 <label>TBA - Supportive</label>
             </value>
             <value>
-                <fullName>TBA - Not Supportiv</fullName>
+                <fullName>TBA - Not Supportive</fullName>
                 <default>false</default>
-                <label>TBA - Not Supportiv</label>
+                <label>TBA - Not Supportive</label>
             </value>
             <value>
                 <fullName>TBA - Conditioned</fullName>
@@ -121,9 +121,9 @@
                 <label>Olga Eguilior - Supportive</label>
             </value>
             <value>
-                <fullName>Olga Eguilior - Not Supportiv</fullName>
+                <fullName>Olga Eguilior - Not Supportive</fullName>
                 <default>false</default>
-                <label>Olga Eguilior - Not Supportiv</label>
+                <label>Olga Eguilior - Not Supportive</label>
             </value>
             <value>
                 <fullName>Olga Eguilior - Conditioned</fullName>
@@ -181,19 +181,88 @@
                 <label>Luis Enrique Rodríguez - Conditioned</label>
             </value>
             <value>
-                <fullName>Manuel Franch- Supportive</fullName>
+                <fullName>Beatriz Roa - Conditioned</fullName>
                 <default>false</default>
-                <label>Manuel Franch- Supportive</label>
+                <isActive>false</isActive>
+                <label>Beatriz Roa - Conditioned</label>
             </value>
             <value>
-                <fullName>Manuel Franch- Not Supportiv</fullName>
+                <fullName>Beatriz Roa - Not Supportiv</fullName>
                 <default>false</default>
-                <label>Manuel Franch- Not Supportiv</label>
+                <isActive>false</isActive>
+                <label>Beatriz Roa - Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>Beatriz Roa - Supportive</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Beatriz Roa - Supportive</label>
+            </value>
+            <value>
+                <fullName>Gonzalo Fernandez-Turegano - Not Supportiv</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Gonzalo Fernandez-Turegano - Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>Iván Poza - Not Supportiv</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Iván Poza - Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>Iñigo Leivar - Not Supportiv</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Iñigo Leivar - Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>Ksenia Nekrasova - Conditioned</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Ksenia Nekrasova - Conditioned</label>
+            </value>
+            <value>
+                <fullName>Ksenia Nekrasova - Not Supportiv</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Ksenia Nekrasova - Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>Ksenia Nekrasova - Supportive</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Ksenia Nekrasova - Supportive</label>
             </value>
             <value>
                 <fullName>Manuel Franch- Conditioned</fullName>
                 <default>false</default>
+                <isActive>false</isActive>
                 <label>Manuel Franch- Conditioned</label>
+            </value>
+            <value>
+                <fullName>Manuel Franch- Not Supportiv</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Manuel Franch- Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>Manuel Franch- Supportive</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Manuel Franch- Supportive</label>
+            </value>
+            <value>
+                <fullName>Olga Eguilior - Not Supportiv</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Olga Eguilior - Not Supportiv</label>
+            </value>
+            <value>
+                <fullName>TBA - Not Supportiv</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>TBA - Not Supportiv</label>
             </value>
         </valueSetDefinition>
     </valueSet>

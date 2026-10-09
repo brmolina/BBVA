@@ -13,7 +13,7 @@
             <c-dmt_profitability_chart profitability={profitability} opportunity-id={opportunityId}></c-dmt_profitability_chart>
         </template>
         <template lwc:elseif={graphicModal}>
-            <c-dmt_subfeature_chart wrapper-data={limits} feature-name={featureName} feature-light={featureLight} show-condition-desc={showConditionDesc}></c-dmt_subfeature_chart>
+            <c-dmt_subfeature_chart wrapper-data={limits} feature-name={featureName} feature-light={featureLight} show-condition-desc={showConditionDesc} currency-id={currencyId}></c-dmt_subfeature_chart>
             <template lwc:if={hasAssociatedLine}>
                 <div class="slds-m-top_medium" style="text-align: center;">
                     <span class="slds-m-right_x-small">Link to Risk Approval:</span>

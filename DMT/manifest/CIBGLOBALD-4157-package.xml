@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>DMT_Access</members>
+        <members>DMT_Integration_Analytics</members>
+        <members>DMT_ReadOnly</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>dmt_bulk_import</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <version>65.0</version>
+</Package>

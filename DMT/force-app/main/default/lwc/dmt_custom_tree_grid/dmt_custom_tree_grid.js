@@ -59,7 +59,10 @@ export default class Dmt_custom_tree_grid extends LightningElement {
             const width = this.columnWidths[col.fieldName];
             return {
                 ...col,
-                widthStyle: width ? `width: ${width}px; min-width: ${width}px;` : ''
+                widthStyle: width ? `width: ${width}px; min-width: ${width}px;` : '',
+                sortIconClass: col.sortDirection === 'asc'
+                ? 'sort-icon sort-icon-asc'
+                : 'sort-icon'
             };
         });
     }
@@ -524,5 +527,18 @@ export default class Dmt_custom_tree_grid extends LightningElement {
         if (this.selectedRows.length !== previousCount) {
             this.emitSelectionChange();
         }
+    }
+
+    handleHeaderClick(event) {
+        // Si el clic viene del handle de resize, no disparamos sort
+        if (event.target.closest('.resize-handle')) {
+            return;
+        }
+        const fieldName = event.currentTarget.dataset.field;
+        if (!fieldName) return;
+
+        this.dispatchEvent(new CustomEvent('sort', {
+            detail: { fieldName }
+        }));
     }
 }

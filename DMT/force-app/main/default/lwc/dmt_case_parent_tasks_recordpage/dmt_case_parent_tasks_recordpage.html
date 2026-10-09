@@ -1,0 +1,8 @@
+<template>
+    <template lwc:if={isDataReceived}>
+        <c-dmt_custom_tree_grid model-data={dataFromApex} columns={columns} is-expanded=true></c-dmt_custom_tree_grid>
+    </template>
+    <template lwc:else>
+        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+</template>

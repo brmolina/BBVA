@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__risk_unit_confirm_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Field used to respond the question &quot;The Risk Unit that it proposes confirms that there have been notable changes with respect to the approach received during the technical contrast process prior to the Committee, whose detail is included below:&quot;</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Risk unit confirm notable changes</label>
+    <length>1500</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

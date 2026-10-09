@@ -1,5 +1,5 @@
 import { LightningElement, api, track } from 'lwc';
-import { deleteRecord }    from 'lightning/uiRecordApi';
+import deleteRecordApex   from '@salesforce/apex/DMT_WithoutSharingDAO.deleteRecordById';
 import { ShowToastEvent }  from 'lightning/platformShowToastEvent';
 import LightningConfirm    from 'lightning/confirm';
 import GuarantorModal      from 'c/dmt_opp_product_modal_guarantor';
@@ -55,13 +55,33 @@ export default class DmtOppProductTableUnfundedMitigants extends LightningElemen
     @api get catalogValues() { return this._catalogValues; }
     set catalogValues(value) {
         if (!value || typeof value !== 'object') return;
-        this._catalogValues = value;
+        const seen = new Set();
+        const d971 = (value['D971'] || []).filter(o => {
+            if (seen.has(o.label)) return false;
+            seen.add(o.label);
+            return true;
+        });
+        this._catalogValues = { ...value, D971: d971 };
     }
 
 
     @api setReadOnlyMode(readOnly) {
         this._canEdit = !readOnly;
         this.columns  = this._buildColumns();
+        this._refreshDerivedState();
+    }
+
+    @api enterEditMode() {
+        // Unfunded mitigants uses modal pattern, no inline editing
+    }
+
+    @api restoreSnapshot() {
+        // On cancel, reload from prop to sync with server state
+        this._loadFromData();
+    }
+
+    @api commitEdit() {
+        // Data already persisted via modal; just refresh UI to read-only mode
         this._refreshDerivedState();
     }
 
@@ -80,15 +100,31 @@ export default class DmtOppProductTableUnfundedMitigants extends LightningElemen
 
     _normalizeIncoming(value) {
         try {
+            let items;
             if (typeof value === 'string') {
                 const parsed = JSON.parse(value);
-                if (Array.isArray(parsed)) return parsed;
-                if (parsed && typeof parsed === 'object') return [parsed];
-                return [];
+                if (Array.isArray(parsed)) items = parsed;
+                else if (parsed && typeof parsed === 'object') items = [parsed];
+                else items = [];
+            } else if (Array.isArray(value)) {
+                items = value.filter(item => typeof item === 'object' && item !== null);
+            } else if (value && typeof value === 'object') {
+                items = [value];
+            } else {
+                items = [];
             }
-            if (Array.isArray(value)) return value.filter(item => typeof item === 'object' && item !== null);
-            if (value && typeof value === 'object') return [value];
-            return [];
+            // Compute guarantor display from cross-object fields.
+            // Formula fields cannot read encrypted Account fields (Shield PE), so we build
+            // the display string here using the SOQL cross-object result instead.
+            return items.map(item => {
+                const accR = item['DMT_Guarantor_Account__r'];
+                if (accR) {
+                    const gId  = accR.g_customer_id__c || '';
+                    const name = accR.Name || '';
+                    return { ...item, DMT_Guarantor_Display__c: `${gId} - ${name}` };
+                }
+                return item;
+            });
         } catch (e) {
             return [];
         }
@@ -144,10 +180,9 @@ export default class DmtOppProductTableUnfundedMitigants extends LightningElemen
             this.data = result;
             this._toast('Success', 'Guarantor saved successfully.', 'success');
         } catch (error) {
-            console.error('Error opening guarantor modal:', error);
-            console.error('Error message:', error?.message);
+            console.error('Error message:', error.body?.message || error.message);
             console.error('Full error:', JSON.parse(JSON.stringify(error)));
-            this._toast('Unexpected Error', error?.message || 'Unknown error', 'error');
+            this._toast('Unexpected Error', error.body?.message || error.message || 'Unknown error', 'error');
         } finally {
             this.isLoading = false;
         }
@@ -167,13 +202,15 @@ export default class DmtOppProductTableUnfundedMitigants extends LightningElemen
         });
         if (!confirmed) return;
         this.isLoading = true;
-        deleteRecord(row.Id)
+        deleteRecordApex({ recordId: row.Id })
             .then(() => {
                 this._toast('Record deleted', 'The guarantor was successfully deleted.', 'success');
                 this._removeFromTable(row.Id);
             })
             .catch(error => {
                 const msg = error?.body?.message || error.message || 'It was not possible to delete the record.';
+                console.error('Error message:', error.body?.message || error.message);
+                console.error('Full error: ', JSON.stringify(error));
                 this._toast('Error', msg, 'error');
             })
             .finally(() => { this.isLoading = false; });

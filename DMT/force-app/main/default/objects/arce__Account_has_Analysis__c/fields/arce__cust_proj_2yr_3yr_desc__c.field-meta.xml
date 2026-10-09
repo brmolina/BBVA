@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__cust_proj_2yr_3yr_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Projection (2-3 year)</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Comments on Projection (2-3 year)</label>
+    <length>1500</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>2</visibleLines>
+</CustomField>

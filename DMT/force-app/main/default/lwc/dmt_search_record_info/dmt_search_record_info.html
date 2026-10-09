@@ -4,7 +4,7 @@
         <div class="slds-combobox_container">
             <!-- SECCIÓN 1: La "Píldora" del registro seleccionado (se muestra después de seleccionar) label={selectedClient.Name}-->
             <template lwc:if={selectedClient}>
-                <label class="slds-form-element__label">Group</label>
+                <label class="slds-form-element__label">Clients</label>
                 <div class="slds-box slds-box_xx-small" style="height:32px; padding:2px;">
                     <div class="pill-container">
                         <lightning-pill onremove={handleClearSelection}>
@@ -21,8 +21,8 @@
                     <!-- Campo de entrada con el icono de búsqueda -->
                     <div class="slds-combobox__form-element slds-input-has-icon slds-inputhas-icon_right" role="none">
                         <lightning-input
-                            label="Group"
-                            placeholder="Search Groups..."
+                            label="Clients"
+                            placeholder="Search Clients..."
                             onkeyup={handleSearch}
                             onblur={handleBlur}
                             onfocus={handleFocus}
@@ -80,18 +80,4 @@
             </template>
         </div>
     </template>
-    <lightning-record-picker
-        label="Local Client"
-        placeholder="Search Clients..."
-        object-api-name="Local_Client__c"
-        filter={filter}
-        matching-info={matchingInfo}
-        onchange={handleChangeLocalClient}
-        value={localClientValue}
-        disabled={disabledLocalClient}
-        display-info={displayInfoLocal}
-    >
-    </lightning-record-picker>
-
-
 </template>

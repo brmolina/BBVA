@@ -29,6 +29,18 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>DES_ProspectStructureBuilder</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DES_ProspectStructureBuilderTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DES_ProspectStructurePayload</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>DES_UOS_Utils</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -93,6 +105,18 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>DMT_CalloutTrackableCheckPayload</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_CalloutTrackableFreezePayload</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_CalloutTrackableRenderer</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>DMT_ClientInformationRenderer</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -106,6 +130,14 @@
     </classAccesses>
     <classAccesses>
         <apexClass>DMT_ClientTierRenderer</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_CommercialProcessDataController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_CommercialProcessDataController_Test</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -173,6 +205,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>DMT_FieldTrackableRenderer</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>DMT_FormLookupController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -181,7 +217,19 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>DMT_InfoNBCRenderer</apexClass>
+        <apexClass>DMT_GenericHasProspectRenderer</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_GenericHasProspectRendererTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_HasProspectRenderer</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_HasProspectRendererTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -245,6 +293,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>DMT_MultiObjectFieldTrackableRenderer</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>DMT_MultipleProducts_OtherLine</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -289,10 +341,6 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>DMT_OppInfoNBCRenderer</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
         <apexClass>DMT_OppIntroOpportunityDealRenderer</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -318,10 +366,6 @@
     </classAccesses>
     <classAccesses>
         <apexClass>DMT_OppSustainableFinanceRenderer</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>DMT_OppTransactionOverviewRenderer</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -373,6 +417,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>DMT_ProductSanctionMigrationController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>DMT_ProductsRenderer</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -389,7 +437,23 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>DMT_ProspectValidation</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_ProspectValidation_Test</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>DMT_RendererFactory</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_RiskTablesLineController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_RiskTablesLineController_Test</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -437,6 +501,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>DMT_SnapshotChildComparator</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>DMT_SnapshotPayload</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -469,7 +537,7 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>DMT_TransactionOverviewRenderer</apexClass>
+        <apexClass>DMT_TrackedComponent</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -486,6 +554,14 @@
     </classAccesses>
     <classAccesses>
         <apexClass>DMT_TreasuryProductsRenderer_CO</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_TreasuryProductsRenderer_MX</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_TreasuryProductsRenderer_MXTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -506,6 +582,10 @@
     </classAccesses>
     <classAccesses>
         <apexClass>DMT_View_Selector</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_WutSurveyPayload</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -612,6 +692,16 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Account.DES_ID_Fiscal__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Account.DMT_Client_Prospect_Name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Account.DMT_Has_Prospect_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -776,82 +866,82 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Next_FY_Cash_Management_amount__c</field>
+        <field>Account.Next_FY_Cash_Management_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Next_FY_Client_Resources_amount__c</field>
+        <field>Account.Next_FY_Client_Resources_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Next_FY_Corp_Synd_Lending_amount__c</field>
+        <field>Account.Next_FY_Corp_Synd_Lending_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Next_FY_Credit_Equity_amount__c</field>
+        <field>Account.Next_FY_Credit_Equity_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Next_FY_DCM_amount__c</field>
+        <field>Account.Next_FY_DCM_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Next_FY_ECM_M_A_amount__c</field>
+        <field>Account.Next_FY_ECM_M_A_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Next_FY_FX_CCS_amount__c</field>
+        <field>Account.Next_FY_FX_CCS_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Next_FY_GTF_amount__c</field>
+        <field>Account.Next_FY_GTF_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Next_FY_Rates_amount__c</field>
+        <field>Account.Next_FY_Rates_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Next_FY_Securities_Services_amount__c</field>
+        <field>Account.Next_FY_Securities_Services_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Next_FY_Str_Trade_Finance_amount__c</field>
+        <field>Account.Next_FY_Str_Trade_Finance_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Next_FY_Structured_Finance_amount__c</field>
+        <field>Account.Next_FY_Structured_Finance_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Account.Next_FY_Total_Non_X_Sell_amount__c</field>
+        <field>Account.Next_FY_Total_Non_X_Sell_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Account.Next_FY_Total_Revenues_amount__c</field>
+        <field>Account.Next_FY_Total_Revenues_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Account.Next_FY_Total_X_Sell_amount__c</field>
+        <field>Account.Next_FY_Total_X_Sell_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Next_FY_Working_Capital_amount__c</field>
+        <field>Account.Next_FY_Working_Capital_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -861,162 +951,162 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past2_FY_Cash_Management_amount__c</field>
+        <field>Account.Past2_FY_Cash_Management_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past2_FY_Client_Resources_amount__c</field>
+        <field>Account.Past2_FY_Client_Resources_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past2_FY_Corp_Synd_Lending_amount__c</field>
+        <field>Account.Past2_FY_Corp_Synd_Lending_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past2_FY_Credit_Equity_amount__c</field>
+        <field>Account.Past2_FY_Credit_Equity_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past2_FY_DCM_amount__c</field>
+        <field>Account.Past2_FY_DCM_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past2_FY_ECM_M_A_Amount__c</field>
+        <field>Account.Past2_FY_ECM_M_A_Amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past2_FY_FX_CCS_amount__c</field>
+        <field>Account.Past2_FY_FX_CCS_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past2_FY_GTF_amount__c</field>
+        <field>Account.Past2_FY_GTF_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past2_FY_Rates_amount__c</field>
+        <field>Account.Past2_FY_Rates_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past2_FY_Securities_Services_amount__c</field>
+        <field>Account.Past2_FY_Securities_Services_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past2_FY_Str_Trade_Finance_amount__c</field>
+        <field>Account.Past2_FY_Str_Trade_Finance_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past2_FY_Structured_Finance_amount__c</field>
+        <field>Account.Past2_FY_Structured_Finance_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Account.Past2_FY_Total_Non_X_Sell_amount__c</field>
+        <field>Account.Past2_FY_Total_Non_X_Sell_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Account.Past2_FY_Total_Revenues_amount__c</field>
+        <field>Account.Past2_FY_Total_Revenues_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Account.Past2_FY_Total_X_Sell_amount__c</field>
+        <field>Account.Past2_FY_Total_X_Sell_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past2_FY_Working_Capital_amount__c</field>
+        <field>Account.Past2_FY_Working_Capital_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past_FY_Cash_Management_amount__c</field>
+        <field>Account.Past_FY_Cash_Management_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past_FY_Client_Resources_amount__c</field>
+        <field>Account.Past_FY_Client_Resources_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past_FY_Corp_Synd_Lending_amount__c</field>
+        <field>Account.Past_FY_Corp_Synd_Lending_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past_FY_Credit_Equity_amount__c</field>
+        <field>Account.Past_FY_Credit_Equity_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past_FY_DCM_amount__c</field>
+        <field>Account.Past_FY_DCM_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past_FY_ECM_M_A_Amount__c</field>
+        <field>Account.Past_FY_ECM_M_A_Amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past_FY_FX_CCS_amount__c</field>
+        <field>Account.Past_FY_FX_CCS_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past_FY_GTF_amount__c</field>
+        <field>Account.Past_FY_GTF_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past_FY_Rates_amount__c</field>
+        <field>Account.Past_FY_Rates_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past_FY_Securities_Services_amount__c</field>
+        <field>Account.Past_FY_Securities_Services_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past_FY_Str_Trade_Finance_amount__c</field>
+        <field>Account.Past_FY_Str_Trade_Finance_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past_FY_Structured_Finance_amount__c</field>
+        <field>Account.Past_FY_Structured_Finance_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Account.Past_FY_Total_Non_X_Sell_amount__c</field>
+        <field>Account.Past_FY_Total_Non_X_Sell_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Account.Past_FY_Total_Revenues_amount__c</field>
+        <field>Account.Past_FY_Total_Revenues_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>Account.Past_FY_Total_X_Sell_amount__c</field>
+        <field>Account.Past_FY_Total_X_Sell_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Account.Past_FY_Working_Capital_amount__c</field>
+        <field>Account.Past_FY_Working_Capital_amount_del__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1165,6 +1255,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Custom_Association_Client__c.DMT_Client__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Custom_Association_Client__c.DMT_DVPAmount__c</field>
         <readable>true</readable>
@@ -1177,6 +1272,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Custom_Association_Client__c.DMT_Term__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Custom_Association_Opportunity__c.DMT_Client__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1440,6 +1540,26 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Custom_Association_ClientOpportunity__c.DMT_Client__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Custom_Association_ClientOpportunity__c.DMT_g_customer_id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Custom_Association_ClientOpportunity__c.DMT_g_entific_id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Custom_Association_ClientOpportunity__c.DMT_gf_customer_group_id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>DMT_Items__c.DMT_Campos_componente__c</field>
         <readable>true</readable>
@@ -1487,6 +1607,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>DMT_Line_Product_Item__c.Max_Tenor_WC__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Line__c.Amount__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1540,8 +1665,58 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Line__c.DMT_Business_Approval_Term__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Line__c.DMT_Business_Approval_Term_n__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Line__c.DMT_Business_Approved_End_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>DMT_Line__c.DMT_Bussiness_Approved_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>DMT_Line__c.DMT_Comments__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>DMT_Line__c.DMT_Destination_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>DMT_Line__c.DMT_Destination_Error__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>DMT_Line__c.DMT_Destination_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>DMT_Line__c.DMT_Destination_Label__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>DMT_Line__c.DMT_Destination_Light__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>DMT_Line__c.DMT_Destination_Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1552,6 +1727,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>DMT_Line__c.DMT_LastGeneratedVersionName__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Line__c.DMT_LastLevelId__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1580,12 +1760,17 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Line__c.DMT_Risk_Approval_Term__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>DMT_Line__c.DvP_Amount__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>DMT_Line__c.End_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1602,6 +1787,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>DMT_Line__c.First_Breakclause__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>DMT_Line__c.Golden_Code__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1630,13 +1820,38 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>DMT_Line__c.Start_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>DMT_Line__c.Waiver__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Line__c.gf_min_raroec_wo_fcg_per__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Line__c.gf_min_rorc_wo_fcg_per__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_NotificationSubscription__c.Client__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_NotificationSubscription__c.Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_NotificationSubscription__c.User__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2286,12 +2501,27 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>DMT_Risk_Line_Term__c.DMT_Commercial_Product_Description__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>DMT_Risk_Line_Term__c.DMT_End_Term__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>DMT_Risk_Line_Term__c.DMT_Init_Term__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>DMT_Risk_Line_Term__c.DMT_Line_Tenor__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>DMT_Risk_Line_Term__c.DMT_Operation_Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2361,12 +2591,27 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Opportunity.DMT_Booking_System_Code__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Opportunity.DMT_Booking_Unit_Risk_Analyst__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Opportunity.DMT_Financial_Sponsors__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Opportunity.DMT_GlobalBanker__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_Has_Asset_Allocation__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2431,7 +2676,32 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>OpportunityLineItem.DMT_TXT_Commitment_Fees__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_TXT_Extension_Duration_Fees__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_TXT_Other_Fees_Accrual__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_TXT_Other_Fees_NonAccrual__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>OpportunityLineItem.DMT_TXT_ProductNameOLI__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_Utilisation_Fee__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2607,6 +2877,16 @@
         <allowEdit>false</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
+        <object>Custom_Association_Opportunity__c</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
         <object>Custom_Association__c</object>
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
@@ -2692,6 +2972,16 @@
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>DMT_Custom_Association_ClientOpportunity__c</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
         <allowEdit>true</allowEdit>
@@ -2729,6 +3019,16 @@
         <modifyAllRecords>false</modifyAllRecords>
         <object>DMT_Line__c</object>
         <viewAllFields>false</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>DMT_NotificationSubscription__c</object>
+        <viewAllFields>true</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
     <objectPermissions>

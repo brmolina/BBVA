@@ -17,7 +17,7 @@ export default class LocalClientSelect extends NavigationMixin(LightningElement)
 
 
   @wire(gtLocalCountry, {clientCode: '$clientVar'})
-  completeCountries({ error, data }) {
+  completeCountries({ error, data }) { 
     if(data) {
       this.optionsCountry = [];
       var obj = JSON.parse(data);
@@ -50,7 +50,9 @@ export default class LocalClientSelect extends NavigationMixin(LightningElement)
       type: 'standard__recordPage',
       attributes: {
         recordId: this.valueAcc,
-        objectApiName: 'Local_Client__c',
+        objectApiName: this.valueAcc.startsWith('001')
+        ? 'Account'
+        : 'Local_Client__c',
         actionName: 'view'
       }
     });

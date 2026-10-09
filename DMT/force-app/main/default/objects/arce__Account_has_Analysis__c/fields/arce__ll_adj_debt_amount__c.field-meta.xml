@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__ll_adj_debt_amount__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Gross Financial Debt +/- &quot;Committed and not disbursed&quot; +/- &quot;Adjustemnts to Gross Financial Debt&quot;</description>
+    <formula>arce__gf_total_debt_amount__c +  arce__ll_adj_debt_auditor_amount__c +  arce__ll_adj_deb_excl_amount__c +  arce__ll_other_adj_debt_amount__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Adjustments to Total Debt Amount</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

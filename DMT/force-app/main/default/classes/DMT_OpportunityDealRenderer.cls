@@ -1,4 +1,4 @@
-public with sharing class DMT_OpportunityDealRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_OpportunityDealRenderer implements DMT_ViewRenderer {
     public String renderHtml(DMT_ViewController.LineDataWrapper data) {
         if (data == null || data.opportunity.getPopulatedFieldsAsMap().isEmpty()) {
             return '<div>Opportunity data not provided</div>';
@@ -146,19 +146,6 @@ public with sharing class DMT_OpportunityDealRenderer implements DMT_ViewRendere
         } catch (Exception e){
             System.debug('Error in DMT_OpportunityDealRenderer renderHtml, '+ e.getMessage() + ' ' + e.getLineNumber());
             return '<div>Error: '+e.getMessage()+' - '+e.getLineNumber()+'</div>';
-        }
-    }
-
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null || data.opportunity.getPopulatedFieldsAsMap().isEmpty()) {
-            return new Map<String, Object>();
-        }
-        try {
-            return new Map<String, Object>();
-        } catch (Exception e) {
-            System.debug('Error in DMT_OpportunityDealRenderer renderPdfJson, ' + e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),'DMT_OpportunityDealRenderer','renderPdfJson','DMT',''));
-            return new Map<String, Object>();
         }
     }
 }

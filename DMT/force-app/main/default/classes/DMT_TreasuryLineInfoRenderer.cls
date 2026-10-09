@@ -1,9 +1,9 @@
 // This renderer builds HTML via DMT_FormattingUtils.DisplayField/tableRow2columns, matching
 // DMT_OtherLineInfoRenderer's pattern - data-dmt-* attributes are added by those shared helpers
 // so htmlVersionNormalizer.js can use the tagged path for accurate field-level diff comparison.
-public with sharing class DMT_TreasuryLineInfoRenderer implements DMT_ViewRenderer, DMT_FieldTrackableRenderer {
+public without sharing class DMT_TreasuryLineInfoRenderer implements DMT_ViewRenderer, DMT_FieldTrackableRenderer {
 
-    // ADD OR REMOVE A FIELD HERE. Feeds both renderHtml() and getTrackedFields(), so pass the field
+    // CIBGLOBALD-4117: ADD OR REMOVE A FIELD HERE. Feeds both renderHtml() and getTrackedFields(), so pass the field
     // API name as the third DisplayField argument or the field renders without being watched.
     // See DMT_InfoRenderer for the full rules.
     private List<DMT_FormattingUtils.DisplayField> buildRenderFields(DMT_ViewController.LineDataWrapper data) {
@@ -14,11 +14,22 @@ public with sharing class DMT_TreasuryLineInfoRenderer implements DMT_ViewRender
             new DMT_FormattingUtils.DisplayField('Start Date:', DMT_FormattingUtils.changeDateFormat(data.line.Start_Date__c), new List<String>{'Start_Date__c'}),
             new DMT_FormattingUtils.DisplayField('End Date:', DMT_FormattingUtils.changeDateFormat(data.line.End_Date__c), new List<String>{'End_Date__c'}),
             new DMT_FormattingUtils.DisplayField('Currency:', DMT_FormattingUtils.checkNull(data.line.CurrencyIsoCode), new List<String>{'CurrencyIsoCode'}),
-            new DMT_FormattingUtils.DisplayField('Office:', DMT_FormattingUtils.checkNull(data.line.DMT_Oficina__c), new List<String>{'DMT_Oficina__c'})
+            new DMT_FormattingUtils.DisplayField('Office:', DMT_FormattingUtils.checkNull(data.line.DMT_Oficina__c), new List<String>{'DMT_Oficina__c'}),
+            // CIBGLOBALD-4117 - editable in the LINE INFO tab's cfSummaryTreasury_Flexcard (a
+            // FlexCard, not rendered by this class) but neither displayed nor tracked until now -
+            // found via a field-drift audit against the live edit-side component.
+            new DMT_FormattingUtils.DisplayField('Business Approval Term:', DMT_FormattingUtils.checkNull(data.line.DMT_Business_Approval_Term_n__c), new List<String>{'DMT_Business_Approval_Term_n__c'}),
+            new DMT_FormattingUtils.DisplayField('Business Approval Start Date:', DMT_FormattingUtils.changeDateFormat(data.line.DMT_Bussiness_Approved_Date__c), new List<String>{'DMT_Bussiness_Approved_Date__c'}),
+            new DMT_FormattingUtils.DisplayField('Business Approval End Date:', DMT_FormattingUtils.changeDateFormat(data.line.DMT_Business_Approved_End_Date__c), new List<String>{'DMT_Business_Approved_End_Date__c'}),
+            new DMT_FormattingUtils.DisplayField('Minimum percentage RAROEC without financing:', DMT_FormattingUtils.checkNull(data.line.gf_min_raroec_wo_fcg_per__c), new List<String>{'gf_min_raroec_wo_fcg_per__c'}),
+            new DMT_FormattingUtils.DisplayField('Minimum percentage RORC without financing:', DMT_FormattingUtils.checkNull(data.line.gf_min_rorc_wo_fcg_per__c), new List<String>{'gf_min_rorc_wo_fcg_per__c'})
         };
     }
 
-    public List<String> getTrackedFields(Id recordTypeId) {
+    // CIBGLOBALD-4117 - getTrackedFields() = buildRenderFields()'s own field names (what gets
+    // rendered), plus, immediately below the loop, any fields that might not be rendered. If this
+    // renderer doesn't use buildRenderFields(), just list the field API names directly instead.
+    public List<String> getTrackedFields(SObject record) {
         Set<String> fields = new Set<String>();
         for (DMT_FormattingUtils.DisplayField df : buildRenderFields(new DMT_ViewController.LineDataWrapper())) {
             if (df.fieldApiNames != null) {

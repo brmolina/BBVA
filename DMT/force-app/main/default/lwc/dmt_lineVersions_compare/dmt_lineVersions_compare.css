@@ -87,3 +87,13 @@ lightning-input {
 .content-body {
     padding: 1rem;
 }
+
+/* Prevent flex columns from overflowing their 50% allocation when table content is wide */
+.slds-section__content .slds-grid > .slds-col {
+    min-width: 0;
+}
+
+/* Wide tables scroll horizontally within their column instead of bleeding into the other side */
+.comparison-table-wrapper {
+    overflow-x: auto;
+}

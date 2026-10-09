@@ -28,6 +28,8 @@ const NO_RECORDS_FLAG = "//NO RECORDS";
 const FILTERS_ROOT = "line";
 const ROLE_FUNCTIONAL_SUPPORT = "DMT_Soporte funcional";
 const ROLE_CONFIGURATOR = "Configurador SF";
+const ROLE_READONLY = "DMT_Read Only";
+const ROLE_READONLYLINES = "DMT_OnlyLines";
 const STATUS_CLOSED = "Closed";
 const CLOSED_WON = "Won";
 const STATUS_DRAFT = "Draft";
@@ -105,7 +107,9 @@ export default class dmtLinesManagementContent extends LightningElement {
   filteredTableData = [];
   _indexedRecords = [];
   hasInitialized = false;
-  @api groupId = "";
+  @api groupId;
+  @api clientId;
+  @api taxpayer;
   userInformation;
 
   connectedCallback() {
@@ -235,6 +239,8 @@ export default class dmtLinesManagementContent extends LightningElement {
       this.userInformation?.DMT_User_Role__c?.includes(
         ROLE_FUNCTIONAL_SUPPORT
       ) || this.userInformation?.DMT_User_Role__c?.includes(ROLE_CONFIGURATOR)
+      || this.userInformation?.DMT_User_Role__c?.includes(ROLE_READONLY)
+      || this.userInformation?.DMT_User_Role__c?.includes(ROLE_READONLYLINES)
     );
   }
 
@@ -478,28 +484,33 @@ export default class dmtLinesManagementContent extends LightningElement {
         lineId: event.detail.Id
       });
     } catch (error) {
-      console.error("Error opening RenewLine modal:", error);
-      console.error("Stack:", error?.stack);
-      console.error("Message:", error?.message);
-      console.error("Details:", { ...error });
+
     }
   }
 
   async handleNewLine() {
-    try {console.log("new line modal open");
-      await NewLineModal.open({ size: "small" });
+    try {
+      const resultId = await NewLineModal.open({
+        size: "small",
+        clientId: this.clientId,
+        groupId: this.groupId,
+        taxPayer: this.taxpayer,
+      });
+      if (resultId) {
+        this.dispatchEvent(new CustomEvent('refreshdata', {
+              bubbles: true,     // Permite que el evento suba en el árbol DOM
+              composed: true     // Permite que cruce la barrera del Shadow DOM
+          }));
+      }
     } catch (error) {
-      console.error("Error opening NewLine modal:", error);
-      console.error("Stack:", error?.stack);
-      console.error("Message:", error?.message);
-      console.error("Details:", { ...error });
+
     }
 
     return true;
   }
 
   // =========================================================
-  // Recalculate approvals (Apex)
+  // Get auto
   // =========================================================
   async loadAutoValues() {
     if (!hasNotApprovalRequired) {
@@ -522,7 +533,6 @@ export default class dmtLinesManagementContent extends LightningElement {
       this.applyFilters();
 
     } catch (error) {
-      console.error("Error loading auto values", error);
     }
   }
 
@@ -781,7 +791,6 @@ handleAction(event) {
   try {
     handler();
   } catch (error) {
-    console.error(`Error executing action "${action}"`, error);
     this.showToast(
       "An error has occurred",
       error?.body?.message || error?.message || "Unknown error",
@@ -831,8 +840,6 @@ prepareDisconnect() {
     this.enableSelectionColumn();
     this.currentBulkAction = "disconnect";
 
-    console.log("prepareDisconnect - indexedRecords:", JSON.stringify(this._indexedRecords));
-    console.log("hasGodPermission:", hasGodPermission);
 
     this.filteredTableData = (this._indexedRecords || [])
       .filter((line) => {
@@ -960,7 +967,6 @@ get bulkActionLabel() {
       this.tableColumns = this.baseTableColumns;
 
     } catch (error) {
-      console.error(error);
       this.handleCancelSelection(); // reset automático
       this.isLoading = false;
       this.showToast(
@@ -995,7 +1001,6 @@ async handleRenew() {
     return;
   }
 
-  console.log("Renew rows:", rows);
 
   // TODO: llamada Apex
 }
@@ -1012,7 +1017,6 @@ async handleModify() {
     return;
   }
 
-  console.log("Modify rows:", rows);
 
   // TODO: llamada Apex
 }
@@ -1030,6 +1034,7 @@ handleMenuAction(event) {
 async openModifyModal() {
   try {
     const selectedLineIds = this.selectedRows
+    
       .map((r) => r.Line_Id__c)
       .filter((id) => !!id);
 
@@ -1053,7 +1058,6 @@ async openModifyModal() {
       });
     }
   } catch (error) {
-    console.error("Error opening ModifyLines modal:", error);
     this.showToast(
       "Error",
       error?.body?.message || error?.message || "Unknown error",
@@ -1114,7 +1118,6 @@ async openModifyModal() {
       });
 
     } catch (error) {
-      console.error(error);
       this.showToast(
         "Error",
         error?.body?.message || error?.message || "Unknown error",
@@ -1160,5 +1163,37 @@ async openModifyModal() {
       )
     );
   }
+
+    // =========================================================
+  // Recalculate approvals (Apex)
+  // =========================================================
+  async handleRecalculateApprovals() {
+    this.isLoadingRecualculate = true;
+    try {
+      const response = await consumptionReassign({
+        inputMap: { groupId: this.groupId }
+      });
+      if (response === "OK") {
+        this.showToast(
+          "Success!",
+          this.labels.DMT_RecalculationSuccessMessage,
+          "success"
+        );
+        
+      }else{
+        this.showToast(
+          "An error has occurred",
+          this.labels.DMT_RecalculationErrorMessage,
+          "error"
+        );
+      }
+    } catch (e) {
+      const msg = e?.body?.message || e?.message || "Unknown error";
+      this.showToast("An error has occurred", msg, "error");
+    } finally {
+      this.isLoadingRecualculate = false;
+}
+  return true;
+}
 
 }

@@ -11,6 +11,8 @@
 .productList {
     height: 35vh; /* ajusta según tu diseño */
     overflow-y: auto;
+    overflow-x: hidden;
+    min-width: 0;
     /* margin-left: 1.2rem; */
 }
 lightning-input[type="checkbox"] .sldscheckbox_faux{

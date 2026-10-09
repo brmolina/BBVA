@@ -5,7 +5,7 @@ import { columnsOpp } from './dmtOpportunitiesManagmentContent_Columns';
 import RenewOpportunityModal from "c/dmtRenewOpportunityModal";
 import { NavigationMixin } from 'lightning/navigation';
 import pubsub from "omnistudio/pubsub";
-
+import { RefreshEvent } from 'lightning/refresh';
 
 
 // Labels
@@ -95,7 +95,9 @@ export default class dmtOpportunitiesManagmentContent extends NavigationMixin(Li
   _indexedRecords = [];
   hasInitialized = false;
   userInformation;
-  @api groupId = "";
+  @api groupId;
+  @api clientId;
+  @api taxpayer;
 
   // =========================================================
   // API: valuesFilters
@@ -449,7 +451,18 @@ export default class dmtOpportunitiesManagmentContent extends NavigationMixin(Li
   // =========================================================
   async handleNewOpportunity() {
     try {
-      await newOpportunityModal.open({ size: "small" });
+      const resultId = await newOpportunityModal.open({
+        size: "small",
+        clientId: this.clientId,
+        groupId: this.groupId,
+        taxPayer: this.taxpayer
+      });
+      if (resultId) {
+        this.dispatchEvent(new CustomEvent('refreshdata', {
+              bubbles: true,     // Permite que el evento suba en el árbol DOM
+              composed: true     // Permite que cruce la barrera del Shadow DOM
+          }));
+      }
     } catch (error) {
       console.error("Error opening NewOpportunity modal:", error);
       console.error("Stack:", error?.stack);

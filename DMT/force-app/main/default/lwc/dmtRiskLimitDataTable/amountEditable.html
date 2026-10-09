@@ -1,0 +1,12 @@
+<template>
+    <div class="slds-grid slds-grid_vertical-align-center">
+        <lightning-input
+            type="text"
+            variant="label-hidden"
+            value={typeAttributes.editValue}
+            data-inputable="true"
+            class="slds-grow"
+        ></lightning-input>
+        <span class="slds-p-left_x-small slds-truncate" title={typeAttributes.currencyLabel}>{typeAttributes.currencyLabel}</span>
+    </div>
+</template>

@@ -1,23 +1,63 @@
 import { LightningElement, api, wire, track } from 'lwc';
-import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
+import { getRecord, getFieldValue, getRecordNotifyChange, updateRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { subscribe, unsubscribe, MessageContext } from 'lightning/messageService';
 import XSELL_SYNC_CHANNEL from '@salesforce/messageChannel/DmtXSellSync__c';
 
-import STAGE_FIELD from '@salesforce/schema/Opportunity.StageName';
+import STAGE_FIELD       from '@salesforce/schema/Opportunity.StageName';
+import ENTIFIC_FIELD     from '@salesforce/schema/Opportunity.Entific__c';
+import BOOKING_RISK_ID   from '@salesforce/schema/Opportunity.DMT_Booking_Unit_Risk_Analyst__c';
+import BOOKING_RISK_NAME from '@salesforce/schema/Opportunity.DMT_Booking_Unit_Risk_Analyst__r.Name';
+import APPROVER_ID       from '@salesforce/schema/Opportunity.DMT_Approver__c';
+import APPROVER_NAME     from '@salesforce/schema/Opportunity.DMT_Approver__r.Name';
+import APPROVER_GB_ID    from '@salesforce/schema/Opportunity.DMT_ApproverGlobalBanker__c';
+import APPROVER_GB_NAME  from '@salesforce/schema/Opportunity.DMT_ApproverGlobalBanker__r.Name';
+import FINANCIAL_SPONSORS_FIELD from '@salesforce/schema/Opportunity.DMT_Financial_Sponsors__c';
 
 import pubsub from 'omnistudio/pubsub';
 import saveXSellRecords from '@salesforce/apex/DMT_XSell.saveXSellRecords';
 
-const FIELDS          = [STAGE_FIELD];
+const FIELDS = [
+    STAGE_FIELD,
+    ENTIFIC_FIELD,
+    BOOKING_RISK_ID, BOOKING_RISK_NAME,
+    APPROVER_ID,     APPROVER_NAME,
+    APPROVER_GB_ID,  APPROVER_GB_NAME,
+    FINANCIAL_SPONSORS_FIELD
+];
 const EDITABLE_STAGES = ['Draft', 'Proposal'];
+
+const APPROVER_FIELD_LABELS = {
+    'DMT_Booking_Unit_Risk_Analyst__c': 'Booking Unit Risk Approver (Local)',
+    'DMT_Approver__c': 'Financial Program Risk Approver (Global)',
+    'DMT_ApproverGlobalBanker__c': 'Approver Global Banker'
+};
 
 export default class Dmt_OppApproversInfoForm extends LightningElement {
 
     @api recordId;
+    @api opportunityId;
+    @api coordinatedMode = false;
 
     @track isEditMode = false;  // Controls read/edit view mode
     @track isSaving   = false;  // Controls spinner and disabled state of buttons
+
+    // Draft state (pending edits not yet saved)
+    @track draftValues      = {};
+    @track draftLookupNames = {};
+
+    _isReadOnlyMode = false;
+
+    // Current saved values (populated by @wire)
+    @track stageName;
+    @track entificValue;
+    @track bookingRiskId;
+    @track bookingRiskName;
+    @track approverId;
+    @track approverName;
+    @track approverGBId;
+    @track approverGBName;
+    @track financialSponsors = false;
 
     // Local Cache populated strictly by the Message Channel
     cachedXsellData = [];
@@ -28,7 +68,21 @@ export default class Dmt_OppApproversInfoForm extends LightningElement {
     messageContext;
 
     @wire(getRecord, { recordId: '$recordId', fields: FIELDS })
-    opportunity;
+    wiredOpportunity(result) {
+        this.opportunity = result;
+        const { data } = result;
+        if (data) {
+            this.stageName       = getFieldValue(data, STAGE_FIELD);
+            this.entificValue    = getFieldValue(data, ENTIFIC_FIELD);
+            this.bookingRiskId   = getFieldValue(data, BOOKING_RISK_ID);
+            this.bookingRiskName = getFieldValue(data, BOOKING_RISK_NAME);
+            this.approverId      = getFieldValue(data, APPROVER_ID);
+            this.approverName    = getFieldValue(data, APPROVER_NAME);
+            this.approverGBId    = getFieldValue(data, APPROVER_GB_ID);
+            this.approverGBName  = getFieldValue(data, APPROVER_GB_NAME);
+            this.financialSponsors = getFieldValue(data, FINANCIAL_SPONSORS_FIELD) === true;
+        }
+    }
 
     connectedCallback() {
         pubsub.register('Save', {
@@ -66,14 +120,92 @@ export default class Dmt_OppApproversInfoForm extends LightningElement {
     // ─── Getters ──────────────────────────────────────────────────────────────
 
     get canEdit() {
-        const stage = getFieldValue(this.opportunity?.data, STAGE_FIELD);
-        return EDITABLE_STAGES.includes(stage);
+        if (this._isReadOnlyMode) return false;
+        return EDITABLE_STAGES.includes(this.stageName);
     }
 
     get isReadOnly() {
         return !this.isEditMode;
     }
 
+    get showOwnFooter() {
+        return !this.coordinatedMode && this.isEditMode;
+    }
+
+    get entific() {
+        return this.entificValue || '';
+    }
+
+    get bookingRiskValueId() {
+        return this.draftValues.DMT_Booking_Unit_Risk_Analyst__c ?? this.bookingRiskId;
+    }
+    get bookingRiskValueName() {
+        return this.draftLookupNames.DMT_Booking_Unit_Risk_Analyst__c ?? this.bookingRiskName;
+    }
+
+    get approverValueId() {
+        return this.draftValues.DMT_Approver__c ?? this.approverId;
+    }
+    get approverValueName() {
+        return this.draftLookupNames.DMT_Approver__c ?? this.approverName;
+    }
+
+    get approverGBValueId() {
+        return this.draftValues.DMT_ApproverGlobalBanker__c ?? this.approverGBId;
+    }
+    get approverGBValueName() {
+        return this.draftLookupNames.DMT_ApproverGlobalBanker__c ?? this.approverGBName;
+    }
+
+    get financialSponsorsValue() {
+        return this.draftValues.DMT_Financial_Sponsors__c ?? this.financialSponsors;
+    }
+
+
+    // ─── Ref-contract methods (coordinated save pattern) ────────────────────
+
+    @api
+    enterEditMode() {
+        this.isEditMode = true;
+    }
+
+    @api
+    restoreSnapshot() {
+        this.draftValues      = {};
+        this.draftLookupNames = {};
+        this.isEditMode       = false;
+    }
+
+    @api
+    commitEdit() {
+        this.draftValues      = {};
+        this.draftLookupNames = {};
+        this.isEditMode       = false;
+    }
+
+    @api
+    setReadOnlyMode(readOnly) {
+        this._isReadOnlyMode = readOnly;
+    }
+
+    @api
+    collectChanges() {
+        if (Object.keys(this.draftValues).length === 0) return null;
+        return { ...this.draftValues };
+    }
+       
+
+    @api
+    validateRequired() {
+        return { isValid: true, invalidFields: [], invalidFieldIds: [] };
+    }
+
+    @api
+    getFieldLabel(apiName) {
+        return APPROVER_FIELD_LABELS[apiName] || null;
+    }
+
+    // ─── Notifications ────────────────────────────────────────────────────────
 
     notifyEditMode(value) {
         this.dispatchEvent(new CustomEvent('editmodetab', {
@@ -87,49 +219,98 @@ export default class Dmt_OppApproversInfoForm extends LightningElement {
 
     handleEdit() {
         if (!this.canEdit) return;
+        if (this.coordinatedMode) {
+            this.dispatchEvent(new CustomEvent('editmodechange', { bubbles: true, composed: true }));
+            return;
+        }
         this.isEditMode = true;
         this.notifyEditMode(true);
     }
 
     handleCancel() {
-        this.isEditMode = false;
-        this.isSaving   = false;
+        this.isEditMode     = false;
+        this.isSaving       = false;
+        this.draftValues    = {};
+        this.draftLookupNames = {};
         this.notifyEditMode(false);
-
-        this.refs['DMT_Booking_Unit_Risk_Analyst__c']?.reset();
-        this.refs['DMT_Approver__c']?.reset();
-        this.refs['DMT_ApproverGlobalBanker__c']?.reset();
     }
 
-    handleChange(event) {
-        //console.log(`Field changed → ${event.target.fieldName}:`, event.detail.value);
+    handleApproverChange(event) {
+        const fieldName = event.target.dataset.field;
+        const { id, name } = event.detail;
+        this.draftValues      = { ...this.draftValues,      [fieldName]: id   };
+        this.draftLookupNames = { ...this.draftLookupNames, [fieldName]: name };
+        if (this.coordinatedMode) {
+            this._notifyFieldChange(fieldName);
+        }
     }
 
-    handleSave() {
+    handleApproverClear(event) {
+        const fieldName = event.target.dataset.field;
+        this.draftValues      = { ...this.draftValues,      [fieldName]: '' };
+        this.draftLookupNames = { ...this.draftLookupNames, [fieldName]: '' };
+        if (this.coordinatedMode) {
+            this._notifyFieldChange(fieldName);
+        }
+    }
+
+    handleFinancialSponsorsChange(event) {
+        const checked = event.target.checked;
+        this.draftValues = { ...this.draftValues, DMT_Financial_Sponsors__c: checked };
+        if (this.coordinatedMode) {
+            this._notifyFieldChange('DMT_Financial_Sponsors__c');
+        }
+    }
+
+    _notifyFieldChange(fieldId) {
+        this.dispatchEvent(new CustomEvent('fieldchange', {
+            detail: { fieldId, isFieldValid: true },
+            bubbles: true,
+            composed: true
+        }));
+    }
+
+    async handleSave() {
         this.isSaving = true;
-        this.refs.submitBtn?.click();
-    }
 
-    handleSuccess() {
-        this.isSaving   = false;
-        this.isEditMode = false;
-        this.notifyEditMode(false);
+        if (Object.keys(this.draftValues).length === 0) {
+            this.isEditMode = false;
+            this.isSaving   = false;
+            this.notifyEditMode(false);
+            return;
+        }
 
-        this.dispatchEvent(new ShowToastEvent({
-            title  : 'Success',
-            message: 'Record updated successfully',
-            variant: 'success'
-        }));
-    }
+        const fields = { Id: this.recordId, ...this.draftValues };
 
-    handleError(event) {
-        this.isSaving = false;
-
-        this.dispatchEvent(new ShowToastEvent({
-            title  : 'Error',
-            message: event.detail.detail,
-            variant: 'error'
-        }));
+        try {
+            const saves = [];
+            if (Object.keys(fields).length > 1) saves.push(updateRecord({ fields }));
+            await Promise.all(saves);
+            this.isSaving         = false;
+            this.isEditMode       = false;
+            this.draftValues      = {};
+            this.draftLookupNames = {};
+            this.notifyEditMode(false);
+            await getRecordNotifyChange([{ recordId: this.recordId }]);
+            this.dispatchEvent(new ShowToastEvent({
+                title  : 'Success',
+                message: 'Record updated successfully',
+                variant: 'success'
+            }));
+        } catch (error) {
+            this.isSaving = false;
+            let message = error.body?.message || 'An error occurred while saving.';
+            if (error.body?.output?.fieldErrors) {
+                message = Object.entries(error.body.output.fieldErrors)
+                    .map(([field, errors]) => `${field}: ${errors[0].message}`)
+                    .join(' / ');
+            }
+            this.dispatchEvent(new ShowToastEvent({
+                title  : 'Error',
+                message: message,
+                variant: 'error'
+            }));
+        }
     }
 
     /**

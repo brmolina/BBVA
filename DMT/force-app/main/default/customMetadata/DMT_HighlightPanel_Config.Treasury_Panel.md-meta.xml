@@ -17,8 +17,8 @@
   },
  {
     &quot;type&quot;: &quot;text&quot;,
-    &quot;label&quot;: &quot;Cliente&quot;,
-    &quot;fieldApiName&quot;: &quot;Client__r.Name&quot;,
+    &quot;label&quot;: &quot;Client&quot;,
+    &quot;fieldApiName&quot;: &quot;Client__r.DMT_Client_Prospect_Name__c&quot;,
     &quot;action&quot;: {
       &quot;type&quot;: &quot;navigate&quot;,
       &quot;params&quot;: {
@@ -180,6 +180,12 @@
   }
 },
 {
+  &quot;label&quot;: &quot;Feedback&quot;,
+  &quot;name&quot;: &quot;Feedback&quot;,
+  &quot;variant&quot;: &quot;brand&quot;,
+  &quot;actionType&quot;: &quot;labelUrl&quot;
+},
+{
 &quot;label&quot;: &quot;Chatter&quot;,
 &quot;name&quot;: &quot;ChatterOpp&quot;,
 &quot;variant&quot;: &quot;brand&quot;,
@@ -191,7 +197,10 @@
 &quot;actionConfig&quot;: {
 &quot;quickActionApiName&quot;: &quot;DMT_Line__c.ChatterFeed&quot;
 },
-&quot;disabled&quot;: false
+&quot;disabled&quot;: false,
+&quot;visibilityCondition&quot;: {
+&quot;systemPermission&quot;: &quot;PermissionsChatterEnabledForUser&quot;
+}
 },
   {
     &quot;label&quot;: &quot;Send to closed lost&quot;,

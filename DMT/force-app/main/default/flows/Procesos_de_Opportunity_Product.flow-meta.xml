@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>myRule_1</name>
+        <label>Is New</label>
+        <locationX>297</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>myRule_4</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Is New</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_1</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_TRUE_myRule_1</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_1_A1</targetReference>
+            </connector>
+            <label>TRUE_Is New</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_11</name>
+        <label>Is Changed</label>
+        <locationX>974</locationX>
+        <locationY>647</locationY>
+        <defaultConnector>
+            <targetReference>myRule_14</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Is Changed</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_11</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_TRUE_myRule_11</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_11_A1</targetReference>
+            </connector>
+            <label>TRUE_Is Changed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_14</name>
+        <label>Tenor months to years</label>
+        <locationX>974</locationX>
+        <locationY>947</locationY>
+        <defaultConnector>
+            <targetReference>myRule_18</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Tenor months to years</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_14</name>
+            <conditionLogic>(1 OR 2 OR 3 OR 4 OR 5 OR 6 OR 7 OR 9) AND 8</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.solution_classification_desc__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Rates</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.solution_classification_desc__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Equity</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.solution_classification_desc__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>FX</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.solution_classification_desc__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Credit</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.solution_classification_desc__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Client Resources</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.solution_classification_desc__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Working Capital</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.solution_classification_desc__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Structured Trade Finance</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.loan_tenor_month_desc__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.solution_classification_desc__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Transaction Trade Finance</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_14_A1</targetReference>
+            </connector>
+            <label>TRUE_Tenor months to years</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_18</name>
+        <label>Tenor years to months</label>
+        <locationX>974</locationX>
+        <locationY>1247</locationY>
+        <defaultConnectorLabel>FALSE_Tenor years to months</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_18</name>
+            <conditionLogic>(1 OR 2 OR 3 OR 4) AND 5</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.solution_classification_desc__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Corporate Loans</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.solution_classification_desc__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Debt Capital Markets</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.solution_classification_desc__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Leverage Buyout (LBOs)</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.solution_classification_desc__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Project Finance - Lending</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.opportunity_tenor_years_number__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_18_A1</targetReference>
+            </connector>
+            <label>TRUE_Tenor years to months</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_4</name>
+        <label>Product Specialist is changed</label>
+        <locationX>545</locationX>
+        <locationY>431</locationY>
+        <defaultConnector>
+            <targetReference>myRule_7</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Product Specialist is changed</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_4</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_TRUE_myRule_4</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_4_A1</targetReference>
+            </connector>
+            <label>TRUE_Product Specialist is changed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_7</name>
+        <label>Decision Outdated</label>
+        <locationX>776</locationX>
+        <locationY>539</locationY>
+        <defaultConnector>
+            <targetReference>myRule_11</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Decision Outdated</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_7</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.opportunity_nbc_recm_ind_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Yes</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.opportunity_stage_type__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Closed Won</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.opportunity_stage_type__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Closed Lost</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.oppy_nbc_rcmndn_maturity_date__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>formula_1_Formula_3391100221</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.oppy_nbc_rcmndn_maturity_date__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+            </conditions>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>TRUE_Decision Outdated</label>
+        </rules>
+    </decisions>
+    <description>Se pone condicional para que no salte cuando se inserta un OLI relacionado con un oportunidad de DMT</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>formula_1_Formula_3391100221</name>
+        <dataType>Date</dataType>
+        <expression>PRIORVALUE({!$Record.oppy_nbc_rcmndn_maturity_date__c} )</expression>
+    </formulas>
+    <formulas>
+        <name>formula_4_myRule_1_A1_0239057761</name>
+        <dataType>String</dataType>
+        <expression>IF(
+ISBLANK({!$Record.Opportunity.DES_Product_Specialist__c}),&apos;0&apos;,
+{!$Record.Opportunity.DES_Product_Specialist__c}
+)</expression>
+    </formulas>
+    <formulas>
+        <name>formula_5_myRule_4_A1_8991178472</name>
+        <dataType>String</dataType>
+        <expression>PRIORVALUE({!$Record.DES_Product_Specialist__c})</expression>
+    </formulas>
+    <formulas>
+        <name>formula_6_myRule_11_A1_6925724869</name>
+        <dataType>String</dataType>
+        <expression>{!$Record.Id}</expression>
+    </formulas>
+    <formulas>
+        <name>formula_7_myRule_14_A1_7947046818</name>
+        <dataType>Number</dataType>
+        <expression>{!$Record.loan_tenor_month_desc__c} /12</expression>
+        <scale>18</scale>
+    </formulas>
+    <formulas>
+        <name>formula_8_myRule_18_A1_0427729049</name>
+        <dataType>Number</dataType>
+        <expression>{!$Record.opportunity_tenor_years_number__c} * 12</expression>
+        <scale>18</scale>
+    </formulas>
+    <formulas>
+        <name>formula_TRUE_myRule_1</name>
+        <dataType>Boolean</dataType>
+        <expression>ISNEW()</expression>
+    </formulas>
+    <formulas>
+        <name>formula_TRUE_myRule_11</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+TEXT({!$Record.opportunity_stage_type__c}) != $Label.DES_Closed_Lose,
+TEXT({!$Record.opportunity_stage_type__c}) != $Label.DES_Closed_Won,
+TEXT({!$Record.Opportunity.StageName}) != $Label.DES_Closed_Lose,
+TEXT({!$Record.Opportunity.StageName}) != $Label.DES_Closed_Won,
+NOT(AND(
+	OR(
+		PRIORVALUE({!$Record.Opportunity.Template_pending_approval_type__c}) == true,
+		PRIORVALUE({!$Record.Opportunity.Template_approved_type__c}) == true
+	),
+	{!$Record.Opportunity.Template_pending_approval_type__c} == false,
+	{!$Record.Opportunity.Template_approved_type__c} == false
+)),
+
+	NOT(AND(TEXT(PRIORVALUE({!$Record.opportunity_nbc_recm_ind_type__c})) != &apos;N.A.&apos;, TEXT({!$Record.opportunity_nbc_recm_ind_type__c}) == &apos;N.A.&apos;)),
+
+ISCHANGED({!$Record.LastModifiedDate}),
+TEXT({!$Record.Opportunity.NBC_Decision_Taken_type__c}) != $Label.NBC_Decision_Not_Recommended,
+TEXT({!$Record.Opportunity.NBC_Decision_Taken_type__c}) != $Label.NBC_Decision_Recommended,
+OR(NOT({!$Record.Opportunity.Template_pending_approval_type__c}),TEXT({!$Record.Opportunity.NBC_Decision_Taken_type__c}) = $Label.NBC_Decision_Pending, TEXT({!$Record.Opportunity.NBC_Decision_Taken_type__c}) = $Label.NBC_Decision_Outdated),
+OR({!$Record.solution_classification_desc__c} ==$Label.DES_Corporate_Loans,
+{!$Record.solution_classification_desc__c} ==$Label.DES_Leverage_Buyout_LBOs,
+{!$Record.solution_classification_desc__c} ==$Label.DES_Structure_Trade_Finance,
+{!$Record.solution_classification_desc__c} ==$Label.DES_Transaction_Trade_Finance,
+{!$Record.solution_classification_desc__c} ==$Label.DES_Working_Capital,
+{!$Record.solution_classification_desc__c} ==$Label.DES_Project_Finance_Lending))</expression>
+    </formulas>
+    <formulas>
+        <name>formula_TRUE_myRule_4</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+NOT(ISBLANK(PRIORVALUE({!$Record.DES_Product_Specialist__c}))),
+ISCHANGED({!$Record.DES_Product_Specialist__c} )
+)</expression>
+    </formulas>
+    <interviewLabel>Procesos de Opportunity Product {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Procesos de Opportunity Product</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>myRule_14_A1</name>
+        <label>Tenor Months to Years</label>
+        <locationX>842</locationX>
+        <locationY>1055</locationY>
+        <connector>
+            <targetReference>myRule_18</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>opportunity_tenor_years_number__c</field>
+            <value>
+                <elementReference>formula_7_myRule_14_A1_7947046818</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_18_A1</name>
+        <label>Tenor Years to Months</label>
+        <locationX>842</locationX>
+        <locationY>1355</locationY>
+        <inputAssignments>
+            <field>loan_tenor_month_desc__c</field>
+            <value>
+                <elementReference>formula_8_myRule_18_A1_0427729049</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_1_A2</name>
+        <label>Actualizar Opportunity Stage</label>
+        <locationX>50</locationX>
+        <locationY>539</locationY>
+        <inputAssignments>
+            <field>opportunity_stage_type__c</field>
+            <value>
+                <elementReference>$Record.Opportunity.StageName</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>171</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_1</targetReference>
+        </connector>
+        <filterFormula>{!$Record.Opportunity.RecordType.DeveloperName} != &apos;DMT_Opportunity&apos;</filterFormula>
+        <object>OpportunityLineItem</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <subflows>
+        <name>myRule_11_A1</name>
+        <label>Informate Template</label>
+        <locationX>842</locationX>
+        <locationY>755</locationY>
+        <connector>
+            <targetReference>myRule_14</targetReference>
+        </connector>
+        <flowName>Template_Information_Gathering</flowName>
+        <inputAssignments>
+            <name>StartObject</name>
+            <value>
+                <stringValue>Product</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recordId</name>
+            <value>
+                <elementReference>formula_6_myRule_11_A1_6925724869</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>myRule_1_A1</name>
+        <label>Recorrer matriz Product Specialist</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <connector>
+            <targetReference>myRule_1_A2</targetReference>
+        </connector>
+        <flowName>Update_Prduct_Specialist_Opportunity_Product</flowName>
+        <inputAssignments>
+            <name>OpportunityId</name>
+            <value>
+                <elementReference>$Record.Opportunity.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>ProductId</name>
+            <value>
+                <elementReference>$Record.Product2.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>CountriesValues</name>
+            <value>
+                <elementReference>$Record.Opportunity.DES_Countries__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>ProductSpecialist</name>
+            <value>
+                <elementReference>formula_4_myRule_1_A1_0239057761</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>recordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>myRule_4_A1</name>
+        <label>Actualizar Product Specialist en OppTeam</label>
+        <locationX>314</locationX>
+        <locationY>539</locationY>
+        <flowName>ActualizarProductSpecialistEnOppTeam</flowName>
+        <inputAssignments>
+            <name>OpportunityId</name>
+            <value>
+                <elementReference>$Record.OpportunityId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>ProductSpecialistNew</name>
+            <value>
+                <elementReference>$Record.DES_Product_Specialist__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>ProductSpecialistOld</name>
+            <value>
+                <elementReference>formula_5_myRule_4_A1_8991178472</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+</Flow>

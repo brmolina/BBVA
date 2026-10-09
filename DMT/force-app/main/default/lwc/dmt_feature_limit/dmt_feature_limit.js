@@ -154,7 +154,7 @@ export default class Dmt_feature_limit extends LightningElement {
         let dataNewOpportunity = [];
 
         let noShowInfo = false;
-        let consumptionLimits = this.searchCorrectConsuptionLimit(idEvent);
+        const { consumptionLimits, mitigantCurrency } = this.searchCorrectConsuptionLimit(idEvent);
 
         consumptionLimits?.forEach(limits => {
             if (limits?.stateName !== undefined) {
@@ -186,7 +186,7 @@ export default class Dmt_feature_limit extends LightningElement {
             datasets: datasets,
             labels: labels,
             limitLights: limitLights,
-            originCurrency: currencies[0],
+            originCurrency: mitigantCurrency || currencies[0],
             sections: sections,
             targetColor: 'red',
             targets: targets
@@ -209,7 +209,8 @@ export default class Dmt_feature_limit extends LightningElement {
                 errorModal: false,
                 profitability: null,
                 showProfitabilityChart: false,
-                opportunityId: this.oppId
+                opportunityId: this.oppId,
+                currencyId: mitigantCurrency || null
             });
 
             this.isExpanded = false;
@@ -226,6 +227,7 @@ export default class Dmt_feature_limit extends LightningElement {
 
     searchCorrectConsuptionLimit(idEvent) {
         let consumptionLimits = [];
+        let mitigantCurrency = null;
 
         if (this.feature.idProccess == idEvent) {
             consumptionLimits = this.feature?.consumptionLimits;
@@ -239,11 +241,12 @@ export default class Dmt_feature_limit extends LightningElement {
             product.mitigants?.forEach(mitigant => {
                 if (mitigant.mitigantId == idEvent) {
                     consumptionLimits = mitigant.consumptionLimits;
+                    mitigantCurrency = mitigant.mitigantCurrency || null;
                 }
             });
         });
 
-        return consumptionLimits;
+        return { consumptionLimits, mitigantCurrency };
     }
 
     expandedControlEvent(event) {

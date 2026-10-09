@@ -11,13 +11,15 @@ private without sharing class DMT_SustainableDealControllerTest {
             DMT_Active__c = true,
             DMT_Catalog__c = 'RBGR',
             DMT_Value__c = 'GRN1',
-            DMT_Name_EN__c = 'Alpha'
+            DMT_Name_EN__c = 'Alpha',
+            gf_catalog_atrb_val17_name__c='Delegated Label CIB'
         ));
         rows.add(new DMT_Taxonomy_Values__c(
             DMT_Active__c = true,
             DMT_Catalog__c = 'RBGR',
             DMT_Value__c = 'GRN2',
-            DMT_Name_EN__c = 'Beta'
+            DMT_Name_EN__c = 'Beta',
+            gf_catalog_atrb_val17_name__c='Delegated Label CIB'
         ));
         // Duplicate value with different name should be ignored by controller
         rows.add(new DMT_Taxonomy_Values__c(
@@ -230,32 +232,33 @@ private without sharing class DMT_SustainableDealControllerTest {
 
     @IsTest
     static void testGetCatalogBySubtype_Green_greenFilter_delegated() {
-        // enableGreenFilter=true, greenFilter='delegated' enters the delegated branch.
-        // The SOQL clause is pending implementation (commented out), so the full RBGR
-        // catalog is returned unchanged — verifies no exception is thrown and the
-        // delegated code path is exercised.
+        // enableGreenFilter=true, greenFilter='delegated' filters to
+        // gf_catalog_atrb_val17_name__c = 'Delegated Label CIB', which matches Alpha and Beta
+        // (both carry that label) — the duplicate GammaDuplicate row (val17 = null) is excluded.
         Test.startTest();
         List<DMT_SustainableDealController.CatalogOption> options =
             DMT_SustainableDealController.getCatalogBySubtype(DMT_Constants.DMT_SUSTAINABLE_GREEN, 'delegated', true);
         Test.stopTest();
 
-        System.assertEquals(2, options.size(), 'Delegated filter: full RBGR catalog returned while filter is pending implementation');
+        System.assertEquals(2, options.size(), 'Delegated filter should match Alpha and Beta only');
         System.assertEquals('GRN1 - Alpha', options[0].label);
         System.assertEquals('GRN2 - Beta', options[1].label);
     }
 
     @IsTest
     static void testGetCatalogBySubtype_Green_greenFilter_other() {
-        // enableGreenFilter=true, greenFilter='other' enters the other branch.
-        // Same as above: SOQL clause is commented, full RBGR catalog returned.
+        // enableGreenFilter=true, greenFilter='other' filters to
+        // gf_catalog_atrb_val17_name__c != 'Delegated Label CIB'. In SOQL, != includes NULLs,
+        // so only the duplicate GRN1 row (val17 = null, name 'GammaDuplicate') matches —
+        // Alpha and Beta both have val17 = 'Delegated Label CIB' and are excluded.
         Test.startTest();
         List<DMT_SustainableDealController.CatalogOption> options =
             DMT_SustainableDealController.getCatalogBySubtype(DMT_Constants.DMT_SUSTAINABLE_GREEN, 'other', true);
         Test.stopTest();
 
-        System.assertEquals(2, options.size(), 'Other filter: full RBGR catalog returned while filter is pending implementation');
-        System.assertEquals('GRN1 - Alpha', options[0].label);
-        System.assertEquals('GRN2 - Beta', options[1].label);
+        System.assertEquals(1, options.size(), 'Other filter: only the row without the delegated label should match');
+        System.assertEquals('GRN1', options[0].value);
+        System.assertEquals('GRN1 - GammaDuplicate', options[0].label);
     }
 
     @IsTest

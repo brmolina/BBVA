@@ -1,59 +1,87 @@
 <template>
-    <template if:true={hasValueEntity}>
-        <lightning-record-picker
-            label={labelValue}
-            placeholder={placeholderValue}
-            filter={filter}
-            object-api-name="Local_Client__c"
-            if:true={hasValue}
-            value={clientId}
-            matching-info={matchingInfo}
-            required
-            display-info={displayInfo}
-            disabled={disabled}
-            onchange={handleChange}>
-        </lightning-record-picker>
+    <div class="slds-form-element">
+        <label class="slds-form-element__label">
+            <abbr class="slds-required" title="required">*</abbr>
+            Clients
+        </label>
 
-        <template if:false={hasValue}>
-            <lightning-record-picker
-                label={labelValue}
-                placeholder={placeholderValue}
-                filter={filter}
-                object-api-name="Local_Client__c"
-                matching-info={matchingInfo}  
-                required
-                display-info={displayInfo}
-                disabled={disabled}
-                onchange={handleChange}>
-            </lightning-record-picker>
-        </template>
-    </template>
+        <div class="slds-form-element__control">
+            <div class="slds-combobox_container">
+                <div
+                    class={prospectComboboxClass}
+                    role="combobox"
+                    aria-expanded={prospectOpen}
+                    aria-haspopup="listbox">
 
-    <template if:false={hasValueEntity}>
-        <lightning-record-picker
-            label={labelValue}
-            placeholder={placeholderValue}
-            object-api-name="Local_Client__c"
-            if:true={hasValue}
-            value={clientId}
-            matching-info={matchingInfo}
-            required
-            display-info={displayInfo}
-            disabled={disabled}
-            onchange={handleChange}>
-        </lightning-record-picker>
+                    <lightning-input
+                        type="search"
+                        variant="label-hidden"
+                        value={prospectSearchTerm}
+                        placeholder="Search Clients..."
+                        disabled={disabled}
+                        onchange={handleProspectSearch}
+                        onfocus={handleProspectFocus}
+                        onblur={handleProspectBlur}>
+                    </lightning-input>
 
-        <template if:false={hasValue}>
-            <lightning-record-picker
-                label={labelValue}
-                placeholder={placeholderValue}
-                object-api-name="Local_Client__c"
-                matching-info={matchingInfo}
-                display-info={displayInfo}
-                required
-                disabled={disabled}
-                onchange={handleChange}>
-            </lightning-record-picker>
-        </template>
-    </template>
+                    <template if:true={prospectLoading}>
+                        <lightning-spinner
+                            size="small"
+                            alternative-text="Searching clients">
+                        </lightning-spinner>
+                    </template>
+
+                    <template if:true={showProspectResults}>
+                        <div
+                            class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+                            role="listbox">
+
+                            <ul
+                                class="slds-listbox slds-listbox_vertical"
+                                role="presentation">
+
+                                <template
+                                    for:each={prospectResults}
+                                    for:item="client">
+
+                                    <li
+                                        key={client.id}
+                                        class="slds-listbox__item"
+                                        role="presentation">
+
+                                        <button
+                                            type="button"
+                                            role="option"
+                                            class="slds-button slds-button_reset slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta"
+                                            data-id={client.id}
+                                            data-label={client.label}
+                                            onclick={handleProspectSelect}>
+
+                                            <span class="slds-media__figure">
+                                                <lightning-icon
+                                                    icon-name="standard:account"
+                                                    size="small"
+                                                    alternative-text="Account">
+                                                </lightning-icon>
+                                            </span>
+
+                                            <span class="slds-media__body">
+                                                <span class="slds-listbox__option-text slds-listbox__option-text_entity">
+                                                    {client.label}
+                                                </span>
+
+                                                <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">
+                                                    {client.subtitle}
+                                                </span>
+                                            </span>
+                                        </button>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>acpl__gf_ap_substatus_type_name__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Sub-status</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>acpl__gf_ap_status_type_name__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Not started</fullName>
+                <default>true</default>
+                <label>Not started</label>
+            </value>
+            <value>
+                <fullName>AP team not invited</fullName>
+                <default>false</default>
+                <label>AP team not invited</label>
+            </value>
+            <value>
+                <fullName>AP team invited</fullName>
+                <default>false</default>
+                <label>AP team invited</label>
+            </value>
+            <value>
+                <fullName>Pending pre-validation</fullName>
+                <default>false</default>
+                <label>Pending pre-validation</label>
+            </value>
+            <value>
+                <fullName>Pre-validated</fullName>
+                <default>false</default>
+                <label>Pre-validated</label>
+            </value>
+            <value>
+                <fullName>Pending review</fullName>
+                <default>false</default>
+                <label>Pending review</label>
+            </value>
+            <value>
+                <fullName>Pending validation</fullName>
+                <default>false</default>
+                <label>Pending validation</label>
+            </value>
+            <value>
+                <fullName>In place</fullName>
+                <default>false</default>
+                <label>In place</label>
+            </value>
+            <value>
+                <fullName>Expired</fullName>
+                <default>false</default>
+                <label>Expired</label>
+            </value>
+            <value>
+                <fullName>Under Review</fullName>
+                <default>false</default>
+                <label>Under Review</label>
+            </value>
+            <value>
+                <fullName>Pending Revalidation</fullName>
+                <default>false</default>
+                <label>Pending Revalidation</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Not started</controllingFieldValue>
+            <valueName>Not started</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Not started</controllingFieldValue>
+            <controllingFieldValue>In Progress</controllingFieldValue>
+            <valueName>AP team not invited</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Not started</controllingFieldValue>
+            <controllingFieldValue>In Progress</controllingFieldValue>
+            <controllingFieldValue>Pending Validation</controllingFieldValue>
+            <controllingFieldValue>Validated</controllingFieldValue>
+            <valueName>Expired</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>In Progress</controllingFieldValue>
+            <valueName>AP team invited</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>In Progress</controllingFieldValue>
+            <valueName>Pending pre-validation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>In Progress</controllingFieldValue>
+            <valueName>Pre-validated</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>In Progress</controllingFieldValue>
+            <valueName>Pending review</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Pending Validation</controllingFieldValue>
+            <valueName>Pending validation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Validated</controllingFieldValue>
+            <valueName>In place</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Validated</controllingFieldValue>
+            <valueName>Under Review</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Validated</controllingFieldValue>
+            <valueName>Pending Revalidation</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

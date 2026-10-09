@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__recalculate_rating__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Recalculate rating</description>
+    <label>Recalculate rating</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>0</fullName>
+                <default>false</default>
+                <label>anchor,rating and overlays</label>
+            </value>
+            <value>
+                <fullName>1</fullName>
+                <default>false</default>
+                <label>rating and overlays</label>
+            </value>
+            <value>
+                <fullName>2</fullName>
+                <default>false</default>
+                <label>rating</label>
+            </value>
+            <value>
+                <fullName>3</fullName>
+                <default>false</default>
+                <label>overlays</label>
+            </value>
+            <value>
+                <fullName>4</fullName>
+                <default>true</default>
+                <label>No recalculate needed</label>
+            </value>
+            <value>
+                <fullName>5</fullName>
+                <default>false</default>
+                <label>Leveraged</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

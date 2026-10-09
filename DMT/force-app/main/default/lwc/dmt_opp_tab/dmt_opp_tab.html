@@ -10,6 +10,11 @@
                         tabindex={tab.tabIndex}
                         aria-selected={tab.ariaSelected}
                         data-controls={tab.id}>
+                        <template if:true={tab.hasWarning}>
+                            <span class="tab-icon-with-sup">
+                                <lightning-icon icon-name="utility:warning" size="xx-small" class="tab-icon-warning" title="There are pending fields to fill in to avoid Passport errors"></lightning-icon>
+                            </span>
+                        </template>
                         <span class="tab-label">{tab.label}</span>
                     </a>
                 </li>
@@ -19,11 +24,27 @@
             <li class="slds-tabs_default__item slds-tabs_default__overflow-button slds-hide" role="presentation">
                 <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
                     <button class="slds-button" aria-haspopup="true" role="tab">
+                        <template if:true={hasAnyTabWarning}>
+                            <lightning-icon icon-name="utility:warning" size="xx-small" class="tab-icon-warning" title="Complete the highlighted fields to avoid Passport errors."></lightning-icon>
+                        </template>
                         More
                         <lightning-icon icon-name="utility:down" size="xx-small"></lightning-icon>
                     </button>
                     <div class="slds-dropdown slds-dropdown_right">
-                        <ul class="slds-dropdown__list" role="menu"></ul>
+                        <ul class="slds-dropdown__list" role="menu">
+                            <template for:each={overflowTabs} for:item="tab">
+                                <li key={tab.id} class="slds-dropdown__item" role="presentation">
+                                    <a href="#" role="menuitem" tabindex="-1" data-tab-id={tab.id} onclick={handleDropdownItemClick} style="text-transform:uppercase">
+                                        <template if:true={tab.hasWarning}>
+                                            <span class="tab-icon-with-sup" style="margin-right: 0.5rem; margin-bottom: 0.05rem;">
+                                                <lightning-icon icon-name="utility:warning" size="xx-small" class="tab-icon-warning" title="Complete the highlighted fields to avoid Passport errors."></lightning-icon>
+                                            </span>
+                                        </template>
+                                        <span>{tab.label}</span>
+                                    </a>
+                                </li>
+                            </template>
+                        </ul>
                     </div>
                 </div>
             </li>
@@ -48,44 +69,39 @@
         </template>
 
         <!-- Tab panels: each panel maps to a tab via data-panel-id -->
-
-        <div data-panel-id="opportunityInfo" class="slds-tabs_default__content slds-show" role="tabpanel">
+        <div data-panel-id="opportunityInfo" class="slds-tabs_default__content slds-hide" role="tabpanel">
             <template if:true={visiblePanels.opportunityInfo}>
-                <c-cf-D-M-T_-opportunity_-info_-tab record-id={recordId}></c-cf-D-M-T_-opportunity_-info_-tab>
-                <c-dmt_document_manager_for_core_document></c-dmt_document_manager_for_core_document>
+                <c-dmt_opp_info record-id={recordId} stage-record={stageRecord} can-edit={canEditOpportunityInfo} missing-passport-fields={isFieldWarningPassport.opportunityInfo} is-single-field-warning={isSinglePassportFieldWarning} onpassportwarningchange={handleOpportunityInfoWarningChange}></c-dmt_opp_info>
             </template>
         </div>
 
         <div data-panel-id="client" class="slds-tabs_default__content slds-hide" role="tabpanel">
             <template if:true={visiblePanels.client}>
-                <c-cf-D-M-T_-opportunity_-client_v3 record-id={recordId}></c-cf-D-M-T_-opportunity_-client_v3>
-            </template>
-        </div>
-        <div data-panel-id="clientV2" class="slds-tabs_default__content slds-hide" role="tabpanel">
-            <template if:true={visiblePanels.clientV2}>
-                <c-dmt_opp_client record-id={recordId} stage-record={stageRecord} can-edit={canEdit}></c-dmt_opp_client>
+                <c-dmt_opp_client record-id={recordId} stage-record={stageRecord} can-edit={canEditClient} missing-passport-fields={isFieldWarningPassport.client} is-single-field-warning={isSinglePassportFieldWarning} onpassportwarningchange={handleClientWarningChange}></c-dmt_opp_client>                
             </template>
         </div>
         <div data-panel-id="products" class="slds-tabs_default__content slds-hide" role="tabpanel">
             <template if:true={visiblePanels.products}>
-                <c-dmt_opp_products record-id={recordId} stage-record={stageRecord} can-edit={canEdit}></c-dmt_opp_products>
+                <c-dmt_opp_products record-id={recordId} stage-record={stageRecord} can-edit={canEditProducts} onproductdeleted={handleProductDeleted} onproductchanged={handleProductDeleted}></c-dmt_opp_products>
             </template>
         </div>
 
         <div data-panel-id="approvalProcessData" class="slds-tabs_default__content slds-hide" role="tabpanel">
             <template if:true={visiblePanels.approvalProcessData}>
-                <c-dmt_-opp-approvers-info-form record-id={recordId}></c-dmt_-opp-approvers-info-form>
                 <c-cf-D-M-T_-R-I-S-K-A-P-P-R-O-V-A-L-O-P-P record-id={recordId}></c-cf-D-M-T_-R-I-S-K-A-P-P-R-O-V-A-L-O-P-P>
-                <div style="min-height: 200em;">
-                    <c-cf-D-M-T_-C-L-I-E-N-T_-G-R-O-U-P_-V2_-O-P-P-O-R-T-U-N-I-T-Y record-id={recordId}></c-cf-D-M-T_-C-L-I-E-N-T_-G-R-O-U-P_-V2_-O-P-P-O-R-T-U-N-I-T-Y>
+                <div class="approval-details-wrapper">
+                    <c-dmt_opp_approval_details
+                        record-id={recordId}
+                        stage-record={stageRecord}
+                        can-edit={canEditApprovalProcessData}>
+                    </c-dmt_opp_approval_details>
                 </div>
-                <c-dmt_features_selected record-id={recordId}></c-dmt_features_selected>
+                <c-dmt_features_selected record-id={recordId} stage-record={stageRecord} can-edit={canEditApprovalProcessData}></c-dmt_features_selected>
             </template>
         </div>
-
-        <div data-panel-id="commercialProcessData" class="slds-tabs_default__content slds-hide" role="tabpanel">
-            <template if:true={visiblePanels.commercialProcessData}>
-                <c-cf-D-M-T_-Opportunity_-Tab_-Commercial record-id={recordId}></c-cf-D-M-T_-Opportunity_-Tab_-Commercial>
+        <div data-panel-id="IBFPIPELINE" class="slds-tabs_default__content slds-hide" role="tabpanel">
+            <template if:true={visiblePanels.IBFPIPELINE}>
+                <c-dmt_opp_commercial_process_data record-id={recordId} stage-record={stageRecord} can-edit={canEditIBFPipeline}></c-dmt_opp_commercial_process_data>
             </template>
         </div>
 

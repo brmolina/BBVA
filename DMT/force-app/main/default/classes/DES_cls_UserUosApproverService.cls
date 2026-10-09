@@ -81,8 +81,29 @@ public with sharing class DES_cls_UserUosApproverService{
 
         List<GroupMember> groupMemberToDelete = new List<GroupMember>();
 
+        //Contexto update: borrar registros antiguos y filtrar solo usuarios con cambio de UOS
         if (oldUserMap != null && !oldUserMap.isEmpty()){
+
+            // Llamar con el mapa completo (sin filtrar) para que deleteOld compare correctamente
             groupMemberToDelete = deleteOldApproverMembersAndReturnGroupMembers(oldUserMap, mapUosUser);
+
+            Map<Id, String> mapUosUserOld;
+
+            if (Test.isRunningTest() && TEST_OLD_UOS_BY_USER != null){
+                mapUosUserOld = TEST_OLD_UOS_BY_USER;
+            } else{
+                DES_UOS_Utils uosUtilOld = new DES_UOS_Utils();
+                mapUosUserOld = uosUtilOld.indentifyUserUos(oldUserMap.values());
+            }
+
+            Set<Id> changedUsers = filterUsersWithUosChange(mapUosUser, mapUosUserOld);
+            Map<Id, String> filteredMapUosUser = new Map<Id, String>();
+
+            for (Id uid : changedUsers){
+                filteredMapUosUser.put(uid, mapUosUser.get(uid));
+            }
+
+            mapUosUser = filteredMapUosUser;
         }
 
         if (mapUosUser == null || mapUosUser.isEmpty()){
@@ -236,12 +257,12 @@ public with sharing class DES_cls_UserUosApproverService{
 
         Set<Id> usersToDeleteApprover = new Set<Id>();
 
-        for (Id userId : mapUosUserNew.keySet()){
+        for (Id userId : mapUosUserOld.keySet()){
 
-            String newUos = mapUosUserNew.get(userId);
             String oldUos = mapUosUserOld.get(userId);
+            String newUos = mapUosUserNew.get(userId);
 
-            if (newUos != null && newUos != oldUos){
+            if (oldUos != null && oldUos != newUos){
                 usersToDeleteApprover.add(userId);
             }
         }
@@ -291,6 +312,30 @@ public with sharing class DES_cls_UserUosApproverService{
         }
 
         return gms;
+    }
+
+    // =====================================================
+    // FILTRO UOS
+    // =====================================================
+    private static Set<Id> filterUsersWithUosChange(Map<Id, String> mapUosUserNew, Map<Id, String> mapUosUserOld){
+
+        Set<Id> changedUsers = new Set<Id>();
+
+        if (mapUosUserNew == null || mapUosUserOld == null){
+            return changedUsers;
+        }
+
+        for (Id userId : mapUosUserNew.keySet()){
+
+            String newUos = mapUosUserNew.get(userId);
+            String oldUos = mapUosUserOld.get(userId);
+            System.debug(' *** UserId: ' + userId + ' | OldUOS: ' + oldUos + ' | NewUOS: ' + newUos);
+            if (newUos != null && newUos != oldUos){
+                changedUsers.add(userId);
+            }
+        }
+
+        return changedUsers;
     }
 
     // =====================================================

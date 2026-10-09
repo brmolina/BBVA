@@ -1,0 +1,8 @@
+<template>
+    <template lwc:if={typeAttributes.hasAccess}>
+        <a href={value} target={typeAttributes.target} title={typeAttributes.tooltip}>{typeAttributes.label}</a>
+    </template>
+    <template lwc:else>
+        <span title={typeAttributes.tooltip}>{typeAttributes.label}</span>
+    </template>
+</template>

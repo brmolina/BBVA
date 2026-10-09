@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__ebitda_3yr_evolution_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>An explanation of the evolution of Ebitda</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Evolution of Ebitda</label>
+    <length>1000</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>2</visibleLines>
+</CustomField>

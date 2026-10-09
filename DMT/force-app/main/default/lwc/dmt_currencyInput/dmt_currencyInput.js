@@ -2,10 +2,11 @@ import { LightningElement, api } from 'lwc';
 import pubsub from 'omnistudio/pubsub';
 import userLocale from '@salesforce/i18n/locale';
 import ERR_NEGATIVE_VALUE from '@salesforce/label/c.DMT_Negative_Value_Error';
+import { parseAbbreviatedNumber } from 'c/dmt_numberUtils';
 
 export default class Dmt_currencyInput extends LightningElement {
 
-    label = {
+    errorLabels = {
         ERR_NEGATIVE_VALUE
     };
 
@@ -19,6 +20,9 @@ export default class Dmt_currencyInput extends LightningElement {
     _pattern;
     _objectType;
     _required = false;
+    _formatOnBlur = false;
+    _isFocused = false;
+    _displayValue;
 
     parseLocalizedNumber(rawValue) {
         if (rawValue === null || rawValue === undefined || rawValue === '') {
@@ -26,6 +30,10 @@ export default class Dmt_currencyInput extends LightningElement {
         }
 
         const value = String(rawValue).trim();
+        if (/[KMBT]$/i.test(value)) {
+            return parseAbbreviatedNumber(value, true);
+        }
+
         const hasDot = value.includes('.');
         const hasComma = value.includes(',');
 
@@ -46,7 +54,18 @@ export default class Dmt_currencyInput extends LightningElement {
         }
 
         if (hasDot) {
+            // Check if dot is decimal separator (followed by 1-3 digits at the end)
+            // or thousands separator (followed by exactly 3 digits not at the end)
+            const dotIndex = value.lastIndexOf('.');
+            const digitsAfterDot = value.length - dotIndex - 1;
+            const isDecimalSeparator = digitsAfterDot >= 1 && digitsAfterDot <= 3 && dotIndex === value.indexOf('.');
+            
             if (userLocale.startsWith('es')) {
+                if (isDecimalSeparator) {
+                    // Single dot followed by 1-3 digits: treat as decimal (user typed decimal with dot)
+                    return parseFloat(value);
+                }
+                // Otherwise treat dot as thousands separator
                 return parseFloat(value.replace(/\./g, ''));
             }
 
@@ -59,6 +78,8 @@ export default class Dmt_currencyInput extends LightningElement {
     @api label;
     @api eventName;
     @api channelName;
+    @api compactLabel = false;
+    @api disabled = false;
 
     @api
     set objectType(value){
@@ -95,14 +116,45 @@ export default class Dmt_currencyInput extends LightningElement {
     
     @api
     set value(value){
-        
         console.log('----- value ' + value);
 
         this._value = value;
+        this._displayValue = this._formatOnBlur && !this._isFocused
+            ? this.formatValue(value)
+            : value;
     }
 
     get value() {
         return this._value;
+    }
+
+    @api
+    set formatOnBlur(value) {
+        this._formatOnBlur = value === true || value === 'true';
+        this._displayValue = this._formatOnBlur && !this._isFocused
+            ? this.formatValue(this._value)
+            : this._value;
+    }
+
+    get formatOnBlur() {
+        return this._formatOnBlur;
+    }
+
+    get inputType() {
+        return this._formatOnBlur ? 'text' : 'number';
+    }
+
+    get displayValue() {
+        return this._displayValue;
+    }
+
+    formatValue(value) {
+        if (value === null || value === undefined || value === '') {
+            return '';
+        }
+
+        const numericValue = Number(value);
+        return Number.isFinite(numericValue) ? numericValue.toLocaleString('en-US') : value;
     }
 
     @api 
@@ -144,13 +196,15 @@ export default class Dmt_currencyInput extends LightningElement {
 
     @api helpTextMessage = '';
 
+    _pendingValue;
+
     @api
     checkValidity() {
         const input = this.template.querySelector('lightning-input');
         const val = parseFloat(input.value);
 
         if (!isNaN(val) && val < 0) {
-            input.setCustomValidity(this.label.ERR_NEGATIVE_VALUE);
+            input.setCustomValidity(this.errorLabels.ERR_NEGATIVE_VALUE);
             input.reportValidity();
             return false;
         }
@@ -160,30 +214,67 @@ export default class Dmt_currencyInput extends LightningElement {
         return true;
     }
 
+    handleInputChange(event) {
+        this._pendingValue = event.target.value;
+        this._displayValue = event.target.value;
+    }
+
+    handleInputFocus() {
+        this._isFocused = true;
+        this._displayValue = this._value ?? '';
+    }
+
     handleInputblur(event) {
 
-        const val = parseFloat(event.target.value);
+        const rawValue = this._pendingValue !== undefined ? this._pendingValue : event.target.value;
+        this._pendingValue = undefined;
+
+        const val = this.parseLocalizedNumber(rawValue);
         const input = this.template.querySelector('lightning-input');
 
         if (!isNaN(val) && val < 0) {
-            input.setCustomValidity(this.label.ERR_NEGATIVE_VALUE);
+            input.setCustomValidity(this.errorLabels.ERR_NEGATIVE_VALUE);
             input.reportValidity();
+
+            const parsedNegativeValue = this.parseLocalizedNumber(rawValue);
+            this._displayValue = this._formatOnBlur ? this.formatValue(parsedNegativeValue) : rawValue;
+            if (this.isPubsubEvent) {
+              pubsub.fire(this.channelName, this.eventName, {
+                value: parsedNegativeValue,
+                isFieldValid: input.checkValidity()
+              });
+            } else {
+              this.dispatchEvent(
+                new CustomEvent(this.eventName, {
+                  detail: { value: parsedNegativeValue, isFieldValid: input.checkValidity() },
+                  bubbles: true,
+                  composed: true
+                })
+              );
+            }
+
             return;
         }
 
         input.setCustomValidity('');
         input.reportValidity();
 
-        if(event.target.value == null || event.target.value == undefined || event.target.value == '') {
+        if(rawValue == null || rawValue == undefined || rawValue == '' || rawValue === 0) {
             if(this.objectType != 'Line'){
-                  event.target.value = 0;
+                  this._value = 0;
             }
         }
 
+        // Parse the value to normalize decimal format before sending to backend
+        const parsedValue = this.parseLocalizedNumber(rawValue);
+        this._value = parsedValue;
+        this._displayValue = this._formatOnBlur ? this.formatValue(parsedValue) : parsedValue;
+        this._isFocused = false;
+        
         if(this.isPubsubEvent) {
-            pubsub.fire(this.channelName, this.eventName, { value: event.target.value});
+            pubsub.fire(this.channelName, this.eventName, { value: parsedValue, isFieldValid: input.checkValidity() });
         }else {
-            this.dispatchEvent(new CustomEvent(this.eventName, {detail: { value: event.target.value}, bubbles: true, composed: true}));  
+            this.dispatchEvent(new CustomEvent(this.eventName, {detail: { value: parsedValue, isFieldValid: input.checkValidity() }, bubbles: true, composed: true}));  
         }
     }
 

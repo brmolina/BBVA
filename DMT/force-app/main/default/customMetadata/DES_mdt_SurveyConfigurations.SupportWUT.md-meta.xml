@@ -104,6 +104,10 @@
         <value xsi:type="xsd:double">3.0</value>
     </values>
     <values>
+        <field>DES_fld_Notebook__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
         <field>DES_fld_Sender__c</field>
         <value xsi:type="xsd:string">ans_clientcloud@bbva.com</value>
     </values>

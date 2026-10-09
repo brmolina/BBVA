@@ -1,0 +1,105 @@
+<template>
+    <div class="slds-is-relative" onclick={handleContainerClick}>
+        <template lwc:if={hasFields}>
+            <button
+                type="button"
+                class="c-trigger-link slds-text-body_small"
+                onclick={handleToggle}
+                aria-haspopup="true"
+                aria-expanded={isOpen}
+            >
+                <lightning-icon
+                    icon-name="utility:warning"
+                    variant="warning"
+                    size="x-small"
+                    class="slds-m-right_xx-small slds-m-left_x-small"
+                    alternative-text="Warning"
+                ></lightning-icon>
+                View fields
+            </button>
+        </template>
+
+        <template lwc:if={isOpen}>
+            <section
+                class="slds-popover slds-popover_warning slds-nubbin_top-left c-missing-fields-popover"
+                role="dialog"
+                aria-label={title}
+            >
+                <header class="slds-popover__header slds-theme_warning slds-grid slds-grid_vertical-align-center slds-grid_align-spread">
+                    <button
+                        class="slds-button slds-button_icon slds-button_icon-small slds-popover__close slds-order_1"
+                        title="Close"
+                        onclick={handleClose}
+                    >
+                        <lightning-icon icon-name="utility:close" size="xx-small" alternative-text="Close"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                        <h2 class="slds-truncate slds-text-title_bold" title={title}>
+                            {title}
+                        </h2>
+                    </div>
+                </header>
+
+                <div class="slds-popover__body c-popover-body">
+                    <template for:each={groupedFields} for:item="group">
+                        <ul key={group.key} class="slds-list_vertical c-field-group">
+                            <li class="slds-item c-group-header slds-text-title_caps slds-text-color_weak slds-grid slds-grid_vertical-align-center">
+                                <span>{group.label}</span>
+                                <template lwc:if={group.isUnmapped}>
+                                    <lightning-helptext content={group.tooltip} class="slds-m-left_xx-small slds-p-bottom_xx-small"></lightning-helptext>
+                                </template>
+                            </li>
+                            <template for:each={group.items} for:item="field">
+                                <li key={field.id} class="slds-item c-field-item slds-p-vertical_xx-small slds-border_bottom">
+                                    <lightning-icon
+                                        icon-name="utility:warning"
+                                        variant="warning"
+                                        size="xx-small"
+                                        alternative-text="Missing field"
+                                    ></lightning-icon>
+                                    <template lwc:if={field.isUnmapped}>
+                                        <span
+                                            class="c-field-unmapped"
+                                            title="This field still needs to be configured, so we can't redirect you to it automatically, you can search for it manually."
+                                        >
+                                            {field.label}
+                                        </span>
+                                    </template>
+                                    <template lwc:else>
+                                        <button
+                                            type="button"
+                                            class="c-field-link"
+                                            data-id={field.id}
+                                            data-fieldname={field.fieldName}
+                                            data-label={field.label}
+                                            data-path={field.pathJson}
+                                            onclick={handleFieldClick}
+                                        >
+                                            {field.label}
+                                        </button>
+                                    </template>
+                                </li>
+                            </template>
+                        </ul>
+                    </template>
+                </div>
+
+                <footer class="slds-popover__footer c-popover-footer">
+                    <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                        <span class="slds-grid slds-grid_vertical-align-center">
+                            <span class="slds-text-body_small slds-text-color_weak">{resultsCount}</span>
+                            <lightning-helptext
+                                content="Click a field to locate and highlight it in the form"
+                                class="slds-m-left_xx-small slds-p-bottom_xx-small"
+                            ></lightning-helptext>
+                        </span>
+                        <button type="button" title="Click to locate and highlight all missing fields in the form" class="c-highlight-all-link slds-text-body_small" onclick={handleHighlightAll}>
+                            Review all
+                        </button>
+                    </div>
+                </footer>
+            </section>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>altm__comm_alerts_perf_actions_type__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Actions to be performed</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Tasks</fullName>
+                <default>false</default>
+                <label>Tasks</label>
+            </value>
+            <value>
+                <fullName>Opportunities</fullName>
+                <default>false</default>
+                <label>Opportunities</label>
+            </value>
+            <value>
+                <fullName>Sample</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sample</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>altm__BBVA_rejection_reason_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <label>BBVA Discard Reasons</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Not my client</fullName>
+                <default>false</default>
+                <label>Not my client</label>
+            </value>
+            <value>
+                <fullName>Informative but not required commercial action</fullName>
+                <default>false</default>
+                <label>Informative but not required commercial action</label>
+            </value>
+            <value>
+                <fullName>Useful, Managed out of GDT</fullName>
+                <default>false</default>
+                <label>Useful, Managed out of GDT</label>
+            </value>
+            <value>
+                <fullName>Actions on going</fullName>
+                <default>false</default>
+                <label>Actions on going</label>
+            </value>
+            <value>
+                <fullName>Too late / Deal Missed</fullName>
+                <default>false</default>
+                <label>Too late / Deal Missed</label>
+            </value>
+            <value>
+                <fullName>Not Useful / Wrong Alerts</fullName>
+                <default>false</default>
+                <label>Not Useful / Wrong Alerts</label>
+            </value>
+            <value>
+                <fullName>No possible action - Risk limitation</fullName>
+                <default>false</default>
+                <label>No possible action - Risk limitation</label>
+            </value>
+            <value>
+                <fullName>No possible action - Pricing</fullName>
+                <default>false</default>
+                <label>No possible action - Pricing</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <label>Others</label>
+            </value>
+            <value>
+                <fullName>Client withdrawn</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Client withdrawn</label>
+            </value>
+            <value>
+                <fullName>Missed Deadline</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Missed Deadline</label>
+            </value>
+            <value>
+                <fullName>N/A</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>N/A</label>
+            </value>
+            <value>
+                <fullName>Risk amounts limitation</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Risk amounts limitation</label>
+            </value>
+            <value>
+                <fullName>Risk not approved</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Risk not approved</label>
+            </value>
+            <value>
+                <fullName>Sample</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sample</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

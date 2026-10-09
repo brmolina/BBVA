@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Not_Old_Visit</fullName>
+    <active>false</active>
+    <description>Regla de validación que no permite crear visitas con fecha pasada</description>
+    <errorConditionFormula>AND(
+				dwp_kitv__visit_start_date__c &lt; NOW(),
+	   ISNEW()
+)</errorConditionFormula>
+    <errorMessage>You cannot create a visit with past date.</errorMessage>
+</ValidationRule>

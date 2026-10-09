@@ -1,7 +1,18 @@
 import { LightningElement, api, track } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { labels } from './dmt_select_clients_in_opportunity_labels.js';
 import fetchInitialData from '@salesforce/apex/DMT_HPG_MainTableCustomController.fetchInitialData';
 import fetchData from '@salesforce/apex/DMT_HPG_MainTableCustomController.fetchData';
+import lastDate from '@salesforce/apex/DMT_HPG_Utils.lastDate';
+
+const CUSTOM_EVENT_OPTIONS = { bubbles: true, composed: true, cancelable: true };
+
+const MAIN_BORROWER_TOAST = {
+    title: 'Action not allowed',
+    message: 'You cannot remove the Main Borrower. Please select a different client as Main Borrower first.',
+    variant: 'warning',
+    mode: 'dismissable'
+};
 
 function normalizeToArray(value) {
     if (Array.isArray(value)) return value.filter(Boolean);
@@ -21,7 +32,7 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
     @api isLoading;
 
     /** When true the table body shows a service-unavailable message instead of data. */
-    @api serviceUnavailable = false;
+   // @api serviceUnavailable = false;
 
     // ─── @api getter/setter props ─────────────────────────────────────────────
     _clientId;
@@ -35,19 +46,17 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
         const next    = v || null;
         const changed = this._clientId !== next;
         this._clientId = next;
-        if (changed && this._clientId) this._loadInitialData();
+        if (changed && this._clientId) {
+            // CIBGLOBALD-4344 - A new opportunity/client context resets the With-Exposure-empty
+            // fallback so it can re-arm, even if the user had manually overridden it previously.
+            this._userManuallyChangedFilter = false;
+            this._hasAutoSwitchedExposure   = false;
+            this._fetchDateAndLoad();
+        }
     }
 
     @api get isReadOnlyUser() { return this._isReadOnlyUser; }
     set isReadOnlyUser(v) { this._isReadOnlyUser = v; }
-
-    @api get searchDate() { return this._searchDate; }
-    set searchDate(v) {
-        const next    = v || null;
-        const changed = this._searchDate !== next;
-        this._searchDate = next;
-        if (changed && this._searchDate && this._clientId) this._loadInitialData();
-    }
 
     @api get stageName() { return this._stageName; }
     set stageName(v) { this._stageName = v; }
@@ -68,8 +77,8 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
         this._priorselectedRows = normalizeToArray(value);
         if (this._hasInitializedSelection) return;
 
-        this.selectedClients       = this._priorselectedRows.map(item => ({ ...item, mainHolder: null }));
-        this._mainHolderSelectRows = this.selectedClients.map(c => c.customerId);
+        this.selectedClients       = this._cloneClients(this._priorselectedRows);
+        this._mainHolderSelectRows = this._selectedCustomerIds;
 
         const mainHolderFromData = this._priorselectedRows.find(
             item => item.mainHolder && item.mainHolder !== 'null'
@@ -83,10 +92,9 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
         }
     }
 
-    // ─── @api command methods ─────────────────────────────────────────────────
     @api getSelectionData() {
         return {
-            selectedClients: this.selectedClients.map(c => ({ ...c })),
+            selectedClients: this._cloneClients(this.selectedClients),
             mainHolder:      this._mainHolderCustomer || null
         };
     }
@@ -94,8 +102,8 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
     @api restoreSelection(snapshot) {
         if (!snapshot) return;
         const { selectedClients = [], mainHolder = null } = snapshot;
-        this.selectedClients       = selectedClients.map(c => ({ ...c, mainHolder: null }));
-        this._mainHolderSelectRows = this.selectedClients.map(c => c.customerId);
+        this.selectedClients       = this._cloneClients(selectedClients);
+        this._mainHolderSelectRows = this._selectedCustomerIds;
         this._mainHolderCustomer   = mainHolder || '';
         this.errorMainHolder       = false;
     }
@@ -106,13 +114,26 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
         this._mainHolderCustomer   = '';
         this.errorMainHolder       = false;
     }
+    @track filterClientsValue;
+    @api get filterClients() { return this.filterClientsValue; }
+    set filterClients(v) {
+        const next    = v || null;
+        const changed = this.filterClientsValue !== next;
+        this.filterClientsValue = next;
+        if (changed) {
+            if (this._searchDate) {
+                this._loadInitialData();
+            } else {
+                this._fetchDateAndLoad();
+            }
+        }
+    }
 
     // ─── @track reactive state ────────────────────────────────────────────────
     @track allAvailableClients = [];
     @track searchText          = '';
-    @track filterClients       = 'Y';
-    @track showLoading         = false;
     @track errorMainHolder     = false;
+    @track _internalError      = false;
 
     // ─── private state ────────────────────────────────────────────────────────
     labels                   = labels;
@@ -130,13 +151,16 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
 
     // ─── lifecycle ────────────────────────────────────────────────────────────
     connectedCallback() {
-        if (this._isSubsidiary || !this._clientId) return;
-        this._loadInitialData();
+        if (!this._clientId) return;
+        this._fetchDateAndLoad();
     }
 
     // ─── computed getters ─────────────────────────────────────────────────────
     get showInternalRating()    { return true; }
     get showCurrentRatingDate() { return true; }
+    get showExpirationRatingDate() {
+        return this.selectedTab === 'tcmopp';
+    }
     get showExternalRating() {
         return this.selectedTab === 'tcmopp' || this.selectedTab === 'tcmoppMitigants';
     }
@@ -150,25 +174,26 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
     }
 
     get selectedCount()            { return this.selectedClients.length; }
-    get showGlobalLoadingOverlay() { return this.showLoading && !this.isFetchingPage; }
-    get showTableLoadingOverlay()  { return this.showLoading && !this.showGlobalLoadingOverlay; }
-    get loadingMessage()           { return this.showLoading ? 'Loading information, please wait...' : ''; }
 
     get canSelectClients() {
-        return !this._isReadOnlyUser &&
+        return !this._isReadOnlyUser && !this._isSubsidiary &&
             (this._stageName === 'Draft' || this._stageName === 'Ready to close');
     }
 
     get isClientSelectionDisabled() { return !this.canSelectClients; }
 
-    get showNoClients() {
-        return !this.showLoading && this._hasLoadedOnce && this.allAvailableClients.length === 0;
-    }
-
     get hasLoadedOnce() { return this._hasLoadedOnce; }
 
+    get tableFrameClass() {
+        return this._isSubsidiary ? 'table-frame table-frame--compact' : 'table-frame';
+    }
+
+    get showFilters() { return !this._isSubsidiary; }
+
     get totalColumns() {
-        return 3 + (this.showExternalRating ? 1 : 0);
+        return 4
+            + (this.showExpirationRatingDate ? 1 : 0)
+            + (this.showExternalRating ? 1 : 0);
     }
 
     get visibleClients() {
@@ -177,7 +202,13 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
 
         const filtered = this.allAvailableClients.filter(row => {
             const id = row.customerId || row[6];
-            if (this.booking && id && !id.startsWith(this.booking)) return false;
+
+            // Subsidiaries: informational display of the single associated client only.
+            if (this._isSubsidiary) {
+                return id === this._mainHolderCustomer;
+            }
+
+            if (!this.matchesBookingGeography(id)) return false;
             if (this.filterClients === 'true' && !selectedById.has(id)) return false;
             if (!query) return true;
             const name    = (row.customerName || row[9] || '').toLowerCase();
@@ -203,42 +234,94 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
 
     get hasVisibleClients() { return this.visibleClients.length > 0; }
 
-    // ─── data loading ─────────────────────────────────────────────────────────
-    async _loadInitialData() {
-        if (this._isSubsidiary || !this._clientId || !this._searchDate) return;
+    get showNoClientsForGeography() {
+        return !this.isLoading && this.allAvailableClients.length === 0;
+    }
 
-        this.showLoading    = true;
+    get noClientsMessage() {
+        return 'No clients found for this geography.';
+    }
+
+    get isServiceUnavailable() { return this.serviceUnavailable || this._internalError; }
+
+    get showSelectionSummary() { return !this.isServiceUnavailable && !this._isSubsidiary; }
+
+    get isFiltersDisabled() { return this.isServiceUnavailable || this.isLoading || this._isSubsidiary; }
+
+    // ─── private computed helpers ─────────────────────────────────────────────
+    get _selectedCustomerIds() {
+        return this.selectedClients.map(c => c.customerId);
+    }
+
+
+    // ─── data loading ─────────────────────────────────────────────────────────
+    async _fetchDateAndLoad() {
+        if (!this._searchDate) {
+            try {
+                const date = await lastDate();
+                this._searchDate = date || null;
+            } catch (error) {
+                this._internalError = true;
+                console.error('[dmt_select_clients_in_opportunity][lastDate]', error);
+                return;
+            }
+        }
+        await this._loadInitialData();
+    }
+    _hasAutoSwitchedExposure = false;
+    // CIBGLOBALD-4344 - Tracks whether the user has deliberately picked a filter option, so the
+    // With-Exposure-empty fallback only acts on the default/initial load, never overriding a
+    // choice the user made themselves.
+    _userManuallyChangedFilter = false;
+    async _loadInitialData() {
+        if (!this._clientId || !this._searchDate || !this.filterClientsValue) return;
+        this.isLoading     = true;
         this.visibleRowLimit = this.batchSize;
-        const clientPosition = this.filterClients === 'true' ? 'Y/N' : (this.filterClients || 'Y');
 
         try {
-            const data = await fetchInitialData({
-                selectedTab:         this.selectedTab,
-                clientId:            this._clientId,
-                lCountries:          this.countries,
-                searchDate:          this._searchDate,
-                clientPositionsType: clientPosition,
-                page:                this.page,
-                pageSize:            this.pageSize
-            });
+            const data = await fetchInitialData(
+                this._buildFetchParams({ page: this.page, pageSize: this.pageSize })
+            );
 
             if (data?.success) {
+                this._internalError      = false;
                 this.groupedData         = data.data || [];
+                if (this._shouldSwitchToAllExposure()) {
+                     this._hasAutoSwitchedExposure = true;
+                    this.filterClientsValue = 'Y/N';
+                    await this._loadInitialData();
+                return;
+            }
                 this.allAvailableClients = this._applyRatingExpiration(this.groupedData);
                 this._hasLoadedOnce      = true;
                 if (this._pendingInitialSelection) this._finalizeInitialSelection();
             } else {
+                this._internalError = true;
                 this._dispatchLoadError(data?.errorMessage || 'Unknown error loading data');
             }
         } catch (error) {
+            this._internalError = true;
             this._dispatchLoadError(error);
         } finally {
-            this.showLoading = false;
+            this.isLoading = false;
         }
     }
+    // CIBGLOBALD-4344 - Also switches when, after applying this opportunity's booking geography,
+    // the "With Exposure" result is empty altogether (not just missing the saved Main Holder).
+    _shouldSwitchToAllExposure() {
+        if (this._hasAutoSwitchedExposure || this._userManuallyChangedFilter || this.filterClientsValue !== 'Y') {
+            return false;
+        }
 
+        const hasGeographyMatch = this.groupedData.some(c => this.matchesBookingGeography(c.customerId));
+        if (!hasGeographyMatch) {
+            return true;
+        }
+
+        return Boolean(this._mainHolderCustomer)
+            && !this.groupedData.some(c => c.customerId === this._mainHolderCustomer);
+    }
     @api fetchData(params) {
-        if (this._isSubsidiary) return;
         fetchData(params)
             .then(data => {
                 if (data.success) {
@@ -254,22 +337,27 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
     }
 
     _fetchMore(page, pageSz) {
-        const clientPosition = this.filterClients === 'true' ? 'Y/N' : (this.filterClients || 'Y');
-        this.fetchData({
-            selectedTab:         this.selectedTab,
-            clientId:            this._clientId,
-            lCountries:          this.countries,
-            searchDate:          this._searchDate,
-            clientPositionsType: clientPosition,
-            page,
-            pageSize:            pageSz,
-            bubbles:             false
-        });
+        this.fetchData(this._buildFetchParams({ page, pageSize: pageSz, bubbles: false }));
     }
 
     _finalizeInitialSelection() {
         this._pendingInitialSelection = false;
         this._hasInitializedSelection = true;
+    }
+
+    _buildFetchParams(overrides = {}) {
+        return {
+            selectedTab:         this.selectedTab,
+            clientId:            this._clientId,
+            lCountries:          this.countries,
+            searchDate:          this._searchDate,
+            clientPositionsType: this.filterClients,
+            ...overrides
+        };
+    }
+
+    _cloneClients(arr) {
+        return arr.map(c => ({ ...c }));
     }
 
     // ─── selection logic ──────────────────────────────────────────────────────
@@ -278,14 +366,23 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
         const customerId = event.currentTarget?.dataset?.id;
         if (!customerId) return;
 
-        this._dispatchEditMode();
         const idx = this.selectedClients.findIndex(c => c.customerId === customerId);
         if (idx !== -1) {
+            if (this._mainHolderCustomer === customerId && this.selectedClients.length === 1) {
+                this._showMainBorrowerProtectionToast();
+                return;
+            }
+
+            this._dispatchEditMode();
             this.selectedClients = this.selectedClients.filter(c => c.customerId !== customerId);
+
             if (this._mainHolderCustomer === customerId) {
                 this._mainHolderCustomer = this.selectedClients[0]?.customerId || '';
+                this.errorMainHolder     = false;
+                this._dispatchViewModeMainHolder();
             }
         } else {
+            this._dispatchEditMode();
             const full = this.groupedData.find(c => c.customerId === customerId);
             if (full) this.selectedClients = [...this.selectedClients, { ...full }];
             if (!this._mainHolderCustomer && this.selectedClients.length === 1) {
@@ -293,10 +390,9 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
             }
         }
 
-        this._mainHolderSelectRows = this.selectedClients.map(c => c.customerId);
+        this._mainHolderSelectRows = this._selectedCustomerIds;
         this.errorMainHolder       = false;
         this._dispatchViewModeSelection();
-        this._dispatchViewModeMainHolder();
     }
 
     // ─── main borrower toggle ─────────────────────────────────────────────────
@@ -304,6 +400,12 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
         if (!this.canSelectClients) return;
         const customerId = event.target.dataset.id;
         if (!customerId) return;
+
+        if (!event.target.checked && this._mainHolderCustomer === customerId) {
+            event.target.checked = true;
+            this._showMainBorrowerProtectionToast();
+            return;
+        }
 
         this._dispatchEditMode();
         this._mainHolderCustomer = event.target.checked ? customerId
@@ -318,7 +420,8 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
     }
 
     async handleFilterChange(event) {
-        this.filterClients = event.detail.value;
+        this._userManuallyChangedFilter = true;
+        this.filterClientsValue = event.detail.value;
         await this._loadInitialData();
     }
 
@@ -377,41 +480,49 @@ export default class DmtSelectClientsInOpportunity extends LightningElement {
     }
 
     // ─── event dispatching ────────────────────────────────────────────────────
+    _dispatchCustomEvent(name, detail) {
+        this.dispatchEvent(new CustomEvent(name, { ...CUSTOM_EVENT_OPTIONS, detail }));
+    }
+
     _dispatchEditMode() {
-        this.dispatchEvent(new CustomEvent('editmode', { bubbles: true, composed: true, cancelable: true }));
+        this._dispatchCustomEvent('editmode');
     }
 
     _dispatchViewModeSelection() {
-        this.dispatchEvent(new CustomEvent('viewmodeselection', {
-            bubbles: true, composed: true, cancelable: true,
-            detail: {
-                selectedClients: this.selectedClients.map(c => ({ customerId: c.customerId, mainHolder: null })),
-                isUserAction: true
-            }
-        }));
+        this._dispatchCustomEvent('viewmodeselection', {
+            selectedClients: this._selectedCustomerIds.map(customerId => ({ customerId })),
+            isUserAction: true
+        });
     }
 
     _dispatchViewModeMainHolder() {
-        this.dispatchEvent(new CustomEvent('viewmodemainholder', {
-            bubbles: true, composed: true, cancelable: true,
-            detail: { mainHolder: this._mainHolderCustomer || null, isUserAction: true }
-        }));
+        const originalRecord = this.groupedData.find(c => c.customerId === this._mainHolderCustomer)
+            || this.selectedClients.find(c => c.customerId === this._mainHolderCustomer)
+            || null;
+        this._dispatchCustomEvent('viewmodemainholder', {
+            mainHolder: this._mainHolderCustomer || null, originalRecord, isUserAction: true
+        });
     }
 
     _dispatchLoadError(error) {
         const rawMessage = (error && typeof error === 'object')
             ? (error.body?.message || error.message || JSON.stringify(error))
             : String(error);
-        this.dispatchEvent(new CustomEvent('loaderror', {
-            bubbles: true, composed: true, cancelable: true,
-            detail: { error, message: rawMessage }
-        }));
-    }
-    get showSelectionSummary() {
-    return !this.serviceUnavailable;
+        this._dispatchCustomEvent('loaderror', { error, message: rawMessage });
     }
 
-    get isFiltersDisabled() {
-        return this.serviceUnavailable || this.isLoading;
+    matchesBookingGeography(customerId) {
+        const bookingPrefix = String(this.booking || '').trim().toUpperCase();
+        if (!bookingPrefix) {
+            return true;
+        }
+
+        const customer = String(customerId || '').toUpperCase();
+        return customer.startsWith(bookingPrefix);
     }
+
+    _showMainBorrowerProtectionToast() {
+        this.dispatchEvent(new ShowToastEvent(MAIN_BORROWER_TOAST));
+    }
+
 }

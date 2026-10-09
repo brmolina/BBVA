@@ -6,6 +6,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
           import pubsub from "omnistudio/pubsub";
           import { getRecord } from "lightning/uiRecordApi";
           
+          
           import data from "./definition";
           
           import styleDef from "./styleDefinition";
@@ -22,9 +23,10 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
+              
               @track Label={dmt_cl_Result:"Result",
         dmt_cl_Comments:"Comments",
-        dmt_cl_NotAsk_Text:"Do Not Ask",
+        dmt_cl_NotAsk_Text:"Keep decision on Rollback",
         dmt_cl_SendNextApprover_Text:"Send to next approver",
         dmt_cl_returnRequester_Text:"Return to requester",
         dmt_cl_CloseTaskButton_Text:"Close Task",
@@ -34,6 +36,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               customEvent = [];
               
               connectedCallback() {
+                
                 super.connectedCallback();
                 this.setThemeClass(data);
                 this.setStyleDefinition(styleDef);
@@ -46,9 +49,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKE000000L96MYAS"
+                  " card-0koKE000000L9vbYAC"
                 );
-                this.loadCustomStylesheetAttachement("00PKE000001voSu2AI");
+                this.loadCustomStylesheetAttachement("00PKE000002N0lU2AS");
                 
                 
               }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Business_Approval_Term_n__c</fullName>
+    <description>CIBGLOBALD-3779: replaces DMT_Business_Approval_Term__c (Text, being deprecated) - this is the Number equivalent, matching DMT_Risk_Approval_Term__c&apos;s pattern. DMT_Line_Helper auto-populates this from the old field&apos;s value on update.</description>
+    <externalId>false</externalId>
+    <label>Business Approval Term</label>
+    <precision>3</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__investment_relevant_fact_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Field for filling any comments about possible investments in the group/company</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Comments on relevant facts</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>TextArea</type>
+</CustomField>

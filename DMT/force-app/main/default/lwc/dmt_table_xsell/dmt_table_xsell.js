@@ -43,7 +43,6 @@ import saveXSellRecords from '@salesforce/apex/DMT_XSell.saveXSellRecords';
     refreshButtonStates() {
         if (!this.tableData || this.tableData.length === 0) return;
         
-        console.log(`[XSELL-LWC] 🔄 Refreshing row button states. Edit Mode is now: ${this._isEditMode}`);
         const isDraft = this._parentType === 'Account' ? true : (this.oppState == 'Draft');
         
         let updatedData = this.deepCloneArray(this.tableData);
@@ -149,13 +148,6 @@ import saveXSellRecords from '@salesforce/apex/DMT_XSell.saveXSellRecords';
     _requestTotalsPending = false;
 
     handleLmsMessage(message) {
-        console.log('[XSELL] LMS RECEIVED:',JSON.stringify(message));
-
-        console.log(
-            '[REQUEST_TOTALS] current tableData',
-            JSON.stringify(this.tableData)
-        );
-
         if (message.action === 'REQUEST_TOTALS') {
 
             if (!this.tableData || this.tableData.length === 0) {
@@ -170,17 +162,12 @@ import saveXSellRecords from '@salesforce/apex/DMT_XSell.saveXSellRecords';
     }
 
     async handleGetXsellRecords() {
-        console.log('[XSELL-LWC] 1. handleGetXsellRecords initiated for ID:', this._recordId);
-        
-        // CRITICAL FIX: Removed "this.isEditMode = false;" 
-        // We MUST respect the @api isEditMode state passed by the parent on page load.
         
         this.idListToDelete = [];
         this._pendingXSellData = null; 
 
         try {
             const dataResult = await getXSellRecords({ parentId: this._recordId });
-            console.log('[XSELL-LWC] 2. Apex getXSellRecords returned:', JSON.stringify(dataResult));
             
             // DIRECT HANDOFF: Feed the buffer and force processing
             this._pendingXSellData = dataResult;
@@ -245,16 +232,14 @@ import saveXSellRecords from '@salesforce/apex/DMT_XSell.saveXSellRecords';
 
     // Centralized processor that only runs when BOTH the data and the options are ready
     processTableData() {
-      console.log(`[XSELL-LWC] 3. processTableData called. OptionsLoaded: ${this._isOptionsLoaded}, PendingData exists: ${!!this._pendingXSellData}`);
         
       if (!this._isOptionsLoaded || !this._pendingXSellData) {
-          console.log('[XSELL-LWC] 3a. BUFFER ACTIVE: Waiting for either options or data to finish loading.');
+          console.info('[XSELL-LWC] 3a. BUFFER ACTIVE: Waiting for either options or data to finish loading.');
           return;
       }
 
       let value = this._pendingXSellData;
       let normalizedData;
-      console.log('[XSELL-LWC] 4. Processing Raw Data:', JSON.stringify(value));
     
       try {
         if (typeof value === 'string') {
@@ -277,11 +262,6 @@ import saveXSellRecords from '@salesforce/apex/DMT_XSell.saveXSellRecords';
         console.error('Error al procesar table:', e);
         normalizedData = [];
       }
-
-      console.log(
-            '[PROCESS] rebuilding tableData',
-            JSON.stringify(normalizedData)
-        );
       
       if (normalizedData.length > 0) {
         const newArray = normalizedData.map((item, index) => {
@@ -337,9 +317,6 @@ import saveXSellRecords from '@salesforce/apex/DMT_XSell.saveXSellRecords';
         }];
       }
 
-      console.log('[XSELL-LWC] 5. Table Data built successfully. Final array size:', this.tableData.length);
-      
-
       if (this._requestTotalsPending) {
             this._requestTotalsPending = false;
 
@@ -347,14 +324,6 @@ import saveXSellRecords from '@salesforce/apex/DMT_XSell.saveXSellRecords';
                 this._cleanForParent(this.tableData)
             );
       }
-      
-      /* setTimeout(() => {
-        // Fire to sibling IMMEDIATELY on load so it has the state.
-        // The timeout prevents race conditions where the sibling hasn't rendered yet.
-        const cleanData = this._cleanForParent(this.tableData);
-        console.log('[XSELL] Broadcasting initial totals:',JSON.stringify(cleanData));
-          this.broadcastToSibling(cleanData);
-      }, 10000); */
     }
     
     /**
@@ -400,8 +369,6 @@ import saveXSellRecords from '@salesforce/apex/DMT_XSell.saveXSellRecords';
           totals.NY += (Number(row.XSELL_Value_NY__c) || 0);
           totals.NY1 += (Number(row.XSELL_Value_NY1__c) || 0);
       });
-
-      console.log('[XSELL-LWC] Publishing filtered rows:',JSON.stringify(filteredData));
 
       publish(this.messageContext, XSELL_SYNC_CHANNEL, {
           PY: totals.PY,
@@ -502,11 +469,6 @@ import saveXSellRecords from '@salesforce/apex/DMT_XSell.saveXSellRecords';
                   sendcopyDataNew[i].buttonDisabled = (i !== sendcopyDataNew.length - 1);
                   sendcopyDataNew[i].pickDisabled = (i !== sendcopyDataNew.length - 1);
               }
-
-              console.log(
-                  '[ADD] rows after add',
-                  JSON.stringify(sendcopyDataNew)
-              );
               
               this.tableData = sendcopyDataNew;
               this.injectGeographyData();
@@ -770,10 +732,6 @@ import saveXSellRecords from '@salesforce/apex/DMT_XSell.saveXSellRecords';
           pickDisabled, initRead, tabletype, aviableItem, GeographyLabel__c, 
           opportunity, account, ...cleanRow 
         } = row;
-
-        /* if (isRealId(cleanRow.Id)) {
-          cleanRow.updateKeyId = cleanRow.Id;
-        } */
 
         // Force string values into floats for Apex mapping
         const numFields = ['XSELL_Value_PY__c', 'XSELL_Value_CY__c', 'XSELL_Value_NY__c', 'XSELL_Value_NY1__c'];

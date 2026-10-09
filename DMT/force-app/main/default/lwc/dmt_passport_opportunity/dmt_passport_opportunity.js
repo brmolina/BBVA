@@ -36,10 +36,7 @@ import OPPORTUNITY_ID_FIELD from '@salesforce/schema/Opportunity.Id';
 const LOAD_STYLE_MESSAGE = 'Static Resource Loaded';
 const ERROR_MESSAGE = 'error';
 const ERROR_PASSPORT_MESSAGE = 'Error processing passport';
-const UNSUBCRIBE_MESSAGE = 'Unsubscribed to change events';
 const UNKNOWN_MESSAGE = 'Unknown error';
-const PASSPORT_ENTITY = 'Passport__c';
-const TASK_ENTTITY = 'Task';
 const STRING_TYPE = 'string';
 const MOTOR_DESC_FIELD = 'motorDesc';
 const PASSPORT_SANCTION_FIELD = 'passportSanction';
@@ -75,8 +72,11 @@ const PROPOSAL_OPPORTUNITY_STATE = 'Proposal';
 const READY_TO_CLOSE_OPPORTUNITY_STATE = 'Ready to close';
 const CLOSED_WON_OPPORTUNITY_STATE = 'Closed Won';
 
-const CHANNEL_PASSPORT = '/data/Passport__ChangeEvent';
+// CIBGLOBALD-4617 - single filtered channel: DMT_Task__e is published only for DMT approval Task changes
+// and for Passport JSON / Obsolete changes, keyed by Line / Opportunity Id. Passport__ChangeEvent was removed.
 const CHANNEL_TASK = '/event/DMT_Task__e';
+// Refresh once on return if the tab was hidden longer than this (events are not delivered while unsubscribed)
+const CATCH_UP_AFTER_HIDDEN_MS = 30000;
 
 
 export default class Dmt_passport_opportunity extends LightningElement {
@@ -177,8 +177,9 @@ export default class Dmt_passport_opportunity extends LightningElement {
     features = [];
     showfeaturesTable = false;
     featuresId;
-    subscriptionPassport;
-    subscriptionTask;
+    subscriptionTask = null;
+    hiddenAt = null;
+    visibilityHandler;
     recordType;
     groupedData = [];
     featuresIds = [];
@@ -207,7 +208,9 @@ export default class Dmt_passport_opportunity extends LightningElement {
     responseValidationOpp;
     userPermission = false;
     previousOpportunityStage;
+    approvalTransitionPending = false;
     statusRefreshInProgress = false;
+    readytoclosePassportTriggered = new Set();
 
     bigVersionColumns = [
         { label: "FEATURE", fieldName: 'approvers', type: 'text', isNarrow: "slds-size_3-of-12" },
@@ -310,8 +313,15 @@ export default class Dmt_passport_opportunity extends LightningElement {
 
                 const newStage = getFieldValue(data, OPPORTUNITY_STAGE_NAME_FIELD);
 
-                if (this.previousOpportunityStage != undefined && this.previousOpportunityStage != newStage && this.isBigVersion !== 'true') {
-                    this.handleStatusChange();
+                if (this.previousOpportunityStage != undefined && this.previousOpportunityStage != newStage) {
+                    const isEnteringApproval = newStage === APPROVAL_OPPORTUNITY_STATE;
+                    this.approvalTransitionPending = isEnteringApproval && this.hasResolvableApprovalApprover();
+                    if (this.approvalTransitionPending) {
+                        this.showSpinner = true;
+                    }
+                    if (newStage !== APPROVAL_OPPORTUNITY_STATE && this.isBigVersion !== 'true') {
+                        this.handleStatusChange();
+                    }
                 }
 
                 this.previousOpportunityStage = newStage;
@@ -381,8 +391,8 @@ export default class Dmt_passport_opportunity extends LightningElement {
     }
 
     disconnectedCallback() {
-        unsubscribe(this.subscriptionPassport, () => console.info(UNSUBCRIBE_MESSAGE + PASSPORT_ENTITY));
-        unsubscribe(this.subscriptionTask, () => console.info(UNSUBCRIBE_MESSAGE + TASK_ENTTITY));
+        document.removeEventListener('visibilitychange', this.visibilityHandler);
+        this.unsubscribeFromTaskChannel();
         pubsub.unregister('callPassportLWC', this.handleEventObj);
         unregisterRefreshContainer(this.refreshContainerID);
     }
@@ -444,50 +454,135 @@ export default class Dmt_passport_opportunity extends LightningElement {
         });
     }
 
+    // CIBGLOBALD-4617 - subscribes only to the filtered DMT_Task__e channel, and only while the tab is
+    // visible: a hidden tab would otherwise keep consuming event deliveries for nothing.
     registerSubscribe() {
+        if (document.visibilityState !== 'hidden') {
+            this.subscribeToTaskChannel();
+        } else {
+            // Loaded in a background tab: remember it, so the first time it becomes visible it catches up
+            this.hiddenAt = Date.now();
+        }
 
-        const changeEventPassportCallback = changeEventPassport => {
-            this.processChangePassportEvent(changeEventPassport);
-        };
-
-        const changeEventTaskCallback = changeEventTask => {
-            this.processChangeTaskEvent(changeEventTask);
-        };
-
-        subscribe(CHANNEL_PASSPORT, -1, changeEventPassportCallback).then(subscription => {
-            this.subscriptionPassport = subscription;
-        });
-        subscribe(CHANNEL_TASK, -1, changeEventTaskCallback).then(subscription => {
-            this.subscriptionTask = subscription;
-        });
+        this.visibilityHandler = () => this.handleVisibilityChange();
+        document.addEventListener('visibilitychange', this.visibilityHandler);
 
         notifyRecordUpdateAvailable([{ recordId: this.passportId }]);
     }
 
-    processChangePassportEvent(changeEvent) {
+    subscribeToTaskChannel() {
+        if (this.subscriptionTask) {
+            return; // already subscribed
+        }
+        this.subscriptionTask = {}; // placeholder so a second call while subscribing is ignored
+        subscribe(CHANNEL_TASK, -1, changeEventTask => {
+            this.processChangeTaskEvent(changeEventTask);
+        }).then(subscription => {
+            this.subscriptionTask = subscription;
+        }).catch(error => {
+            this.subscriptionTask = null;
+            console.error('Task channel subscription failed', JSON.stringify(error));
+        });
+    }
+
+    unsubscribeFromTaskChannel() {
+        if (this.subscriptionTask && this.subscriptionTask.id !== undefined) {
+            unsubscribe(this.subscriptionTask, () => {});
+        }
+        this.subscriptionTask = null;
+    }
+
+    handleVisibilityChange() {
+        if (document.visibilityState === 'hidden') {
+            this.hiddenAt = Date.now();
+            this.unsubscribeFromTaskChannel();
+            return;
+        }
+
+        this.subscribeToTaskChannel();
+        // Events published while the tab was hidden were not delivered: catch up with one refresh
+        if (this.hiddenAt && Date.now() - this.hiddenAt > CATCH_UP_AFTER_HIDDEN_MS) {
+            notifyRecordUpdateAvailable([{ recordId: this.passportId }]);
+            this.refreshAllWires();
+            this.getCurrentStepFromFeaturesOpp();
+        }
+        this.hiddenAt = null;
+    }
+
+    // CIBGLOBALD-4617 - DMT_Task__e payload: records__c = Line / Opportunity Ids, Operation__c =
+    // CREATE | MODIFY | MODIFY_MULTI (approval Tasks) or PASSPORT (Passport JSON / Obsolete changed).
+    // Only events for this Opportunity are processed (the previous handler refreshed on every event).
+    processChangeTaskEvent(changeEvent) {
         try {
-            const recordIds = changeEvent.data.payload.ChangeEventHeader.recordIds;
-            if(recordIds.includes(this.passportId)){
+            const operation = changeEvent.data.payload.Operation__c;
+            const recordIds = changeEvent.data.payload.records__c.split(',');
+
+            if (!this.opportunityId || !recordIds.includes(this.opportunityId)) {
+                return;
+            }
+
+            if (operation === 'PASSPORT') {
                 notifyRecordUpdateAvailable([{ recordId: this.passportId }]);
+                return;
+            }
+
+            if (operation === 'CREATE' && this.checkStatusApproval && this.approvalTransitionPending) {
+                this.approvalTransitionPending = false;
+                this.showSpinner = false;
+            }
+
+            this.refreshAllWires();
+            this.getCurrentStepFromFeaturesOpp();
+
+            // Detect "Close Task" (step 11): MODIFY_MULTI means several approval Tasks of this
+            // Opportunity changed in the same transaction (all Tasks of the case set to Finished).
+            // This is the moment to refresh the passport (callService).
+            if (operation === 'MODIFY_MULTI' && this.checkStatusReadyToClose) {
+                if (!this.readytoclosePassportTriggered.has('_closetask_')) {
+                    this.readytoclosePassportTriggered.add('_closetask_');
+                    // Wait for Salesforce transaction to fully commit
+                    setTimeout(() => {
+                        this.triggerReadytoclosePassportRefresh();
+                    }, 5000);
+                }
             }
         } catch (error) {
             this.handleError(error.message);
         }
     }
 
-    processChangeTaskEvent(changeEvent) {
-        try {
-            const operation = changeEvent.data.payload.Operation__c;
-            
-            // React to both creations and updates (closures/approvals)
-         //   if (operation === OPPERATION_CREATE_EVENT || operation === 'MODIFY') {
-                this.refreshAllWires();
-                
-                // Crucial: Re-fetch the task logic imperatively to get the new traffic light status
-                this.getCurrentStepFromFeaturesOpp(); 
-          //  }
-        } catch (error) {
-            this.handleError(error.message);
+    triggerReadytoclosePassportRefresh() {
+        let arrayFeaturesApproverId = [];
+        if (this.readytocloseFeatures) {
+            this.readytocloseFeatures.forEach(feature => {
+                const approverId = feature?.tasks?.[0]?.approvers?.[0]?.id;
+                if (approverId) {
+                    arrayFeaturesApproverId.push(approverId);
+                }
+            });
+        }
+
+        if (this.opportunityId != null && arrayFeaturesApproverId.length > 0) {
+            updateRiskLinesAndWarranties({ oppId: this.opportunityId, approversId: arrayFeaturesApproverId, typeFeature: 'business' })
+                .then(() => {
+                    if (!this.statusRefreshInProgress) {
+                        this.statusRefreshInProgress = true;
+                        this.callService().finally(() => {
+                            this.statusRefreshInProgress = false;
+                            // After passport is refreshed, fetch the settled state → GREEN
+                            this.getCurrentStepFromFeaturesOpp();
+                            this.readytoclosePassportTriggered.delete('_closetask_');
+                        });
+                    } else {
+                        this.readytoclosePassportTriggered.delete('_closetask_');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error in triggerReadytoclosePassportRefresh:', error);
+                    this.readytoclosePassportTriggered.delete('_closetask_');
+                });
+        } else {
+            this.readytoclosePassportTriggered.delete('_closetask_');
         }
     }
 
@@ -509,7 +604,7 @@ export default class Dmt_passport_opportunity extends LightningElement {
 
             this.limitTestFeatures = this.filterListByField(this.features, MOTOR_DESC_FIELD, LIMIT_ENGINE_FEATURE);
             this.limitTestFeatures = this.limitTestFeatures.concat(this.filterListByField(this.features, MOTOR_DESC_FIELD, CONSUME_ENGINE_FEATURE));
-            this.lineEngineFeatures = this.filterListByField(this.features, MOTOR_DESC_FIELD, LINE_ENGINE_FEATURE);
+            this.lineEngineFeatures = this.filterListByField(this.filterListByField(this.features, MOTOR_DESC_FIELD, LINE_ENGINE_FEATURE), PASSPORT_SANCTION_FIELD, PASSPORT_SECTION_FEATURE);
             this.globalValidationsFeatures = this.filterListByField(this.features, MOTOR_DESC_FIELD, SALESFORCE_FEATURE);
             this.profitabilityFeatures = this.filterListByField(this.features, MOTOR_DESC_FIELD, PROFITABILITY_ENGINE_FEATURE);
             let preFilterFeatures = this.filterListByField(this.features, MOTOR_DESC_FIELD, UNDEFINED_ENGINE_FEATURE);
@@ -544,6 +639,7 @@ export default class Dmt_passport_opportunity extends LightningElement {
         feature.userPermission = this.userPermission;
         feature.featureIsValid = true;
         feature.opportunityId = this.externalId;
+        feature.fieldsRequired = feature.fieldsRequired || {};
 
         feature.showTrafficLight = feature.stateName != WHITE_STATE && feature.stateName != BLANK_STATE && feature.stateName != undefined;
         feature.showErrorCapability = feature.validations?.length > 0;
@@ -591,7 +687,7 @@ export default class Dmt_passport_opportunity extends LightningElement {
         if (isReadyToClose && isApprovers) feature.request = true;
         if (isProposal && isApprovers && allowProposalRequest) feature.request = true;
         if (!isProposal && isApproval && !isReadyToClose && isApprovers) feature.request = true;
-        //if(feature.name == 'PAWIF SALESFORCE') feature.pawif = true;
+        if(feature.name == 'Portfolio Alignment Simulation') feature.pawif = true;
 
         const freezedFeature = (feature?.indicatorId || '').trim().toUpperCase();
         feature.isFaded = freezedFeature=== 'Y' && (this.checkStatusReadyToClose || this.checkStatusClosedWon); //&& !isReadyToCloseFeature && !isMandatoryFeature;
@@ -633,7 +729,6 @@ export default class Dmt_passport_opportunity extends LightningElement {
             featuresIds: this.featuresIds,
             oppExternalId: this.externalId
         }).then(response => {
-
             if (response !== undefined) {
 
                 let currentTaks = JSON.parse(JSON.stringify(response));
@@ -754,21 +849,6 @@ export default class Dmt_passport_opportunity extends LightningElement {
                     feature.showHistoryButton = currentTask.taskSize > 1;
 
                     feature.workflowColor = this.getWorkflowColor(currentTask, feature);
-                    console.log('FEATURE AML:', JSON.parse(JSON.stringify(feature)));
-                    if(feature.workflowColor === GREEN_STATE && this.checkStatusReadyToClose){
-                        let arrayFeaturesApproverId = [];
-                        arrayFeaturesApproverId.push(feature?.tasks?.[0]?.approvers?.[0]?.id);
-                        if(this.opportunityId != null){
-                            updateRiskLinesAndWarranties({ oppId: this.opportunityId, approversId: arrayFeaturesApproverId, typeFeature: 'business'  }).then(() => {
-                            console.log('Risk lines and warranties updated successfully.');
-                            // Optionally, you can show a success message or refresh the data here
-                            }).catch(error => {
-                                console.error('Error updating risk lines and warranties:', error);
-                                this.notifyParentError('Error refreshing approval: ' + error.message);
-                            });
-                        }
-                        
-                    }
                 }
             }
             featuresAux.push(feature);
@@ -805,6 +885,13 @@ export default class Dmt_passport_opportunity extends LightningElement {
 
     filterListByField(list, field, value) {
         return list?.filter(item => item[field] == value) || [];
+    }
+
+    hasResolvableApprovalApprover() {
+        return (this.features || []).some(feature =>
+            feature.passportSanction === APPROVAL_SECTION_FEATURE &&
+            feature.tasks?.[0]?.approvers?.[0]?.id != undefined
+        );
     }
 
     processFeaturesRules(featuresRulesList) {
@@ -874,10 +961,10 @@ export default class Dmt_passport_opportunity extends LightningElement {
 
     async callService() {
 
+        this.messageError = '';
         this.showSpinner = true;
 
         await this.validateOppBeforePassportService();
-
         if (!this.responseValidationOpp?.success) {
             this.handleError(this.responseValidationOpp?.message?.[0]);
             return;
@@ -916,22 +1003,22 @@ export default class Dmt_passport_opportunity extends LightningElement {
         }).catch((error) => {
             this.handleError(error.message);
         });
-
-
-       
     }
 
     async buttonCallPassport(data) {
-
         if (data) {
             buttonCallPassport({
                 recordId: this.recordId,
                 clientesGroup: JSON.stringify(data)
             }).then(response => {
-
                 let result = JSON.parse(response);
                 if (!result.result) {
                     this.handleError(result.message);
+                } else {
+                    this.messageError = '';
+                    if (this.passportId) {
+                        notifyRecordUpdateAvailable([{ recordId: this.passportId }]);
+                    }
                 }
             }).catch((error) => {
                 this.handleError(error.message);

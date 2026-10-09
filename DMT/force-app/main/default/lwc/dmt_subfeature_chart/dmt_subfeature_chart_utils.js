@@ -65,22 +65,20 @@ var colours = {
     }
 }
 
-function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
+export function getWrappedLines(ctx, text, maxWidth) {
     if (!text || maxWidth <= 0) {
-        return 0;
+        return [];
     }
-
     const words = String(text).split(' ');
     let line = '';
-    let linesDrawn = 0;
+    const lines = [];
 
     words.forEach((word) => {
         const testLine = line ? `${line} ${word}` : word;
         const testWidth = ctx.measureText(testLine).width;
 
         if (testWidth > maxWidth && line) {
-            ctx.fillText(line, x, y + (linesDrawn * lineHeight));
-            linesDrawn += 1;
+            lines.push(line);
             line = word;
         } else {
             line = testLine;
@@ -88,11 +86,15 @@ function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
     });
 
     if (line) {
-        ctx.fillText(line, x, y + (linesDrawn * lineHeight));
-        linesDrawn += 1;
+        lines.push(line);
     }
+    return lines;
+}
 
-    return linesDrawn;
+function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
+    const lines = getWrappedLines(ctx, text, maxWidth);
+    lines.forEach((line, i) => ctx.fillText(line, x, y + (i * lineHeight)));
+    return lines.length;
 }
 
 // toggle notices in traffic lights
@@ -315,17 +317,33 @@ export function drawTargets(chart) {
                 ctx.fillStyle = "#777";
 
                 if (chartInstance.data.showConditionDesc) {
-                    const labelMaxWidth = Math.max(xaxis.getPixelForValue(0) - posX - 12, 60);
-                    drawWrappedText(ctx, bar._model.label, posX, posY - 6, labelMaxWidth, 13);
 
+                    // Etiqueta — una sola línea, encima de la barra
+                    ctx.font = "13px sans-serif";
+                    ctx.fillStyle = "#777";
+                    ctx.fillText(bar._model.label, posX, posY - 6);
+
+                    // Condición — debajo de la barra, empezando en x=0, con todo el ancho disponible
                     const conditionText = chartInstance.data.conditions?.[index] || chart.data.sublabels?.[index] || '';
-                    const conditionPosX = xaxis.getPixelForValue(0) + 8;
+                    const conditionPosX = xaxis.getPixelForValue(0);
                     const conditionPosY = posY + (barHeight / 2) + 14;
                     const conditionMaxWidth = Math.max(chartInstance.width - conditionPosX - 12, 100);
 
+                    // Red de seguridad: recorta la fila a su propia banda vertical,
+                    // desde el techo de esta barra hasta el techo de la siguiente
+                    const rowTop = posY - barHeight;
+                    const nextBar = meta.data[index + 1];
+                    const rowBottom = nextBar ? (nextBar._model.y - nextBar._model.height) : chartInstance.height;
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(0, rowTop, chartInstance.width, rowBottom - rowTop);
+                    ctx.clip();
                     ctx.font = "12px sans-serif";
                     ctx.fillStyle = "#777";
-                    drawWrappedText(ctx, conditionText, conditionPosX, conditionPosY, conditionMaxWidth, 25);
+                    drawWrappedText(ctx, conditionText, conditionPosX, conditionPosY, conditionMaxWidth, 16);
+                    ctx.restore();
+
                 } else {
                     ctx.fillText(bar._model.label, posX, posY - 6);
                     ctx.font = "13px sans-serif";

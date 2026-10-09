@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>pith__solution_category_name__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Guarda la familia del producto con el que está relacionado el pitch</description>
+    <label>Product Family</label>
+    <required>true</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>GTB</fullName>
+                <default>false</default>
+                <label>GTB</label>
+            </value>
+            <value>
+                <fullName>GM</fullName>
+                <default>false</default>
+                <label>GM</label>
+            </value>
+            <value>
+                <fullName>IBF</fullName>
+                <default>false</default>
+                <label>IBF</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__WF_Stage_WF_Status__c</fullName>
+    <deprecated>false</deprecated>
+    <externalId>false</externalId>
+    <formula>IF(ISPICKVAL(arce__group_asset_header_type__c, &quot;1&quot;),
+CASE(TEXT(arce__Analysis__r.arce__Stage__c),
+&quot;1&quot;,$Label.arce__Arc_Gen_Stage_01,
+&quot;2&quot;,$Label.arce__Arc_Gen_Stage_02,
+&quot;3&quot;,$Label.arce__Arc_Gen_Stage_03,
+&quot;&quot;),
+CASE(TEXT(arce__Analysis__r.arce__wf_status_id__c),
+&quot;01&quot;,$Label.arce__Arc_Gen_Traceability_01,
+&quot;02&quot;,$Label.arce__Arc_Gen_Traceability_02,
+&quot;04&quot;,$Label.arce__Arc_Gen_Traceability_04,
+&quot;07&quot;,$Label.arce__Arc_Gen_Traceability_07,
+&quot;08&quot;,$Label.arce__Arc_Gen_Traceability_08,
+&quot;10&quot;,$Label.arce__Arc_Gen_Traceability_10,
+IF(ISPICKVAL(arce__group_asset_header_type__c, &quot;2&quot;),
+CASE(TEXT(arce__Analysis__r.arce__Stage__c),
+&quot;1&quot;,$Label.arce__Arc_Gen_Stage_01,
+&quot;2&quot;,$Label.arce__Arc_Gen_Stage_02,
+&quot;3&quot;,$Label.arce__Arc_Gen_Stage_03,
+&quot;&quot;),
+CASE(TEXT(arce__Analysis__r.arce__wf_status_id__c),
+&quot;01&quot;,$Label.arce__Arc_Gen_Traceability_01,
+&quot;02&quot;,$Label.arce__Arc_Gen_Traceability_02,
+&quot;04&quot;,$Label.arce__Arc_Gen_Traceability_04,
+&quot;07&quot;,$Label.arce__Arc_Gen_Traceability_07,
+&quot;08&quot;,$Label.arce__Arc_Gen_Traceability_08,
+&quot;10&quot;,$Label.arce__Arc_Gen_Traceability_10,
+&quot;11&quot;,$Label.arce__Arc_Gen_Traceability_11,
+&quot;12&quot;,$Label.arce__Arc_Gen_Traceability_12,
+&quot;13&quot;,$Label.arce__Arc_Gen_Traceability_13,
+&quot;&quot;)
+)))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>WF Stage / WF Status</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

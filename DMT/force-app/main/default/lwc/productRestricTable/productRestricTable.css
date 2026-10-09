@@ -2,8 +2,21 @@
     border: 3px solid gray;
     border-top: 2px solid red;
     display:none;
+    
   }
 
-  .private-ssr-placeholder-class {
+.private-ssr-placeholder-class {
     text-align: center;
+}
+
+
+.slds-checkbox .slds-checkbox_faux, .slds-checkbox .slds-checkbox--faux {
+    width: 2rem !important;
+    height: 2rem !important;
+}
+
+.slds-checkbox [type=checkbox]:checked+.slds-checkbox_faux:after, .slds-checkbox [type=checkbox]:checked+.slds-checkbox--faux:after, .slds-checkbox [type=checkbox]:checked~.slds-checkbox_faux:after, .slds-checkbox [type=checkbox]:checked~.slds-checkbox--faux:after, .slds-checkbox [type=checkbox]:checked+.slds-checkbox__label .slds-checkbox_faux:after, .slds-checkbox [type=checkbox]:checked+.slds-checkbox__label .slds-checkbox--faux:after {
+
+    height: .55rem !important;
+    width: 1.25rem !important;
 }

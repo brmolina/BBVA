@@ -8,6 +8,14 @@
                            <lightning-button label={closeApprovalButtonLabel} variant={buttonCloseApprovalVariant} onclick={handleToggleClickCloseApproval}></lightning-button>
                             <lightning-button label="Close for review" variant={closeForReviewButtonVariant} onclick={handleClickCloseForReview}></lightning-button>
                         </lightning-button-group>
+                        <lightning-button-icon
+                            class="slds-m-left_x-small"
+                            icon-name="utility:notification"
+                            variant="border-filled"
+                            alternative-text="Schedule summary"
+                            title="Schedule summary"
+                            onclick={handleOpenScheduleSummaryModal}>
+                        </lightning-button-icon>
                     </div>
                 </div>
 
@@ -53,17 +61,17 @@
                     </ul>
                     <div class={inProgressPanelClass}>
                         <c-dmt_custom_tree_grid model-data={inProgressData} columns={columns} search="false"
-                            empty-label={labels.DMT_No_Records} onloadmoredata={handleScroll} is-selection-mode={isSelectionActive} onselectionchange={handleSelectionChange}>
+                            empty-label={labels.DMT_No_Records} onloadmoredata={handleScroll} is-selection-mode={isSelectionActive} onselectionchange={handleSelectionChange}  onsort={handleSort}>
                         </c-dmt_custom_tree_grid>
                     </div>
                     <div class={returnedPanelClass}>
                         <c-dmt_custom_tree_grid model-data={returnedData} columns={columns} search="false"
-                            empty-label={labels.DMT_No_Records} onloadmoredata={handleScroll} is-selection-mode={isSelectionActive} onselectionchange={handleSelectionChange}>
+                            empty-label={labels.DMT_No_Records} onloadmoredata={handleScroll} is-selection-mode={isSelectionActive} onselectionchange={handleSelectionChange}  onsort={handleSort}>
                         </c-dmt_custom_tree_grid>
                     </div>
                     <div class={closedPanelClass}>
                         <c-dmt_custom_tree_grid model-data={closedData} columns={columns} search="false"
-                            empty-label={labels.DMT_No_Records} onloadmoredata={handleScroll} is-selection-mode={isSelectionActive} onselectionchange={handleSelectionChange}>
+                            empty-label={labels.DMT_No_Records} onloadmoredata={handleScroll} is-selection-mode={isSelectionActive} onselectionchange={handleSelectionChange}  onsort={handleSort}>
                         </c-dmt_custom_tree_grid>
                     </div>
                 </div>
@@ -98,4 +106,8 @@
     <template lwc:else>
         <lightning-spinner alternative-text="Loading"></lightning-spinner>
     </template>
+    <c-dmt_schedule_summary_modal
+        show-modal={showScheduleSummaryModal}
+        onclosemodal={handleCloseScheduleSummaryModal}>
+    </c-dmt_schedule_summary_modal>  
 </template>

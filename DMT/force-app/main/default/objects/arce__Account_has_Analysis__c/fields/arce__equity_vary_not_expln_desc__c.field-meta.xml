@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__equity_vary_not_expln_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Explain the equity variation not explained by P&amp;L and dividends</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Equity variation not explained</label>
+    <length>500</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>2</visibleLines>
+</CustomField>

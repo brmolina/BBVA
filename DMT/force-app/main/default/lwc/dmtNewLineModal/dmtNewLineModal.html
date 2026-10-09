@@ -7,8 +7,31 @@
             <template if:true={isLoading}>
                 <lightning-spinner alternative-text="Loading" variant="brand"></lightning-spinner>
             </template>
+            <div
+                class="slds-notify slds-notify_alert slds-theme_info"
+                role="status"
+            >
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <lightning-icon
+                            icon-name="utility:info"
+                            alternative-text="Information"
+                            size="x-small"
+                        ></lightning-icon>
+                    </div>
+
+                    <div class="slds-media__body">
+                        <p>
+                            This line has no associated profitability calculation. To
+                            include profitability, please create the line from the
+                            Opportunity tab.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
             <div class="slds-grid slds-gutters_large">
+                
                 <!-- LEFT COLUMN -->
                 <div class="slds-col slds-size_1-of-2  slds-p-top_small">
                     <article class="slds-tile slds-media slds-p-left_medium">
@@ -35,7 +58,7 @@
                                         </div>
                                         <div
                                             class="slds-col slds-size_4-of-6 slds-p-around_none slds-text-body_small slds-hyphenate slds-align-bottom">
-                                            {clientType}
+                                            {clientTypeLabel}
                                         </div>
                                     </div>
                                 </template>
@@ -124,6 +147,7 @@
 
             </div>
         </div>
+         
     </lightning-modal-body>
 
     <lightning-modal-footer>

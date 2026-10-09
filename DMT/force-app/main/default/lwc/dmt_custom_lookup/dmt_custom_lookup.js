@@ -245,7 +245,7 @@ export default class dmt_custom_lookup extends LightningElement {
         this._hasFocus     = true;
         this._focusedIndex = null;
         this._isLoading    = true;
-        this._search('');
+        this._search(this._searchTerm.trim());
     }
 
     handleBlur() {
@@ -277,7 +277,6 @@ export default class dmt_custom_lookup extends LightningElement {
         if (!record) return;
         this._selectedRecord = record;
         this._value          = record.id || record.Id;
-        this._searchTerm     = '';
         this._hasFocus       = false;
         this._focusedIndex   = null;
         this._options        = [];
@@ -337,5 +336,10 @@ export default class dmt_custom_lookup extends LightningElement {
         this._hasFocus       = false;
         this._options        = [];
         this._lastSearchTerm = null;
+    }
+
+    @api validate() {
+        const input = this.template.querySelector('input');
+        return input ? input.reportValidity() : true;
     }
 }

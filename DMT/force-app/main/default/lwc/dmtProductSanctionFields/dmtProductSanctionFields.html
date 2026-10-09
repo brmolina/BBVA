@@ -1,0 +1,63 @@
+<template>
+    <template if:true={hasConfiguredFields}>
+        <div class={containerClass}>
+            <template if:true={isSaving}>
+                <div class="save-overlay" role="status" aria-live="polite">
+                    <div class="save-overlay__panel">
+                        <div class="save-overlay__spinner">
+                            <lightning-spinner alternative-text="Saving changes" size="medium"></lightning-spinner>
+                        </div>
+                        <div class="save-overlay__text">Saving changes...</div>
+                    </div>
+                </div>
+            </template>
+
+            <div class="details-container">
+                <c-dmt_form_renderer
+                    fields={fields}
+                    is-edit-mode={isEditMode}
+                    oneditmodechange={handleEditModeChange}
+                    onfieldchange={handleFieldChange}>
+                </c-dmt_form_renderer>
+            </div>
+
+            <template if:true={showClientsSection}>
+                <div class="clients-container slds-m-top_medium">
+                    <div class="clients-title">Clients</div>
+                    <c-dmt-product-custom-association-clients
+                        risk-id={riskId}
+                        line-id={lineId}
+                        priority-id={riskPriorityId}
+                        line-status={lineStatus}>
+                    </c-dmt-product-custom-association-clients>
+                </div>
+            </template>
+
+            <template if:true={isEditMode}>
+                <template if:true={showInlineFooter}>
+                <div class="footer-buttons slds-docked-form-footer">
+                    <div class="footer-buttons__inner">
+                        <lightning-button
+                            class="slds-m-right_small"
+                            variant="neutral"
+                            label="Cancel"
+                            disabled={isSaving}
+                            onclick={handleCancel}>
+                        </lightning-button>
+                        <lightning-button
+                            variant="brand"
+                            label="Save"
+                            disabled={isSaving}
+                            onclick={handleSave}>
+                        </lightning-button>
+                    </div>
+                </div>
+                </template>
+            </template>
+        </div>
+    </template>
+
+    <template if:false={hasConfiguredFields}>
+        <div class="slds-text-color_weak slds-p-around_small">No fields configured.</div>
+    </template>
+</template>

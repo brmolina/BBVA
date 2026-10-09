@@ -44,7 +44,16 @@ renderedCallback(){
         }};
         setTimeout(()=>{
           this.dispatchEvent(new CustomEvent('closemodal',  { bubbles:true, composed:true} ));
-          this[NavigationMixin.GenerateUrl](urlMixin).then( url => window.open(url, '_blank'));
+          this[NavigationMixin.GenerateUrl](urlMixin).then(url => {
+            const link = document.createElement('a');
+            link.href = url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+          });
         },15);
 
   }

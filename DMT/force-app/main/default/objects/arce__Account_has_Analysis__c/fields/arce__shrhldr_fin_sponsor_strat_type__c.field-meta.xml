@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__shrhldr_fin_sponsor_strat_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Assess the temporal strategy of the final sponsor through a response combo</description>
+    <label>Financial Sponsor strategy</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>1</fullName>
+                <default>false</default>
+                <label>0-3 years</label>
+            </value>
+            <value>
+                <fullName>2</fullName>
+                <default>false</default>
+                <label>3-5 years</label>
+            </value>
+            <value>
+                <fullName>3</fullName>
+                <default>false</default>
+                <label>&gt; 5 years</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

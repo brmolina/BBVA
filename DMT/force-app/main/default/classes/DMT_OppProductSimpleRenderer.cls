@@ -1,4 +1,4 @@
-public with sharing class DMT_OppProductSimpleRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_OppProductSimpleRenderer implements DMT_ViewRenderer {
 
     // ==========================================
     // HELPER METHODS: Form Grids (DisplayFields)
@@ -9,8 +9,6 @@ public with sharing class DMT_OppProductSimpleRenderer implements DMT_ViewRender
             new DMT_FormattingUtils.DisplayField('Name', DMT_FormattingUtils.checkNull(oppProduct.name))
         };
     }
-
-   
 
     private List<DMT_FormattingUtils.DisplayField> buildFundingFields(DMT_ViewController.OpportunityProduct oppProduct) {
         List<DMT_FormattingUtils.DisplayField> fundingFields = new List<DMT_FormattingUtils.DisplayField>();
@@ -26,8 +24,6 @@ public with sharing class DMT_OppProductSimpleRenderer implements DMT_ViewRender
         return fundingFields;
     }
 
-
-
     private String getSafePercentage(Decimal val) {
         return val != null ? String.valueOf(Integer.valueOf(val)) : '';
     }
@@ -36,7 +32,6 @@ public with sharing class DMT_OppProductSimpleRenderer implements DMT_ViewRender
     // DATA TABLE BUILDERS (For Lists of Records)
     // ==========================================
 
-  
 
     private List<DMT_FormattingUtils.DataTableWrapper> buildMitigantTables(DMT_ViewController.OpportunityProduct oppProduct) {
         DMT_FormattingUtils.DataTableWrapper collateralTable = new DMT_FormattingUtils.DataTableWrapper(System.Label.dmt_cl_Collateral_Guarantees_Text, new List<String>{
@@ -44,7 +39,6 @@ public with sharing class DMT_OppProductSimpleRenderer implements DMT_ViewRender
         });
 
         
-
         Set<String> validCollateralTypes = new Set<String>{
             'Real > Mortgage guarantee', 'Real > Cash', 'Real > Gold Bullion', 'Real > Debt securities', 'Real > Debt securities issued by central governments or central Banks', 'Real > Receivables', 'Real > Index equities and Index convertible bonds', 'Real > Securitisation', 'Real > Others real'
         };
@@ -96,8 +90,6 @@ public with sharing class DMT_OppProductSimpleRenderer implements DMT_ViewRender
                             + '</div>&nbsp;</br>';
 
             
-
-
                 htmlOutput += '<h3 style="font-size: 16px; color: #004481; margin-bottom: 10px;">Mitigants</h3><div class="slds-scope">';
 
                 // MITIGANTS TABLES (Collateral)
@@ -111,60 +103,6 @@ public with sharing class DMT_OppProductSimpleRenderer implements DMT_ViewRender
         } catch (Exception e){
             System.debug('Error in DMT_OppProductSimleRenderer renderHtml, '+ e.getMessage() + ' ' + e.getLineNumber());
             return '<div>Error: '+e.getMessage()+' - '+e.getLineNumber()+'</div>';
-        }
-    }
-
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null || data.oppProducts.isEmpty()) return new Map<String, Object>();
-
-        try {
-            List<Object> contentList = new List<Object>();
-            Map<String, Object> component = new Map<String, Object>();
-            contentList.add(new Map<String, Object>{ 'type' => 'pageBreak', 'threshold' => 60 });
-            contentList.add(DMT_Create_Pdf_Controller.createTitle('Products'));
-
-            for (DMT_ViewController.OpportunityProduct oppProduct : data.oppProducts) {
-                contentList.add(new Map<String, Object>{ 'type' => 'pageBreak', 'threshold' => 50 });
-
-                // General Info
-                contentList.add(new Map<String, Object>{ 'type' => 'text', 'text' => 'General Info', 'style' => new Map<String, Object>{'fontSize'=>14, 'textColor'=>'#004481'} });
-                contentList.add(DMT_Create_Pdf_Controller.generatePdfList(buildDetailFields(oppProduct)));
-                contentList.add(new Map<String, Object>{ 'type' => 'pageBreak', 'threshold' => 50 });
-
-                // Funding
-                contentList.add(new Map<String, Object>{ 'type' => 'text', 'text' => 'Cost of Funding', 'style' => new Map<String, Object>{'fontSize'=>14, 'textColor'=>'#004481'} });
-                contentList.add(DMT_Create_Pdf_Controller.generatePdfList(buildFundingFields(oppProduct)));
-                contentList.add(new Map<String, Object>{ 'type' => 'pageBreak', 'threshold' => 50 });
-
-               
-
-              
-
-                // Mitigants Base
-                contentList.add(new Map<String, Object>{ 'type' => 'text', 'text' => 'Mitigants', 'style' => new Map<String, Object>{'fontSize'=>14, 'textColor'=>'#004481'} });
-
-                // Mitigants Tables (Collateral)
-                for (DMT_FormattingUtils.DataTableWrapper mitTable : buildMitigantTables(oppProduct)) {
-                    if (!mitTable.rows.isEmpty()) {
-                        List<Object> mitTitle = DMT_Create_Pdf_Controller.createTitleSection(mitTable.title);
-                        contentList.add(mitTitle[0]); contentList.add(mitTitle[1]);
-                        contentList.add(DMT_Create_Pdf_Controller.createTable(new List<List<String>>{mitTable.headers}, mitTable.rows));
-                    }
-                }
-                contentList.add(new Map<String, Object>{
-                    'type' => 'text',
-                    'text' => ' ',
-                    'style' => new Map<String, Object>{ 'fontSize' => 24 }
-                });
-
-                component.put('content', contentList);
-                component.put('name', 'Products');
-            }
-            return component;
-
-        } catch (Exception e) {
-            System.debug('Error in DMT_OppProductSimpleRenderer renderPdfJson, ' + e.getMessage() + ' ' + e.getLineNumber());
-            return new Map<String, Object>();
         }
     }
 }

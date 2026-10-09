@@ -24,6 +24,11 @@
                 <default>false</default>
                 <label>validator</label>
             </value>
+            <value>
+                <fullName>User-Defined</fullName>
+                <default>false</default>
+                <label>User-Defined</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

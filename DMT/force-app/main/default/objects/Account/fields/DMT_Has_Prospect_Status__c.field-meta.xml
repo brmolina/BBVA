@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Has_Prospect_Status__c</fullName>
+    <description>Helper field to validate if Prospect Status is populated. Used in Flexipage visibility rules to hide Deal Management button when status is empty.</description>
+    <formula>NOT(ISBLANK(TEXT(DES_Prospect_Status_Funnel__c)))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Has Prospect Status</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

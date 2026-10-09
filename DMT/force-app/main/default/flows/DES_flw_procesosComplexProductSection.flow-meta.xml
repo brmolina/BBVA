@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Tenor_in_GM</name>
+        <label>Tenor in GM</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_Tenor_in_GM</name>
+            <conditionLogic>(1 OR 3 OR 4 OR 5) AND 2</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.fprd__GBL_Complex_section__r.fprd__Product_configuration__r.fprd__Product__r.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Debt Capital Markets</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.opportunity_tenor_years_number__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.fprd__GBL_Complex_section__r.fprd__Product_configuration__r.fprd__Product__r.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Corporate Loans</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.fprd__GBL_Complex_section__r.fprd__Product_configuration__r.fprd__Product__r.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Leverage Buyout (LBOs)</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.fprd__GBL_Complex_section__r.fprd__Product_configuration__r.fprd__Product__r.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Project Finance - Lending</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Tenor_in_Months</targetReference>
+            </connector>
+            <label>TRUE Tenor in GM</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>opportunity_tenor_years_number_multiply</name>
+        <dataType>Number</dataType>
+        <expression>{!$Record.opportunity_tenor_years_number__c} * 12</expression>
+        <scale>0</scale>
+    </formulas>
+    <interviewLabel>DES_flw_procesosComplexProductSection {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>DES_flw_procesosComplexProductSection</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Tenor_in_Months</name>
+        <label>Tenor in Months</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <inputAssignments>
+            <field>loan_tenor_month_desc__c</field>
+            <value>
+                <elementReference>opportunity_tenor_years_number_multiply</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Tenor_in_GM</targetReference>
+        </connector>
+        <object>fprd__GBL_Complex_product_section__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Draft</status>
+</Flow>

@@ -1,4 +1,6 @@
 public with sharing class DMT_TaxonomyMultipleProducts {
+    private static final String LOG_PREFIX = '[DMT_TaxonomyMultipleProducts]';
+
     @AuraEnabled(cacheable=true)
     public static List<dmt_taxonomy_values__c> getTaxonomy(Id recordId) {
         DMT_Line__c line = [SELECT Booking_Geography__c FROM DMT_Line__c WHERE Id =: recordId LIMIT 1];
@@ -14,22 +16,14 @@ public with sharing class DMT_TaxonomyMultipleProducts {
         ];
     }
 
-    /*@AuraEnabled(cacheable=true)
-    public static List<Product2> getProductsDMT(Id recordId) {
-        DMT_Line__c line = DMT_Passport_Selector.getLine(recordId);
-        String template = line.DMT_line_template_type__c;
-        return [
-            SELECT Id, Name, ProductCode, Family, DMT_Product_family__c, DMT_Product_Subfamily__c, DMT_Product_category__c,
-             DMT_Product_Subcategory__c, DMT_Global_Product_Id__c, DMT_Classification_Level__c, DMT_CatalogTaxonomy__c,
-             DMT_Taxonomy_Value__c, DMT_Taxonomy_Value__r.gf_catalog_atrb_val2_name__c, DMT_Taxonomy_Value__r.gf_catalog_atrb_val3_name__c, DMT_Product_Template__c, Parent_Product__c
-            FROM Product2
-            WHERE Family = 'DMT Lines' AND DMT_Entific__c =: line.Booking_Geography__c AND DMT_Product_Template__c INCLUDES (:template) AND IsActive =: true ORDER BY Name
-        ];
-    }*/
-
     // Modificación para añadir compatibilidad con Opportunity
     @AuraEnabled(cacheable=true)
-    public static List<Product2> getProductsDMT(Id recordId, String contextCode) {
+    public static List<Product2> getProductsDMTByContext(Id recordId, String contextCode) {
+        logStep('getProductsDMTByContext.start', new Map<String, Object>{
+            'recordId' => recordId,
+            'contextCode' => contextCode
+        });
+
         // Detectar el tipo de objeto a partir del prefijo del Id
         String prefix = String.valueOf(recordId).substring(0, 3);
         Schema.SObjectType sObjectType = null;
@@ -49,15 +43,17 @@ public with sharing class DMT_TaxonomyMultipleProducts {
             }
         }
 
+        logStep('getProductsDMTByContext.objectType', new Map<String, Object>{
+            'sObjectType' => sObjectType == null ? null : String.valueOf(sObjectType)
+        });
+
         if (sObjectType == Opportunity.SObjectType) {
             List<Opportunity> opp = DMT_Passport_Selector.getOpportunity(recordId);
-            String contextFilter = String.isBlank(contextCode) ? '%OPP%' : '%' + contextCode + '%';
-            //String template = opp.DMT_line_template_type__c;
-            System.debug('El contexto: ' + contextFilter);
             List<Product2> products = [
                 SELECT Id, Name, ProductCode, Family, DMT_Product_family__c, DMT_Product_Subfamily__c,
                     DMT_Product_category__c, DMT_Product_Subcategory__c, DMT_Global_Product_Id__c,
                     DMT_Classification_Level__c, DMT_CatalogTaxonomy__c, DMT_Taxonomy_Value__c,
+                    DMT_Taxonomy_Value__r.gf_catalog_atrb_val1_name_c__c,
                     DMT_Taxonomy_Value__r.gf_catalog_atrb_val2_name__c,
                     DMT_Taxonomy_Value__r.gf_catalog_atrb_val3_name__c,
                     DMT_Taxonomy_Value__r.gf_catalog_atrb_val7_name__c,
@@ -67,9 +63,20 @@ public with sharing class DMT_TaxonomyMultipleProducts {
                     AND IsActive = true
                     AND DMT_Entific__c =: opp[0].Entific__c
                     AND DMT_Product_Template__c INCLUDES ('OP','TO','OL')
-                    //AND DMT_Taxonomy_Value__r.gf_catalog_atrb_val7_name__c LIKE :contextFilter
+                    AND DMT_Taxonomy_Value__r.gf_catalog_atrb_val4_name__c = 'Product'
                 ORDER BY Name
             ];
+            logStep('getProductsDMTByContext.opportunity.query', new Map<String, Object>{
+                'entific' => opp.isEmpty() ? null : opp[0].Entific__c,
+                'templateFilter' => 'OP;TO;OL',
+                'contextCode' => contextCode,
+                'productsBeforeContextFilter' => products.size()
+            });
+            products = filterProductsByContext(products, contextCode);
+            logStep('getProductsDMTByContext.opportunity.filtered', new Map<String, Object>{
+                'productsAfterContextFilter' => products.size(),
+                'allowedTokens' => resolveAllowedContextTokens(contextCode)
+            });
             for (Product2 p : products) {
                 p.HelpText = 'OP_CONTEXT';
             }
@@ -78,16 +85,215 @@ public with sharing class DMT_TaxonomyMultipleProducts {
         } else if (sObjectType == DMT_Line__c.SObjectType) {
             DMT_Line__c line = DMT_Passport_Selector.getLine(recordId);
             String template = line.DMT_line_template_type__c;
-            return [
+            List<Product2> products = [
                 SELECT Id, Name, ProductCode, Family, DMT_Product_family__c, DMT_Product_Subfamily__c, DMT_Product_category__c,
                 DMT_Product_Subcategory__c, DMT_Global_Product_Id__c, DMT_Classification_Level__c, DMT_CatalogTaxonomy__c,
-                DMT_Taxonomy_Value__c, DMT_Taxonomy_Value__r.gf_catalog_atrb_val2_name__c, DMT_Taxonomy_Value__r.gf_catalog_atrb_val3_name__c, DMT_Product_Template__c, Parent_Product__c
+                DMT_Taxonomy_Value__c, DMT_Taxonomy_Value__r.gf_catalog_atrb_val1_name_c__c, DMT_Taxonomy_Value__r.gf_catalog_atrb_val2_name__c, DMT_Taxonomy_Value__r.gf_catalog_atrb_val3_name__c, DMT_Taxonomy_Value__r.gf_catalog_atrb_val7_name__c, DMT_Product_Template__c, Parent_Product__c
                 FROM Product2
-                WHERE Family = 'DMT Lines' AND DMT_Entific__c =: line.Booking_Geography__c AND DMT_Product_Template__c INCLUDES (:template) AND IsActive =: true AND DMT_Taxonomy_Value__r.gf_catalog_atrb_val4_name__c = 'Product'  ORDER BY Name
+                WHERE Family = 'DMT Lines'
+                    AND DMT_Entific__c =: line.Booking_Geography__c
+                    AND IsActive =: true
+                    AND DMT_Taxonomy_Value__r.gf_catalog_atrb_val4_name__c = 'Product'
+                ORDER BY Name
             ];
+
+            List<Product2> parentTemplateProducts = new List<Product2>();
+            for (Product2 product : products) {
+                if (matchesTemplate(product.DMT_Product_Template__c, template)) {
+                    parentTemplateProducts.add(product);
+                }
+            }
+
+			system.debug('size'+parentTemplateProducts.size());
+            logStep('getProductsDMTByContext.line.query', new Map<String, Object>{
+                'booking' => line.Booking_Geography__c,
+                'templateFilter' => template,
+                'contextCode' => contextCode,
+                'productsBeforeContextFilter' => parentTemplateProducts.size(),
+                'productsQueried' => products.size()
+            });
+
+            List<Product2> filteredParentProducts = new List<Product2>();
+            if (String.isBlank(contextCode)) {
+                filteredParentProducts.addAll(parentTemplateProducts);
+            } else {
+                Set<String> allowedTokens = resolveAllowedContextTokens(contextCode);
+                for (Product2 parentProduct : parentTemplateProducts) {
+                    if (matchesAnyContextToken(parentProduct.DMT_Taxonomy_Value__r?.gf_catalog_atrb_val7_name__c, allowedTokens)) {
+                        filteredParentProducts.add(parentProduct);
+                    }
+                }
+            }
+
+            Set<String> requiredChildCodes = new Set<String>();
+            for (Product2 parentProduct : filteredParentProducts) {
+                String childCodes = parentProduct.DMT_Taxonomy_Value__r?.gf_catalog_atrb_val1_name_c__c;
+                if (String.isBlank(childCodes)) {
+                    continue;
+                }
+                for (String childCode : childCodes.split(',')) {
+                    String normalized = String.valueOf(childCode).trim();
+                    if (!String.isBlank(normalized)) {
+                        requiredChildCodes.add(normalized);
+                    }
+                }
+            }
+
+            Map<Id, Product2> mergedById = new Map<Id, Product2>();
+            for (Product2 parentProduct : filteredParentProducts) {
+                mergedById.put(parentProduct.Id, parentProduct);
+            }
+
+            if (!requiredChildCodes.isEmpty()) {
+                for (Product2 candidate : products) {
+                    if (isLeafProduct(candidate)
+                        && matchesAllowedProductCode(candidate.ProductCode, requiredChildCodes)) {
+                        mergedById.put(candidate.Id, candidate);
+                    }
+                }
+            }
+
+            List<Product2> filteredProducts = mergedById.values();
+            logStep('getProductsDMTByContext.line.filtered', new Map<String, Object>{
+                'productsAfterContextFilter' => filteredProducts.size(),
+                'parentsAfterContextFilter' => filteredParentProducts.size(),
+                'requiredChildCodesCount' => requiredChildCodes.size(),
+                'allowedTokens' => resolveAllowedContextTokens(contextCode)
+            });
+            return filteredProducts;
         } else {
             throw new AuraHandledException('El recordId no pertenece a Opportunity ni a DMT_Line__c');
         }
+    }
+
+    private static List<Product2> filterProductsByContext(List<Product2> products, String contextCode) {
+        if (String.isBlank(contextCode)) {
+            return products;
+        }
+
+        Set<String> allowedTokens = resolveAllowedContextTokens(contextCode);
+        Set<String> allowedProductCodes = new Set<String>();
+
+        for (Product2 product : products) {
+            if (matchesAnyContextToken(product.DMT_Taxonomy_Value__r?.gf_catalog_atrb_val7_name__c, allowedTokens)) {
+                allowedProductCodes.addAll(resolveProductCodeTokens(product.ProductCode));
+            }
+        }
+
+        List<Product2> filtered = new List<Product2>();
+        for (Product2 product : products) {
+            if (matchesAllowedProductCode(product.ProductCode, allowedProductCodes)
+                || hasAllowedChild(product, allowedProductCodes)) {
+                filtered.add(product);
+            }
+        }
+
+        return filtered;
+    }
+
+    private static Set<String> resolveAllowedContextTokens(String contextCode) {
+        Set<String> tokens = new Set<String>();
+        if (String.isBlank(contextCode)) {
+            return tokens;
+        }
+
+        for (String token : contextCode.split(',')) {
+            String normalized = String.valueOf(token).trim().toUpperCase();
+            if (normalized == 'OP' || normalized == 'OPP' || normalized == 'ONE_OFF') {
+                tokens.add('OPP');
+            } else if (normalized == 'L' || normalized == 'LC' || normalized == 'LNC' || normalized == 'TO' || normalized == 'LINE') {
+                tokens.add('L');
+            }
+        }
+        return tokens;
+    }
+
+    private static Boolean matchesAnyContextToken(String rawValue, Set<String> allowedTokens) {
+        if (String.isBlank(rawValue)) {
+            return false;
+        }
+
+        String normalizedValue = rawValue.toUpperCase();
+        for (String token : allowedTokens) {
+            if (normalizedValue.contains(token)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void logStep(String step, Object payload) {
+        System.debug(LoggingLevel.WARN, LOG_PREFIX + '[' + step + '] ' + JSON.serialize(payload));
+    }
+
+    private static Boolean hasAllowedChild(Product2 product, Set<String> allowedProductCodes) {
+        String childCodes = product.DMT_Taxonomy_Value__r?.gf_catalog_atrb_val1_name_c__c;
+        if (String.isBlank(childCodes)) {
+            return false;
+        }
+
+        for (String childCode : childCodes.split(',')) {
+            if (allowedProductCodes.contains(String.valueOf(childCode).trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Set<String> resolveProductCodeTokens(String rawProductCode) {
+        Set<String> tokens = new Set<String>();
+        if (String.isBlank(rawProductCode)) {
+            return tokens;
+        }
+
+        for (String token : rawProductCode.split(',')) {
+            String normalized = String.valueOf(token).trim();
+            if (!String.isBlank(normalized)) {
+                tokens.add(normalized);
+            }
+        }
+
+        return tokens;
+    }
+
+    private static Boolean matchesAllowedProductCode(String productCodeRaw, Set<String> allowedProductCodes) {
+        if (allowedProductCodes == null || allowedProductCodes.isEmpty()) {
+            return false;
+        }
+
+        for (String code : resolveProductCodeTokens(productCodeRaw)) {
+            if (allowedProductCodes.contains(code)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static Boolean matchesTemplate(String rawTemplates, String expectedTemplate) {
+        if (String.isBlank(rawTemplates) || String.isBlank(expectedTemplate)) {
+            return false;
+        }
+
+        String expected = expectedTemplate.trim().toUpperCase();
+        for (String token : rawTemplates.split(';')) {
+            if (String.valueOf(token).trim().toUpperCase() == expected) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Boolean isLeafProduct(Product2 product) {
+        String sortOrder = String.valueOf(product.DMT_Taxonomy_Value__r?.gf_catalog_atrb_val2_name__c);
+        String manualIndent = String.valueOf(product.DMT_Taxonomy_Value__r?.gf_catalog_atrb_val3_name__c);
+        if (sortOrder == null || manualIndent == null) {
+            return false;
+        }
+
+        sortOrder = sortOrder.trim();
+        manualIndent = manualIndent.trim().toUpperCase();
+        return sortOrder == '99' && manualIndent == 'XX';
     }
 
     @AuraEnabled(cacheable=true)

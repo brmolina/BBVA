@@ -20,6 +20,8 @@ public with sharing class DMT_HPG_MainTableCustomController {
         DMT_HPG_GlobalPosition.Wrapper clients = new DMT_HPG_GlobalPosition.Wrapper();
         Map<String, Object> request = new Map<String, Object>();
         Map<String, Object> payload = new Map<String, Object>();
+        Boolean isCustomerIdQuery = false;
+
         if (countries != null && countries.size() > 0 ) {
             List<Map<String,Object>> countriesToSend = new List<Map<String,Object>>();
             for(String country : countries){
@@ -35,12 +37,16 @@ public with sharing class DMT_HPG_MainTableCustomController {
             payload.put('groupId', DMT_HPG_Utils.getGroupId(clientId));
         }
         else if(String.isNotBlank(customerId)){
+            isCustomerIdQuery = true;
             String customerIdPayLoad = DMT_HPG_Utils.getAlphaCode(customerId);
 
             if(customerIdPayLoad == null){
                 System.debug('ABS TEST customerId');
-                List<Account> acc = [SELECT Id,DES_Group_Code__c FROM Account WHERE Id =:customerId WITH SECURITY_ENFORCED];
-                if(!acc.isEmpty() && acc[0].DES_Group_Code__c =='GXXXXXXXXXXXXXX' ){
+                List<Account> acc = [SELECT Id, DES_Group_Code__c, RecordType.DeveloperName, g_customer_id__c FROM Account WHERE Id =:customerId WITH USER_MODE];
+                if(!acc.isEmpty() && acc[0].RecordType.DeveloperName == 'Prospect_Subsidiary') {
+                    customerIdPayLoad =  acc[0].g_customer_id__c;
+                }
+                else if(!acc.isEmpty() && acc[0].DES_Group_Code__c =='GXXXXXXXXXXXXXX' ){
                     customerIdPayLoad =  'ES0182XXXXXXXXX' ;
                 }
             }
@@ -48,38 +54,26 @@ public with sharing class DMT_HPG_MainTableCustomController {
         }
 
         payload.put('clientDataOption', 'D');
-        payload.put('paginationKey', page);
-        payload.put('pageSize', pageSize);
+        if (!isCustomerIdQuery) {
+            payload.put('paginationKey', page);
+            payload.put('pageSize', pageSize);
+        }
         payload.put('searchDate', searchDate);
         payload.put('clientPositionsType', (clientPositionsType == 'Y') ? 'Y' : '');
         request.put('payload' , JSON.serialize(payload));
         System.debug('Request Test: ' + request);
         clients = DMT_HPG_GlobalPosition.getGlobalPosition(request);
         System.debug('Response Test: ' + clients);
-        // Transform ratingGenerationDate
-        if (clients != null && clients.data != null) {
-            for (DMT_HPG_GlobalPosition.Data data : clients.data) {
-                if (data.ratingGenerationDate != null) {
-                    Datetime ratingGenerationDateTime = (DateTime)JSON.deserialize('"' + data.ratingGenerationDate + '"', DateTime.class);
-                    Date ratingGenerationDate = date.newinstance(ratingGenerationDateTime.year(), ratingGenerationDateTime.month(), ratingGenerationDateTime.day());
-                    data.ratingGenerationDate = String.valueOf(ratingGenerationDate);
-                }
-                data.sectorAA = DMT_HPG_Utils.unNullValue(data.assetAllocationSectorType, '') + '/' + DMT_HPG_Utils.unNullValue(data.assetAllcSectorDesc, '');
-                data.subSectorAA = DMT_HPG_Utils.unNullValue(data.assetAllocationSubSecType, '') + '/' + DMT_HPG_Utils.unNullValue(data.aaSubSectorDesc, '');
-                data.activityAA  = DMT_HPG_Utils.unNullValue(data.assetAllocationActvyType, '') + '/' + DMT_HPG_Utils.unNullValue(data.aaActivityDesc, '');
-                //data.priority = 'Jimmy';
-            }
-        }
-        return clients;
+        return enrichClientData(clients);
     }
-
-
 
     @AuraEnabled
     public static DMT_HPG_GlobalPosition.Wrapper fetchClientDataFromServiceLine(Id clientId, String page, String pageSize, List<String> countries, Date searchDate, String clientPositionsType, String customerId) {
         DMT_HPG_GlobalPosition.Wrapper clients = new DMT_HPG_GlobalPosition.Wrapper();
         Map<String, Object> request = new Map<String, Object>();
         Map<String, Object> payload = new Map<String, Object>();
+        Boolean isCustomerIdQuery = false;
+
         if (countries != null && countries.size() > 0 ) {
             List<Map<String,Object>> countriesToSend = new List<Map<String,Object>>();
             for(String country : countries){
@@ -99,22 +93,27 @@ public with sharing class DMT_HPG_MainTableCustomController {
                     SELECT Id, DES_Group_Code__c, g_customer_id__c, DES_Client_Type__c
                     FROM Account
                     WHERE Id = :clientId
-                    WITH SECURITY_ENFORCED
+                    WITH USER_MODE
                     LIMIT 1
                 ];
 
             if (acc.DES_Client_Type__c == 'Subsidiary') {
+                isCustomerIdQuery = true;
                 payload.put('customerId', recordCode);
             } else {
                 payload.put('groupId', DMT_HPG_Utils.getGroupId(clientId));
             }
         }
         else if(String.isNotBlank(customerId)){
+            isCustomerIdQuery = true;
             String customerIdPayLoad = DMT_HPG_Utils.getAlphaCode(customerId);
 
             if(customerIdPayLoad == null){
-                List<Account> acc = [SELECT Id,DES_Group_Code__c FROM Account WHERE Id =:customerId WITH SECURITY_ENFORCED];
-                if(!acc.isEmpty() && acc[0].DES_Group_Code__c =='GXXXXXXXXXXXXXX' ){
+                List<Account> acc = [SELECT Id,DES_Group_Code__c, RecordType.DeveloperName, g_customer_id__c FROM Account WHERE Id =:customerId WITH USER_MODE];
+                if(!acc.isEmpty() && acc[0].RecordType.DeveloperName == 'Prospect_Subsidiary') {
+                    customerIdPayLoad =  acc[0].g_customer_id__c;
+                }
+                else if(!acc.isEmpty() && acc[0].DES_Group_Code__c =='GXXXXXXXXXXXXXX' ){
                     customerIdPayLoad =  'ES0182XXXXXXXXX' ;
                 }
             }
@@ -122,21 +121,26 @@ public with sharing class DMT_HPG_MainTableCustomController {
         }
 
         payload.put('clientDataOption', 'D');
-        payload.put('paginationKey', page);
-        payload.put('pageSize', pageSize);
+        if (!isCustomerIdQuery) {
+            payload.put('paginationKey', page);
+            payload.put('pageSize', pageSize);
+        }
         payload.put('searchDate', searchDate);
         payload.put('clientPositionsType', (clientPositionsType == 'Y') ? 'Y' : '');
         request.put('payload' , JSON.serialize(payload));
         clients = DMT_HPG_GlobalPosition.getGlobalPosition(request);
+        return enrichClientData(clients);
+    }
 
+    private static DMT_HPG_GlobalPosition.Wrapper enrichClientData(DMT_HPG_GlobalPosition.Wrapper clients) {
         if (clients != null && clients.data != null) {
             for (DMT_HPG_GlobalPosition.Data data : clients.data) {
                 if (data.ratingGenerationDate != null) {
-                    Datetime ratingGenerationDateTime = (DateTime)JSON.deserialize('"' + data.ratingGenerationDate + '"', DateTime.class);
+                    Datetime ratingGenerationDateTime = (DateTime) JSON.deserialize('"' + data.ratingGenerationDate + '"', DateTime.class);
                     Date ratingGenerationDate = date.newinstance(ratingGenerationDateTime.year(), ratingGenerationDateTime.month(), ratingGenerationDateTime.day());
                     data.ratingGenerationDate = String.valueOf(ratingGenerationDate);
                 }
-                data.sectorAA = DMT_HPG_Utils.unNullValue(data.assetAllocationSectorType, '') + '/' + DMT_HPG_Utils.unNullValue(data.assetAllcSectorDesc, '');
+                data.sectorAA    = DMT_HPG_Utils.unNullValue(data.assetAllocationSectorType, '') + '/' + DMT_HPG_Utils.unNullValue(data.assetAllcSectorDesc, '');
                 data.subSectorAA = DMT_HPG_Utils.unNullValue(data.assetAllocationSubSecType, '') + '/' + DMT_HPG_Utils.unNullValue(data.aaSubSectorDesc, '');
                 data.activityAA  = DMT_HPG_Utils.unNullValue(data.assetAllocationActvyType, '') + '/' + DMT_HPG_Utils.unNullValue(data.aaActivityDesc, '');
             }
@@ -147,13 +151,12 @@ public with sharing class DMT_HPG_MainTableCustomController {
     @AuraEnabled
     public static String getClientId(String clientId) {
         String res;
-        List<Account> acc = [SELECT Name, DES_Structure_Type__c, DES_Group_Code__c  FROM Account WHERE Id =:clientId WITH SECURITY_ENFORCED];
+        List<Account> acc = [SELECT Name, DES_Structure_Type__c, DES_Group_Code__c, g_customer_id__c FROM Account WHERE Id =:clientId WITH SECURITY_ENFORCED];
         if (acc.size() > 0 && acc[0].DES_Structure_Type__c == 'Group' || acc[0].DES_Structure_Type__c == 'Supragroup') {
             res = acc[0].DES_Group_Code__c;
         } else {
-            List<Local_Client__c> local = [SELECT Id, Alpha_code__c, Is_Parent__c, Cib_Client__c, Cib_Client__r.DES_Main_Parent__c from Local_Client__c where Cib_Client__c  =:clientId WITH SECURITY_ENFORCED];
-            if (local.size() > 0) {
-                res = local[0].Alpha_code__c;
+            if (acc.size() > 0 && acc[0].g_customer_id__c != null) {
+                res = acc[0].g_customer_id__c;
             }
         }
         return res;
@@ -188,7 +191,7 @@ public with sharing class DMT_HPG_MainTableCustomController {
     public static List<String> getAllGroups() {
        return new List<String>();
     }
-
+    
     @AuraEnabled(cacheable = true)
     public static Object fetchInitialData(String selectedTab, Id clientId, List<String> lCountries, String searchDate, String clientPositionsType, String page, String pageSize, String customerId) {
         Object res;
@@ -206,9 +209,9 @@ public with sharing class DMT_HPG_MainTableCustomController {
         final Date dateFrom = Date.valueOf(searchDate);
         final List<String> countries = new List<String>();
         res = new DMT_HPG_GlobalPosition.Wrapper();
-        res = fetchClientDataFromServiceLine(clientId, page, pageSize, countries, dateFrom, clientPositionsType, customerId);
-
-        return res;
+         res = fetchClientDataFromServiceLine(clientId, page, pageSize, countries, dateFrom, clientPositionsType, customerId);
+         
+         return res;
     }
 
     @AuraEnabled
@@ -269,6 +272,7 @@ public with sharing class DMT_HPG_MainTableCustomController {
         return '';
     }
 
+    /* NEW MULTIHOLDER MODEL METHOD 
     @AuraEnabled
     public static void saveOpportunityClients(List<Object> selectedClients, Id opportunityId){
 
@@ -374,6 +378,156 @@ public with sharing class DMT_HPG_MainTableCustomController {
 
         if(!toInsert.isEmpty()){
             insert toInsert;
+        }
+    }*/
+
+    @AuraEnabled
+    public static void saveOpportunityClients(List<Object> selectedClients, Id opportunityId){
+
+        if(opportunityId == null){
+            throw new AuraHandledException('OpportunityId is null');
+        }
+
+        Set<String> incomingAlphaCodes = new Set<String>();
+        if(selectedClients != null){
+            for(Object obj : selectedClients){
+                Map<String, Object> row = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(obj));
+                String alphaCode = (String) row.get('customerId');
+                if(String.isNotBlank(alphaCode)){
+                    incomingAlphaCodes.add(alphaCode);
+                }
+            }
+        }
+
+
+        List<Custom_Association_Opportunity__c> association = [
+            SELECT Id, g_customer_id__c, gf_customer_group_id__c, Group__c
+            FROM Custom_Association_Opportunity__c
+            WHERE Opportunity__c = :opportunityId
+            LIMIT 1
+        ];
+
+        if(association.isEmpty()){
+            throw new AuraHandledException('No Custom Association found for Opportunity');
+        }
+
+        Id assocId = association[0].Id;
+        String mainHolderAlphaCode = association[0].g_customer_id__c;
+
+        // Participantes secundarios existentes
+        List<DMT_Custom_Association_ClientOpportunity__c> existingSecondaries = [
+            SELECT Id, DMT_g_customer_id__c, DMT_gf_customer_group_id__c, DMT_g_entific_id__c
+            FROM DMT_Custom_Association_ClientOpportunity__c
+            WHERE DMT_Custom_Association_Opportunity__c = :assocId
+        ];
+        Map<String, DMT_Custom_Association_ClientOpportunity__c> existingSecondaryByGCustomerId = new Map<String, DMT_Custom_Association_ClientOpportunity__c>();
+        for(DMT_Custom_Association_ClientOpportunity__c rec : existingSecondaries){
+            if(rec.DMT_g_customer_id__c != null){
+                existingSecondaryByGCustomerId.put(rec.DMT_g_customer_id__c, rec);
+            }
+        }
+
+        // Main Holder existente en DMT_Opportunity_Client__c
+        List<DMT_Opportunity_Client__c> existingMainRecords = [
+            SELECT Id, Alpha_Code_Client__c
+            FROM DMT_Opportunity_Client__c
+            WHERE DMT_MDE_Opportunity__c = :opportunityId
+        ];
+        Map<String, DMT_Opportunity_Client__c> existingMainByAlpha = new Map<String, DMT_Opportunity_Client__c>();
+        for(DMT_Opportunity_Client__c rec : existingMainRecords){
+            if(rec.Alpha_Code_Client__c != null){
+                existingMainByAlpha.put(rec.Alpha_Code_Client__c, rec);
+            }
+        }
+
+        List<DMT_Opportunity_Client__c> mainToUpsert = new List<DMT_Opportunity_Client__c>();
+        List<DMT_Custom_Association_ClientOpportunity__c> toInsertSecondary = new List<DMT_Custom_Association_ClientOpportunity__c>();
+        List<DMT_Custom_Association_ClientOpportunity__c> toUpdateSecondary = new List<DMT_Custom_Association_ClientOpportunity__c>();
+        List<DMT_Custom_Association_ClientOpportunity__c> toDeleteSecondary = new List<DMT_Custom_Association_ClientOpportunity__c>();
+
+        if(selectedClients != null){
+            for(Object obj : selectedClients){
+                Map<String, Object> row = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(obj));
+                String alphaCode = (String) row.get('customerId');
+                if(String.isBlank(alphaCode)) continue;
+
+                Boolean isMainHolder = alphaCode.equals(mainHolderAlphaCode);
+
+                if(isMainHolder){
+                    // HPG data del Main Holder → DMT_Opportunity_Client__c
+                    // Reutilizar el registro existente (update) en vez de crear uno nuevo
+                    DMT_Opportunity_Client__c client = existingMainRecords.isEmpty()
+                        ? new DMT_Opportunity_Client__c(DMT_MDE_Opportunity__c = opportunityId)
+                        : new DMT_Opportunity_Client__c(Id = existingMainRecords[0].Id);
+                    client.Alpha_Code_Client__c = alphaCode;
+                    client.DMT_Activity__c = (String) row.get('assetAllocationActvyType');
+                    client.DMT_Sector__c = (String) row.get('assetAllocationSectorType');
+                    client.DMT_Subsector__c = (String) row.get('assetAllocationSubSecType');
+                    client.DMT_External_Rating_Fitch__c = (String) row.get('fitchLtRatingLcType');
+                    client.DMT_External_Rating_Moodys__c = (String) row.get('moodysLtRatingLcType');
+                    client.DMT_External_Rating_SP__c = (String) row.get('spLtRatingLcType');
+                    client.External_Rating__c = (String) row.get('unifiedExtRatgLtFcType');
+                    client.g_upd_lmscl_internal_ratg_type__c = (String) row.get('updLmsclInternalRatgType');
+                    Object scoringValue = row.get('totalRatingScoreNumber');
+                    if(scoringValue != null){
+                        client.DMT_Scoring__c = Decimal.valueOf(String.valueOf(scoringValue)).setScale(2, RoundingMode.HALF_UP);
+                    }
+                    mainToUpsert.add(client);
+                    // Main Holder también en DMT_Custom_Association_ClientOpportunity__c (igual que en Lines)
+                    if(!existingSecondaryByGCustomerId.containsKey(alphaCode)){
+                        DMT_Custom_Association_ClientOpportunity__c mainAsParticipant = new DMT_Custom_Association_ClientOpportunity__c();
+                        mainAsParticipant.DMT_Custom_Association_Opportunity__c = assocId;
+                        mainAsParticipant.DMT_g_customer_id__c = alphaCode;
+                        mainAsParticipant.DMT_gf_customer_group_id__c = association[0].gf_customer_group_id__c;
+                        mainAsParticipant.DMT_g_entific_id__c = (String) row.get('countryIfoId');
+                        toInsertSecondary.add(mainAsParticipant);
+                    }
+                    else {
+                        DMT_Custom_Association_ClientOpportunity__c existingRec = existingSecondaryByGCustomerId.get(alphaCode);
+                        if(existingRec != null && existingRec.DMT_g_entific_id__c == null){
+                            existingRec.DMT_gf_customer_group_id__c = association[0].gf_customer_group_id__c;
+                            existingRec.DMT_g_entific_id__c = (String) row.get('countryIfoId');
+                            toUpdateSecondary.add(existingRec);
+                        }
+                    }
+                } else if(!existingSecondaryByGCustomerId.containsKey(alphaCode)){
+                    // Clientes secundarios → DMT_Custom_Association_ClientOpportunity__c (solo identificación)
+                    DMT_Custom_Association_ClientOpportunity__c secClient = new DMT_Custom_Association_ClientOpportunity__c();
+                    secClient.DMT_Custom_Association_Opportunity__c = assocId;
+                    secClient.DMT_g_customer_id__c = alphaCode;
+                    secClient.DMT_gf_customer_group_id__c = association[0].gf_customer_group_id__c;
+                    secClient.DMT_g_entific_id__c = (String) row.get('countryIfoId');
+                    toInsertSecondary.add(secClient);
+                }
+                else{
+                    DMT_Custom_Association_ClientOpportunity__c existingRec = existingSecondaryByGCustomerId.get(alphaCode);
+                    if(existingRec != null && existingRec.DMT_g_entific_id__c == null){
+                        existingRec.DMT_gf_customer_group_id__c = association[0].gf_customer_group_id__c;
+                        existingRec.DMT_g_entific_id__c = (String) row.get('countryIfoId');
+                        toUpdateSecondary.add(existingRec);
+                    }
+                }
+            }
+        }
+
+        // Eliminar secundarios que ya no están seleccionados
+        for(DMT_Custom_Association_ClientOpportunity__c existing : existingSecondaries){
+            if(existing.DMT_g_customer_id__c == null || !incomingAlphaCodes.contains(existing.DMT_g_customer_id__c)){
+                toDeleteSecondary.add(existing);
+            }
+        }
+
+        if(!toDeleteSecondary.isEmpty()){
+            delete toDeleteSecondary;
+        } 
+        if(!mainToUpsert.isEmpty()){
+            upsert mainToUpsert;
+        } 
+        if(!toInsertSecondary.isEmpty()){
+            insert toInsertSecondary;
+        }
+        if(!toUpdateSecondary.isEmpty()){
+            update toUpdateSecondary;
         }
     }
 
@@ -592,21 +746,16 @@ public with sharing class DMT_HPG_MainTableCustomController {
             throw new AuraHandledException('OpportunityId is null');
         }
 
-        List<Custom_Association_Opportunity__c> assocList = [
+        Custom_Association_Opportunity__c association = [
             SELECT Id, g_customer_id__c
             FROM Custom_Association_Opportunity__c
             WHERE Opportunity__c = :opportunityId
             LIMIT 1
         ];
 
-        if (!assocList.isEmpty()) {
-            assocList[0].g_customer_id__c = alphaCode;
-            update assocList[0];
-        } else {
-            Custom_Association_Opportunity__c newAssoc = new Custom_Association_Opportunity__c();
-            newAssoc.Opportunity__c      = opportunityId;
-            newAssoc.g_customer_id__c    = alphaCode;
-            insert newAssoc;
+        if(association != null){
+            association.g_customer_id__c = alphaCode;
+            update association;
         }
 
     }

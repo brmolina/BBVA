@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>dwp_kitv__Visit_Contact</fullName>
+    <fields>dwp_kitv__contact_email_desc__c</fields>
+    <fields>dwp_kitv__contact_title__c</fields>
+    <label>Visit Contact</label>
+</CompactLayout>

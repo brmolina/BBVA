@@ -450,6 +450,122 @@ public with sharing class DMT_Opportunity_UtilsTest {
     }
 
     @isTest
+    static void testGetOpportunityMoney() {
+        OpportunityLineItem oli = [SELECT Id FROM OpportunityLineItem LIMIT 1];
+
+        DMT_Opportunity_Money__c oldMoneyRecord = new DMT_Opportunity_Money__c(
+            DMT_Opportunity_Product__c  = oli.Id,
+            Name                        = 'OM-OLD-' + oli.Id,
+            DMT_Is_Old_Money__c         = true,
+            DMT_Up_Front_Fee_Accrual__c = '1.5%',
+            DMT_Applicable_Margin__c    = '2.0%'
+        );
+        DMT_Opportunity_Money__c newMoneyRecord = new DMT_Opportunity_Money__c(
+            DMT_Opportunity_Product__c  = oli.Id,
+            Name                        = 'OM-NEW-' + oli.Id,
+            DMT_Is_Old_Money__c         = false,
+            DMT_Up_Front_Fee_Accrual__c = '3.0%',
+            DMT_Applicable_Margin__c    = '4.0%'
+        );
+        insert new List<DMT_Opportunity_Money__c>{ oldMoneyRecord, newMoneyRecord };
+
+        Test.startTest();
+        Object rawResult = DMT_Opportunity_Utils.getOpportunityMoney(oli.Id);
+        Test.stopTest();
+
+        System.assertNotEquals(null, rawResult, 'A MoneyRecordPair should be returned');
+        Map<String, Object> pair     = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(rawResult));
+        Map<String, Object> oldMoney = (Map<String, Object>) pair.get('oldMoney');
+        Map<String, Object> newMoney = (Map<String, Object>) pair.get('newMoney');
+        System.assertEquals(String.valueOf(oldMoneyRecord.Id), (String) oldMoney.get('Id'), 'oldMoney Id should match the inserted old record');
+        System.assertEquals(String.valueOf(newMoneyRecord.Id), (String) newMoney.get('Id'), 'newMoney Id should match the inserted new record');
+        System.assertEquals('1.5%', (String) oldMoney.get('DMT_Up_Front_Fee_Accrual__c'), 'Old money Up-Front Fee Accrual should match');
+        System.assertEquals('3.0%', (String) newMoney.get('DMT_Up_Front_Fee_Accrual__c'), 'New money Up-Front Fee Accrual should match');
+    }
+
+    @isTest
+    static void testUpsertOpportunityMoney() {
+        OpportunityLineItem oli = [SELECT Id FROM OpportunityLineItem LIMIT 1];
+
+        // --- Insert case ---
+        Map<String, Object> oldInsertMap = new Map<String, Object>{
+            'DMT_Opportunity_Product__c'  => oli.Id,
+            'DMT_Up_Front_Fee_Accrual__c' => '1.5%',
+            'DMT_Funding_Cost__c'         => '0.8%'
+        };
+        Map<String, Object> newInsertMap = new Map<String, Object>{
+            'DMT_Opportunity_Product__c'  => oli.Id,
+            'DMT_Up_Front_Fee_Accrual__c' => '2.5%',
+            'DMT_Funding_Cost__c'         => '1.0%'
+        };
+
+        Test.startTest();
+        Object rawInserted = DMT_Opportunity_Utils.upsertOpportunityMoney(
+            JSON.serialize(oldInsertMap), JSON.serialize(newInsertMap)
+        );
+
+        Map<String, Object> insertedPair = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(rawInserted));
+        Map<String, Object> insertedOld  = (Map<String, Object>) insertedPair.get('oldMoney');
+        Map<String, Object> insertedNew  = (Map<String, Object>) insertedPair.get('newMoney');
+        String oldId = (String) insertedOld.get('Id');
+        String newId = (String) insertedNew.get('Id');
+
+        // --- Update case ---
+        Map<String, Object> oldUpdateMap = new Map<String, Object>{
+            'Id'                          => oldId,
+            'DMT_Opportunity_Product__c'  => oli.Id,
+            'DMT_Up_Front_Fee_Accrual__c' => '2.0%',
+            'DMT_Funding_Cost__c'         => '1.2%'
+        };
+        Map<String, Object> newUpdateMap = new Map<String, Object>{
+            'Id'                          => newId,
+            'DMT_Opportunity_Product__c'  => oli.Id,
+            'DMT_Up_Front_Fee_Accrual__c' => '3.0%',
+            'DMT_Funding_Cost__c'         => '1.5%'
+        };
+        DMT_Opportunity_Utils.upsertOpportunityMoney(
+            JSON.serialize(oldUpdateMap), JSON.serialize(newUpdateMap)
+        );
+        Test.stopTest();
+
+        System.assertNotEquals(null, oldId, 'Insert should assign an Id to oldMoney');
+        System.assertNotEquals(null, newId, 'Insert should assign an Id to newMoney');
+        System.assert(
+            [SELECT Name FROM DMT_Opportunity_Money__c WHERE Id = :oldId].Name.startsWith('OM-OLD-'),
+            'Old money name should be auto-generated with OM-OLD- prefix'
+        );
+        System.assert(
+            [SELECT Name FROM DMT_Opportunity_Money__c WHERE Id = :newId].Name.startsWith('OM-NEW-'),
+            'New money name should be auto-generated with OM-NEW- prefix'
+        );
+
+        DMT_Opportunity_Money__c afterUpdateOld = [
+            SELECT DMT_Up_Front_Fee_Accrual__c, DMT_Funding_Cost__c, DMT_Is_Old_Money__c
+            FROM DMT_Opportunity_Money__c
+            WHERE Id = :oldId
+        ];
+        DMT_Opportunity_Money__c afterUpdateNew = [
+            SELECT DMT_Up_Front_Fee_Accrual__c, DMT_Funding_Cost__c, DMT_Is_Old_Money__c
+            FROM DMT_Opportunity_Money__c
+            WHERE Id = :newId
+        ];
+
+        System.assertEquals('2.0%', afterUpdateOld.DMT_Up_Front_Fee_Accrual__c, 'Old money Up-Front Fee Accrual should reflect the update');
+        System.assertEquals('1.2%', afterUpdateOld.DMT_Funding_Cost__c, 'Old money Funding Cost should reflect the update');
+        System.assertEquals(true, afterUpdateOld.DMT_Is_Old_Money__c, 'DMT_Is_Old_Money__c must be true for old record');
+
+        System.assertEquals('3.0%', afterUpdateNew.DMT_Up_Front_Fee_Accrual__c, 'New money Up-Front Fee Accrual should reflect the update');
+        System.assertEquals('1.5%', afterUpdateNew.DMT_Funding_Cost__c, 'New money Funding Cost should reflect the update');
+        System.assertEquals(false, afterUpdateNew.DMT_Is_Old_Money__c, 'DMT_Is_Old_Money__c must be false for new record');
+
+        System.assertEquals(
+            2,
+            [SELECT COUNT() FROM DMT_Opportunity_Money__c WHERE DMT_Opportunity_Product__c = :oli.Id],
+            'Exactly two records (old and new) should exist after insert + update'
+        );
+    }
+
+    @isTest
     static void testHandleOppXSellGeneration_SubsidiaryHierarchySuccess() {
         TriggerBypass.setBypass();
 
@@ -505,4 +621,130 @@ public with sharing class DMT_Opportunity_UtilsTest {
         System.assertEquals(1, generatedXSells.size(), 'Handler must walk hierarchy tree to extract parent source x-sells when child has no data');
         System.assertEquals(750, generatedXSells[0].XSELL_Value_CY__c, 'Financial tracking indicators must verify exactly');
     }
+    
+    
+    @isTest
+    static void testCheckProspectInOpportunity() {
+        TriggerBypass.setBypass();
+        
+        Id prospectGroupRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Group').getRecordTypeId();
+        Id prospectSubsidiaryRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Subsidiary').getRecordTypeId();
+        Id customerRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Customer').getRecordTypeId();
+        Id dmtOppRtId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
+        
+        // Crear Prospect Group
+        Account prospectGroup = new Account(
+            Name = 'Test Prospect Group Opp Badge',
+            g_customer_id__c = 'ES0000000000031',
+            RecordTypeId = prospectGroupRtId
+        );
+        insert prospectGroup;
+        
+        // Crear Prospect Subsidiary
+        Account prospectSub = new Account(
+            Name = 'Test Prospect Subsidiary Opp Badge',
+            g_customer_id__c = 'ES0000000000032',
+            DES_ID_Fiscal__c = 'x9012',
+            RecordTypeId = prospectSubsidiaryRtId
+        );
+        insert prospectSub;
+        
+        // Crear Account normal
+        Account normalAccount = new Account(
+            Name = 'Normal Account Opp Badge',
+            g_customer_id__c = 'ES0000000000033',
+            RecordTypeId = customerRtId
+        );
+        insert normalAccount;
+        
+        // Opp 1: Con Prospect Group como cliente directo
+        Opportunity opp1 = new Opportunity(
+            Name = 'Test Opp Prospect Group',
+            AccountId = prospectGroup.Id,
+            RecordTypeId = dmtOppRtId,
+            StageName = 'Prospecting',
+            CloseDate = Date.today().addDays(30)
+        );
+        
+        // Opp 2: Con Prospect Subsidiary como cliente directo
+        Opportunity opp2 = new Opportunity(
+            Name = 'Test Opp Prospect Sub',
+            AccountId = prospectSub.Id,
+            RecordTypeId = dmtOppRtId,
+            StageName = 'Prospecting',
+            CloseDate = Date.today().addDays(30)
+        );
+        
+        // Opp 3: Con cuenta normal + Prospect en multiholder
+        Opportunity opp3 = new Opportunity(
+            Name = 'Test Opp Normal With Prospect Multiholder',
+            AccountId = normalAccount.Id,
+            RecordTypeId = dmtOppRtId,
+            StageName = 'Prospecting',
+            CloseDate = Date.today().addDays(30)
+        );
+        
+        // Opp 4: Con cuenta normal sin Prospect
+        Opportunity opp4 = new Opportunity(
+            Name = 'Test Opp Normal No Prospect',
+            AccountId = normalAccount.Id,
+            RecordTypeId = dmtOppRtId,
+            StageName = 'Prospecting',
+            CloseDate = Date.today().addDays(30)
+        );
+        
+        insert new List<Opportunity>{opp1, opp2, opp3, opp4};
+        
+        // Crear Custom_Association_Opportunity__c para opp3 (main holder = normalAccount)
+        Custom_Association_Opportunity__c assocOpp3 = new Custom_Association_Opportunity__c(
+            Opportunity__c = opp3.Id,
+            g_customer_id__c = normalAccount.g_customer_id__c,
+            gf_customer_group_id__c = 'G20180109100427'
+        );
+        insert assocOpp3;
+        
+        // Crear DMT_Custom_Association_ClientOpportunity__c para opp3 apuntando a Prospect (multiholder)
+        DMT_Custom_Association_ClientOpportunity__c multiholder3 = new DMT_Custom_Association_ClientOpportunity__c(
+            DMT_Custom_Association_Opportunity__c = assocOpp3.Id,
+            DMT_g_customer_id__c = prospectSub.g_customer_id__c
+        );
+        insert multiholder3;
+        
+        TriggerBypass.removeBypass();
+        
+        Test.startTest();
+        
+        // Test 1: Opp con Prospect Group como cliente directo
+        List<Boolean> result1 = DMT_Opportunity_Utils.checkProspectInOpportunity(new List<Id>{opp1.Id});
+        System.assertEquals(1, result1.size(), 'Should return one result');
+        System.assertEquals(true, result1[0], 'Should return true for Prospect Group');
+        
+        // Test 2: Opp con Prospect Subsidiary como cliente directo
+        List<Boolean> result2 = DMT_Opportunity_Utils.checkProspectInOpportunity(new List<Id>{opp2.Id});
+        System.assertEquals(1, result2.size(), 'Should return one result');
+        System.assertEquals(true, result2[0], 'Should return true for Prospect Subsidiary');
+        
+        // Test 3: Opp con cuenta normal + Prospect en multiholder
+        List<Boolean> result3 = DMT_Opportunity_Utils.checkProspectInOpportunity(new List<Id>{opp3.Id});
+        System.assertEquals(1, result3.size(), 'Should return one result');
+        System.assertEquals(true, result3[0], 'Should return true for Prospect in multiholder');
+        
+        // Test 4: Opp sin Prospect
+        List<Boolean> result4 = DMT_Opportunity_Utils.checkProspectInOpportunity(new List<Id>{opp4.Id});
+        System.assertEquals(1, result4.size(), 'Should return one result');
+        System.assertEquals(false, result4[0], 'Should return false for normal account without Prospect');
+        
+        // Test 5: Lista vacía
+        List<Boolean> result5 = DMT_Opportunity_Utils.checkProspectInOpportunity(new List<Id>());
+        System.assertEquals(1, result5.size(), 'Should return one result');
+        System.assertEquals(false, result5[0], 'Should return false for empty list');
+        
+        // Test 6: Lista null
+        List<Boolean> result6 = DMT_Opportunity_Utils.checkProspectInOpportunity(null);
+        System.assertEquals(1, result6.size(), 'Should return one result');
+        System.assertEquals(false, result6[0], 'Should return false for null list');
+        
+        Test.stopTest();
+    }
+    
 }

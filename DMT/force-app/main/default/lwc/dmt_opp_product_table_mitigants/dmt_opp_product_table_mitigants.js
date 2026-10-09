@@ -1,8 +1,9 @@
 import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { deleteRecord } from 'lightning/uiRecordApi';
+import deleteRecordApex   from '@salesforce/apex/DMT_WithoutSharingDAO.deleteRecordById';
 import LightningConfirm from 'lightning/confirm';
 import TITLETABLE from '@salesforce/label/c.dmt_cl_Collateral_Guarantees_Text';
+import saveMitigants          from '@salesforce/apex/DMT_OpportunityProductsController.saveMitigants';
 
 const TEMP_ID_PREFIX = 'NEW_';
 const VALID_MITIGANT_TYPES_REAL = new Set([
@@ -25,9 +26,9 @@ const LIQUIDATION_ENABLED_TYPES = new Set([
     'Real > Securitisation'
 ]);
 const LIQUIDATION_PERIOD_OPTIONS = [
-    { label: '5 días', value: '5' },
-    { label: '10 días', value: '10' },
-    { label: '20 días', value: '20' }
+    { label: '5 days', value: '5' },
+    { label: '10 days', value: '10' },
+    { label: '20 days', value: '20' }
 ];
 const BUSINESS_FIELDS = [
     'Mitigant_Type__c',
@@ -36,7 +37,7 @@ const BUSINESS_FIELDS = [
     'End_Date__c',
     'Internal_Rating__c',
     'External_Rating__c',
-    'CurrencyIsoCode',
+    'DMT_Currency__c',
     'DMT_Country_Guarantor__c',
     'Liquidation_Period__c',
     'DMT_Opportunity_Product__c'
@@ -48,7 +49,7 @@ const COLUMN_WIDTHS = {
     EndDate                 : 133,
     Internal_Rating__c      : 112,
     External_Rating__c      : 112,
-    CurrencyIsoCode         : 113,
+    DMT_Currency__c         : 113,
     Country_Guarantor__c    : 145,
     Liquidation_Period__c   : 135,
     button                  : 60
@@ -60,7 +61,7 @@ const FIELD_LABELS = {
     End_Date__c             : 'End Date',
     Internal_Rating__c      : 'Internal Rating',
     External_Rating__c      : 'External Rating',
-    CurrencyIsoCode         : 'Currency',
+    DMT_Currency__c         : 'Currency',
     DMT_Country_Guarantor__c: 'Country Collateral',
     Liquidation_Period__c   : 'Liquidation Period'
 };
@@ -93,9 +94,15 @@ export default class DmtOppProductTableMitigants extends LightningElement {
     @api get catalogValues() { return {}; }
     set catalogValues(value) {
         if (!value || typeof value !== 'object') return;
+        const seen = new Set();
         this._termOptions = (value['E895'] || [])
             .filter(o => VALID_MITIGANT_TYPES_REAL.has(o.label))
-            .map(o => ({ label: o.label, value: o.label }));
+            .map(o => ({ label: o.label, value: o.label }))
+            .filter(o => {
+                if (seen.has(o.label)) return false;
+                seen.add(o.label);
+                return true;
+            });
         this._internalRatingOptions = value['C204'] || [];
         this._externalRatingOptions = value['C009'] || [];
         this._countryOptions        = value['C245'] || [];
@@ -137,11 +144,10 @@ export default class DmtOppProductTableMitigants extends LightningElement {
     }
 
     @api commitEdit() {
-        this.rows        = this.rows.filter(r => !r._deleted);
         this._snapshot   = null;
         this._isEditMode = false;
         this.columns     = this._buildColumns();
-        this._loadFromData();
+        this._refreshDerivedState();
     }
 
     @api collectMitigantsChanges() {
@@ -167,29 +173,8 @@ export default class DmtOppProductTableMitigants extends LightningElement {
         return FIELD_LABELS[apiName] || null;
     }
 
-    @api collectInvalidFields() {
-        const { isValid, invalidFields } = this.collectNegativeFieldsValidation();
-        return { isValid, invalidFields };
-    }
-
     @api get totalRowsCount() {
         return this.rows.filter(r => !r._deleted).length;
-    }
-
-    collectNegativeFieldsValidation() {
-        const invalidFields = [];
-        const activeRows = this.rows.filter(r => !r._deleted);
-        
-        const hasNegativeCommercial = activeRows.some(r => parseFloat(r.Commercial_Percentage__c || 0) < 0);
-        if (hasNegativeCommercial) invalidFields.push(FIELD_LABELS.Commercial_Percentage__c);
-        
-        const hasNegativePolitical = activeRows.some(r => parseFloat(r.Political_Percentage__c || 0) < 0);
-        if (hasNegativePolitical) invalidFields.push(FIELD_LABELS.Political_Percentage__c);
-
-        return {
-            isValid: invalidFields.length === 0,
-            invalidFields: [...new Set(invalidFields)]
-        };
     }
 
     _loadFromData() {
@@ -256,7 +241,7 @@ export default class DmtOppProductTableMitigants extends LightningElement {
             End_Date__c               : this.endDateProduct || '',
             Internal_Rating__c        : '',
             External_Rating__c        : 'NR',
-            CurrencyIsoCode           : '',
+            DMT_Currency__c           : '',
             DMT_Country_Guarantor__c  : '',
             Liquidation_Period__c     : '',
             DMT_Opportunity_Product__c: this.oppProduct || null
@@ -278,6 +263,55 @@ export default class DmtOppProductTableMitigants extends LightningElement {
             }));
         }
     }
+
+    async handlePasteData(event) {
+        event.stopPropagation();
+        const pasted = event.detail.data;
+        if (!Array.isArray(pasted) || pasted.length === 0) return;
+
+        const incomingRows = pasted
+            .filter(item => VALID_MITIGANT_TYPES_REAL.has(item.Mitigant_Type__c) || !item.Mitigant_Type__c)
+            .map(r => this._decorateNewRow(r));
+
+        // Already editing: stage rows in memory only, the Save button will persist them
+        if (this._isEditMode) {
+            if (!this._snapshot) {
+                this._snapshot = this.rows.map(r => ({ ...r }));
+            }
+            this.rows = incomingRows;
+            this._refreshDerivedState();
+            return;
+        }
+
+        // Not editing: persist immediately
+        await this._persistPastedRows(incomingRows);
+    }
+
+    async _persistPastedRows(incomingRows) {
+        if (!this.oppProduct) {
+            this._toast('Error', 'Cannot save: missing Opportunity Product.', 'error');
+            return;
+        }
+        this.isLoading = true;
+        try {
+            const mitigantsToUpsert = incomingRows.map(r => this._cleanRow(r));
+            const savedMitigants = await saveMitigants({
+                opportunityLineItemId: this.oppProduct,
+                mitigantsToUpsert,
+                mitigantsToDelete: []
+            });
+            this._data = savedMitigants || [];
+            this._loadFromData();
+            this._toast('Success', 'Collateral Guarantees saved successfully.', 'success');
+        } catch (error) {
+            this._toast('Error saving data', error?.body?.message || error?.message || 'Could not save the Collateral Guarantees.', 'error');
+            console.error('Error message:', error.body?.message || error.message);
+            console.error('Full error:', JSON.parse(JSON.stringify(error)));
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
 
     async _requestDelete(id) {
         const row = this.rows.find(r => r.Id === id);
@@ -310,7 +344,7 @@ export default class DmtOppProductTableMitigants extends LightningElement {
             return;
         }
         this.isLoading = true;
-        deleteRecord(id)
+        deleteRecordApex({ recordId: id })
             .then(() => {
                 this._toast('Record deleted', 'The Collateral Guarantee was successfully deleted.', 'success');
                 this.rows = this.rows.filter(r => r.Id !== id);
@@ -326,7 +360,7 @@ export default class DmtOppProductTableMitigants extends LightningElement {
 
     _handleCellChange(event) {
         event.stopPropagation();
-        const { context: id, fieldname: field, value } = event.detail.data;
+        const { context: id, fieldname: field, value,fieldlabel, isFieldValid } = event.detail.data;
         const idx = this.rows.findIndex(r => r.Id === id);
         if (idx === -1) return;
         const newRow = { ...this.rows[idx], [field]: value };
@@ -337,6 +371,20 @@ export default class DmtOppProductTableMitigants extends LightningElement {
         const newArr = [...this.rows];
         newArr[idx]  = newRow;
         this.rows    = newArr;
+
+        //Refresh de datos en el padre informando errores:
+        this.dispatchEvent(new CustomEvent('fieldchange', {
+            detail: {
+                fieldId: id,
+                label: fieldlabel,
+                apiName: field || null,
+                value: value,
+                isFieldValid
+            },
+            bubbles: true,
+            composed: true
+        }));
+
         this._refreshDerivedState();
     }
 
@@ -369,7 +417,7 @@ export default class DmtOppProductTableMitigants extends LightningElement {
             this._dateColumn       ('End Date',            'End_Date__c',                                            e),
             this._picklistColumn   ('Internal Rating',     'Internal_Rating__c',        this._internalRatingOptions, e, COLUMN_WIDTHS.Internal_Rating__c),
             this._picklistColumn   ('External Rating',     'External_Rating__c',        this._externalRatingOptions, e, COLUMN_WIDTHS.External_Rating__c),
-            this._searchComboColumn('Currency',            'CurrencyIsoCode',           this._currencyOptions,       e, COLUMN_WIDTHS.CurrencyIsoCode),
+            this._searchComboColumn('Currency',            'DMT_Currency__c',           this._currencyOptions,       e, COLUMN_WIDTHS.DMT_Currency__c),
             this._searchComboColumn('Country Collateral',  'DMT_Country_Guarantor__c',  this._countryOptions,        e, COLUMN_WIDTHS.Country_Guarantor__c),
             this._liquidationColumn(e),
             this._buttonColumn('utility:delete', 'deleteRecord', 'deleteDisabled'),
@@ -430,7 +478,8 @@ export default class DmtOppProductTableMitigants extends LightningElement {
                 numberValue     : { fieldName: field },
                 fieldName       : field,
                 context         : { fieldName: 'Id' },
-                validateNegative: !!isEdit
+                validateNegative: !!isEdit,
+                fieldlabel : label,
             }
         };
     }
@@ -473,6 +522,11 @@ export default class DmtOppProductTableMitigants extends LightningElement {
                 inputValue : { fieldName: 'Liquidation_Period__c' }
             }
         };
+    }
+    get copyPasteColumns() {
+        return this.columns
+            .filter(c => c.type !== 'button' && c.type !== 'action' && c.type !== 'button-icon')
+            .map(c => ({ ...c, editable: true }));
     }
 
     _buttonColumn(iconName, actionName, disabledField) {

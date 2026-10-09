@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>bupl__gf_business_plan_version_id__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Business Plan Version</label>
+    <referenceTo>bupl__BusinessPlan_Version__c</referenceTo>
+    <relationshipLabel>Business Plan Items</relationshipLabel>
+    <relationshipName>BusinessPlan_Items</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

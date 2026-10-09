@@ -436,6 +436,9 @@ public with sharing class ComponentNBC_Controller {
     } catch (Exception e) {
       System.debug('Could not get toolkit info'); //NOSONAR
     }
+    System.debug('=== CIBGLOBALD-3798 loadToolkitInfo START === toolkitId: ' + toolkitId);
+    System.debug('>>> getNbcInfo isEmpty: ' + info.isEmpty());
+    System.debug('>>> getNbcInfo keys: ' + info.keySet());
     List<cstk__General_Data__c> toolkits = new List<cstk__General_Data__c>();
     List<cstk__Strategy__c> listStrategy = new List<cstk__Strategy__c>();
     List<cstk__EmissionTarget__c> listTarget = new List<cstk__EmissionTarget__c>();
@@ -451,6 +454,12 @@ public with sharing class ComponentNBC_Controller {
       listTarget = (List<cstk__EmissionTarget__c>)info.get('emissionTargets');
       triGen = (List<cstk__Tri_Generic__c>)info.get('triGeneric');
       triAutoparts = (List<cstk__Tri_Autoparts__c>)info.get('triAutoparts');
+      System.debug('>>> sector: ' + sector);
+      System.debug('>>> GeneralData size: ' + (toolkits != null ? String.valueOf(toolkits.size()) : 'NULL'));
+      System.debug('>>> strategy size: ' + (listStrategy != null ? String.valueOf(listStrategy.size()) : 'NULL'));
+      System.debug('>>> emissionTargets size: ' + (listTarget != null ? String.valueOf(listTarget.size()) : 'NULL'));
+      System.debug('>>> triGeneric size: ' + (triGen != null ? String.valueOf(triGen.size()) : 'NULL'));
+      System.debug('>>> triAutoparts size: ' + (triAutoparts != null ? String.valueOf(triAutoparts.size()) : 'NULL'));
     } 
 
     String rating;
@@ -569,6 +578,8 @@ public with sharing class ComponentNBC_Controller {
 
     res.put('Rating',rating);
     res.put('SectorAverage', sectorAvg);
+    System.debug('>>> loadToolkitInfo result map: ' + res);
+    System.debug('=== CIBGLOBALD-3798 loadToolkitInfo END ===');
     return res;
   }
 

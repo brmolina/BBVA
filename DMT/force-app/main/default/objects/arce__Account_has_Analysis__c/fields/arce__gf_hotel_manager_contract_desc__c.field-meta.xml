@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_hotel_manager_contract_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Description and comments about the contracts and appraisals table.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Additional comments appraisals table</label>
+    <length>1000</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

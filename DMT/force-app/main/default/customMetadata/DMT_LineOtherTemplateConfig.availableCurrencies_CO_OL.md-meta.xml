@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>availableCurrencies_CO_OL</label>
+    <protected>false</protected>
+    <values>
+        <field>DataType__c</field>
+        <value xsi:type="xsd:string">MULTIPICKLIST</value>
+    </values>
+    <values>
+        <field>DependsOnField__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>DisplayLabel__c</field>
+        <value xsi:type="xsd:string">Available Currencies for disposals</value>
+    </values>
+    <values>
+        <field>Entific__c</field>
+        <value xsi:type="xsd:string">CO</value>
+    </values>
+    <values>
+        <field>FieldOrder__c</field>
+        <value xsi:type="xsd:double">4.0</value>
+    </values>
+    <values>
+        <field>Field_Edit_Is_Disabled__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Field_View_Is_Disabled__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>FilterText__c</field>
+        <value xsi:type="xsd:string">DMT_Currency_Provision__c.g_currency_id__c</value>
+    </values>
+    <values>
+        <field>HelpText__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>IsRequired__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>LineType__c</field>
+        <value xsi:type="xsd:string">OL</value>
+    </values>
+    <values>
+        <field>OptionsJson__c</field>
+        <value xsi:type="xsd:string">{ &quot;options&quot;: [ { &quot;label&quot;: &quot;AED&quot;, &quot;value&quot;: &quot;AED&quot; }, { &quot;label&quot;: &quot;ARS&quot;, &quot;value&quot;: &quot;ARS&quot; }, { &quot;label&quot;: &quot;AUD&quot;, &quot;value&quot;: &quot;AUD&quot; }, { &quot;label&quot;: &quot;BRL&quot;, &quot;value&quot;: &quot;BRL&quot; }, { &quot;label&quot;: &quot;CAD&quot;, &quot;value&quot;: &quot;CAD&quot; }, { &quot;label&quot;: &quot;CHF&quot;, &quot;value&quot;: &quot;CHF&quot; }, { &quot;label&quot;: &quot;CLF&quot;, &quot;value&quot;: &quot;CLF&quot; }, { &quot;label&quot;: &quot;CLP&quot;, &quot;value&quot;: &quot;CLP&quot; }, { &quot;label&quot;: &quot;CNH&quot;, &quot;value&quot;: &quot;CNH&quot; }, { &quot;label&quot;: &quot;CNY&quot;, &quot;value&quot;: &quot;CNY&quot; }, { &quot;label&quot;: &quot;COP&quot;, &quot;value&quot;: &quot;COP&quot; }, { &quot;label&quot;: &quot;CZK&quot;, &quot;value&quot;: &quot;CZK&quot; }, { &quot;label&quot;: &quot;DKK&quot;, &quot;value&quot;: &quot;DKK&quot; }, { &quot;label&quot;: &quot;EGP&quot;, &quot;value&quot;: &quot;EGP&quot; }, { &quot;label&quot;: &quot;EUR&quot;, &quot;value&quot;: &quot;EUR&quot; }, { &quot;label&quot;: &quot;GBP&quot;, &quot;value&quot;: &quot;GBP&quot; }, { &quot;label&quot;: &quot;HKD&quot;, &quot;value&quot;: &quot;HKD&quot; }, { &quot;label&quot;: &quot;HRK&quot;, &quot;value&quot;: &quot;HRK&quot; }, { &quot;label&quot;: &quot;HUF&quot;, &quot;value&quot;: &quot;HUF&quot; }, { &quot;label&quot;: &quot;IDR&quot;, &quot;value&quot;: &quot;IDR&quot; }, { &quot;label&quot;: &quot;INR&quot;, &quot;value&quot;: &quot;INR&quot; }, { &quot;label&quot;: &quot;ISK&quot;, &quot;value&quot;: &quot;ISK&quot; }, { &quot;label&quot;: &quot;JPY&quot;, &quot;value&quot;: &quot;JPY&quot; }, { &quot;label&quot;: &quot;KRW&quot;, &quot;value&quot;: &quot;KRW&quot; }, { &quot;label&quot;: &quot;LTL&quot;, &quot;value&quot;: &quot;LTL&quot; }, { &quot;label&quot;: &quot;MAD&quot;, &quot;value&quot;: &quot;MAD&quot; }, { &quot;label&quot;: &quot;MXN&quot;, &quot;value&quot;: &quot;MXN&quot; }, { &quot;label&quot;: &quot;MYR&quot;, &quot;value&quot;: &quot;MYR&quot; }, { &quot;label&quot;: &quot;NOK&quot;, &quot;value&quot;: &quot;NOK&quot; }, { &quot;label&quot;: &quot;NZD&quot;, &quot;value&quot;: &quot;NZD&quot; }, { &quot;label&quot;: &quot;PEN&quot;, &quot;value&quot;: &quot;PEN&quot; }, { &quot;label&quot;: &quot;PHP&quot;, &quot;value&quot;: &quot;PHP&quot; }, { &quot;label&quot;: &quot;PLN&quot;, &quot;value&quot;: &quot;PLN&quot; }, { &quot;label&quot;: &quot;RON&quot;, &quot;value&quot;: &quot;RON&quot; }, { &quot;label&quot;: &quot;RUB&quot;, &quot;value&quot;: &quot;RUB&quot; }, { &quot;label&quot;: &quot;SAR&quot;, &quot;value&quot;: &quot;SAR&quot; }, { &quot;label&quot;: &quot;SEK&quot;, &quot;value&quot;: &quot;SEK&quot; }, { &quot;label&quot;: &quot;SGD&quot;, &quot;value&quot;: &quot;SGD&quot; }, { &quot;label&quot;: &quot;THB&quot;, &quot;value&quot;: &quot;THB&quot; }, { &quot;label&quot;: &quot;TND&quot;, &quot;value&quot;: &quot;TND&quot; }, { &quot;label&quot;: &quot;TRY&quot;, &quot;value&quot;: &quot;TRY&quot; }, { &quot;label&quot;: &quot;TWD&quot;, &quot;value&quot;: &quot;TWD&quot; }, { &quot;label&quot;: &quot;USD&quot;, &quot;value&quot;: &quot;USD&quot; }, { &quot;label&quot;: &quot;UYU&quot;, &quot;value&quot;: &quot;UYU&quot; }, { &quot;label&quot;: &quot;VEF&quot;, &quot;value&quot;: &quot;VEF&quot; }, { &quot;label&quot;: &quot;VES&quot;, &quot;value&quot;: &quot;VES&quot; }, { &quot;label&quot;: &quot;ZAR&quot;, &quot;value&quot;: &quot;ZAR&quot; } ], &quot;inputAttributes&quot;: { &quot;placeholder&quot;: &quot;Select currency&quot;, &quot;searchable&quot;: true } }</value>
+    </values>
+    <values>
+        <field>SectionOrder__c</field>
+        <value xsi:type="xsd:double">1.0</value>
+    </values>
+    <values>
+        <field>Section__c</field>
+        <value xsi:type="xsd:string">Details</value>
+    </values>
+    <values>
+        <field>TaxonomyCatalog__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>TaxonomyFilterRule__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>TemplateSubtype__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>VisibilityRule__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>isActive__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

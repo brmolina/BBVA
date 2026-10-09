@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_bldg_cmpltn_per_cmnt_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Comments on the Percentage of work progress of the Certificates and / or technical opinion of the construction in process</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Comments on the Percentage of work prog</label>
+    <length>300</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

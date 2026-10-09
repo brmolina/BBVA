@@ -1,0 +1,152 @@
+<template>
+    <lightning-modal-header label="Economics Old / New Money"></lightning-modal-header>
+
+    <lightning-modal-body>
+        <template if:true={isLoading}>
+            <div class="slds-align_absolute-center slds-p-around_large">
+                <lightning-spinner alternative-text="Loading..." size="medium" variant="brand"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:false={isLoading}>
+
+            <!-- Rows (header is sticky inside the same scroll container as the rows,
+                 so both share the exact same width once the vertical scrollbar appears) -->
+            <div style="max-height: 55vh; overflow-y: auto; overflow-x: hidden;">
+
+                <!-- Column headers (sticky) -->
+                <div class="slds-grid slds-grid_vertical-align-center slds-p-vertical_small slds-border_bottom"
+                     style="position: sticky; top: 0; background: white; z-index: 10;">
+                     <div class="slds-col slds-size_3-of-12 slds-p-right_small" style="min-width: 0;">
+                    </div>
+                    <div class="slds-col slds-size_3-of-12 slds-p-horizontal_x-small slds-text-align_center" style="min-width: 0;">
+                        <span class="slds-text-heading_small slds-text-color_default">Old Money</span>
+                    </div>
+                    <div class="slds-col slds-size_3-of-12 slds-p-horizontal_x-small slds-text-align_center" style="min-width: 0;">
+                        <span class="slds-text-heading_small slds-text-color_default">New Money</span>
+                    </div>
+                    <div class="slds-col slds-grow-none slds-text-align_center" style="width: 44px;">
+                        <lightning-button-icon
+                            icon-name="utility:back"
+                            variant="border-filled"
+                            alternative-text="Get All"
+                            title="Get All"
+                            onclick={handleFetchAll}
+                            disabled={isSaving}>
+                        </lightning-button-icon>
+                    </div>
+                    <div class="slds-col slds-size_3-of-12 slds-p-left_x-small slds-text-align_center">
+                        <span class="slds-text-heading_small slds-text-color_default">Inferred</span>
+                    </div>
+                </div>
+
+                <template for:each={rows} for:item="row">
+                    <div key={row.key} class="slds-grid slds-grid_vertical-align-center slds-p-vertical_x-small slds-border_bottom">
+                        <div class="slds-col slds-size_3-of-12 slds-p-right_small" style="min-width: 0;">
+                            <div class="slds-form-element__label slds-m-bottom_none">{row.label}</div>
+                        </div>
+                        <div class="slds-col slds-size_3-of-12 slds-p-horizontal_x-small" style="min-width: 0;">
+                <template if:true={row.isTextArea}>
+                                <lightning-textarea
+                                    variant="label-hidden"
+                                    value={row.oldValue}
+                                    onchange={handleInputChange}
+                                    data-row-key={row.key}
+                                    data-money-type="old"
+                                    max-length="255"
+                                    style="resize: none;">
+                                </lightning-textarea>
+                            </template>
+                            <template if:false={row.isTextArea}>
+                                <lightning-input
+                                    type="text"
+                                    variant="label-hidden"
+                                    value={row.oldValue}
+                                    onchange={handleInputChange}
+                                    data-row-key={row.key}
+                                    data-money-type="old"
+                                    maxlength="255"
+                                    style="resize: none;">
+                                </lightning-input>
+                            </template>
+                        </div>
+                        <div class="slds-col slds-size_3-of-12 slds-p-horizontal_x-small" style="min-width: 0;">
+                            <template if:true={row.isTextArea}>
+                                <lightning-textarea
+                                    variant="label-hidden"
+                                    value={row.newValue}
+                                    onchange={handleInputChange}
+                                    data-row-key={row.key}
+                                    data-money-type="new"
+                                    max-length="255">
+                                </lightning-textarea>
+                            </template>
+                            <template if:false={row.isTextArea}>
+                                <lightning-input
+                                    type="text"
+                                    variant="label-hidden"
+                                    value={row.newValue}
+                                    onchange={handleInputChange}
+                                    data-row-key={row.key}
+                                    data-money-type="new"
+                                    maxlength="255">
+                                </lightning-input>
+                            </template>
+                        </div>
+                        <div class="slds-col slds-grow-none slds-text-align_center" style="width: 44px;">
+                            <template if:true={row.canFetchSource}>
+                                <lightning-button-icon
+                                    icon-name="utility:back"
+                                    variant="border-filled"
+                                    alternative-text="Aplicar a New Money"
+                                    title="Aplicar a New Money"
+                                    onclick={handleFetchRowSource}
+                                    data-row-key={row.key}
+                                    data-money-type="new"
+                                    disabled={isSaving}>
+                                </lightning-button-icon>
+                            </template>
+                        </div>
+                        <div class="slds-col slds-size_3-of-12 slds-p-left_x-small" style="min-width: 0;">
+                            <div class="slds-grid slds-grid_vertical-align-center slds-wrap">
+                                <template if:true={row.canFetchSource}>
+                                    <lightning-helptext
+                                        class="slds-m-right_x-small"
+                                        content={row.helpText}>
+                                    </lightning-helptext>
+                                </template>
+                                <span class="slds-truncate">{row.sourceValue}</span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <template if:true={hasError}>
+            <div class="slds-notify slds-notify_alert slds-theme_error slds-m-horizontal_small slds-m-bottom_small" role="alert">
+                <span class="slds-assistive-text">Error</span>
+                <lightning-icon icon-name="utility:error" alternative-text="Error" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                {errorMessage}
+            </div>
+        </template>
+    </lightning-modal-body>
+
+    <lightning-modal-footer>
+        <div class="slds-grid slds-grid_align-center">
+            <lightning-button
+                label="Cancel"
+                variant="neutral"
+                onclick={handleCancel}
+                disabled={isSaving}>
+            </lightning-button>
+            <lightning-button
+                label="Save"
+                variant="brand"
+                onclick={handleSave}
+                disabled={isSaving}
+                class="slds-m-left_x-small">
+            </lightning-button>
+        </div>
+    </lightning-modal-footer>
+</template>

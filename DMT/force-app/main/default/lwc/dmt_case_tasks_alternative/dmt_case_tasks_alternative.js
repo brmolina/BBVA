@@ -18,6 +18,7 @@ export default class Dmt_case_tasks_alternative extends LightningElement {
     // NUEVO: Variable para controlar si el modal está abierto
     @track isModalOpen = false;
     @track massiveActionMode = 'closeApproval';
+    showScheduleSummaryModal = false; 
     closeForReviewEligibleTaskIds = new Set();
 
     columns = [
@@ -74,6 +75,9 @@ export default class Dmt_case_tasks_alternative extends LightningElement {
 
     //busqueda por fecha
     _currentDateList = null;
+
+    sortedField = null;
+    sortDirection = 'asc';
 
     labels = {
         DMT_No_Records,
@@ -305,6 +309,11 @@ export default class Dmt_case_tasks_alternative extends LightningElement {
             this.filteredClosed = this.filterByPicklists(baseClosed, activeFilters);
         }
 
+        if (this.sortedField) {
+            this.filteredInProgress = this.sortTree(this.filteredInProgress);
+            this.filteredReturned = this.sortTree(this.filteredReturned);
+            this.filteredClosed = this.sortTree(this.filteredClosed);
+        }
         this.currentInProgressPage = 1;
         this.currentReturnedPage = 1;
         this.currentClosedPage = 1;
@@ -562,5 +571,135 @@ export default class Dmt_case_tasks_alternative extends LightningElement {
 
         this.isDataReceived = false;
         this.loadData();
+    }
+
+        
+    handleOpenScheduleSummaryModal() {
+        this.showScheduleSummaryModal = true;
+    }
+
+    handleCloseScheduleSummaryModal() {
+        this.showScheduleSummaryModal = false;
+    }
+    
+
+    handleSort(event) {
+    const { fieldName } = event.detail;
+    if (!fieldName) return;
+
+    if (this.sortedField === fieldName) {
+        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        this.sortedField = fieldName;
+        this.sortDirection = 'asc';
+    }
+
+    // Marcamos qué columna está activa y en qué dirección, para que el hijo pinte el icono
+    this.columns = this.columns.map(col => ({
+        ...col,
+        isSorted: col.fieldName === this.sortedField,
+        sortDirection: col.fieldName === this.sortedField ? this.sortDirection : undefined
+    }));
+
+    this.isFiltering = true;
+    setTimeout(() => {
+        this.applySort();
+        this.isFiltering = false;
+    }, 50);
+    }
+
+    applySort() {
+        if (!this.sortedField) return;
+
+        this.filteredInProgress = this.sortTree(this.filteredInProgress);
+        this.filteredReturned = this.sortTree(this.filteredReturned);
+        this.filteredClosed = this.sortTree(this.filteredClosed);
+
+        this.currentInProgressPage = 1;
+        this.currentReturnedPage = 1;
+        this.currentClosedPage = 1;
+
+        this.inProgressData = this.filteredInProgress.slice(0, this.pageSize);
+        this.returnedData = this.filteredReturned.slice(0, this.pageSize);
+        this.closedData = this.filteredClosed.slice(0, this.pageSize);
+    }
+
+    sortTree(nodes) {
+        const sorted = [...(nodes || [])].sort((a, b) => this.compareRecords(a, b));
+        return sorted.map(node => {
+            if (node.subitems && node.subitems.length > 0) {
+                return { ...node, subitems: this.sortTree(node.subitems) };
+            }
+            return node;
+        });
+    }
+
+    getSortValue(node, field) {
+        const column = (this.columns || []).find(col => col.fieldName === field);
+        let raw = node[field];
+
+        // Columnas tipo 'url' (ej. step, oppLineName) guardan un objeto {urlLabel, urlValue}
+        if (column && column.type === 'url' && raw && typeof raw === 'object') {
+            return raw.urlLabel || raw.urlValue || '';
+        }
+        return raw;
+    }
+
+    parseDate(dateStr) {
+        // Formato: 27/May/2026 13:15:57
+        if (!dateStr || typeof dateStr !== 'string') return null;
+
+        const datePattern = /(\d{1,2})\/(\w+)\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/;
+        const match = dateStr.match(datePattern);
+
+        if (!match) return null;
+
+        const [, day, monthStr, year, hour, minute, second] = match;
+
+        // Mapa de meses
+        const monthMap = {
+            'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+            'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+        };
+
+        const month = monthMap[monthStr];
+        if (month === undefined) return null;
+
+        // Retorna timestamp para poder comparar numéricamente
+        return new Date(year, month, day, hour, minute, second).getTime();
+    }
+
+    compareRecords(a, b) {
+        const field = this.sortedField;
+        const valA = this.getSortValue(a, field);
+        const valB = this.getSortValue(b, field);
+
+        const aEmpty = valA === null || valA === undefined || valA === '';
+        const bEmpty = valB === null || valB === undefined || valB === '';
+        if (aEmpty && bEmpty) return 0;
+        if (aEmpty) return 1;  // vacíos siempre al final
+        if (bEmpty) return -1;
+
+        // Detectar si es una fecha (por el nombre del campo)
+        const dateFields = ['startDate', 'endDate'];
+        if (dateFields.includes(field)) {
+            const dateA = this.parseDate(String(valA));
+            const dateB = this.parseDate(String(valB));
+
+            if (dateA !== null && dateB !== null) {
+                const result = dateA - dateB;
+                return this.sortDirection === 'asc' ? -result : result;
+            }
+        }
+
+        const numA = Number(valA);
+        const numB = Number(valB);
+        const bothNumeric = valA !== '' && valB !== '' && !isNaN(numA) && !isNaN(numB);
+
+        const result = bothNumeric
+            ? numA - numB
+            : String(valA).localeCompare(String(valB), undefined, { sensitivity: 'base', numeric: true });
+
+        return this.sortDirection === 'asc' ? -result : result;
     }
 }

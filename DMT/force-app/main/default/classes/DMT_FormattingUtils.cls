@@ -6,6 +6,7 @@ public with sharing class DMT_FormattingUtils {
         public String value { get; set; }
         public Boolean boolValue {get; set; }
         public String size { get; set; }
+        public List<String> fieldApiNames { get; set; }
 
         public DisplayField(String label, String value) {
             this.label = label;
@@ -29,6 +30,23 @@ public with sharing class DMT_FormattingUtils {
             this.label = label;
             this.value = value;
             this.size = size;
+        }
+
+        // CIBGLOBALD-4117 - carries which raw field(s) fed this display value, so getTrackedFields()
+        // can derive the watch list from the same call site that builds the display, instead of a
+        // separate hand-maintained list that can drift from what's actually rendered.
+        public DisplayField(String label, String value, List<String> fieldApiNames) {
+            this.label = label;
+            this.value = value;
+            this.size = 'HALF';
+            this.fieldApiNames = fieldApiNames;
+        }
+
+        public DisplayField(String label, Boolean value, List<String> fieldApiNames) {
+            this.label = label;
+            this.boolValue = value;
+            this.size = 'HALF';
+            this.fieldApiNames = fieldApiNames;
         }
     }
 
@@ -131,32 +149,32 @@ public with sharing class DMT_FormattingUtils {
     } */
     public static String tableRow1column(String label, String value) {
         /*---- START NEW PDF BUILDER----*/
-        return  '<tr>'
+        return  '<tr data-dmt-row="field">'
             + '<td style="padding: 8px 10px 4px; vertical-align: top; border-top: none; border-left: none; border-right: none; border-bottom: 1px solid #ccc;">'
-            + '<div style="font-weight: bold; color: #333;">' + label + '</div>'
-            + '<div style="min-height: 20px;">' + (String.isNotBlank(value) ? value : '&nbsp;') + '</div>'
+            + '<div data-dmt-label="' + label.escapeHtml4() + '" style="font-weight: bold; color: #333;">' + label + '</div>'
+            + '<div data-dmt-value="true" style="min-height: 20px;">' + (String.isNotBlank(value) ? value : '&nbsp;') + '</div>'
             + '</td>'
             + '</tr>';
         /*---- END NEW PDF BUILDER----*/
     }
     public static String tableRow1columnWithHelper(String label, String helper, String value) {
-        return  '<tr>'
+        return  '<tr data-dmt-row="field">'
             + '<td colspan="2" style="padding-bottom: 8px; padding-top: 8px; vertical-align: top;">'
-            + '<div><strong>' + label + '</strong></div>'
+            + '<div data-dmt-label="' + label.escapeHtml4() + '"><strong>' + label + '</strong></div>'
             + '<div style="font-size: 8px; font-style: italic; color: #888; margin-top: 2px; margin-bottom: 4px;">'
             + helper + '</div>'
-            + '<div style="min-height: 25px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">'
+            + '<div data-dmt-value="true" style="min-height: 25px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">'
             + value + '</div>'
             + '</td>'
             + '</tr>';
     }
 
     public static String tableRow2columns(String label, String value, String label2, String value2) {
-        return '<tr>'
-            + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>' + label + '</strong></td>'
-            + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + value + '</td>'
-            + '<td style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>' + label2 + '</strong></td>'
-            + '<td style="padding: 8px; border-bottom: 1px solid #ccc;">' + value2 + '</td>'
+        return '<tr data-dmt-row="field">'
+            + '<td data-dmt-pair="1" data-dmt-label="' + label.escapeHtml4() + '" style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>' + label + '</strong></td>'
+            + '<td data-dmt-pair="1" data-dmt-value="true" style="padding: 8px; border-bottom: 1px solid #ccc;">' + value + '</td>'
+            + '<td data-dmt-pair="2" data-dmt-label="' + label2.escapeHtml4() + '" style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>' + label2 + '</strong></td>'
+            + '<td data-dmt-pair="2" data-dmt-value="true" style="padding: 8px; border-bottom: 1px solid #ccc;">' + value2 + '</td>'
             + '</tr>';
     }
 
@@ -165,26 +183,36 @@ public with sharing class DMT_FormattingUtils {
         if (String.isBlank(label2) && String.isBlank(value2)) {
             rightCell = '<td style="padding-bottom: 8px; padding-top: 8px; vertical-align: top;"></td>'; // Empty td to maintain alignment
         } else {
-            rightCell = '<td style="padding-bottom: 8px; padding-top: 8px; vertical-align: top;">'
-                + '<div><strong>' + label2 + '</strong></div>'
-                + '<div style="min-height: 25px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">' + value2 + '</div>'
+            rightCell = '<td data-dmt-pair="2" style="padding-bottom: 8px; padding-top: 8px; vertical-align: top;">'
+                + '<div data-dmt-label="' + label2.escapeHtml4() + '"><strong>' + label2 + '</strong></div>'
+                + '<div data-dmt-value="true" style="min-height: 25px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">' + value2 + '</div>'
                 + '</td>';
         }
-        return '<tr>'
-            + '<td style="padding-bottom: 8px; padding-top: 8px; padding-right: 16px; vertical-align: top;">'
-            + '<div><strong>' + label + '</strong></div>'
-            + '<div style="min-height: 25px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">' + value + '</div>'
+        return '<tr data-dmt-row="field">'
+            + '<td data-dmt-pair="1" style="padding-bottom: 8px; padding-top: 8px; padding-right: 16px; vertical-align: top;">'
+            + '<div data-dmt-label="' + label.escapeHtml4() + '"><strong>' + label + '</strong></div>'
+            + '<div data-dmt-value="true" style="min-height: 25px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">' + value + '</div>'
             + '</td>'
             + rightCell
             + '</tr>';
     }
 
+    // Same cell markup/style as tableRow2columns' pair 1 (two <td>s, data-dmt-pair="1" on both),
+    // just without a second pair - for a trailing unpaired field in an otherwise-2-per-row table.
+    // Distinct from tableRow1column, which stacks label+value in a single <td> via nested <div>s.
+    public static String tableRow1columnPairStyle(String label, String value) {
+        return '<tr data-dmt-row="field">'
+            + '<td data-dmt-pair="1" data-dmt-label="' + label.escapeHtml4() + '" style="padding: 8px; border-bottom: 1px solid #ccc;"><strong>' + label + '</strong></td>'
+            + '<td data-dmt-pair="1" data-dmt-value="true" style="padding: 8px; border-bottom: 1px solid #ccc;">' + value + '</td>'
+            + '</tr>';
+    }
+
     public static String tableRow1column_checkbox(String label, Boolean value) {
-        return  '<tr>'
+        return  '<tr data-dmt-row="field">'
             + '<td style="padding-bottom: 8px; padding-top: 8px; padding-right: 16px; vertical-align: top;">'
             + '<div>'
-            + '<div><strong>'+label+'</strong></div>'
-            + '<div style="min-height: 25px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">' + '<input type="checkbox" disabled="" '+ (value ? 'checked' : '') +' />' + '</div>'
+            + '<div data-dmt-label="' + label.escapeHtml4() + '"><strong>'+label+'</strong></div>'
+            + '<div data-dmt-value="true" data-dmt-checked="' + (value == true) + '" style="min-height: 25px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">' + '<input type="checkbox" disabled="" '+ (value ? 'checked' : '') +' />' + '</div>'
             + '</div>'
             + '</td>'
             +'<td style="padding-bottom: 8px; padding-top: 8px; vertical-align: top;"></td>' // Empty td to maintain alignment
@@ -192,17 +220,17 @@ public with sharing class DMT_FormattingUtils {
     }
 
     public static String tableRow2columns_checkbox(String label, Boolean value, String label2, Boolean value2) {
-        return '<tr>'
-            + '<td style="padding-bottom: 8px; padding-top: 8px; padding-right: 16px; vertical-align: top;">'
+        return '<tr data-dmt-row="field">'
+            + '<td data-dmt-pair="1" style="padding-bottom: 8px; padding-top: 8px; padding-right: 16px; vertical-align: top;">'
             + '<div>'
-            + '<div><strong>'+label+'</strong></div>'
-            + '<div style="min-height: 25px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">' + '<input type="checkbox" disabled="" '+ (value ? 'checked' : '') +' />' + '</div>'
+            + '<div data-dmt-label="' + label.escapeHtml4() + '"><strong>'+label+'</strong></div>'
+            + '<div data-dmt-value="true" data-dmt-checked="' + (value == true) + '" style="min-height: 25px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">' + '<input type="checkbox" disabled="" '+ (value ? 'checked' : '') +' />' + '</div>'
             + '</div>'
             + '</td>'
-            + '<td style="padding-bottom: 8px; padding-top: 8px; vertical-align: top;">'
+            + '<td data-dmt-pair="2" style="padding-bottom: 8px; padding-top: 8px; vertical-align: top;">'
             + '<div>'
-            + '<div><strong>'+label2+'</strong></div>'
-            + '<div style="min-height: 25px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">' + '<input type="checkbox" disabled="" '+ (value2 ? 'checked' : '') +' />' + '</div>'
+            + '<div data-dmt-label="' + label2.escapeHtml4() + '"><strong>'+label2+'</strong></div>'
+            + '<div data-dmt-value="true" data-dmt-checked="' + (value2 == true) + '" style="min-height: 25px; border-bottom: 1px solid #ccc; padding-bottom: 4px;">' + '<input type="checkbox" disabled="" '+ (value2 ? 'checked' : '') +' />' + '</div>'
             + '</div>'
             + '</td>'
             + '</tr>';
@@ -223,10 +251,11 @@ public with sharing class DMT_FormattingUtils {
         String redLight = 'CircleGrey';
         String yellowLight = 'CircleGrey';
         String greenLight = 'CircleGrey';
-        if (color.toLowerCase() == 'red') redLight = 'CircleRed';
-        else if (color.toLowerCase() == 'yellow') yellowLight = 'CircleYellow';
-        else if (color.toLowerCase() == 'green') greenLight = 'CircleGreen';
-        return '<div class="traffic-light-container" style="display: inline-block;">'
+        String activeColor = 'GREY';
+        if (color.toLowerCase() == 'red') { redLight = 'CircleRed'; activeColor = 'RED'; }
+        else if (color.toLowerCase() == 'yellow') { yellowLight = 'CircleYellow'; activeColor = 'YELLOW'; }
+        else if (color.toLowerCase() == 'green') { greenLight = 'CircleGreen'; activeColor = 'GREEN'; }
+        return '<div class="traffic-light-container" data-dmt-traffic="' + activeColor + '" data-dmt-traffic-mode="triple" style="display: inline-block;">'
             + '<img src="/resource/' + redLight + '" style="width: 25px; height: 25px; margin: 1px;">'
             + '<img src="/resource/' + yellowLight + '" style="width: 25px; height: 25px; margin: 1px;">'
             + '<img src="/resource/' + greenLight + '" style="width: 25px; height: 25px; margin: 1px;">'
@@ -347,10 +376,11 @@ public with sharing class DMT_FormattingUtils {
     public static String renderTrafficLightSingle(String color) {
         if (color == 'NOPINTAR') return '';
         String colorPaint = 'CircleGrey';
-        if (color.toLowerCase() == 'red') colorPaint = 'CircleRed';
-        else if (color.toLowerCase() == 'yellow') colorPaint = 'CircleYellow';
-        else if (color.toLowerCase() == 'green') colorPaint = 'CircleGreen';
-        return '<div class="traffic-light-container" style="display: inline-block; vertical-align: middle;">'
+        String activeColor = 'GREY';
+        if (color.toLowerCase() == 'red') { colorPaint = 'CircleRed'; activeColor = 'RED'; }
+        else if (color.toLowerCase() == 'yellow') { colorPaint = 'CircleYellow'; activeColor = 'YELLOW'; }
+        else if (color.toLowerCase() == 'green') { colorPaint = 'CircleGreen'; activeColor = 'GREEN'; }
+        return '<div class="traffic-light-container" data-dmt-traffic="' + activeColor + '" data-dmt-traffic-mode="single" style="display: inline-block; vertical-align: middle;">'
             + '<img src="/resource/' + colorPaint + '" style="width: 25px; height: 25px; margin: 1px;">'
             + '</div>';
     }
@@ -531,6 +561,23 @@ public with sharing class DMT_FormattingUtils {
             return itemSection;
     }
 
+    // Converts a raw stored amount to millions for sections labeled "(Figures in Mn)".
+    public static Object toMillions(Object rawValue) {
+        Decimal result;
+        if (rawValue == null) return null;
+        try {
+            result = ((Decimal) rawValue) / 1000000;
+            return result.setScale(2);
+        } catch (Exception e) {
+            try {
+                result = Decimal.valueOf(String.valueOf(rawValue)) / 1000000;
+                return result.setScale(2);
+            } catch (Exception ex) {
+                return null;
+            }
+        }
+    }
+
     public static String formatDecimalEs(Object rawValue, Integer scale) {
         if (rawValue == null) return '';
 
@@ -640,7 +687,7 @@ public static String generateHtmlTable(List<DisplayField> fields) {
         // 1. Filtrar los campos que vienen vacíos (If you still need this logic, you can add it here!)
 
         // 2. Construir el HTML con 4 columnas base para soportar QUARTER (25%), HALF (50%) y FULL (100%)
-        String html = '<table class="style-table" style="width:100%; border-collapse: collapse; table-layout: fixed;">'
+        String html = '<table class="style-table" data-dmt-fieldgrid="true" style="width:100%; border-collapse: collapse; table-layout: fixed;">'
                         + '<colgroup>'
                         + '<col style="width: 25%;"><col style="width: 25%;">'
 /*                         + '<col style="width: 25%;"><col style="width: 25%;">' */
@@ -712,9 +759,9 @@ public static String generateHtmlTable(List<DisplayField> fields) {
         }
 
         // Build and return the standardized HTML with the dynamic colspan
-        return '<td colspan="' + colspan + '" style="padding-bottom: 8px; padding-top: 8px; padding-right: 16px; vertical-align: top;">'
-             + '<div><strong>' + (label != null ? label : '') + '</strong></div>'
-             + '<div style="min-height: 25px; ' + borderStyle + '">' + displayValue + '</div>'
+        return '<td data-dmt-row="field" colspan="' + colspan + '" style="padding-bottom: 8px; padding-top: 8px; padding-right: 16px; vertical-align: top; word-wrap: break-word; overflow-wrap: break-word;">'
+             + '<div data-dmt-label="' + (label != null ? label : '').escapeHtml4() + '"><strong>' + (label != null ? label : '') + '</strong></div>'
+               + '<div data-dmt-value="true" style="min-height: 25px; word-wrap: break-word; overflow-wrap: break-word; word-break: break-all; white-space: normal; ' + borderStyle + '">' + displayValue + '</div>'
              + '</td>';
     }
 
@@ -722,19 +769,19 @@ public static String generateHtmlTable(List<DisplayField> fields) {
     public static String renderHtmlDataTable(DataTableWrapper tableData) {
         if (tableData.rows.isEmpty()) return ''; // No renderiza si está vacía
 
-        String html = '<table class="style-table" style="width:' + tableData.width + '; border-collapse: collapse; table-layout: fixed; margin-bottom: 15px;">';
-        html += '<tr><td colspan="' + tableData.headers.size() + '" style="padding: 8px; text-align: center; border-bottom: 1px solid #ccc; background-color: rgb(174, 174, 174); font-size: 16px; word-wrap: break-word;"><strong>' + tableData.title + '</strong></td></tr>';
+        String html = '<table class="style-table" data-dmt-table="true" style="width:' + tableData.width + '; border-collapse: collapse; table-layout: fixed; margin-bottom: 15px;">';
+        html += '<tr data-dmt-table-title="true"><td colspan="' + tableData.headers.size() + '" style="padding: 8px; text-align: center; border-bottom: 1px solid #ccc; background-color: rgb(174, 174, 174); font-size: 16px; word-wrap: break-word;"><strong>' + tableData.title + '</strong></td></tr>';
 
-        html += '<tr>';
+        html += '<tr data-dmt-table-header="true">';
         for (String header : tableData.headers) {
-            html += '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-wrap: break-word;"><strong>' + header + '</strong></td>';
+            html += '<td data-dmt-header-cell="true" style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-wrap: break-word;"><strong>' + header + '</strong></td>';
         }
         html += '</tr>';
 
         for (List<String> row : tableData.rows) {
-            html += '<tr>';
+            html += '<tr data-dmt-table-row="true">';
             for (String cell : row) {
-                html += '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-wrap: break-word;">' + cell + '</td>';
+                html += '<td data-dmt-cell="true" style="padding: 8px; border-bottom: 1px solid #ccc; word-wrap: break-word;">' + cell + '</td>';
             }
             html += '</tr>';
         }
@@ -772,6 +819,9 @@ public static String generateHtmlTable(List<DisplayField> fields) {
         }
     }
 
+    private static final Integer SAFE_MULTILINE_BREAK_INTERVAL = 47;
+    private static final String HTML_SOFT_BREAK_MARKUP = '<wbr/>';
+
     public static String formatToTwoDecimals(Object rawValue) {
         if (rawValue == null || String.isBlank(String.valueOf(rawValue))) return '';
         try {
@@ -781,6 +831,64 @@ public static String generateHtmlTable(List<DisplayField> fields) {
         } catch (Exception e) {
             return String.valueOf(rawValue);
         }
+    }
+    
+    public static String toSafeMultilineHtml(String value) {
+        String safeValue = value;
+        if (safeValue == null) {
+            safeValue = '';
+        }
+
+        safeValue = addSoftBreaksToLongRuns(safeValue.escapeHtml4());
+
+        return safeValue
+            .replace('\r\n', '<br/>')
+            .replace('\n', '<br/>')
+            .replace('\r', '<br/>');
+    }
+
+    private static String addSoftBreaksToLongRuns(String value) {
+        if (String.isBlank(value)) {
+            return value;
+        }
+
+        String result = '';
+        Integer consecutiveCount = 0;
+        Integer index = 0;
+
+        while (index < value.length()) {
+            if (value.substring(index, index + 1) == '&') {
+                Integer semicolonOffset = value.substring(index).indexOf(';');
+                if (semicolonOffset > 0) {
+                    String entityToken = value.substring(index, index + semicolonOffset + 1);
+                    result += entityToken;
+                    consecutiveCount++;
+                    if (consecutiveCount >= SAFE_MULTILINE_BREAK_INTERVAL) {
+                        result += HTML_SOFT_BREAK_MARKUP;
+                        consecutiveCount = 0;
+                    }
+                    index += semicolonOffset + 1;
+                    continue;
+                }
+            }
+
+            String currentChar = value.substring(index, index + 1);
+            result += currentChar;
+
+            if (currentChar == ' ' || currentChar == '\t' || currentChar == '\r' || currentChar == '\n') {
+                consecutiveCount = 0;
+            } else {
+                consecutiveCount++;
+                if (consecutiveCount >= SAFE_MULTILINE_BREAK_INTERVAL) {
+                    result += HTML_SOFT_BREAK_MARKUP;
+                    consecutiveCount = 0;
+                }
+            }
+
+            index++;
+        }
+
+        return result;
     }
 
 }

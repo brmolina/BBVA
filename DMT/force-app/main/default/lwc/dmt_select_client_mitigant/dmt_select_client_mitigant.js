@@ -93,8 +93,8 @@ export default class LocalClientPicker extends LightningElement {
             this.results = data.map(record => ({
                 id: record.Id,
                 name: record.Name,
-                alphaCode: record.Alpha_code__c || '',
-                fiscalId: record.Cib_Client__r ? record.Cib_Client__r.DES_ID_Fiscal__c || '' : ''
+                alphaCode: record.g_customer_id__c || '',
+                fiscalId: record.DES_Tax_Identification_Number__c || ''
             }));
 
         } catch (e) {

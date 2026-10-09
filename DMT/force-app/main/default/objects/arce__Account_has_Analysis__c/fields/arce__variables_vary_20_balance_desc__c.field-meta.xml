@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__variables_vary_20_balance_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>&quot;
+Explain items that suposse total balance variation  of more than 20%, not explained before
+&quot;</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Total balance variation of more than 20%</label>
+    <length>500</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>2</visibleLines>
+</CustomField>

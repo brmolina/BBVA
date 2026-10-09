@@ -24,7 +24,7 @@ export const scheduleFields = [
         type: 'picklist',
         isReadOnly: false,
         isHidden: false,
-        isRequired: false,
+        isRequired: true,
         options: [
             { label: 'Monthly', value: 'Monthly' },
             { label: 'Quarterly', value: 'Quarterly' },
@@ -41,7 +41,7 @@ export const scheduleFields = [
         type: 'picklist',
         isReadOnly: false,
         isHidden: false,
-        isRequired: false,
+        isRequired: true,
         options: [
             { label: 'Fixed', value: 'Fixed' },
             { label: 'Variable', value: 'Variable' }
@@ -61,7 +61,7 @@ export const scheduleFields = [
     },
     {
         id: 'gf_accrual_fees_bp__c',
-        label: 'Accrual Fees',
+        label: 'Accrual Fees (BPS)',
         apiName: 'gf_accrual_fees_bp__c',
         value: 0,
         size: '1-of-2',

@@ -114,7 +114,8 @@ const columns = {
         { label: 'Asset allocation ActvyType', field: 'assetAllocationActvyType', title: '', type: 'text', sortable: false },
         { label: 'Asset allocation SubScType', field: 'assetAllocationSubSecType', title: '', type: 'text', sortable: false },
         { label: 'Internal<br/>Rating (short)', field: 'updSmsclInternalRatgType', title: 't_hpgr_customers.g_upd_smscl_internal_ratg_type', type: 'text', sortable: false },
-        { label: 'Current Rating<br/>Tool Date TEEST', field: 'currentRatingToolDate', title: 't_hpgr_customers.gf_current_rating_tool_date', type: 'date', sortable: false },
+        { label: 'Current Rating<br/>Tool Date', field: 'currentRatingToolDate', title: 't_hpgr_customers.gf_current_rating_tool_date', type: 'date', sortable: false },
+        { label: 'Expiration Rating<br/>Date', field: 'expirationRatingDate', title: 't_hpgr_customers.gf_current_rating_tool_date', type: 'date', sortable: false },
         { label: 'External Rating<br/>(Foreign Curr)', field: 'unifiedExtRatgLtFcType', title: 't_hpgr_customers.g_unified_ext_ratg_lt_fc_type', type: 'text', sortable: false }
     ]
     , tcmoppMitigants: [
@@ -165,9 +166,10 @@ export function getVisibleColumns(tabName) {
             { label: 'Internal<br/>Rating (short)', field: 'updSmsclInternalRatgType', title: 'displaytext', type: 'text', sortable: false },
             { label: 'Current Rating<br/>Tool Date', field: 'currentRatingToolDate', title: 'displaytext', type: 'date', sortable: false }]
     } else if (tabName === 'tcmopp') {
-        return [{ label: 'Client Name', field: 'name', type: 'text',title: 'displaytext', sortable: false },  
+        return [{ label: 'Client Name', field: 'name', type: 'text',title: 'displaytext', sortable: false },
             { label: 'Internal<br/>Rating (short)', field: 'updSmsclInternalRatgType', title: 'displaytext', type: 'text', sortable: false },
             { label: 'Current Rating<br/>Tool Date', field: 'currentRatingToolDate', title: 'displaytext', type: 'date', sortable: false },
+            { label: 'Expiration Rating Date', field: 'expirationRatingDate', title: 'displaytext', type: 'date', sortable: false },
             { label: 'External Rating<br/>(Foreign Curr)', field: 'unifiedExtRatgLtFcType', type: 'text',title: 'displaytext', sortable: false }]
     } else if (tabName === 'tcmoppMitigants') {
         return [{ label: 'Guarantor Name', field: 'name', type: 'text',title: 'displaytext', sortable: false },

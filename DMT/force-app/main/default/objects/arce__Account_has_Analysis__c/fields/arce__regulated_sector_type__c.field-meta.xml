@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__regulated_sector_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>A check box to determine if the sector is regulated or not.</description>
+    <label>Regulated sector</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>1</fullName>
+                <default>false</default>
+                <label>No implications</label>
+            </value>
+            <value>
+                <fullName>2</fullName>
+                <default>false</default>
+                <label>Affected the company</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

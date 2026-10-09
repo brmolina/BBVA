@@ -15,7 +15,9 @@ public with sharing class DMT_Currency_Conversion_Utils {
                                                                 'en_US' => '#,###.00',
                                                                 'es_ES' => '#.###,00',
                                                                 'es_CO' => '#.###,00',
-                                                                'es_PE' => '#.###,00'
+                                                                'es_PE' => '#.###,00',
+                                                                'es_AR' => '#.###,00',
+                                                                'es_MX' => '#,###.00'
             };
 
     /**
@@ -103,11 +105,24 @@ public with sharing class DMT_Currency_Conversion_Utils {
 
                     Object val = inputMap.get(key);
 
-                    //Verifico que los valores sean numericos
+                    //Verifico que los valores sean numericos o strings numericos
+                    Decimal numericVal = null;
                     if (val instanceof Decimal || val instanceof Integer || val instanceof Double) {
-
-                    Decimal numericVal;
-                    numericVal = Decimal.valueOf(String.valueOf(val));
+                        numericVal = Decimal.valueOf(String.valueOf(val));
+                    } else if (val instanceof String) {
+                        String strVal = ((String) val).trim();
+                        if (String.isNotBlank(strVal) && strVal != 'null') {
+                            try {
+                                // Normalizar separadores: reemplazar coma por punto para locales españoles
+                                strVal = strVal.replace(',', '.');
+                                numericVal = Decimal.valueOf(strVal);
+                            } catch (Exception e) {
+                                // No es un número válido, se copiará tal cual
+                            }
+                        }
+                    }
+                    
+                    if (numericVal != null) {
                     
                     Decimal result;
 
@@ -306,6 +321,7 @@ public with sharing class DMT_Currency_Conversion_Utils {
      * @Description Metodo auxiliar para copiar el contenido de un mapa de entrada a un nuevo mapa,
      *              excluyendo las claves 'recordId' y 'action'. Usado para llenar el 'outMap'
      *              con los datos originales cuando la conversion no se realiza o falla.
+     *              Convierte strings numericos a Decimal para asegurar formato correcto.
      * @param inputMap El mapa de entrada del cual copiar los valores.
      * @return Map<String, Object> Un nuevo mapa con los valores copiados, excluyendo 'recordId' y 'action'.
      */
@@ -313,7 +329,23 @@ public with sharing class DMT_Currency_Conversion_Utils {
         Map<String, Object> result = new Map<String, Object>();
         for (String key : inputMap.keySet()) {
             if (key != 'recordId' && key != 'action') {
-                result.put(key, inputMap.get(key));
+                Object val = inputMap.get(key);
+                // Intentar convertir Strings numericos a Decimal
+                if (val instanceof String) {
+                    String strVal = ((String) val).trim();
+                    if (String.isNotBlank(strVal) && strVal != 'null') {
+                        try {
+                            // Normalizar separadores: reemplazar coma por punto para locales españoles
+                            strVal = strVal.replace(',', '.');
+                            Decimal numericVal = Decimal.valueOf(strVal);
+                            result.put(key, numericVal);
+                            continue;
+                        } catch (Exception e) {
+                            // No es un número válido, copiar como está
+                        }
+                    }
+                }
+                result.put(key, val);
             }
         }
         return result;
@@ -1175,6 +1207,77 @@ public static Map<String, Object> formatAmountScientificNotation (Map<String, Ob
     }
 
     return outMap;
+}
+
+/**
+ * @Description Multiplica el amount por el factor de conversión definido en DMT_Currency_Conversion__mdt
+ *              para la currency indicada. Si no existe configuración, devuelve el amount sin modificar.
+ * @param currencyIsoCode El código ISO de la moneda (ej: 'COP', 'MXN').
+ * @param amount El monto a convertir.
+ * @return Decimal El monto multiplicado por el factor, o el amount original si no hay configuración.
+ */
+public static Decimal convertToStorage(String currencyIsoCode, Decimal amount) {
+    if (String.isBlank(currencyIsoCode) || amount == null) {
+        return amount;
+    }
+    Decimal conversionFactor = getConversionFactor(currencyIsoCode);
+    if (conversionFactor == null) {
+        return amount;
+    }
+    return amount * conversionFactor;
+}
+
+/**
+ * @Description Divide el amount por el factor de conversión definido en DMT_Currency_Conversion__mdt
+ *              para la currency indicada. Si no existe configuración o el factor es cero, devuelve el amount sin modificar.
+ * @param currencyIsoCode El código ISO de la moneda (ej: 'COP', 'MXN').
+ * @param amount El monto a convertir.
+ * @return Decimal El monto dividido por el factor, o el amount original si no hay configuración.
+ */
+public static Decimal convertToDisplay(String currencyIsoCode, Decimal amount) {
+    if (String.isBlank(currencyIsoCode) || amount == null) {
+        return amount;
+    }
+    Decimal conversionFactor = getConversionFactor(currencyIsoCode);
+    if (conversionFactor == null || conversionFactor == 0) {
+        return amount;
+    }
+    return amount / conversionFactor;
+}
+
+/**
+ * @Description Obtiene el factor de conversión para una currency usando getAll() (no consume SOQL limits).
+ * @param currencyIsoCode El código ISO de la moneda.
+ * @return Decimal El factor de conversión, o null si no existe configuración para esa currency.
+ */
+private static Decimal getConversionFactor(String currencyIsoCode) {
+    List<DMT_Currency_Conversion__mdt> allRecords = DMT_Currency_Conversion__mdt.getAll().values();
+    for (DMT_Currency_Conversion__mdt mdt : allRecords) {
+        if (mdt.CurrencyIsoCode__c == currencyIsoCode) {
+            return mdt.Conversion_Factor__c;
+        }
+    }
+    return null;
+}
+
+/**
+ * @Description Devuelve el texto formateado para mostrar junto a campos de importe.
+ *              Concatena Currency_Label__c + currencyIsoCode desde DMT_Currency_Conversion__mdt.
+ *              Si no existe configuración, devuelve el currencyIsoCode tal cual.
+ * @param currencyIsoCode El código ISO de la moneda (ej: 'EUR', 'USD').
+ * @return String Texto formateado (ej: 'M EUR') o el código ISO si no hay label.
+ */
+@AuraEnabled(cacheable=true)
+public static String getCurrencyLabel(String currencyIsoCode) {
+    if (String.isBlank(currencyIsoCode)) {
+        return currencyIsoCode;
+    }
+    for (DMT_Currency_Conversion__mdt mdt : DMT_Currency_Conversion__mdt.getAll().values()) {
+        if (mdt.CurrencyIsoCode__c == currencyIsoCode && String.isNotBlank(mdt.Currency_Label__c)) {
+            return mdt.Currency_Label__c + ' ' + currencyIsoCode;
+        }
+    }
+    return currencyIsoCode;
 }
 
 /**

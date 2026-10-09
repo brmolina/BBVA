@@ -41,6 +41,32 @@
                 </div>
             </div>
         </template>
+        <template lwc:elseif={showClanErrorModal}>
+            <div class="confidential-backdrop"></div>
+            <div class="confidential-modal-wrapper">
+                <div class="confidential-modal">
+
+                    <button class="confidential-close-btn"
+                            onclick={handleCloseClanErrorModal}>
+                        &#x2715;
+                    </button>
+
+                    <div class="confidential-modal-header">
+                        <h2>Clan Integration Error</h2>
+                    </div>
+                    <div class="confidential-modal-body">
+                        <p>{clanErrorMessage}</p>
+                    </div>
+                    <div class="confidential-modal-footer">
+                        <button class="confidential-ok-btn"
+                                onclick={handleCloseClanErrorModal}>
+                            OK
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </template>
 
         <div class="slds-m-bottom_medium">
             <c-dmt_highlight_panel object-api-name="Opportunity" status={prevOppStatus} record-id={recordId} is-confidential={isConfidential}>
@@ -55,14 +81,14 @@
            
 
             <!-- ===== LEFT COLUMN: Tab navigation and tab content panels ===== -->
-                        <div class="slds-col slds-size_8-of-12 slds-tabs_card">
-                <c-dmt_opp_tab record-id={recordId} oneditmodetab={handleEditMode} stage-record={prevOppStatus} permission-user-record={permissionUserRecord} onreloadeditmode={handleReloadEditMode} is-editing={isEditing}></c-dmt_opp_tab>
+            <div class="slds-col slds-size_8-of-12 slds-tabs_card">
+                <c-dmt_opp_tab record-id={recordId} oneditmodetab={handleEditMode} stage-record={prevOppStatus} permission-user-record={permissionUserRecord} onreloadeditmode={handleReloadEditMode} is-editing={isEditing} onsaveconfidential={handleSaveConfidential} is-field-warning-passport={fieldWarningPassport}></c-dmt_opp_tab>
 
             </div>
 
             <!-- ===== RIGHT COLUMN: Sidebar with passport component ===== -->
-                        <div class="slds-col slds-size_4-of-12 slds-p-left_small ">
-              <c-cf-D-M-T_-small_-passport_-opportunity_v2 record-id={recordId}></c-cf-D-M-T_-small_-passport_-opportunity_v2>
+            <div class="slds-col slds-size_4-of-12 slds-p-left_small ">
+              <c-cf-D-M-T_-small_-passport_-opportunity_v2 record-id={recordId} onpassportfieldswarning={handlePassportFieldsWarning}></c-cf-D-M-T_-small_-passport_-opportunity_v2>
 
             </div>
         </div>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_visit_start_date__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Visit date. Enable a combo / field to include the date.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Visit date</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Date</type>
+</CustomField>

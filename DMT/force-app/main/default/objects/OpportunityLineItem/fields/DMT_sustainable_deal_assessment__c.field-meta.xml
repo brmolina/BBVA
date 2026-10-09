@@ -10,6 +10,11 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
+                <fullName>7</fullName>
+                <default>false</default>
+                <label>Transition Finance</label>
+            </value>
+            <value>
                 <fullName>6</fullName>
                 <default>false</default>
                 <label>Sustainable Use of proceeds</label>

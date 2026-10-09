@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>acpl__gf_account_planning_id__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Account Planning</label>
+    <referenceTo>acpl__Account_Planning__c</referenceTo>
+    <relationshipLabel>Account Planning Questions</relationshipLabel>
+    <relationshipName>Account_Planning_Questions</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>true</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

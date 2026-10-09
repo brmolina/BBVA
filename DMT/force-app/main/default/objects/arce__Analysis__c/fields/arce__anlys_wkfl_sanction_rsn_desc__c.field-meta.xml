@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__anlys_wkfl_sanction_rsn_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Reason given when the ARCE has been Sanctioned</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>WF Sanction Reason</label>
+    <length>1500</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

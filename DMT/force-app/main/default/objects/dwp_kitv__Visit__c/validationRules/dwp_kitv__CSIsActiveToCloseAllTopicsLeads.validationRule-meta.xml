@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>dwp_kitv__CSIsActiveToCloseAllTopicsLeads</fullName>
+    <active>true</active>
+    <description>This rule shows a error message if the user want use the Close All Topics feature and the Custom Setting is inactive.</description>
+    <errorConditionFormula>AND( dwp_kitv__account_id__c == null, dwp_kitv__lead_id__c  != null, NOT( $Setup.dwp_kitv__TopicValidationsLead__c.dwp_kitv__ActivateCloseAllTopicsFeature__c ), NOT(PRIORVALUE( dwp_kitv__CloseAllTopics__c )), dwp_kitv__CloseAllTopics__c)</errorConditionFormula>
+    <errorMessage>You can&apos;t use the Close All Topics feature if the Custom Setting isn&apos;t active. Please read the documentation for activation this feature.</errorMessage>
+</ValidationRule>

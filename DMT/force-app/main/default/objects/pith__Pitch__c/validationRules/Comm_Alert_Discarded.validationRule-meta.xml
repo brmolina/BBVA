@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Comm_Alert_Discarded</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+				commercial_alert_id__c != null,
+				TEXT(commercial_alert_id__r.altm__alert_stage_type__c) != $Label.COMMERCIAL_ALERT_STATUS_PENDING,
+				TEXT(commercial_alert_id__r.altm__alert_stage_type__c) != $Label.COMMERCIAL_ALERT_STATUS_MANAGED
+)</errorConditionFormula>
+    <errorMessage>You cannot relate a discarded commercial alert to a pìtch</errorMessage>
+</ValidationRule>

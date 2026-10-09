@@ -1,0 +1,36 @@
+<template>
+    <div class="slds-p-around_medium">
+
+        <!-- ── Form renderer: always visible ── -->
+        <div class={formContainerClass}>
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading..." size="medium" variant="brand">
+                </lightning-spinner>
+            </template>
+            <c-dmt_form_renderer
+                fields={fields}
+                is-edit-mode={isEditMode}
+                oneditmodechange={handleEditModeChange}
+                onfieldchange={handleFieldChange}>
+            </c-dmt_form_renderer>
+            <div class="slds-m-top_large slds-m-horizontal_small">
+                <c-dmt_document_manager_for_core_document></c-dmt_document_manager_for_core_document>
+
+            </div>
+
+        </div>
+
+
+        <!-- ── Docked footer (edit mode only) ── -->
+        <template if:true={isEditMode}>
+            <c-dmt_docked_form_footer
+                is-loading={isLoading}
+                has-error={hasError}
+                error-message={errorMessage}
+                oncancel={handleCancel}
+                onsave={handleSave}>
+            </c-dmt_docked_form_footer>
+        </template>
+
+    </div>
+</template>

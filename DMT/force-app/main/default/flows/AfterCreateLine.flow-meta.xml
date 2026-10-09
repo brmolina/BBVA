@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
+        <name>Assign_Participants_By_UO</name>
+        <label>Assign Participants By UO</label>
+        <locationX>314</locationX>
+        <locationY>3564</locationY>
+        <actionName>DMT_AssignParticipantsByUO</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Get_RecordType_New</targetReference>
+        </connector>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>recordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+                <inputConfiguratorMode>Resource</inputConfiguratorMode>
+            </value>
+        </inputParameters>
+        <nameSegment>DMT_AssignParticipantsByUO</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
         <description>Devuelve true, si la línea está asociada a un Prospect (Prospect Group o Prospect Subsidiary) o si tiene seleccionada en la multiholder un Prospect</description>
         <name>Validate_Prospect</name>
         <label>Validate Prospect</label>
@@ -657,7 +678,7 @@
         <name>Get_RecordType_New</name>
         <label>Get RecordType</label>
         <locationX>314</locationX>
-        <locationY>3564</locationY>
+        <locationY>3672</locationY>
         <defaultConnectorLabel>Settlement</defaultConnectorLabel>
         <rules>
             <name>Is_Treasury_New</name>
@@ -1192,7 +1213,7 @@
         <locationX>314</locationX>
         <locationY>3456</locationY>
         <connector>
-            <targetReference>Get_RecordType_New</targetReference>
+            <targetReference>Assign_Participants_By_UO</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Custom_Error_Create_Team_Members</targetReference>

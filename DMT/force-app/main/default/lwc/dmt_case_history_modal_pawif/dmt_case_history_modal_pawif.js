@@ -116,7 +116,7 @@ export default class Dmt_case_history_modal_pawif extends NavigationMixin(Lightn
 
         try {
             console.time('[CORE DOCS - TIMING] Fetch external files total time');
-            const response = await getDocuments({ folderCode: this._taskId });
+            const response = await getDocuments({ folderCode: this._lineId });
             
             let fileFound = false;
             let firstFileLocator = null;

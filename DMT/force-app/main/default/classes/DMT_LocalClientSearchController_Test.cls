@@ -16,22 +16,19 @@ public with sharing class DMT_LocalClientSearchController_Test {
         acc.DES_Activity__c = 'NDA';
         acc.Name = 'Test company Search';
         acc.DES_ID_Fiscal__c = 'B12345678';
+        acc.g_customer_id__c = 'ES123';
         insert acc;
-
-        Local_Client__c lc = new Local_Client__c(
-             Name = 'Test company Search',
-            Cib_Client__c = acc.Id,
-            Alpha_code__c = 'ES123'
-        );
-        insert lc;
     }
 
     // ─── searchLocalClients ───────────────────────────────────────────
 
     @isTest
     static void testSearchByName_Positive() {
+        Account account = [SELECT Id FROM Account WHERE g_customer_id__c = 'ES123' LIMIT 1];
+        Test.setFixedSearchResults(new List<Id>{ account.Id });
+
         Test.startTest();
-        List<Local_Client__c> results = DMT_LocalClientSearchController.searchLocalClients('Test company', null);
+        List<Account> results = DMT_LocalClientSearchController.searchLocalClients('Test company', null);
         Test.stopTest();
 
         System.assertNotEquals(0, results.size(), 'Should return results searching by Name');
@@ -39,17 +36,23 @@ public with sharing class DMT_LocalClientSearchController_Test {
 
     @isTest
     static void testSearchByAlphaCode_Positive() {
+        Account account = [SELECT Id FROM Account WHERE g_customer_id__c = 'ES123' LIMIT 1];
+        Test.setFixedSearchResults(new List<Id>{ account.Id });
+
         Test.startTest();
-        List<Local_Client__c> results = DMT_LocalClientSearchController.searchLocalClients('ES123', null);
+        List<Account> results = DMT_LocalClientSearchController.searchLocalClients('ES123', null);
         Test.stopTest();
 
-        System.assertNotEquals(0, results.size(), 'Should return results searching by Alpha_code__c');
+        System.assertNotEquals(0, results.size(), 'Should return results searching by g_customer_id__c');
     }
 
     @isTest
     static void testSearchByFiscalId_Positive() {
+        Account account = [SELECT Id FROM Account WHERE g_customer_id__c = 'ES123' LIMIT 1];
+        Test.setFixedSearchResults(new List<Id>{ account.Id });
+
         Test.startTest();
-        List<Local_Client__c> results = DMT_LocalClientSearchController.searchLocalClients('B12345678', null);
+        List<Account> results = DMT_LocalClientSearchController.searchLocalClients('B12345678', null);
         Test.stopTest();
 
         System.assertNotEquals(0, results.size(), 'Should return results searching by DES_ID_Fiscal__c');
@@ -57,8 +60,11 @@ public with sharing class DMT_LocalClientSearchController_Test {
 
     @isTest
     static void testSearchWithEntityId_Positive() {
+        Account account = [SELECT Id FROM Account WHERE g_customer_id__c = 'ES123' LIMIT 1];
+        Test.setFixedSearchResults(new List<Id>{ account.Id });
+
         Test.startTest();
-        List<Local_Client__c> results = DMT_LocalClientSearchController.searchLocalClients('Test', 'ES123');
+        List<Account> results = DMT_LocalClientSearchController.searchLocalClients('Test', 'ES123');
         Test.stopTest();
 
         System.assertNotEquals(0, results.size(), 'Should return results with entityId filter');
@@ -66,8 +72,11 @@ public with sharing class DMT_LocalClientSearchController_Test {
 
     @isTest
     static void testSearchWithEntityId_NoMatch() {
+        Account account = [SELECT Id FROM Account WHERE g_customer_id__c = 'ES123' LIMIT 1];
+        Test.setFixedSearchResults(new List<Id>{ account.Id });
+
         Test.startTest();
-        List<Local_Client__c> results = DMT_LocalClientSearchController.searchLocalClients('Test', 'XX999');
+        List<Account> results = DMT_LocalClientSearchController.searchLocalClients('Test', 'XX999');
         Test.stopTest();
 
         System.assertEquals(0, results.size(), 'Should return no results when entityId does not match');
@@ -75,8 +84,10 @@ public with sharing class DMT_LocalClientSearchController_Test {
 
     @isTest
     static void testSearchNoResults_Positive() {
+        Test.setFixedSearchResults(new List<Id>());
+
         Test.startTest();
-        List<Local_Client__c> results = DMT_LocalClientSearchController.searchLocalClients('ZZZNOMATCH', null);
+        List<Account> results = DMT_LocalClientSearchController.searchLocalClients('ZZZNOMATCH', null);
         Test.stopTest();
 
         System.assertEquals(0, results.size(), 'Should return empty list when no match');
@@ -84,8 +95,11 @@ public with sharing class DMT_LocalClientSearchController_Test {
 
     @isTest
     static void testSearchWithNullEntityId_Positive() {
+        Account account = [SELECT Id FROM Account WHERE g_customer_id__c = 'ES123' LIMIT 1];
+        Test.setFixedSearchResults(new List<Id>{ account.Id });
+
         Test.startTest();
-        List<Local_Client__c> results = DMT_LocalClientSearchController.searchLocalClients('Test', 'null');
+        List<Account> results = DMT_LocalClientSearchController.searchLocalClients('Test', 'null');
         Test.stopTest();
 
         System.assertNotEquals(0, results.size(), 'Should work when entityId is string null');
@@ -93,8 +107,11 @@ public with sharing class DMT_LocalClientSearchController_Test {
 
     @isTest
     static void testSearchWithUndefinedEntityId_Positive() {
+        Account account = [SELECT Id FROM Account WHERE g_customer_id__c = 'ES123' LIMIT 1];
+        Test.setFixedSearchResults(new List<Id>{ account.Id });
+
         Test.startTest();
-        List<Local_Client__c> results = DMT_LocalClientSearchController.searchLocalClients('Test', 'undefined');
+        List<Account> results = DMT_LocalClientSearchController.searchLocalClients('Test', 'undefined');
         Test.stopTest();
 
         System.assertNotEquals(0, results.size(), 'Should work when entityId is string undefined');
@@ -102,8 +119,11 @@ public with sharing class DMT_LocalClientSearchController_Test {
 
     @isTest
     static void testSearchWithEmptyEntityId_Positive() {
+        Account account = [SELECT Id FROM Account WHERE g_customer_id__c = 'ES123' LIMIT 1];
+        Test.setFixedSearchResults(new List<Id>{ account.Id });
+
         Test.startTest();
-        List<Local_Client__c> results = DMT_LocalClientSearchController.searchLocalClients('Test', '');
+        List<Account> results = DMT_LocalClientSearchController.searchLocalClients('Test', '');
         Test.stopTest();
 
         System.assertNotEquals(0, results.size(), 'Should work when entityId is empty string');
@@ -113,25 +133,22 @@ public with sharing class DMT_LocalClientSearchController_Test {
 
     @isTest
     static void testGetLocalClientById_Positive() {
-        Local_Client__c lc = [SELECT Id FROM Local_Client__c LIMIT 1];
+        Account account = [SELECT Id FROM Account WHERE g_customer_id__c = 'ES123' LIMIT 1];
 
         Test.startTest();
-        Local_Client__c result = DMT_LocalClientSearchController.getLocalClientById(lc.Id);
+        Account result = DMT_LocalClientSearchController.getLocalClientById(account.Id);
         Test.stopTest();
 
         System.assertNotEquals(null, result, 'Should return a record');
-        System.assertEquals(lc.Id, result.Id, 'Should return the correct record');
+        System.assertEquals(account.Id, result.Id, 'Should return the correct record');
     }
 
     @isTest
     static void testGetLocalClientById_Negative() {
         Test.startTest();
-        try {
-            Local_Client__c result = DMT_LocalClientSearchController.getLocalClientById('001000000000000AAA');
-            System.assert(false, 'Should have thrown an exception');
-        } catch (Exception e) {
-            System.assertNotEquals(null, e.getMessage(), 'Should throw exception for non-existent Id');
-        }
+        Account result = DMT_LocalClientSearchController.getLocalClientById('001000000000000AAA');
         Test.stopTest();
+
+        System.assertEquals(null, result, 'Should return null for a non-existent Account');
     }
 }

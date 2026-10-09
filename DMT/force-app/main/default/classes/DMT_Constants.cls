@@ -139,12 +139,13 @@ public with sharing class DMT_Constants {
     public static final String RSK_DERIVATIVES ='Derivatives';
     public static final String RSK_DEPOS ='Depos';
     public static final String RSK_EQUITY ='Equities';
+    public static final String RSK_REPOS ='Repos';
     public static final String RSK_SINGULAR ='Singular';
 
     //gf_group_priority_line_id
     public static final String GROUP_PRIORITY_FD ='01y01';
     public static final String GROUP_PRIORITY_DVP ='02y01';
-    public static final String GROUP_PRIORITY_REPOS ='03y03u01';
+    public static final String GROUP_PRIORITY_REPOS ='06y02';
     public static final String GROUP_PRIORITY_REPOSNOFLOW ='03y03u02';
     public static final String GROUP_PRIORITY_TERM ='03y02';
     public static final String GROUP_PRIORITY_TERM_DEPOS ='04y02';
@@ -157,8 +158,8 @@ public with sharing class DMT_Constants {
     public static final String FEATURE_NAME_ISGDTCLIENT ='Clients found in GDT';
     public static final String FEATURE_NAME_ISCURRENTLINE ='Clients already included in other lines';
     public static final String FEATURE_NAME_RESTRICGREATERTERM ='Maximum consumption and maturities relationship';
-    public static final String FEATURE_NAME_DERIRESTRICNOFDDVP ='Settlement and Derivatives product restrictions consistency';
-    public static final String FEATURE_NAME_NOSETTLEMENTAMOUNT ='Settlement amount informed for restrictions';
+    public static final String FEATURE_NAME_DERIRESTRICNOFDDVP ='Settlement and Derivatives available products consistency';
+    public static final String FEATURE_NAME_NOSETTLEMENTAMOUNT ='Settlement amount informed for available products';
     public static final String FEATURE_NAME_STARTDATE ='Line period review';
     public static final String FEATURE_NAME_LIMITCONSISTENCY ='Repos limit consistency';
     public static final String FEATURE_NAME_COUNTERPARTY = 'Client counterparty code availability';
@@ -166,6 +167,7 @@ public with sharing class DMT_Constants {
     public static final String FEATURE_NAME_ISDA = 'ISDA contract availability';
     public static final String FEATURE_NAME_AMOUNTHIGHER = 'Product amount consistency';
     public static final String FEATURE_NAME_CLIENTS_SELECTED = 'Clients selected';
+    public static final String FEATURE_NAME_WAIVER = 'Exception to the policy consistency';
     public static final String FEATURE_GC_ID ='100';
     public static final String FEATURE_GC_NAME ='General Validations';
     public static final String FEATURE_GC_PASSPORTSANCTION ='passport';
@@ -177,21 +179,22 @@ public with sharing class DMT_Constants {
     public static final String AMOUNT_HIGHER_REDMESSAGE = 'The following products have a higher amount than the line: ';
     public static final String NO_GDT_CLIENT_REDMESSAGE ='The following local clients were not found in Global Desktop: ';
     public static final String CURRENT_CLIENT_LINE_REDMESSAGE ='The following clients are already included in other current lines: ';
-    public static final String GREATER_RESTRIC_TERM_REDMESSAGE ='There are maturities in the product restrictions longer than the maximum consumption limit: ';
-    public static final String DERIVATIVES_NOFDDVP_REDMESSAGE ='In product restrictions, settlement selections are not consistent with the current allowed derivatives products in the line: ';
-    public static final String NO_SETTLEMENT_REDMESSAGE ='without amount and has operational restrictions for the following products: ';
+    public static final String GREATER_RESTRIC_TERM_REDMESSAGE ='There are maturities in the available products longer than the maximum consumption limit: ';
+    public static final String DERIVATIVES_NOFDDVP_REDMESSAGE ='In available products, settlement selections are not consistent with the current allowed derivatives products in the line: ';
+    public static final String NO_SETTLEMENT_REDMESSAGE ='without amount and has available products for the following products: ';
     public static final String START_DATE_REDMESSAGE = 'Start date of the line is earlier than today';
     public static final String LIMIT_CONSISTENCY_REDMESSAGE = 'Limit for repos total is lower than limit for no-flow repos';
     public static final String COUNTERPARTY_REDMESSAGE = 'The following local clients do not have a counterparty code: ';
     public static final String RATING_REDMESSAGE = 'The following local clients do not have a valid rating (expired or unexisting): ';
     public static final String ISDA_REDMESSAGE = 'The following local clients do not have a signed ISDA contract: ';
     public static final String CLIENT_SELECTED_REDMESSAGE = 'The line has been created, but you must select at least two customers.';
+    public static final String WAIVER_REDMESSAGE = 'When exception to the policy is selected, the line must have at least one derivatives risk term and one available product added.';
     public static final String NO_GDT_CLIENT_GREENMESSAGE ='All the selected local clients exist in Global Desktop';
     public static final String CURRENT_CLIENT_LINE_GREENMESSAGE ='None of the clients are already included in another current line';
-    public static final String GREATER_RESTRIC_TERM_GREENMESSAGE ='All the maturities in the product restrictions are shorter than the maximum consumption limit';
-    public static final String DERIVATIVES_NOFDDVP_GREENMESSAGE ='In product restrictions, settlement selections are consistent with the current allowed derivatives products in the line';
-    public static final String NO_SETTLEMENT_GREENMESSAGE ='Neither Free Delivery nor Delivery versus Payment have no operational restrictions and amount 0.';
-    public static final String NO_SETTLEMENT_GREENMESSAGE_AR = 'Delivery versus Payment have no operational restrictions and amount 0.';
+    public static final String GREATER_RESTRIC_TERM_GREENMESSAGE ='All the maturities in the available product  are shorter than the maximum consumption limit';
+    public static final String DERIVATIVES_NOFDDVP_GREENMESSAGE ='In available product, settlement selections are consistent with the current allowed derivatives products in the line';
+    public static final String NO_SETTLEMENT_GREENMESSAGE ='Neither Free Delivery nor Delivery versus Payment have no available products and amount 0.';
+    public static final String NO_SETTLEMENT_GREENMESSAGE_AR = 'Delivery versus Payment have no available products and amount 0.';
     public static final String START_DATE_GREENMESSAGE = 'Start date of the line is not earlier than today';
     public static final String LIMIT_CONSISTENCY_GREENMESSAGE = 'Limit for repos total is equal or higher than limit for no-flow repos';
     public static final String COUNTERPARTY_GREENMESSAGE = 'All the local clients already have a counterparty code';
@@ -199,6 +202,7 @@ public with sharing class DMT_Constants {
     public static final String ISDA_GREENMESSAGE = 'All the local clients already have signed ISDA contracts';
     public static final String AMOUNT_HIGHER_GREENMESSAGE = 'All product amount are correct.';
     public static final String CLIENT_SELECTED_GREENMESSAGE = 'A set of customers in the group has been correctly selected.';
+    public static final String WAIVER_GREENMESSAGE = 'Exception to the policy configuration is consistent with the derivatives risk term and available product added.';
 
     //recordType Names
     public static final String TASK_RT_APPROVAL_STEP ='DMT_Step_Approval';
@@ -222,7 +226,7 @@ public with sharing class DMT_Constants {
     public static final String DMT_SUSTAINABLE_SOCIAL = 'Social';
     public static final String DMT_SUSTAINABLE_GREEN_AND_SOCIAL = 'Green and social';
     public static final String DMT_SUSTAINABLE_USE_OF_PROCEEDS_SUBTYPE = 'Use of proceeds';  
-    public static final String DMT_SUSTAINABLE_SSL_SUBTYPE = 'Sustainability Linked Loan';
+    public static final String DMT_SUSTAINABLE_SSL_SUBTYPE = 'Sustainability Linked Loan (SSL)';
 
     //Opportunity product Sustainable Deal Assessment
     public static final String DMT_SUSTAINABILITY_SSL = '4';
@@ -236,19 +240,8 @@ public with sharing class DMT_Constants {
     public static final String DMT_TAXO_CATALOG_RBGR = 'RBGR';
     public static final String DMT_TAXO_CATALOG_RBSO = 'RBSO';
     public static final String DMT_TAXO_CATALOG_RBES = 'RBES';
-    public static final String DMT_TAXO_CATALOG_RBST = 'RBST';
+    public static final String DMT_TAXO_CATALOG_RBST = 'C593';
 
     public static final String RT_OPP_DMT_NAME = 'DMT_Opportunity';
-
-    // Components whose watched fields come from their renderer. Add a component here once its
-    // renderer implements DMT_FieldTrackableRenderer (or DMT_MultiObjectFieldTrackableRenderer).
-    //
-    // It does not need to be migrated for every record type first: for one it isn't migrated for,
-    // the renderer returns nothing and contributes nothing to the comparison. Client is listed
-    // here while Sanction still has no tracking, and that is fine.
-    //
-    // Read by the two trigger handlers. DMT_ApprovalChangeStep_Handler does NOT read this - it
-    // decides per DMT_Items__c row. Do not duplicate this list anywhere.
-    public static final List<String> RENDERER_TRACKED_COMPONENTS = new List<String>{'Line Info', 'Opportunity Info', 'Client'};
 
 }

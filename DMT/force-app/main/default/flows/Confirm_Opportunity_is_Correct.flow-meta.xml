@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>setConfirm</name>
+        <label>setConfirm</label>
+        <locationX>535</locationX>
+        <locationY>321</locationY>
+        <assignmentItems>
+            <assignToReference>opportunityRecord.opportunity_correct_ind_type__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Confirm_opportunity_is_correct</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Opportunity</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>isConfirm</name>
+        <label>isConfirm</label>
+        <locationX>416</locationX>
+        <locationY>176</locationY>
+        <defaultConnectorLabel>Is not Confirm</defaultConnectorLabel>
+        <rules>
+            <name>Is_Confirm</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Confirm_opportunity_is_correct</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>opportunityRecord.opportunity_correct_ind_type__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Confirm_opportunity_is_correct</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>setConfirm</targetReference>
+            </connector>
+            <label>Is Confirm</label>
+        </rules>
+    </decisions>
+    <description>Flow that shows some details of the opportunity to the user, and includes a checkbox to confirm that information is correcct. 
+Is invocated by the confirmButton component.</description>
+    <interviewLabel>Confirm Opportunity is Correct {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Confirm Opportunity is Correct</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <recordLookups>
+        <name>getOpportunity</name>
+        <label>getOpportunity</label>
+        <locationX>50</locationX>
+        <locationY>241</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>dialogInfo</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <outputReference>opportunityRecord</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>pre_oppy_revenue_next_12m_amount__c</queriedFields>
+        <queriedFields>DES_Booking_Geography__c</queriedFields>
+        <queriedFields>DES_Expected_Revenues__c</queriedFields>
+        <queriedFields>CurrencyIsoCode</queriedFields>
+        <queriedFields>opportunity_correct_ind_type__c</queriedFields>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Opportunity</name>
+        <label>Update Opportunity</label>
+        <locationX>696</locationX>
+        <locationY>321</locationY>
+        <inputReference>opportunityRecord</inputReference>
+    </recordUpdates>
+    <screens>
+        <name>dialogInfo</name>
+        <label>Opportunity Info</label>
+        <locationX>287</locationX>
+        <locationY>58</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>isConfirm</targetReference>
+        </connector>
+        <fields>
+            <name>displayText</name>
+            <fieldText>&lt;dl class=&quot;slds-list_horizontal slds-wrap&quot;&gt;
+	&lt;dt class=&quot;slds-item_label slds-text-color_weak slds-truncate&quot; title=&quot;First Label&quot;&gt;Opportunity Name:&lt;/dt&gt;
+	&lt;dd class=&quot;slds-item_detail slds-truncate&quot; title=&quot;Description for first label&quot;&gt;{!opportunityRecord.Name}&lt;/dd&gt;
+
+	&lt;dt class=&quot;slds-item_label slds-text-color_weak slds-truncate&quot; title=&quot;First Label&quot;&gt;Booking Geografy:&lt;/dt&gt;
+	&lt;dd class=&quot;slds-item_detail slds-truncate&quot; title=&quot;Description for first label&quot;&gt;{!opportunityRecord.DES_Booking_Geography__c}&lt;/dd&gt;
+	&lt;dt class=&quot;slds-item_label slds-text-color_weak slds-truncate&quot; title=&quot;Second Label&quot;&gt;Currency:&lt;/dt&gt;
+	&lt;dd class=&quot;slds-item_detail slds-truncate&quot; title=&quot;Description for second label&quot;&gt;{!opportunityRecord.CurrencyIsoCode}&lt;/dd&gt;
+
+
+	&lt;dt class=&quot;slds-item_label slds-text-color_weak slds-truncate&quot; title=&quot;Second Label&quot;&gt;Total Potential Revenues:&lt;/dt&gt;
+	&lt;dd class=&quot;slds-item_detail slds-truncate&quot; title=&quot;Description for second label&quot;&gt;{!opportunityRecord.pre_oppy_revenue_next_12m_amount__c} {!opportunityRecord.CurrencyIsoCode}&lt;/dd&gt;
+		&lt;dt class=&quot;slds-item_label slds-text-color_weak slds-truncate&quot; title=&quot;First Label&quot;&gt;Total Expected Revenues&lt;/dt&gt;
+	&lt;dd class=&quot;slds-item_detail slds-truncate&quot; title=&quot;Description for first label&quot;&gt;{!opportunityRecord.DES_Expected_Revenues__c} {!opportunityRecord.CurrencyIsoCode}&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;p class=&quot;slds-text-color_error&quot;&gt;Remember that an opportunity cannot be modified or deleted after it is closed&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>Confirm_opportunity_is_correct</name>
+            <dataType>Boolean</dataType>
+            <defaultValue>
+                <elementReference>opportunityRecord.opportunity_correct_ind_type__c</elementReference>
+            </defaultValue>
+            <fieldText>Confirm opportunity is correct</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <startElementReference>getOpportunity</startElementReference>
+    <status>Active</status>
+    <variables>
+        <name>opportunityRecord</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Opportunity</objectType>
+    </variables>
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

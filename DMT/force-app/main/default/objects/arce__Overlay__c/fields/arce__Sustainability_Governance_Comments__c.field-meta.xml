@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Sustainability_Governance_Comments__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Sustainability goals, transparency, and TCFD alignment comments.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Sustainability Governance Comments</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>TextArea</type>
+</CustomField>

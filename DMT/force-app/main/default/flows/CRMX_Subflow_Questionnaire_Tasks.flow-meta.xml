@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Invoked from the &quot;Questionnaire Completed Email&quot; flow. It receives the IDs of the tasks to be deleted, preventing executives from needing delete record permissions.</description>
+    <environments>Default</environments>
+    <interviewLabel>CRMX_Subflow Questionnaire Tasks {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Subflow Questionnaire Tasks</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordDeletes>
+        <description>Receives the IDs of the tasks that will be deleted after the questionnaire is completed.</description>
+        <name>Delete_Regulatory_Questionnaire_Tasks</name>
+        <label>Delete Regulatory Questionnaire Tasks</label>
+        <locationX>176</locationX>
+        <locationY>242</locationY>
+        <inputReference>CRMX_TaskId</inputReference>
+    </recordDeletes>
+    <recordUpdates>
+        <description>Update the questionnaire notification field, setting it to &quot;false&quot; once the questionnaire is completed.</description>
+        <name>Update_Client_Field</name>
+        <label>Update Client Field</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <connector>
+            <targetReference>Delete_Regulatory_Questionnaire_Tasks</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>CRMX_ClientId.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>CRMX_Questionnaire_Notification__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>Account</object>
+    </recordUpdates>
+    <runInMode>SystemModeWithoutSharing</runInMode>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Client_Field</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>Stores the client record to update</description>
+        <name>CRMX_ClientId</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Account</objectType>
+    </variables>
+    <variables>
+        <name>CRMX_TaskId</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Task</objectType>
+    </variables>
+</Flow>

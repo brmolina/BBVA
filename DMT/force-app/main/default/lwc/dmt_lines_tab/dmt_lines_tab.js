@@ -22,6 +22,11 @@ import { refreshApex } from '@salesforce/apex';
 import { RefreshEvent } from "lightning/refresh";
 import pubsub from 'omnistudio/pubsub';
 
+// CIBGLOBALD-3779: RecordType.Name values whose Line Info tab has been migrated off
+// cfSummaryTreasury_Flexcard onto the native dmt_lineInfo LWC: OtherProducts ("Line (Other
+// Products)") and Sanction (RecordType label "Approval"). Every other record type keeps using
+// the shared FlexCard untouched.
+const RISK_APPROVAL_RECORD_TYPES = ['Line (Other Products)', 'Approval'];
 
 export default class Dmt_lines_tab extends LightningElement {
 @track recordId;
@@ -30,6 +35,7 @@ export default class Dmt_lines_tab extends LightningElement {
 isViewDisabled = true;
 lineData;
 treasuryTemplate;
+isRiskApprovalLine;
 updateKey = 0;
 refreshTrigger = 0;
 selectedTab = 'lineinfo'
@@ -41,6 +47,7 @@ isLockedByOther = false;
 isLockEditing = false;
 @track userLock;
 wiredLineResult;
+boundBeforeUnloadHandler = this.handleBeforeUnload.bind(this);
 @track lineFields = [LINE_ID, LINE_TYPE, LINE_STATUS, LINE_CURRENCY, LINE_LOCK];
 modalMessage;
 
@@ -62,14 +69,10 @@ get isLockedByOther() {
 }
 
 connectedCallback(){
-    
-    // Agregar listener para cierre/recarga
-    window.addEventListener('beforeunload', this.handleBeforeUnload.bind(this));
+    window.addEventListener('beforeunload', this.boundBeforeUnloadHandler);
 }
 
 renderedCallback(){
-    // Limpiar listener cuando el componente se destruya
-    window.removeEventListener('beforeunload', this.handleBeforeUnload.bind(this));
     if( this.userLock == this.currentUserId) {
                   updateRecord({ fields: { 
                     Id: this.recordId,
@@ -77,6 +80,10 @@ renderedCallback(){
                     }});  
                 }
     this.handleCheckEditPermission();  
+}
+
+disconnectedCallback() {
+    window.removeEventListener('beforeunload', this.boundBeforeUnloadHandler);
 }
 
     handleBeforeUnload(event) {
@@ -111,7 +118,7 @@ renderedCallback(){
         ];
     }
 
-    @wire(getRecord, { recordId: '$lineId', fields: [LINE_ID, LINE_TYPE, LINE_STATUS, LINE_CURRENCY, LINE_LOCK, LINE_DELETED] })
+    @wire(getRecord, { recordId: '$lineId', fields: [LINE_ID, LINE_TYPE, LINE_STATUS, LINE_CURRENCY, LINE_LOCK, LINE_DELETED, 'DMT_Line__c.RecordType.Name'] })
         wiredRecord(result) {
             this.dispatchEvent(new RefreshEvent());
             this.wiredLineResult = result;
@@ -123,8 +130,10 @@ renderedCallback(){
                 const lineContextChanged =
                     (this.lineStatus != null && this.lineStatus !== nextLineStatus) ||
                     (this.lineCurrency != null && this.lineCurrency !== nextLineCurrency);
-                
+
                 this.treasuryTemplate = getFieldValue(data, LINE_TYPE) == 'TL' ? true : false;
+                const recordTypeName = data.fields.RecordType?.value?.fields?.Name?.value;
+                this.isRiskApprovalLine = RISK_APPROVAL_RECORD_TYPES.includes(recordTypeName);
                 this.lineDeleted = getFieldValue(data, LINE_DELETED);
                 
                 this.userLock = getFieldValue(data, LINE_LOCK);
@@ -190,8 +199,8 @@ handleCheckEditPermission() {
 //  }
 
 handleEditing(event) {
-    refreshApex(this.wiredLineResult).then(() => {
     this.editingTab = event.detail.tab;
+    refreshApex(this.wiredLineResult).then(() => {
     if ( this.userLock && this.userLock != null && this.userLock != this.currentUserId) {
         pubsub.fire("linestab", "refresh", {  });
         this.modalMessage = 'This line is currently being edited by '+ this.userName;

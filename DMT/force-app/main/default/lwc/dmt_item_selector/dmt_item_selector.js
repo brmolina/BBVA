@@ -19,6 +19,7 @@ export default class Dmt_item_selector extends LightningElement {
     @track textValue = '';
     @track items = [];
     draggedItemIndex = null;
+    _addItemLocked = false;
 
     @track _writeAccess = false;
     @track _inputsDisabled = false;
@@ -194,7 +195,7 @@ export default class Dmt_item_selector extends LightningElement {
     }
 
     handleComponentChange(event) {
-        this.selectedComponentItem = event.target.value;
+        this.selectedComponentItem = event.detail.value;
     }
 
     handleTextChange(event) {
@@ -218,7 +219,16 @@ export default class Dmt_item_selector extends LightningElement {
     }
 
     addItem() {
+        // Guards against a double-click firing addItem() twice: the first call succeeds and
+        // resets selectedComponentItem to null, so an immediate second call would otherwise
+        // hit the else branch and show a spurious "nothing selected" toast right after a
+        // successful add.
+        if (this._addItemLocked) {
+            return;
+        }
+
         if (this.selectedType && this.selectedComponentItem) {
+            this._addItemLocked = true;
             const newItem = {
                 type: this.selectedType,
                 component: this.selectedComponentItem,
@@ -228,6 +238,9 @@ export default class Dmt_item_selector extends LightningElement {
             this.items = [...this.items, newItem];
             this.selectedComponentItem = null;
             this.dispatchUpdatedItems();
+            setTimeout(() => {
+                this._addItemLocked = false;
+            }, 400);
         } else {
             this.dispatchEvent(new ShowToastEvent({
                 title: 'Error',

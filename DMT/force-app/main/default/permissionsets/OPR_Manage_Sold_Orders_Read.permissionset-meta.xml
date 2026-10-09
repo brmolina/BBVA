@@ -17,6 +17,11 @@
         <name>Syndicated_Underwriting_User</name>
     </customPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_Booking_System_Code__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.gf_tot_sold_order_fees_amount__c</field>
         <readable>true</readable>

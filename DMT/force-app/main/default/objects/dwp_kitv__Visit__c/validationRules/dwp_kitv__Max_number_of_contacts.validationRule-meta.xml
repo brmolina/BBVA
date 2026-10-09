@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>dwp_kitv__Max_number_of_contacts</fullName>
+    <active>false</active>
+    <description>It´s not possible to add more than 50 contacts to a visit</description>
+    <errorConditionFormula>dwp_kitv__number_of_event_relations__c &gt; 50</errorConditionFormula>
+    <errorMessage>It´s not possible to add more than 50 contacts to a visit</errorMessage>
+</ValidationRule>

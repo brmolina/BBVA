@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__market_situation_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Comments around market situation in relation to supplies that the client needs and demand for products made by the client, in its local market and globally if relevant.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>demand/supply market situation descripti</label>
+    <length>300</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__market_growth_forecast_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Anticipated forecast for the growth in the specific market of this client/group.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>market growth forecast description</label>
+    <length>300</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>25</visibleLines>
+</CustomField>

@@ -15,6 +15,7 @@ export default class Dmt_search_record_info extends LightningElement
     @api accountOrLocalClient;
     @api clientId;
     @api localClientId;
+    @api isSubsidiary;
     @api accountName;
     // Estado interno del componente
     searchTerm = '';
@@ -29,14 +30,7 @@ export default class Dmt_search_record_info extends LightningElement
     }
     filter={};
     accountValue = null;
-    localClientValue = null;
-    disabledLocalClient = false;
     disabledAccount = false;
-
-    matchingInfo = {
-        primaryField: { fieldPath: 'participant_name__c' },
-        additionalFields: [{ fieldPath: 'Alpha_code__c' }]
-    }
 
     matchingInfoAccount = {
         primaryField: { fieldPath: 'DES_Group_Code__c' }
@@ -47,10 +41,6 @@ export default class Dmt_search_record_info extends LightningElement
         additionalFields: ['DES_Group_Code__c'],
     };
 
-    displayInfoLocal = {
-        primaryField: 'participant_name__c',
-        additionalFields: ['Alpha_code__c'],
-    };
     connectedCallback()
     {
         this.filter = {
@@ -75,30 +65,6 @@ export default class Dmt_search_record_info extends LightningElement
     }
 
 
-    handleChangeLocalClient(event)
-    {
-        this.localClientId = event.detail.recordId;
-        this.localClientValue = event.detail.recordId;
-        this.accountValue = null;
-        this.accountName = null;
-
-        if(this.localClientValue === null)
-        {
-            this.disabledLocalClient = false;
-            this.disabledAccount = false;
-        }
-        else
-        {
-            this.disabledLocalClient = false;
-            this.disabledAccount = true;
-        }
-
-        const attributeChangeEventAccount = new FlowAttributeChangeEvent('clientId', this.clientId);
-        this.dispatchEvent(attributeChangeEventAccount);
-
-        const attributeChangeEventclientId = new FlowAttributeChangeEvent('localClientId', this.localClientId);
-        this.dispatchEvent(attributeChangeEventclientId);
-    }
     // --- Lógica de la Búsqueda ---
     handleSearch(event) {
         this.searchTerm = event.target.value;
@@ -112,10 +78,11 @@ export default class Dmt_search_record_info extends LightningElement
             searchClient({ searchTerm: this.searchTerm })
                 .then(result => {
                     this.searchResults = result
-                    .filter(client => client.DES_Group_Code__c)
-                    .map(client => {const secondaryField = client.DES_Group_Code__c || 'Ubicación no disponible';
-                        return { ...client, secondaryField };
-                    });
+                        .filter(client => client.DES_Group_Code__c || client.g_customer_id__c)
+                        .map(client => {
+                            const secondaryField = client.DES_Group_Code__c || client.g_customer_id__c || 'Ubicación no disponible';
+                            return { ...client, secondaryField };
+                        });
                     console.log('this.searchResults', JSON.stringify(this.searchResults));
                 })
                 .catch(error => {
@@ -131,6 +98,7 @@ export default class Dmt_search_record_info extends LightningElement
     handleSelect(event) {
         const selectedId = event.currentTarget.dataset.id;
         this.selectedClient = this.searchResults.find(client => client.Id === selectedId);
+        this.isSubsidiary = !this.selectedClient.DES_Group_Code__c && this.selectedClient.g_customer_id__c !== null;
         this.accountValue = selectedId;
         this.localClientValue = null;
         this.clientId = selectedId;
@@ -139,12 +107,10 @@ export default class Dmt_search_record_info extends LightningElement
 
         if(this.accountValue === null )
         {
-            this.disabledLocalClient = false;
             this.disabledAccount = false;
         }
         else
         {
-            this.disabledLocalClient = true;
             this.disabledAccount = false;
         }
 
@@ -152,6 +118,8 @@ export default class Dmt_search_record_info extends LightningElement
         this.dispatchEvent(attributeChangeEvent);
         const attributeChangeEventclientId = new FlowAttributeChangeEvent('localClientId', this.localClientId);
         this.dispatchEvent(attributeChangeEventclientId);
+        const attributeChangeEventSubsidiary = new FlowAttributeChangeEvent('isSubsidiary', this.isSubsidiary);
+        this.dispatchEvent(attributeChangeEventSubsidiary);
 
         const inputElement = this.template.querySelector('lightning-input');
         inputElement.setCustomValidity('');
@@ -163,12 +131,7 @@ export default class Dmt_search_record_info extends LightningElement
         this.clientId = null;
         this.searchTerm = '';
         this.searchResults = [];
-        this.accountValue =null;
-        if(this.accountValue === null )
-        {
-            this.disabledLocalClient = false;
-            this.disabledAccount = false;
-        }
+        this.accountValue = null;
         // Notifica al Flow que la selección se ha limpiado
         const attributeChangeEvent = new FlowAttributeChangeEvent('clientId',null);
         this.dispatchEvent(attributeChangeEvent);

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__RAR_rating_tool_id__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Code that identifies the rating tool</description>
+    <label>Rating model tool identification</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>4001401100000000</fullName>
+                <default>false</default>
+                <label>Rating States</label>
+            </value>
+            <value>
+                <fullName>4003401300000000</fullName>
+                <default>false</default>
+                <label>Rating States Bureau (evolutionary)</label>
+            </value>
+            <value>
+                <fullName>7001701100000000</fullName>
+                <default>false</default>
+                <label>Rating Companies</label>
+            </value>
+            <value>
+                <fullName>7002701200000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Agroalimentary Model</label>
+            </value>
+            <value>
+                <fullName>7003701300000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Modelo Comercio</label>
+            </value>
+            <value>
+                <fullName>7004701400000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Industry Model</label>
+            </value>
+            <value>
+                <fullName>7005701500000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Model Services</label>
+            </value>
+            <value>
+                <fullName>7006701600000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Agroalimentary Model 2</label>
+            </value>
+            <value>
+                <fullName>7007701700000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Modelo Comercio 2</label>
+            </value>
+            <value>
+                <fullName>7008701800000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Industry Model 2</label>
+            </value>
+            <value>
+                <fullName>7009701900000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Model Services 2</label>
+            </value>
+            <value>
+                <fullName>7020712000000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Agrifood Business Segment 1</label>
+            </value>
+            <value>
+                <fullName>7021712100000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Agrifood Business Segment 2</label>
+            </value>
+            <value>
+                <fullName>7022712200000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Business Segment Commerce 1</label>
+            </value>
+            <value>
+                <fullName>7023712300000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Business Commerce Segment 2</label>
+            </value>
+            <value>
+                <fullName>7024712400000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Business Segment Industry 1</label>
+            </value>
+            <value>
+                <fullName>7025712500000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Business Segment Industry 2</label>
+            </value>
+            <value>
+                <fullName>7026712600000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Business Services Segment 1</label>
+            </value>
+            <value>
+                <fullName>7027712700000000</fullName>
+                <default>false</default>
+                <label>Rating Companies - Business Services Segment 2</label>
+            </value>
+            <value>
+                <fullName>8002801200000000</fullName>
+                <default>false</default>
+                <label>Rating Corporate</label>
+            </value>
+            <value>
+                <fullName>9001901100000000</fullName>
+                <default>false</default>
+                <label>Rating Promoter</label>
+            </value>
+            <value>
+                <fullName>9002901200000000</fullName>
+                <default>false</default>
+                <label>Rating Promoter (evolutionary)</label>
+            </value>
+            <value>
+                <fullName>0008091300000000</fullName>
+                <default>false</default>
+                <label>Risk Analyst (GGEE) - Individual Model</label>
+            </value>
+            <value>
+                <fullName>0009091300000000</fullName>
+                <default>false</default>
+                <label>Risk Analyst (GGEE) - Consolidated Model</label>
+            </value>
+            <value>
+                <fullName>7777777700000000</fullName>
+                <default>false</default>
+                <label>Risk Analyst (GGEE) - Override Model</label>
+            </value>
+            <value>
+                <fullName>3333000000000000</fullName>
+                <default>false</default>
+                <label>Rating Sovereign</label>
+            </value>
+            <value>
+                <fullName>4444000000000000</fullName>
+                <default>false</default>
+                <label>Rating IFI&apos;s</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

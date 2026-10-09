@@ -4,20 +4,24 @@
     showcopypaste="true"
     rowscopypaste={tableData}
     tablecolumnscopypaste={columnstablecopypaste}
-    context="derivatives"
+    context={context}
     isreadonlyuser={isReadOnlyUser}
 ></c-dmt_-table-header-section>
-    <c-custom-data-table
+    <c-dmt-risk-limit-data-table
     data={tableData}
-    style="max-height: 5vh;height: inherit;"
     columns={columns}
+    draft-values={draftValues}
     key-field="Id"
     max-row-selection="0"
     hide-checkbox-column="true"
+    auto-vertical-scroll
     onpicklistchanged={picklistChanged}
+    onendtermchange={handleEndTermChange}
     oncellchange={handleChangeCell}
     onrowaction={handleRowAction}
+    onclick={handleTableClick}
     onsave={handleSaveCell}
+    class="comboboxEndTerm slds-truncate slds-scrollable--y slds-scrollable_y"
     suppress-bottom-bar>
-    </c-custom-data-table>  
+    </c-dmt-risk-limit-data-table>  
 </template>

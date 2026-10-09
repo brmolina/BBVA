@@ -1,0 +1,368 @@
+﻿<template>
+    <template lwc:if={isLoadingSaving}>
+        <lightning-spinner alternative-text="Saving..." size="medium" variant="brand" style="position: fixed;"></lightning-spinner>
+    </template>
+
+    <template lwc:if={isLoading}>
+        <div style="position: relative; width: 40px; left: 7px; background: transparent; bottom: 20px">
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </div>
+    </template>
+
+    <!-- Approvers section — outside tabs -->
+    <c-dmt_-opp-approvers-info-form
+        lwc:ref="approversSection"
+        record-id={currentRecordId}
+        coordinated-mode
+        oneditmodechange={handleEditModeChange}
+        onfieldchange={handleFieldChange}>
+    </c-dmt_-opp-approvers-info-form>
+
+    <!-- Sub-tabs navigation -->
+    <div class="slds-tabs_default slds-m-top_medium">
+            <!-- Client Group title -->
+            <div class="slds-media slds-media_center slds-m-bottom_x-small slds-p-around_small">
+                <div class="slds-media__figure">
+                    <lightning-icon icon-name="standard:account" size="small"></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-text-heading_small slds-truncate" title={clientGroupName}>{clientGroupName}</h2>
+                </div>
+            </div>
+            <ul class="slds-tabs_default__nav" role="tablist">
+            <template for:each={tabsConfig} for:item="tab">
+                <li key={tab.id} class={tab.itemClass} title={tab.label} role="presentation">
+                    <a class="slds-tabs_default__link"
+                        href="#"
+                        role="tab"
+                        tabindex={tab.tabIndex}
+                        aria-selected={tab.ariaSelected}
+                        data-tab-id={tab.id}
+                        onclick={handleTabClick}>
+                        <span class="tab-label-wrapper">
+                            <span>{tab.label}</span>
+                            <template lwc:if={tab.hasError}>
+                                <span class="error-dot" title="Validation errors"></span>
+                            </template>
+                            <template lwc:elseif={tab.isDirty}>
+                                <span class="dirty-dot" title="Unsaved changes"></span>
+                            </template>
+                        </span>
+                    </a>
+                </li>
+            </template>
+        </ul>
+
+        <!-- Tab panels -->
+
+        <!-- DEAL TAB -->
+        <div class={dealPanelClass} role="tabpanel">
+            <template lwc:if={showDealTab}>
+                <lightning-accordion active-section-name={dealSections} allow-multiple-sections-open>
+                    <lightning-accordion-section name="dealMain" label="Main Characteristics" class="delete-border">
+                       <c-dmt_section_simple_form
+                            lwc:ref="dealMain"
+                            field-definitions={dealMainFields}
+                            data={allData}
+                            field-options={approvalFieldOptions}
+                            oneditmodechange={handleEditModeChange}
+                            onfieldchange={handleFieldChange}
+                            onsectionchange={handleSectionChange}>
+                        </c-dmt_section_simple_form>
+                    </lightning-accordion-section>
+                    <template lwc:if={showDealBankingPool}>
+                        <lightning-accordion-section name="dealBankingPool" label="Client Tier or Position in the Banking Pool" class="delete-border">
+                        <c-dmt_section_simple_form
+                                lwc:ref="dealBankingPool"
+                                field-definitions={dealBankingPoolFields}
+                                data={allData}
+                                field-options={approvalFieldOptions}
+                                oneditmodechange={handleEditModeChange}
+                                onfieldchange={handleFieldChange}
+                                onsectionchange={handleSectionChange}>
+                            </c-dmt_section_simple_form>
+                        </lightning-accordion-section>
+                    </template>
+                    <lightning-accordion-section name="dealOtherAspects" label="Other Aspects of the Deal" class="delete-border">
+                        <c-dmt_section_simple_form
+                            lwc:ref="dealOtherAspects"
+                            field-definitions={dealOtherAspectsFields}
+                            data={allData}
+                            field-options={approvalFieldOptions}
+                            oneditmodechange={handleEditModeChange}
+                            onfieldchange={handleFieldChange}
+                            onsectionchange={handleSectionChange}>
+                        </c-dmt_section_simple_form>
+                    </lightning-accordion-section>
+                    <lightning-accordion-section name="dealProfitabilityScenarios" label="Profitability Scenarios" class="delete-border">
+                        <c-dmt_section_simple_form
+                            lwc:ref="dealProfitabilityScenarios"
+                            field-definitions={dealProfitabilityScenariosFields}
+                            data={allData}
+                            field-options={approvalFieldOptions}
+                            oneditmodechange={handleEditModeChange}
+                            onfieldchange={handleFieldChange}
+                            onsectionchange={handleSectionChange}>
+                        </c-dmt_section_simple_form>
+                    </lightning-accordion-section>
+                    <lightning-accordion-section name="dealGlobalStructure" label="Global Structure of the Deal" class="delete-border slds-show">
+                        <c-dmt_section_simple_form
+                            lwc:ref="globalStructureForm"
+                            field-definitions={globalStructureFields}
+                            data={allData}
+                            field-options={approvalFieldOptions}
+                            oneditmodechange={handleEditModeChange}
+                            onfieldchange={handleFieldChange}
+                            onsectionchange={handleSectionChange}>
+                        </c-dmt_section_simple_form>
+                    <template lwc:if={showGlobalStructure}>
+                        <div class="slds-grid">
+                            <div class="slds-col slds-order_2 slds-large-order_1">
+                                <div>
+                                    <c-dmt_table_global_structure
+                                        lwc:ref="globalStructureDebt"
+                                        label="Debt Funds (Mn)"
+                                        record-id={currentRecordId}
+                                        opportunity-client-id={opportunityClientId}
+                                        group-id={groupId}
+                                        table-data={globalStructureData}
+                                        stage-name={stageRecord}
+                                        is-edit-mode={isEditMode}
+                                        is-read-only-user={isReadOnlyUser}
+                                        oneditmodechange={handleEditModeChange}
+                                        onfieldchange={handleFieldChange}
+                                        onsaveerror={handleTableSaveError}>
+                                    </c-dmt_table_global_structure>
+                            </div>
+                                <div>
+                                    <c-dmt_table_global_structure
+                                    lwc:ref="globalStructureEquity"
+                                    label="Equity Funds (Mn)"
+                                    record-id={currentRecordId}
+                                    opportunity-client-id={opportunityClientId}
+                                    group-id={groupId}
+                                    table-data={globalStructureData}
+                                    stage-name={stageRecord}
+                                    is-edit-mode={isEditMode}
+                                    is-read-only-user={isReadOnlyUser}
+                                    oneditmodechange={handleEditModeChange}
+                                    onfieldchange={handleFieldChange}
+                                    onsaveerror={handleTableSaveError}>
+                                </c-dmt_table_global_structure>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-order_1 slds-large-order_2">
+                                <c-dmt_table_global_structure
+                                        lwc:ref="globalStructureUses"
+                                        label="Uses"
+                                        record-id={currentRecordId}
+                                        opportunity-client-id={opportunityClientId}
+                                        group-id={groupId}
+                                        table-data={globalStructureData}
+                                        stage-name={stageRecord}
+                                        is-edit-mode={isEditMode}
+                                        is-read-only-user={isReadOnlyUser}
+                                        oneditmodechange={handleEditModeChange}
+                                        onfieldchange={handleFieldChange}
+                                        onsaveerror={handleTableSaveError}>
+                                    </c-dmt_table_global_structure>
+                                </div>
+                            </div>
+                        </template>
+                    </lightning-accordion-section>
+                    <template lwc:if={showBankingPool}>
+                        <lightning-accordion-section name="bankingPool" label="Banking Pool" class="delete-border">
+                            <c-dmt_bankingpool_table
+                                lwc:ref="bankingPoolTable"
+                                record-id={currentRecordId}
+                                opportunity-client-id={opportunityClientId}
+                                group-id={groupId}
+                                table-data={bankingPoolData}
+                                stage-name={stageRecord}
+                                is-edit-mode={isEditMode}
+                                is-read-only-user={isReadOnlyUser}
+                                oneditmodechange={handleEditModeChange}
+                                onfieldchange={handleFieldChange}
+                                onsaveerror={handleTableSaveError}>
+                            </c-dmt_bankingpool_table>
+                            <c-dmt_section_simple_form
+                                lwc:ref="bankingPoolForm"
+                                field-definitions={bookingPoolFields}
+                                data={allData}
+                                field-options={approvalFieldOptions}
+                                oneditmodechange={handleEditModeChange}
+                                onfieldchange={handleFieldChange}
+                                onsectionchange={handleSectionChange}>
+                            </c-dmt_section_simple_form>
+                        </lightning-accordion-section>
+                    </template>
+                    <template lwc:if={showDealSustainable}>
+                        <lightning-accordion-section name="dealSustainable" label="Sustainable Finance" class="delete-border">
+                            <c-dmt_section_simple_form
+                                lwc:ref="dealSustainable"
+                                field-definitions={dealSustainableFields}
+                                data={allData}
+                                group-data={groupData}
+                                field-options={approvalFieldOptions}
+                                oneditmodechange={handleEditModeChange}
+                                onfieldchange={handleFieldChange}
+                                onsectionchange={handleSectionChange}>
+                            </c-dmt_section_simple_form>
+                        </lightning-accordion-section>
+                    </template>
+                    <template lwc:if={showDealRisk}>
+                        <lightning-accordion-section name="dealRisk" label="Risk" class="delete-border">
+                            <c-dmt_section_simple_form
+                                lwc:ref="dealRisk"
+                                field-definitions={dealRiskFields}
+                                data={allData}
+                                field-options={approvalFieldOptions}
+                                oneditmodechange={handleEditModeChange}
+                                onfieldchange={handleFieldChange}
+                                onsectionchange={handleSectionChange}>
+                            </c-dmt_section_simple_form>
+                        </lightning-accordion-section>
+                    </template>
+                    <lightning-accordion-section name="dealSppi" label="SPPI TEST" class="delete-border">
+                        <c-dmt_section_simple_form
+                            lwc:ref="dealSppi"
+                            field-definitions={dealSppiFields}
+                            data={allData}
+                            field-options={approvalFieldOptions}
+                            oneditmodechange={handleEditModeChange}
+                            onfieldchange={handleFieldChange}
+                            onsectionchange={handleSectionChange}>
+                        </c-dmt_section_simple_form>
+                    </lightning-accordion-section>
+                </lightning-accordion>
+            </template>
+        </div>
+
+        <!-- CLIENT PROFITABILITY TAB -->
+        <div class={clientProfitabilityPanelClass} role="tabpanel">
+            <template lwc:if={showClientProfitabilityTab}>
+                <c-dmt_section_simple_form
+                    lwc:ref="clientProfitability"
+                    field-definitions={clientProfitabilityFields}
+                    data={allData}
+                    group-data={groupData}
+                    field-options={approvalFieldOptions}
+                    oneditmodechange={handleEditModeChange}
+                    onfieldchange={handleFieldChange}
+                    onsectionchange={handleSectionChange}>
+                </c-dmt_section_simple_form>
+            </template>
+        </div>
+
+        <!-- BUSINESS PLAN DATA TAB -->
+        <div class={businessPlanDataPanelClass} role="tabpanel">
+            <template lwc:if={showBusinessPlanDataTab}>
+                <c-dmt_opp_approval_business_plan
+                    lwc:ref="businessPlan"
+                    record-id={currentRecordId}
+                    data={allData}
+                    field-options={approvalFieldOptions}
+                    group-id={groupId}
+                    is-read-only-user={isReadOnlyUser}
+                    opportunity-client-id={opportunityClientId}
+                    is-gtb={isGtb}
+                    oneditmodechange={handleEditModeChange}
+                    onfieldchange={handleFieldChange}
+                    onsectionchange={handleSectionChange}>
+                </c-dmt_opp_approval_business_plan>
+            </template>
+        </div>
+
+        <!-- CLIENT INFORMATION TAB -->
+        <div class={clientInformationPanelClass} role="tabpanel">
+            <template lwc:if={showClientInformationTab}>
+                    <lightning-accordion active-section-name={clientInfoSections} allow-multiple-sections-open>
+                        <template lwc:if={showBasicFinancial}>
+                            <lightning-accordion-section name="basicFinancials" label="Basic Financials" class="delete-border">
+                                <c-dmt_section_simple_form
+                                    lwc:ref="basicFinancialsExtra"
+                                    field-definitions={basicFinancialsFieldsExtra}
+                                    data={allData}
+                                    group-data={groupData}
+                                    field-options={approvalFieldOptions}
+                                    oneditmodechange={handleEditModeChange}
+                                    onfieldchange={handleFieldChange}
+                                    onsectionchange={handleSectionChange}>
+                                </c-dmt_section_simple_form>
+                                <template lwc:if={showFinancialsTable}>
+                                    <c-dmt_financials_table_-client
+                                        lwc:ref="financialsTable"
+                                        record-id={currentRecordId}
+                                        opportunity-client-id={opportunityClientId}
+                                        group-id={groupId}
+                                        stage-name={stageRecord}
+                                        is-edit-mode={isEditMode}
+                                        is-read-only-user={isReadOnlyUser}
+                                        is-opportunity={trueValue}
+                                        is-opp-view={trueValue}
+                                        currency-code={currencyLabel}
+                                        oneditmodechange={handleEditModeChange}
+                                        onfieldchange={handleFieldChange}
+                                        onsaveerror={handleTableSaveError}>
+                                    </c-dmt_financials_table_-client>
+                                </template>
+                                <c-dmt_section_simple_form
+                                    lwc:ref="basicFinancials"
+                                    field-definitions={basicFinancialsFields}
+                                    data={allData}
+                                    group-data={groupData}
+                                    field-options={approvalFieldOptions}
+                                    oneditmodechange={handleEditModeChange}
+                                    onfieldchange={handleFieldChange}
+                                    onsectionchange={handleSectionChange}>
+                                </c-dmt_section_simple_form>
+                            </lightning-accordion-section>
+                        </template>
+
+                            <lightning-accordion-section name="clientInfo" label="Client Info" class="delete-border">
+                                <c-dmt_section_simple_form
+                                    lwc:ref="clientInfo"
+                                    field-definitions={clientInfoFields}
+                                    data={allData}
+                                    group-data={groupData}
+                                    field-options={approvalFieldOptions}
+                                    oneditmodechange={handleEditModeChange}
+                                    onfieldchange={handleFieldChange}
+                                    onsectionchange={handleSectionChange}>
+                                </c-dmt_section_simple_form>
+                            </lightning-accordion-section>
+                    </lightning-accordion>
+            </template>
+        </div>
+    </div>
+    <!-- Docked footer for Save / Cancel -->
+    <template lwc:if={isEditMode}>
+        <c-dmt_docked_form_footer
+            is-loading={isLoadingSaving}
+            has-error={hasError}
+            error-message={errorMessage}
+            onsave={handleSave}
+            oncancel={handleCancel}>
+        </c-dmt_docked_form_footer>
+    </template>
+
+    <!-- Discard changes confirmation modal -->
+    <template lwc:if={showDiscardChangesModal}>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open slds-modal_xxx-small">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h1 class="slds-modal__title slds-hyphenate">Unsaved Changes</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <p>You have unsaved changes. Do you want to discard them?</p>
+                </div>
+                <div class="slds-modal__footer slds-modal__footer_directional">
+                    <button class="slds-button slds-button_neutral" onclick={handleCloseDiscardModal}>Keep Editing</button>
+                    <button class="slds-button slds-button_destructive" onclick={handleConfirmDiscard}>Discard Changes</button>
+                </div>
+            </div>
+        </section>
+    </template>
+    
+</template>

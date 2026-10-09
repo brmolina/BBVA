@@ -1,0 +1,8 @@
+/* Replaces FlexCard inline style: height: calc(100vh - 116px); display: flex; min-height: 0; */
+:host {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 116px);
+    min-height: 0;
+    overflow: hidden;
+}

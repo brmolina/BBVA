@@ -38,6 +38,7 @@ public with sharing class DMT_Opp_Currency_Conversion_Utils {
             String strCurrencyToLook = '';
             Opportunity objOpp = [SELECT CurrencyIsoCode FROM Opportunity WHERE Id = :recordId LIMIT 1];
 
+
             List<DMT_X_Sell__c> listobjXSell = [SELECT DMT_Currency__c FROM DMT_X_Sell__c  WHERE Opportunity__c =: recordId LIMIT 1];
             
             DMT_X_Sell__c objXSell;

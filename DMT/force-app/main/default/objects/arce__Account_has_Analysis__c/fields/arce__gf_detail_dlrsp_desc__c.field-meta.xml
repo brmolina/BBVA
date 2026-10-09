@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_detail_dlrsp_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Comments that specify the detail of the number of dealerships as well as the name of each vehicle brand.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Comments of dealerships and the brands</label>
+    <length>1000</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

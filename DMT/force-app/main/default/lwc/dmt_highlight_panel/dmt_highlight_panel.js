@@ -2,15 +2,25 @@ import { LightningElement, api, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { NavigationMixin } from 'lightning/navigation';
 import { subscribe, unsubscribe, onError } from 'lightning/empApi';
+import { getRecord } from 'lightning/uiRecordApi';
 import getHighlightConfig from '@salesforce/apex/DMT_HighlightPanelController.getHighlightConfig';
 import surveyNotification from '@salesforce/apex/DES_cls_BotonNoteBookLm.surveyNotification';
+import isProspectLine from '@salesforce/apex/DMT_Line_Helper.checkProspectInLine';
+import isProspectOpportunity from '@salesforce/apex/DMT_Opportunity_Utils.checkProspectInOpportunity';
+import DES_lbl_SurveyWUTFeedback from '@salesforce/label/c.DES_lbl_SurveyWUTFeedback';
+
+const CLIENT_FIELD = 'DMT_Line__c.Client__c';
+const CUSTOM_ASSOCIATION_FIELD = 'DMT_Line__c.Custom_Association__c';
+const ACCOUNT_ID_FIELD = 'Opportunity.AccountId';
 
 export default class Dmt_highlight_panel extends NavigationMixin(LightningElement) {
     @api recordId;
     @api objectApiName;
     _isConfidential;
-    CHANNEL_OBJECT = '/event/DMT_LINES__e';
-    subscriptionObject;
+    _isProspect = false;
+    lineId;
+    opportunityId;
+    monitoredFields = [];
     @track config = {};
     @track processedFields = [];
     @track processedPrimaryActions = [];
@@ -33,15 +43,13 @@ export default class Dmt_highlight_panel extends NavigationMixin(LightningElemen
 
      @api
      get status(){
-         //this.loadConfiguration();
          return this.refreshValue;
      }
-     set status(value){console.log('loadconget1',value);
-        if( value != this.refreshValue && this.refreshValue != null){console.log('loadconget2',this.refreshValue);
+     set status(value){
+        if( value != this.refreshValue && this.refreshValue != null){
             this.loadConfiguration();
         }
-        
-         this.refreshValue = value;
+        this.refreshValue = value;
     }
 
     @api
@@ -50,30 +58,43 @@ export default class Dmt_highlight_panel extends NavigationMixin(LightningElemen
     }
     set isConfidential(value) {
         this._isConfidential = value === true || value === 'true';
-        console.log('isconf:', this._isConfidential);
     }
 
+    @api
+    get isProspect() {
+        return this._isProspect;
+    }
+    set isProspect(value) {
+        this._isProspect = value === true || value === 'true';
+    }
 
     connectedCallback() {
-        //this.CHANNEL_OBJECT = this.objectApiName?.includes('__c') ? '/event/'+ 'DMT_Line__e' : '/data/'+this.objectApiName+'__ChangeEvent';
-        console.log('channel',this.CHANNEL_OBJECT);
-        //subscribe(this.CHANNEL_OBJECT, -2, this.loadConfiguration).then(subscription => {
-            //this.subscriptionObject = subscription;
-       // });
-        //this.registerErrorListener();
         this.loadConfiguration();
 
+        if (this.recordId && this.objectApiName === 'DMT_Line__c') {
+            this.lineId = this.recordId;
+            this.monitoredFields = [CLIENT_FIELD, CUSTOM_ASSOCIATION_FIELD];
+            this.checkProspectStatus();
+            this._boundRefreshHandler = this.handlePubsubRefresh.bind(this);
+            window.addEventListener('dmtlinerefresh', this._boundRefreshHandler);
+        } else if (this.recordId && this.objectApiName === 'Opportunity') {
+            this.opportunityId = this.recordId;
+            this.monitoredFields = [ACCOUNT_ID_FIELD];
+            this.checkProspectStatus();
+        }
     }
 
-    registerErrorListener() {
-        onError(error => {
-            console.log('err',error);
-        });
+    handlePubsubRefresh(event) {
+        if (event.detail.lineId === this.recordId) {
+            this.checkProspectStatus();
+        }
     }
+
     disconnectedCallback(){
-        //unsubscribe(this.subscriptionObject, () => console.info(UNSUBCRIBE_MESSAGE + this.CHANNEL_OBJECT));
+        if (this._boundRefreshHandler) {
+            window.removeEventListener('dmtlinerefresh', this._boundRefreshHandler);
+        }
     }
-
     
     async loadConfiguration() {
         try {
@@ -93,6 +114,36 @@ export default class Dmt_highlight_panel extends NavigationMixin(LightningElemen
             this.showToast('Error', 'error', error.body?.message || error.message);
         } finally {
             this.isLoading = false;
+        }
+    }
+
+    // Wire para detectar cambios en campos monitoreados
+    @wire(getRecord, { 
+        recordId: '$recordId', 
+        fields: '$monitoredFields'
+    })
+    wiredRecordChanges({ data, error }) {
+        if (data) {
+            // Cuando cambian los campos monitoreados, verificar Prospect
+            this.checkProspectStatus();
+        }
+    }
+
+    // Método imperativo para verificar Prospect
+    async checkProspectStatus() {
+        if (!this.recordId) return;
+        
+        try {
+            if (this.objectApiName === 'DMT_Line__c' && this.lineId) {
+                const result = await isProspectLine({ lineIds: [this.lineId] });
+                this._isProspect = result && result[0] === true;
+            } else if (this.objectApiName === 'Opportunity' && this.opportunityId) {
+                const result = await isProspectOpportunity({ oppIds: [this.opportunityId] });
+                this._isProspect = result && result[0] === true;
+            }
+        } catch (error) {
+            console.error('Error checking prospect:', error);
+            this._isProspect = false;
         }
     }
     
@@ -294,13 +345,17 @@ export default class Dmt_highlight_panel extends NavigationMixin(LightningElemen
     handleNavigateAction(params) {
         if (!params || !params.recordId || !params.objectApiName) return;
         
-        this[NavigationMixin.Navigate]({
+        const pageRef = {
             type: 'standard__recordPage',
             attributes: {
                 recordId: params.recordId,
                 objectApiName: params.objectApiName,
                 actionName: 'view'
             }
+        };
+
+        this[NavigationMixin.GenerateUrl](pageRef).then((url) => {
+            window.open(url, '_blank');
         });
     }
     
@@ -310,6 +365,7 @@ export default class Dmt_highlight_panel extends NavigationMixin(LightningElemen
         
         if (action) {
             this.publishSurveyIfHelpAction(action);
+            this.openFeedbackIfFeedbackAction(action);
             this.executeAction(action);
         }
     }
@@ -329,6 +385,19 @@ export default class Dmt_highlight_panel extends NavigationMixin(LightningElemen
 
     isHelpAction(action) {
         return action?.label?.toLowerCase() === 'help';
+    }
+
+    /** CIBGLOBALD-4295 - Opens the WUT proactive feedback form in a new tab. No survey Platform Event is published here. */
+    openFeedbackIfFeedbackAction(action) {
+        if (!this.isFeedbackAction(action)) {
+            return;
+        }
+
+        window.open(DES_lbl_SurveyWUTFeedback, '_blank', 'noopener,noreferrer');
+    }
+
+    isFeedbackAction(action) {
+        return action?.label?.toLowerCase() === 'feedback';
     }
     
     handleMenuAction(event) {

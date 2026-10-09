@@ -37,7 +37,7 @@ public with sharing class DMT_WithoutSharingDAO_Test {
         system.runAs(userTest) {
             DMT_WithoutSharingDAO.insertRecord(approver);
         }
-        
+
         Test.stopTest();
 
         List<DMT_Approver__c> approverList = [SELECT Id FROM DMT_Approver__c WHERE Name LIKE '%WithoutSharing%'];
@@ -104,6 +104,49 @@ public with sharing class DMT_WithoutSharingDAO_Test {
 
         System.assertEquals(approvers.size(), 0, 'The query is empty so returns nothing');
 
+    }
+
+    @isTest
+    static void testDeleteRecordById() {
+        DMT_Approver__c approver = [SELECT Id FROM DMT_Approver__c LIMIT 1];
+
+        Test.startTest();
+        DMT_WithoutSharingDAO.deleteRecordById(approver.Id);
+        Test.stopTest();
+
+        List<DMT_Approver__c> approverList = [SELECT Id FROM DMT_Approver__c WHERE Id = :approver.Id];
+
+        System.assertEquals(0, approverList.size(), 'The record should be deleted');
+    }
+    
+    @isTest
+    static void testDeleteRecord() {
+        DMT_Approver__c approver = [SELECT Id FROM DMT_Approver__c LIMIT 1];
+
+        Test.startTest();
+        DMT_WithoutSharingDAO.deleteRecord(approver);
+        Test.stopTest();
+
+        List<DMT_Approver__c> approverList = [SELECT Id FROM DMT_Approver__c WHERE Id = :approver.Id];
+
+        System.assertEquals(0, approverList.size(), 'The record should be deleted');
+    }
+
+    @isTest
+    static void testDeleteRecordByIdWithUserNoPermissions() {
+        DMT_Approver__c approver = [SELECT Id FROM DMT_Approver__c LIMIT 1];
+
+        User userTest = [SELECT Id FROM User WHERE LastName = 'Without Permissions' LIMIT 1];
+
+        Test.startTest();
+        system.runAs(userTest) {
+            DMT_WithoutSharingDAO.deleteRecordById(approver.Id);
+        }
+        Test.stopTest();
+
+        List<DMT_Approver__c> approverList = [SELECT Id FROM DMT_Approver__c WHERE Id = :approver.Id];
+
+        System.assertEquals(1, approverList.size(), 'The record should not be deleted when user lacks permissions');
     }
 
 }

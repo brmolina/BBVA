@@ -6,6 +6,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
           import pubsub from "omnistudio/pubsub";
           import { getRecord } from "lightning/uiRecordApi";
           
+          
           import data from "./definition";
           
           import styleDef from "./styleDefinition";
@@ -22,17 +23,19 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               
               @track record;
               @track _sessionApiVars = {};
-              @track Label={dmt_cl_ISDAWaiver_Text:"Exception to the policy on the execution of mitigating agreements (ISDA/GMRA/GMSLA or similar)",
-        dmt_cl_MitigantAgreementComments_Text:"Mitigating agreements comments",
-        dmt_cl_BrkClauseFrequency_Text:"Breakclause Frequency",
-        dmt_cl_FirstBrkClause_Text:"First Breakclause",
+              
+              @track Label={dmt_cl_DeliveryVsPayment_Text:"Delivery versus Payment (DvP) Amount",
         dmt_cl_FreeDelivery_Text:"Free Delivery (FD) Amount",
-        dmt_cl_DeliveryVsPayment_Text:"Delivery versus Payment (DvP) Amount"
+        dmt_cl_FirstBrkClause_Text:"First Breakclause",
+        dmt_cl_BrkClauseFrequency_Text:"Breakclause Frequency",
+        dmt_cl_MitigantAgreementComments_Text:"Mitigating agreements comments",
+        dmt_cl_ISDAWaiver_Text:"Exception to the policy on the execution of mitigating agreements (ISDA/GMRA/GMSLA or similar)"
         };
               pubsubEvent = [];
               customEvent = [];
               
               connectedCallback() {
+                
                 super.connectedCallback();
                 this.setThemeClass(data);
                 this.setStyleDefinition(styleDef);
@@ -45,9 +48,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKE000000L7oZYAS"
+                  " card-0koKE000000L9tQYAS"
                 );
-                this.loadCustomStylesheetAttachement("00PKE000001ZPdF2AW");
+                this.loadCustomStylesheetAttachement("00PKE000002MxiN2AS");
                 
                 
               }

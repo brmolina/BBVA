@@ -30,8 +30,8 @@ public with sharing class DMT_FinishedConditionCase {
             Account groupClient = [Select Id, DES_Group_Code__c from Account where Id = : line.Client__c LIMIT 1];
             customerSet.add(groupClient.DES_Group_Code__c);
         }else if(line.Client_Type__c == 'Customer'){
-            Local_Client__c customer = [Select Id, Cib_Client__c, Alpha_code__c from Local_Client__c where Cib_Client__c = : line.Client__c LIMIT 1];
-            customerSet.add(customer.Alpha_code__c);
+          Account customer = [Select Id, g_customer_id__c from Account where Id = : line.Client__c LIMIT 1];
+            customerSet.add(customer.g_customer_id__c);
         }
 
         for(Case caseCon : cases){

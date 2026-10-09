@@ -359,3 +359,14 @@ tr:hover td.isSelected:hover {
 .empty-mode tbody tr:hover td{
     background: #fff !important;
 }
+
+
+.column-header-wrapper .sort-icon {
+    margin-left: 0.25rem;
+    vertical-align: middle;
+    transition: transform 0.15s ease;
+}
+
+.column-header-wrapper .sort-icon-asc {
+    transform: rotate(180deg);
+}

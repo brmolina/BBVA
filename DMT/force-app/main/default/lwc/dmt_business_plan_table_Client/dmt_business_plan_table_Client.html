@@ -13,8 +13,12 @@
             </div>
             <c-dmt_-table-header-section
                 titletable="Business Plan"
-                showcopypaste="false"
-                context="derivatives"
+                showcopypaste="true"
+                rowscopypaste={copyPasteRows}
+                tablecolumnscopypaste={copyPasteColumns}
+                context="BusinessPlan"
+                isreadonlyuser={isCopyPasteDisabled}
+                onsendrowsevent={handlePasteData}
             ></c-dmt_-table-header-section> 
             <template lwc:if={isDataProcessed}>
                 <div class="slds-table_edit_container">
@@ -65,8 +69,21 @@
                                                     </template>
                                                 </template>
                                                 <template lwc:else>
-                                                    <div class="slds-col slds-size_2-of-3 cell-value">
-                                                        <span>{cell.value}</span>
+                                                    <div class="slds-col slds-truncate slds-size_2-of-8 cell-value">
+                                                        <p>{cell.value}
+                                                            <template lwc:if={isOpportunity}>
+                                                                <template lwc:if={cell.hasComparisonValue}>
+                                                                    <span><c-dmt_warning_hover content={cell.accountValue} is-equals={cell.isEquals} object="Client"> </c-dmt_warning_hover></span>
+                                                                </template>
+                                                            </template>
+                                                        </p>
+                                                    </div>
+                                                    <div class="slds-p-around_none slds-col slds-size_1-of-3">
+                                                        <template lwc:if={isOpportunity}>
+                                                            <div class="button-group">
+                                                                <lightning-button-icon icon-name="utility:redo" class="redo-icon no-border" alternative-text="redo" data-id={row.Id} data-field={cell.field} onclick={handleRedo} variant='bare' style={cell.styleRedo}></lightning-button-icon>
+                                                            </div>
+                                                        </template>
                                                     </div>
                                                 </template>
                                             </div>

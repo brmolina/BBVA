@@ -84,14 +84,16 @@ public with sharing class DMT_Line_Helper{
                     if (rsk.DMT_Singular__c == false && 
                        (rsk.DMT_Risk_Type__c == DMT_Constants.RSK_DERIVATIVES || 
                         rsk.DMT_Risk_Type__c == DMT_Constants.RSK_DEPOS || 
-                        rsk.DMT_Risk_Type__c == DMT_Constants.RSK_EQUITY)) {
+                        rsk.DMT_Risk_Type__c == DMT_Constants.RSK_EQUITY) || 
+                        rsk.DMT_Risk_Type__c == DMT_Constants.RSK_REPOS) {
                         regList.add(rsk);
                     }
                     
                     // Logic mapped from the old `treasuryLine=true, singular=true` query
                     if (rsk.DMT_Risk_Type__c == DMT_Constants.RSK_SINGULAR || 
                         rsk.DMT_Risk_Type__c == DMT_Constants.RSK_DEPOS || 
-                        rsk.DMT_Risk_Type__c == DMT_Constants.RSK_EQUITY) {
+                        rsk.DMT_Risk_Type__c == DMT_Constants.RSK_EQUITY ||
+                        rsk.DMT_Risk_Type__c == DMT_Constants.RSK_REPOS) {
                         singList.add(rsk);
                     }
                 }
@@ -105,18 +107,18 @@ public with sharing class DMT_Line_Helper{
         }
 
         Map<Id, List<DMT_Line_Product_Item__c>> mapPliByIdLine = getLineProductItemsByLine(mapLines);
+        System.debug('producCodeSearch: ' + producCodeSearch);
         Map<String, Product2> mapProdByProdCod = getProductsByCode(producCodeSearch);
         final Map<Id, User> mapCorporateUByIdLine = getCachedUsersByIds(collectOwnerIds(mapLines.values()));
         List<DMT_Consolidated_Line__c> prevCLines = new List<DMT_Consolidated_Line__c>();
         Map<String, List<DMT_Consolidated_Line__c>> mapClines = getpreviousConsoLines(mapLines);
         
         //Iterate trigger lines
-        System.debug('newLines size: ' + newLines.size());
         for (DMT_Line__c line : newLines){
             //Integer for generate sub id for consolidated lines.
             Integer idPriorityLine = 1;
 
-            if ((line.Status__c == DMT_Constants.APPROVAL || (line.Status__c == DMT_Constants.CLOSED && line.Closed__c == DMT_Constants.WON) || (line.Status__c == DMT_Constants.CLOSED && line.Closed__c == 'Lost') || (line.Status__c == DMT_Constants.DRAFT && line.DMT_Approval_Date__c != null) || (line.Status__c == DMT_Constants.PROPOSAL && line.DMT_Approval_Date__c != null)) && mapOldLines.get(line.Id).Status__c != line.Status__c || mapOldLines.get(line.Id).DMT_Update_Singular__c != line.DMT_Update_Singular__c || (line.Status__c == DMT_Constants.CLOSED && line.Closed__c == DMT_Constants.WON) || (mapOldLines.get(line.Id).DMT_Approval_Date__c != null && mapOldLines.get(line.Id).DMT_Approval_Date__c != line.DMT_Approval_Date__c) || (line.Status__c == DMT_Constants.READYTOCLOSE && line.Product__c == 'Sanction')){
+            if ((line.Status__c == DMT_Constants.APPROVAL || (line.Status__c == DMT_Constants.CLOSED && line.Closed__c == DMT_Constants.WON) || (line.Status__c == DMT_Constants.CLOSED && line.Closed__c == 'Lost') || (line.Status__c == DMT_Constants.DRAFT && line.DMT_Approval_Date__c != null) || (line.Status__c == DMT_Constants.PROPOSAL && line.DMT_Approval_Date__c != null)) && mapOldLines.get(line.Id).Status__c != line.Status__c || mapOldLines.get(line.Id).DMT_Update_Singular__c != line.DMT_Update_Singular__c || (line.Status__c == DMT_Constants.CLOSED && line.Closed__c == DMT_Constants.WON) || (mapOldLines.get(line.Id).DMT_Approval_Date__c != null && mapOldLines.get(line.Id).DMT_Approval_Date__c != line.DMT_Approval_Date__c) || (line.Status__c == DMT_Constants.READYTOCLOSE && line.Product__c == 'Sanction') || (line.Status__c == DMT_Constants.APPROVAL && line.Product__c == 'Sanction')){
 
                 if (mapClines != null && mapClines.get(line.Line_Id__c) != null){
                     prevCLines.addAll(mapClines.get(line.Line_Id__c));
@@ -137,8 +139,8 @@ public with sharing class DMT_Line_Helper{
                         initcLineHeader.g_limit_last_level_type__c = line.DMT_LastLevelId__c;
                         initcLineHeader.gf_clsfn_risk_type_internal_id__c = line.DMT_LastLevelId__c;
                         initcLineHeader.gf_condition_line_amount__c = line.Amount__c;
-                        initcLineHeader.gf_min_raroec_wo_fcg_per__c = line.gf_min_raroec_wo_fcg_per__c;
-                        initcLineHeader.gf_min_rorc_wo_fcg_per__c = line.gf_min_rorc_wo_fcg_per__c;
+                        initcLineHeader.gf_min_raroec_wo_fcg_per__c = getNullableMinimumPercentage(line.gf_min_raroec_wo_fcg_per__c);
+                        initcLineHeader.gf_min_rorc_wo_fcg_per__c = getNullableMinimumPercentage(line.gf_min_rorc_wo_fcg_per__c);
                     } else{
                         initcLineHeader.g_limit_last_level_type__c = '';
                         initcLineHeader.gf_clsfn_risk_type_internal_id__c = '';
@@ -257,6 +259,7 @@ public with sharing class DMT_Line_Helper{
                         Integer idRiskLineDerivatives = 1;
                         Integer idRiskLineDepos = 1;
                         Integer idRiskLineEquities = 1;
+                        Integer idRiskLineRepos = 1;
                         List<DMT_Risk_Line_Term__c> relatedRisk = new List<DMT_Risk_Line_Term__c>();
                         if (line.Product__c == 'Treasury Line'){
                             if (line.DMT_SingularCon__c >= Date.today()){
@@ -273,7 +276,12 @@ public with sharing class DMT_Line_Helper{
                                 if (line.Product__c == 'Treasury Line'){
 
                                     DMT_Consolidated_Line__c initcLineRsk = mapCommonFields(line, mapCorporateUByIdLine.get(line.OwnerId).ID_User__c);
-
+                                    System.debug('Initializing consolidated line for risk: ' + rsk.DMT_Risk_Type__c);
+                                    System.debug('Initializing consolidated line for risk: ' + rsk.DMT_Risk_Type__c + ' with idRiskLineRepos: ' + idRiskLineRepos);
+                                    System.debug('Initializing consolidated line for risk: ' + rsk.DMT_Risk_Type__c + ' with idRiskLineDepos: ' + idRiskLineDepos);
+                                    System.debug('Initializing consolidated line for risk: ' + rsk.DMT_Risk_Type__c + ' with idRiskLineEquities: ' + idRiskLineEquities);
+                                    System.debug('Initializing consolidated line for risk: ' + rsk.DMT_Risk_Type__c + ' with idRiskLineRepos: ' + idRiskLineRepos);
+                                    System.debug('Initializing consolidated line for risk: ' +mapProdByProdCod);
                                     initcLineRsk.g_global_product_family_id__c = !String.isBlank(mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_family__c) ? mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_family__c : rsk.g_global_product_family_id__c;
                                     initcLineRsk.g_global_product_subfamily_id__c = !String.isBlank(mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_Subfamily__c) ? mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_Subfamily__c : rsk.g_global_product_subfamily_id__c;
                                     initcLineRsk.g_global_product_category_id__c = !String.isBlank(mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_category__c) ? mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_category__c : rsk.g_global_product_category_id__c;
@@ -293,11 +301,13 @@ public with sharing class DMT_Line_Helper{
                                     Integer currentRiskLine =
                                         riskType == 'Depos' ? idRiskLineDepos :
                                         riskType == 'Equities' ? idRiskLineEquities :
+                                        riskType == 'Repos' ? idRiskLineRepos :
                                         idRiskLineDerivatives;
 
                                     String groupPriorityTerm =
                                         riskType == 'Depos' ? DMT_Constants.GROUP_PRIORITY_TERM_DEPOS :
                                         riskType == 'Equities' ? DMT_Constants.GROUP_PRIORITY_TERM_EQUITIES :
+                                        riskType == 'Repos' ? DMT_Constants.GROUP_PRIORITY_REPOS :
                                         DMT_Constants.GROUP_PRIORITY_TERM;
 
                                     initcLineRsk.gf_group_priority_line_id__c =
@@ -306,6 +316,7 @@ public with sharing class DMT_Line_Helper{
                                     idRiskLineDepos += riskType == 'Depos' ? 1 : 0;
                                     idRiskLineEquities += riskType == 'Equities' ? 1 : 0;
                                     idRiskLineDerivatives += riskType == 'Derivatives' ? 1 : 0;
+                                    idRiskLineRepos += riskType == 'Repo' ? 1 : 0;
                                     initcLineRsk.g_limit_last_level_type__c = DMT_Constants.RSK_LVL_TREASURY;
                                     initcLineRsk.gf_inscol_months_grace_number__c = rsk.gf_inscol_months_grace_number__c;
                                     initcLineRsk.gf_loan_value_per__c = rsk.gf_loan_value_per__c;
@@ -317,7 +328,7 @@ public with sharing class DMT_Line_Helper{
                                     initcLineRsk.gf_min_rorc_fcg_per__c = rsk.gf_min_rorc_fcg_per__c;
                                     initcLineRsk.gf_min_rorc_wo_fcg_per__c = rsk.gf_min_rorc_wo_fcg_per__c;
                                     //initcLineRsk.g_isda_waiver_ind_type__c = rsk.g_isda_waiver_ind_type__c;
-                                    //initcLineRsk.gf_prev_renewal_group_line_id__c = rsk.DMT_Parent_Product__r.gf_group_priority_line_id__c;
+                                    //initcLineRsk.gf_prev_renewal_priority_line_id__c = rsk.DMT_Parent_Product__r.gf_group_priority_line_id__c;
                                     initcLineRsk.gf_revolvence_pd_days_number__c = rsk.gf_revolvence_pd_days_number__c;
                                     initcLineRsk.gf_break_cl_days_number__c = rsk.gf_break_cl_days_number__c;
                                     initcLineRsk.g_expert_criteria_risk_type__c = rsk.DMT_Risk_Type__c == 'Equities' ? 'WWRX' : '';
@@ -336,10 +347,6 @@ public with sharing class DMT_Line_Helper{
                                     initcLineRsk.g_gbl_product_subcategory_id__c = rsk.g_gbl_product_subcategory_id__c;
                                     initcLineRsk.g_global_product_id__c = rsk.g_global_product_id__c;
                                     initcLineRsk.Origin__c = line.DMT_Approval_Validation__c ? 'Salesforce' : 'XX';
-                                    initcLineRsk.gf_payment_frequency__c = rsk.gf_payment_frequency__c;
-                                    initcLineRsk.g_amortization_type__c = rsk.g_amortization_type__c;
-                                    Boolean hasCurrencyProvision = rsk != null && rsk.DMT_Currency_Provisions__r != null && !rsk.DMT_Currency_Provisions__r.isEmpty();
-                                    initcLineRsk.gf_cont_multi_curncy_ind_type__c = hasCurrencyProvision;
                                     String rawCommitment = rsk.g_line_commitment_level_type__c;
                                     String processedCommitment;
                                     if (String.isBlank(rawCommitment)) {
@@ -370,10 +377,12 @@ public with sharing class DMT_Line_Helper{
                                     initcLineRsk.g_notary_crtfn_ind_type__c = rsk.g_notary_crtfn_ind_type__c;
                                     initcLineRsk.g_gtee_public_adm_ind_type__c = rsk.g_gtee_public_adm_ind_type__c;
                                     initcLineRsk.gf_loan_eca_cntrb_per__c = rsk.gf_loan_eca_cntrb_per__c;
-                                    initcLineRsk.gf_min_raroec_fcg_per__c = rsk.gf_min_raroec_fcg_per__c;
-                                    initcLineRsk.gf_min_raroec_wo_fcg_per__c = rsk.gf_min_raroec_wo_fcg_per__c;
-                                    initcLineRsk.gf_min_rorc_fcg_per__c = rsk.gf_min_rorc_fcg_per__c;
-                                    initcLineRsk.gf_min_rorc_wo_fcg_per__c = rsk.gf_min_rorc_wo_fcg_per__c;
+                                    if (line.Product__c != 'Sanction') {
+                                        initcLineRsk.gf_min_raroec_fcg_per__c = rsk.gf_min_raroec_fcg_per__c;
+                                        initcLineRsk.gf_min_raroec_wo_fcg_per__c = rsk.gf_min_raroec_wo_fcg_per__c;
+                                        initcLineRsk.gf_min_rorc_fcg_per__c = rsk.gf_min_rorc_fcg_per__c;
+                                        initcLineRsk.gf_min_rorc_wo_fcg_per__c = rsk.gf_min_rorc_wo_fcg_per__c;
+                                    }
                                     //initcLineRsk.g_isda_waiver_ind_type__c = rsk.g_isda_waiver_ind_type__c;
                                     initcLineRsk.gf_prev_renewal_group_line_id__c =line.DMT_Parent_Code_Form__c;
                                     initcLineRsk.gf_revolvence_pd_days_number__c = rsk.gf_revolvence_pd_days_number__c;
@@ -485,7 +494,6 @@ public with sharing class DMT_Line_Helper{
             }
         }
         try{
-            System.debug('num' + cLines.size());
             if (cLines.size() > 0){
                 Boolean allNone = newLines.size() == 1 ? true : false;
                 Database.insert (cLines, allNone);
@@ -495,7 +503,6 @@ public with sharing class DMT_Line_Helper{
             }
 
         } catch (DmlException e){
-            System.debug(e.getMessage());
         }
     }
 
@@ -554,6 +561,12 @@ public with sharing class DMT_Line_Helper{
             //initLine.gf_customer_group_id__c = line.line_id__c;
             initLine.gf_global_desktop_lm_engine_cust_type_id__c = DMT_Constants.CUSTOM;
             initLine.client_type__c = DMT_Constants.CUSTOM;
+        } else if (line.Client_Type__c == 'Golden'){
+            initLine.client_id__c = line.Golden_Code__c;
+            //initLine.gf_customer_group_id__c = line.line_id__c;
+            initLine.gf_global_desktop_lm_engine_cust_type_id__c = DMT_Constants.GOLDEN;
+            initLine.client_type__c = DMT_Constants.GOLDEN;
+            initLine.g_golden_customer_id__c = line.Golden_Code__c;
         } else{
             initLine.client_id__c = line.Client_Code__c;
             initLine.g_customer_id__c = line.Client_Code__c;
@@ -572,6 +585,10 @@ public with sharing class DMT_Line_Helper{
         }
 
         return initLine;
+    }
+
+    public Decimal getNullableMinimumPercentage(Decimal percentageValue){
+        return percentageValue == null || percentageValue == 0 ? null : percentageValue;
     }
 
     // Global cache for static products
@@ -613,7 +630,7 @@ public with sharing class DMT_Line_Helper{
                             cachedProductsByCode.put('Equities', p);
                         }
                         when '1611190000'{
-                            cachedProductsByCode.put('Repo', p);
+                            cachedProductsByCode.put('Repos', p);
                         }
                     }
                 }
@@ -649,8 +666,7 @@ public with sharing class DMT_Line_Helper{
                        gf_group_priority_line_id__c, g_line_cond_guarantee_ind_type__c, g_bullet_ind_type__c, 
                        g_smscl_internal_ratg_type__c, g_limit_sinds_ast_sctr_id__c, g_limit_sinds_ast_subsec_id__c, 
                        g_branch_id__c, DMT_Parent_Product__c, DMT_Singular__c, DMT_Singular_Active__c, DMT_Max_Date__c, 
-                      g_expert_criteria_risk_type__c, g_line_commitment_level_type__c, DMT_Singular_DvP__c, DMT_Singular_FD__c,
-                      (SELECT Id FROM DMT_Currency_Provisions__r LIMIT 1), gf_payment_frequency__c 
+                       g_expert_criteria_risk_type__c, g_line_commitment_level_type__c, DMT_Singular_DvP__c, DMT_Singular_FD__c
                 FROM DMT_Risk_Line_Term__c
                 WHERE DMT_Line__c IN :idsToQuery
                 WITH USER_MODE
@@ -728,7 +744,6 @@ public with sharing class DMT_Line_Helper{
 
     //before insert
     public void fillFields(List<DMT_Line__c> newLines){
-        System.debug('fillFields before insert');
         fillFields(newLines, null);
     }
 
@@ -762,21 +777,55 @@ public with sharing class DMT_Line_Helper{
         }
     }
 
-    // @future(callout=true)
-    // public static void updateRecordStatus(Set<Id> recordIds ) {
-    //     List<DMT_Line__c> recordsToUpdate = new List<DMT_Line__c>();
+    // CIBGLOBALD-3779: keeps Term/End Date mutually consistent server-side for both Risk Approval
+    // (Start_Date__c/End_Date__c/DMT_Risk_Approval_Term__c) and Business Approval
+    // (DMT_Bussiness_Approved_Date__c/DMT_Business_Approved_End_Date__c/
+    // DMT_Business_Approval_Term_n__c) — the same behavior the dmt_lineInfo LWC already applies
+    // client-side, but enforced here too so any other write path (data load, other Apex, bulk
+    // update) can't leave Term blank while the dates are filled, or End Date stale after Term
+    // changes. Term takes priority: if Term is set, End Date is (re)computed from Start + Term,
+    // overwriting whatever End Date held. Term is only back-computed from the date pair when Term
+    // itself is blank. Does nothing when Start Date is blank (nothing to compute from).
+    public void syncApprovalTermAndEndDate(List<DMT_Line__c> newLines, Map<Id, DMT_Line__c> oldMapLines){
+        Formula.recalculateFormulas(newLines);
+        for (DMT_Line__c line : newLines){
+            DMT_Line__c oldLine = oldMapLines != null ? oldMapLines.get(line.Id) : null;
+            syncTermAndEndDate(line, oldLine, DMT_Line__c.Start_Date__c, DMT_Line__c.End_Date__c, DMT_Line__c.DMT_Risk_Approval_Term__c);
+            syncTermAndEndDate(line, oldLine, DMT_Line__c.DMT_Bussiness_Approved_Date__c, DMT_Line__c.DMT_Business_Approved_End_Date__c, DMT_Line__c.DMT_Business_Approval_Term_n__c);
+        }
+    }
 
-    //     for (Id recordId : recordIds) {
-    //         DMT_Line__c record = new DMT_Line__c(
-    //             Id = recordId,
-    //             Closed__c = DMT_Constants.WON,
-    //             Status__c = DMT_Constants.CLOSED
-    //         );
-    //         recordsToUpdate.add(record);
+    // SObjectField tokens let this stay generic across both field trios without reflection-by-name.
+    private void syncTermAndEndDate(DMT_Line__c line, DMT_Line__c oldLine, Schema.SObjectField startField, Schema.SObjectField endField, Schema.SObjectField termField) {
+        Date startDate = (Date) line.get(startField);
+        if (startDate == null) {
+            return;
+        }
 
-    //     }
-    //     update recordsToUpdate;
-    // }
+        Object termValue = line.get(termField);
+        Boolean termChanged = oldLine == null || line.get(termField) != oldLine.get(termField);
+
+        if (termValue != null && (termChanged || line.get(endField) == null)) {
+            Integer months = ((Decimal) termValue).intValue();
+            line.put(endField, startDate.addMonths(months));
+        } else if (termValue == null) {
+            Date endDate = (Date) line.get(endField);
+            if (endDate != null) {
+                line.put(termField, wholeMonthsBetween(startDate, endDate));
+            }
+        }
+    }
+
+    // Whole calendar months between two dates, matching the dmt_lineInfo LWC's
+    // _wholeMonthsBetween (ignores leftover days unless the end day-of-month falls before the
+    // start day-of-month, in which case the partial trailing month doesn't count).
+    private Integer wholeMonthsBetween(Date startDate, Date endDate) {
+        Integer months = (endDate.year() - startDate.year()) * 12 + (endDate.month() - startDate.month());
+        if (endDate.day() < startDate.day()) {
+            months -= 1;
+        }
+        return months;
+    }
 
     public void closeFather(List<DMT_Line__c> newLines, Map<Id, DMT_Line__c> oldMapLines){
         // Map para almacenar las líneas padre únicas
@@ -784,19 +833,27 @@ public with sharing class DMT_Line_Helper{
         // Primero, recolectamos todos los IDs de los padres que necesitamos
         Set<Id> parentIds = new Set<Id>();
 
-        //Added to close the lines that are TRSR and active at the same time as the one that triggers
-        Set<String> customersSet = new Set<String>(); // Stores unique customer Ids of the initial line
+        // Added to close the Treasury lines that are active at the same time
+        // as the line that triggers the process.
+        Set<String> customersSet = new Set<String>();
         Set<Id> triggeringLineIds = new Map<Id, DMT_Line__c>(newLines).keySet();
-        List<Custom_Association_Client__c> customAssociationsClientFromLine = DMT_Passport_Selector.getCustomAssociationByList(triggeringLineIds);
-        
-        // CPU Optimization: Map associations by Line_Id__c to avoid nested O(N*M) loop
-        Map<String, List<String>> mappedClientCodes = new Map<String, List<String>>();
-        for (Custom_Association_Client__c caclient : customAssociationsClientFromLine) {
-            if (caclient.Alpha_Code_Client__c != null && caclient.gf_customer_group_id__c != null) {
-                if (!mappedClientCodes.containsKey(caclient.gf_customer_group_id__c)) {
-                    mappedClientCodes.put(caclient.gf_customer_group_id__c, new List<String>());
+
+        List<Custom_Association_Client__c> customAssociationsClientFromLine =
+            DMT_Passport_Selector.getCustomAssociationByList(triggeringLineIds);
+
+        // Map customer IDs by the Salesforce Id of the triggering line.
+        Map<Id, List<String>> mappedCustomerIdsByLine = new Map<Id, List<String>>();
+
+        for (Custom_Association_Client__c caClient : customAssociationsClientFromLine) {
+            Id relatedLineId = caClient.Custom_Association__r == null
+                ? null
+                : caClient.Custom_Association__r.DMT_Line__c;
+
+            if (relatedLineId != null && String.isNotBlank(caClient.g_customer_id__c)) {
+                if (!mappedCustomerIdsByLine.containsKey(relatedLineId)) {
+                    mappedCustomerIdsByLine.put(relatedLineId, new List<String>());
                 }
-                mappedClientCodes.get(caclient.gf_customer_group_id__c).add(caclient.Alpha_Code_Client__c);
+                mappedCustomerIdsByLine.get(relatedLineId).add(caClient.g_customer_id__c);
             }
         }
 
@@ -804,14 +861,17 @@ public with sharing class DMT_Line_Helper{
             if (childLine.DMT_Parent_Line__c != null) {
                 parentIds.add(childLine.DMT_Parent_Line__c);
             }
-            if (childLine?.Product__c == 'Treasury Line') {
-                if (childLine?.Client_Type__c == 'Custom') {
-                    // Fast O(1) memory lookup
-                    if (childLine.Line_Id__c != null && mappedClientCodes.containsKey(childLine.Line_Id__c)) {
-                        customersSet.addAll(mappedClientCodes.get(childLine.Line_Id__c));
+
+            if (childLine.Product__c == 'Treasury Line') {
+                if (childLine.Client_Type__c == 'Custom') {
+                    if (mappedCustomerIdsByLine.containsKey(childLine.Id)) {
+                        customersSet.addAll(mappedCustomerIdsByLine.get(childLine.Id));
                     }
-                } else if (childLine?.Client_Type__c == 'Customer' || childLine?.Client_Type__c == 'Group') {
-                    if (childLine.Client_Code__c != null) {
+                } else if (
+                    childLine.Client_Type__c == 'Customer' ||
+                    childLine.Client_Type__c == 'Group'
+                ) {
+                    if (String.isNotBlank(childLine.Client_Code__c)) {
                         customersSet.add(childLine.Client_Code__c);
                     }
                 }
@@ -849,19 +909,50 @@ public with sharing class DMT_Line_Helper{
             }
         }
         List<String> customerList = new List<String>(customersSet);
-        List<DMT_Line__c> treasuryLinetoExpired = DMT_View_Selector.getRelatedTRSRLines(customerList, newLines[0].Start_Date__c, newLines[0].End_Date__c, String.valueOf(newLines[0].Id));
-        if (!treasuryLinetoExpired.isEmpty() && newLines[0].DMT_line_template_type__c == 'TL' && newLines[0].Status__c == DMT_Constants.CLOSED && newLines[0].Closed__c == DMT_Constants.WON && newLines[0].Status__c != oldMapLines.get(newLines[0].Id).Status__c) {
-            for( DMT_Line__c lineToExpire : treasuryLinetoExpired ) {
-                if( newLines[0].DMT_Parent_Line__c != lineToExpire.Id ) {
-                    Date treasurystartDate = newLines[0].Start_Date__c?.addDays(-1) <= lineToExpire?.Start_Date__c ? newLines[0].Start_Date__c?.addDays(-2) : lineToExpire?.Start_Date__c;
+
+        DMT_Line__c triggeringLine = newLines[0];
+        DMT_Line__c oldTriggeringLine = oldMapLines.get(triggeringLine.Id);
+
+        Boolean becameClosedWon =
+            triggeringLine.DMT_line_template_type__c == 'TL' &&
+            triggeringLine.Status__c == DMT_Constants.CLOSED &&
+            triggeringLine.Closed__c == DMT_Constants.WON &&
+            (
+                oldTriggeringLine == null ||
+                oldTriggeringLine.Status__c != DMT_Constants.CLOSED ||
+                oldTriggeringLine.Closed__c != DMT_Constants.WON
+            );
+
+            List<DMT_Line__c> treasuryLinesToExpire = new List<DMT_Line__c>();
+
+            if (
+                becameClosedWon &&
+                !customerList.isEmpty() &&
+                triggeringLine.Start_Date__c != null &&
+                triggeringLine.End_Date__c != null
+            ) {
+                treasuryLinesToExpire = DMT_View_Selector.getRelatedTRSRLines(
+                    customerList,
+                    triggeringLine.Start_Date__c,
+                    triggeringLine.End_Date__c,
+                    String.valueOf(triggeringLine.Id)
+                );
+            }
+
+            for (DMT_Line__c lineToExpire : treasuryLinesToExpire) {
+                if (triggeringLine.DMT_Parent_Line__c != lineToExpire.Id) {
+                    Date treasuryStartDate =
+                        triggeringLine.Start_Date__c.addDays(-1) <= lineToExpire.Start_Date__c
+                            ? triggeringLine.Start_Date__c.addDays(-2)
+                            : lineToExpire.Start_Date__c;
+
                     parentToClosed.add(new DMT_Line__c(
-                    Id = lineToExpire.Id,
-                    Start_Date__c = treasurystartDate,
-                    End_Date__c = newLines[0].Start_Date__c?.addDays(-1)
+                        Id = lineToExpire.Id,
+                        Start_Date__c = treasuryStartDate,
+                        End_Date__c = triggeringLine.Start_Date__c.addDays(-1)
                     ));
                 }
             }
-        }
 
         if (!parentToClosed.isEmpty()){
             // Use partial DML so a transient row lock on one record does not roll back all date updates.
@@ -972,7 +1063,7 @@ public with sharing class DMT_Line_Helper{
                     singularRiskList.add(riskLT);
                 } else if (!riskLT.DMT_Singular__c && riskLT.DMT_Risk_Type__c == DMT_Constants.RSK_DERIVATIVES){
                     riskList.add(riskLT);
-                } else if (riskLT.DMT_Risk_Type__c == DMT_Constants.RSK_DEPOS || riskLT.DMT_Risk_Type__c == DMT_Constants.RSK_EQUITY){
+                } else if (riskLT.DMT_Risk_Type__c == DMT_Constants.RSK_DEPOS || riskLT.DMT_Risk_Type__c == DMT_Constants.RSK_EQUITY || riskLT.DMT_Risk_Type__c == DMT_Constants.RSK_REPOS){
                     nonDeriRisk.add(riskLT);
                 }
             }
@@ -1034,7 +1125,7 @@ public with sharing class DMT_Line_Helper{
             newLines[0].DMT_Approval_Validation__c = DMT_Case_Steps_Controller.checkApprovalValidation(newLines[0].Id);
 
             if (newLines[0].DMT_Approval_Validation__c && newLines[0].Status__c == DMT_Constants.APPROVAL && newLines[0].dmt_line_template_type__c != 'OP'){
-                newLines[0].Status__c = DMT_Constants.READYTOCLOSE;
+                newLines[0].Status__c = DMT_Constants.READYTOCLOSE;                
             }
         }
     }
@@ -1153,6 +1244,215 @@ public with sharing class DMT_Line_Helper{
     }
 
     /**
+     * CIBGLOBALD-4477 - Single-record overload of enqueueAutoWorkflowOnStatusChange, for callers that only have one Line.
+     */
+    public void enqueueAutoWorkflowOnStatusChange(DMT_Line__c newLine, DMT_Line__c oldLine) {
+        if (newLine == null || oldLine == null) {
+            return;
+        }
+        enqueueAutoWorkflowOnStatusChange(new List<DMT_Line__c>{ newLine }, new Map<Id, DMT_Line__c>{ newLine.Id => oldLine });
+    }
+
+    /**
+     * CIBGLOBALD-4477 - AFTER UPDATE. When a Line moves into Proposal, Approval or Ready to close, starts the approval Case of the
+     * Passport feature flagged for automatic start (see DMT_Case_Steps_Controller.enqueueAutoWorkflowCases).
+     *
+     * Collects every qualifying Line and hands them over in ONE call, so the Passport and Case lookups are
+     * done once for the whole save. The Case creation is deferred to DMT_AsyncOrchestrator (one payload per
+     * Line, each in its own transaction), so DMT_AsyncOrchestrator.flush() must run at the end of the trigger.
+     *
+     * Independent from restartApprovalTasksOnLineResubmission: that one reopens tasks of Cases that already
+     * exist, this one only starts Cases for features that have none yet.
+     */
+    public void enqueueAutoWorkflowOnStatusChange(List<DMT_Line__c> newLines, Map<Id, DMT_Line__c> oldMapLines) {
+        Map<Id, String> stageByLineId = new Map<Id, String>();
+        for (DMT_Line__c line : newLines) {
+            DMT_Line__c oldLine = oldMapLines.get(line.Id);
+            Boolean isSupportedStage = line.Status__c == DMT_Constants.PROPOSAL
+                || line.Status__c == DMT_Constants.APPROVAL
+                || line.Status__c == DMT_Constants.READYTOCLOSE;
+            if (oldLine != null && line.Status__c != oldLine.Status__c && isSupportedStage) {
+                stageByLineId.put(line.Id, line.Status__c);
+            }
+        }
+        if (!stageByLineId.isEmpty()) {
+            DMT_Case_Steps_Controller.enqueueAutoWorkflowCases(stageByLineId, false);
+        }
+    }
+
+    /**
+     * CIBGLOBALD-4117: AFTER UPDATE. Restarts a Line's open approval Tasks when a watched field changed since the
+     * Task was last frozen, so the approver reviews the new value.
+     *
+     * Keeps only what is specific to DMT_Line__c - which Lines qualify and which Cases are theirs -
+     * and hands the rest to DMT_ApprovalChangeStep_Helper.restartStaleApprovalTasks(), shared with
+     * DMT_OpportunityTriggerHandler.
+     *
+     * Runs from the trigger rather than the path component, so it fires on any qualifying save.
+     * Queries: 1 Case + 2 in the shared gate + 1 per child section.
+     */
+    public void restartApprovalTasksOnLineResubmission(List<DMT_Line__c> newLines, Map<Id, DMT_Line__c> oldLinesMap) {
+        try {
+            Set<Id> qualifyingLineIds = getLinesQualifyingForResubmissionCheck(newLines, oldLinesMap);
+            if (qualifyingLineIds.isEmpty()) {
+                return;
+            }
+
+            Map<Id, Id> caseIdToLineId = getCaseIdToLineId(qualifyingLineIds);
+            if (caseIdToLineId.isEmpty()) {
+                return;
+            }
+
+            // Only the qualifying Lines, so the comparator never queries child rows for Lines this
+            // save didn't touch.
+            Map<Id, SObject> qualifyingLines = new Map<Id, SObject>();
+            for (DMT_Line__c line : newLines) {
+                if (qualifyingLineIds.contains(line.Id)) {
+                    qualifyingLines.put(line.Id, line);
+                }
+            }
+
+            DMT_ApprovalChangeStep_Helper.restartStaleApprovalTasks(
+                caseIdToLineId,
+                newLines,
+                'line',
+                DMT_SnapshotChildComparator.forRecords(qualifyingLines),
+                'DMT_Line_Helper'
+            );
+        } catch (Exception e) {
+            logRestartFailure(e, 'DMT_Line__c', 'restartApprovalTasksOnLineResubmission');
+        }
+    }
+
+    /**
+     * CIBGLOBALD-4117: A Line qualifies when it leaves Draft in this save AND was already in Draft with
+     * DMT_DateToProposal__c set - i.e. a genuine resubmission after Return to Draft, not a
+     * first-time submission.
+     *
+     * Reads DMT_DateToProposal__c from oldLinesMap on purpose: Trigger.old always holds the
+     * pre-save value, so this stays correct regardless of anything else stamping that field in the
+     * same transaction.
+     *
+     * Sanction is excluded, matching enqueueRecalculateApprovals - it has never been part of this
+     * mechanism.
+     */
+    private static Set<Id> getLinesQualifyingForResubmissionCheck(List<DMT_Line__c> newLines, Map<Id, DMT_Line__c> oldLinesMap) {
+        Id treasurySettlementRTId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('TreasurySettlement')?.getRecordTypeId();
+        Id otherProductsRTId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('OtherProducts')?.getRecordTypeId();
+
+        Set<Id> qualifyingLineIds = new Set<Id>();
+        for (DMT_Line__c line : newLines) {
+            if (line.RecordTypeId != treasurySettlementRTId && line.RecordTypeId != otherProductsRTId) {
+                continue;
+            }
+            DMT_Line__c oldLine = oldLinesMap.get(line.Id);
+            if (oldLine.Status__c == DMT_Constants.DRAFT && line.Status__c != DMT_Constants.DRAFT && oldLine.DMT_DateToProposal__c != null) {
+                qualifyingLineIds.add(line.Id);
+            }
+        }
+        return qualifyingLineIds;
+    }
+
+    private static Map<Id, Id> getCaseIdToLineId(Set<Id> lineIds) {
+        Map<Id, Id> caseIdToLineId = new Map<Id, Id>();
+        for (Case c : [SELECT Id, DMT_Line__c FROM Case WHERE DMT_Line__c IN :lineIds AND IsDeleted = false]) {
+            caseIdToLineId.put(c.Id, c.DMT_Line__c);
+        }
+        return caseIdToLineId;
+    }
+
+    private static void logRestartFailure(Exception e, String objectName, String methodName) {
+        DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
+            e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
+            'DMT_Line_Helper', methodName, 'DMT', objectName
+        ));
+    }
+
+    /**
+     * @description Called in AFTER UPDATE trigger.
+     * Automates the "Recalculate Approvals" callout (consumptionsReassign) for TreasurySettlement
+     * and OtherProducts lines that just transitioned to Ready to Close or Closed Won, reusing the
+     * same payload/dispatcher/callout classes as the Sanction pipeline, without reusing that
+     * pipeline itself (avoids coupling to its unrelated RiskPositionLine first-callout gate).
+     * Unlike Sanction lines, Treasury/OtherProducts lines have no related Opportunity
+     * (DMT_Opportunity__c is never populated for them), so - confirmed against real org data -
+     * Line_Id__c is not a valid "opportunityId" for this service; only groupId is sent, matching
+     * the manual "Recalculate Approvals" button's payload shape (DMT_Utils.postConsumptionReassign).
+     */
+    public void enqueueRecalculateApprovals(List<DMT_Line__c> newLines, Map<Id, DMT_Line__c> oldLinesMap) {
+        System.debug('entering enqueueRecalculateApprovals');
+
+        Id treasurySettlementRTId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('TreasurySettlement')?.getRecordTypeId();
+        Id otherProductsRTId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('OtherProducts')?.getRecordTypeId();
+
+        Set<Id> qualifyingLineIds = new Set<Id>();
+
+        for (DMT_Line__c line : newLines) {
+            if (line.RecordTypeId != treasurySettlementRTId && line.RecordTypeId != otherProductsRTId) {
+                continue;
+            }
+
+            DMT_Line__c oldLine = oldLinesMap.get(line.Id);
+            if (oldLine == null) {
+                continue;
+            }
+
+            Boolean justReadyToClose = line.Status__c == DMT_Constants.READYTOCLOSE && oldLine.Status__c != DMT_Constants.READYTOCLOSE;
+            Boolean justClosedWon = line.Status__c == DMT_Constants.CLOSED && line.Closed__c == DMT_Constants.WON
+                && !(oldLine.Status__c == DMT_Constants.CLOSED && oldLine.Closed__c == DMT_Constants.WON);
+
+            if (justReadyToClose || justClosedWon) {
+                qualifyingLineIds.add(line.Id);
+            }
+        }
+
+        if (qualifyingLineIds.isEmpty()) {
+            return;
+        }
+
+        Map<Id, DMT_Line__c> groupInfoByLineId = new Map<Id, DMT_Line__c>([
+            SELECT Id, Client_Type__c, Client__r.DES_Main_Parent__r.DES_Group_Code__c, Client__r.DES_group_Code__c
+            FROM DMT_Line__c
+            WHERE Id IN :qualifyingLineIds
+        ]);
+
+        Map<Id, DMT_Line__c> newLinesById = new Map<Id, DMT_Line__c>(newLines);
+
+        // Same "logged-in user first, fall back to the line's stored corporate id" pattern
+        // already used by createLineVersionSnapshot (line ~938-944): the running user in an
+        // automated/async context sometimes has no ID_User__c, so fall back to the line's own.
+        preloadUsersByLines(newLines);
+        User loggedInUser = getCachedUserById(UserInfo.getUserId());
+        String loggedInUserExtId = loggedInUser != null ? loggedInUser.ID_User__c : null;
+
+        for (Id lineId : qualifyingLineIds) {
+            DMT_Line__c line = newLinesById.get(lineId);
+            DMT_Line__c groupInfo = groupInfoByLineId.get(lineId);
+
+            String groupId = (groupInfo != null)
+                ? (line.Client_Type__c == 'Customer'
+                    ? groupInfo.Client__r?.DES_Main_Parent__r?.DES_Group_Code__c
+                    : groupInfo.Client__r?.DES_group_Code__c)
+                : null;
+
+            if (String.isBlank(groupId)) {
+                DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
+                    'Missing Group ID: cannot enqueue Recalculate Approvals for line ' + lineId,
+                    null, null, null,
+                    'DMT_Line_Helper', 'enqueueRecalculateApprovals', 'DMT', 'DMT_Line__c'
+                ));
+                continue;
+            }
+
+            Map<String, Object> inputMap = new Map<String, Object>();
+            inputMap.put('groupId', groupId);
+
+            String corporateUserId = !String.isBlank(loggedInUserExtId) ? loggedInUserExtId : line.DMT_ID_User__c;
+            DMT_AsyncOrchestrator.enqueue(new DMT_ConsumptionReassignPayload(inputMap, corporateUserId));
+        }
+    }
+    
+    /**
      * Retries date updates for DMT_Line__c records that failed with UNABLE_TO_LOCK_ROW
      * during closeFather. Runs asynchronously after the triggering transaction commits.
      */
@@ -1189,23 +1489,55 @@ public with sharing class DMT_Line_Helper{
      
     }
 
-    //this is not a trigger helper method. its referenced in other classes! should not be deleted.
-    public Map<Id, USer> getCorporateUsersOwnLines(Map<ID, DMT_Line__c> mapnewLines){
+    public void setDestinationSystemOnClosedWon(List<DMT_Line__c> newLines, Map<Id, DMT_Line__c> oldLinesMap){
 
-        Set<Id> setOwnerLines = new Set<Id>();
+        Map<String, DMT_Destination_Mapping__mdt> mappingsByRecordType = getCachedDestinationMappings();
 
-        for (DMT_Line__c line : mapnewLines.values()){
-            if (line.OwnerId != null){
-                setOwnerLines.add(line.OwnerId);
-            }
+
+        if (mappingsByRecordType.isEmpty()){
+            System.debug('### DEST salida: CMDT vacío');
+            return;
         }
 
-        Map<Id, User> mapCorporateUser = new Map<Id, User>([SELECT Id, ID_User__c
-                                                            from User
-                                                            where Id = :setOwnerLines]);
+        for (DMT_Line__c line : newLines){
+            DMT_Line__c oldLine = oldLinesMap.get(line.Id);
 
-        return mapCorporateUser;
+            Boolean isClosedWon = line.Status__c == 'Closed' && line.Closed__c == 'Won'
+                                  && !(oldLine.Status__c == 'Closed' && oldLine.Closed__c == 'Won');
+
+            if (!isClosedWon){
+                continue;
+            }
+
+            DMT_Destination_Mapping__mdt mapping = mappingsByRecordType.get(line.DMT_RecordTypeName__c);
+
+            // Record types not parametrized yet are simply skipped
+            if (mapping == null){
+                continue;
+            }
+
+            line.DMT_Destination_Label__c  = mapping.DMT_Booking_System_Code__c;
+            line.DMT_Destination_Status__c = mapping.DMT_Initial_Status__c;
+            line.DMT_Destination_Light__c  = DMT_Line_Status_Process_Helper.LIGHT_YELLOW; 
+            line.DMT_Destination_Error__c  = null;                                          
+            line.DMT_Destination_Date__c   = null;                                              
+        }
     }
+
+    private static Map<String, DMT_Destination_Mapping__mdt> cachedDestinationMappings;
+
+    private static Map<String, DMT_Destination_Mapping__mdt> getCachedDestinationMappings(){
+        if (cachedDestinationMappings == null){
+            cachedDestinationMappings = new Map<String, DMT_Destination_Mapping__mdt>();
+            for (DMT_Destination_Mapping__mdt mapping : DMT_Destination_Mapping__mdt.getAll().values()){
+                if (String.isNotBlank(mapping.DMT_RecordTypeName__c)){
+                    cachedDestinationMappings.put(mapping.DMT_RecordTypeName__c, mapping);
+                }
+            }
+        }
+        return cachedDestinationMappings;
+    }
+    
 
     /**
      * Valida la continuidad e integridad de los registros DMT_Risk_Line_Term__c
@@ -1322,5 +1654,153 @@ public with sharing class DMT_Line_Helper{
 
         return null;
     }
+
+    /**
+     * @description Helper method que retorna IDs de líneas con Prospect en cliente o multiholder
+     * Cliente directo: Busca Prospect_Group O Prospect_Subsidiary
+     * Multiholder: Solo busca Prospect_Subsidiary
+     * 
+     * @param lineIds Set de IDs de líneas a validar
+     * @param clientIds Set de IDs de clientes directos de las líneas
+     * @return Set<Id> IDs de líneas que tienen Prospect (Prospect_Group o Prospect_Subsidiary)
+     */
+    public Set<Id> getLineIdsWithProspectInClientOrMultiholder(Set<Id> lineIds, Set<Id> clientIds) {
+        Id prospectGroupRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Group').getRecordTypeId();
+        Id prospectSubsidiaryRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Subsidiary').getRecordTypeId();        
+        Set<Id> linesWithProspect = new Set<Id>();
+        
+        if (lineIds == null || lineIds.isEmpty() || clientIds == null || clientIds.isEmpty()) {
+            return linesWithProspect;
+        }
+        
+        // Trae todas las líneas con cliente directo y custom associations
+        List<DMT_Line__c> lines = [SELECT Id, 
+                                        Client__c,
+                                        Client__r.RecordTypeId,
+                                        (SELECT Id, 
+                                                (SELECT Id, Alpha_Code_Client__c 
+                                                    FROM Custom_Associations_Clients__r 
+                                                    WHERE Alpha_Code_Client__c != null)
+                                            FROM Custom_Associations__r)
+                                    FROM DMT_Line__c
+                                    WHERE Id IN :lineIds
+                                    WITH SYSTEM_MODE
+                                ];
+        
+        // PASO 1: Verificar cliente directo (Prospect_Group O Prospect_Subsidiary)
+        for (DMT_Line__c line : lines) {
+            if (line.Client__r != null && (line.Client__r.RecordTypeId == prospectGroupRtId || line.Client__r.RecordTypeId == prospectSubsidiaryRtId)) {
+                linesWithProspect.add(line.Id);
+            }
+        }
+        
+        // PASO 2: Verificar multiholder (solo en líneas que NO tengan Prospect directo)
+        Set<String> alphaCodes = new Set<String>();
+        Map<String, Set<Id>> alphaCodeToLineIds = new Map<String, Set<Id>>();
+        
+        for (DMT_Line__c line : lines) {
+            // Saltar líneas que ya tienen Prospect directo
+            if (linesWithProspect.contains(line.Id)) {
+                continue;
+            }
+            
+            if (line.Custom_Associations__r != null && !line.Custom_Associations__r.isEmpty()) {
+                for (Custom_Association__c ca : line.Custom_Associations__r) {
+                    if (ca.Custom_Associations_Clients__r != null && !ca.Custom_Associations_Clients__r.isEmpty()) {
+                        for (Custom_Association_Client__c cac : ca.Custom_Associations_Clients__r) {
+                            alphaCodes.add(cac.Alpha_Code_Client__c);
+                            
+                            if (!alphaCodeToLineIds.containsKey(cac.Alpha_Code_Client__c)) {
+                                alphaCodeToLineIds.put(cac.Alpha_Code_Client__c, new Set<Id>());
+                            }
+                            alphaCodeToLineIds.get(cac.Alpha_Code_Client__c).add(line.Id);
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (!alphaCodes.isEmpty()) {
+            List<Account> prospectAccounts = [SELECT g_customer_id__c FROM Account WHERE g_customer_id__c IN :alphaCodes AND RecordTypeId = :prospectSubsidiaryRtId WITH SYSTEM_MODE];
+            
+            // Marcar líneas que tienen Prospect en multiholder
+            for (Account acc : prospectAccounts) {
+                if (alphaCodeToLineIds.containsKey(acc.g_customer_id__c)) {
+                    linesWithProspect.addAll(alphaCodeToLineIds.get(acc.g_customer_id__c));
+                }
+            }
+        }        
+        return linesWithProspect;
+    }
+
+    /**
+     * @description Valida si líneas tienen Prospect en cliente directo o multiholder (para LWC)
+     * @param lineIds IDs de líneas a validar
+     * @return Lista de boolean (true si tiene Prospect, false si no)
+     */
+    @AuraEnabled(cacheable=false)
+    public static List<Boolean> checkProspectInLine(List<Id> lineIds) {
+        List<Boolean> results = new List<Boolean>();
+        Set<Id> clientIds = new Set<Id>();
+
+        if (lineIds == null || lineIds.isEmpty()) {
+            results.add(false);
+            return results;
+        }
+        
+        for (DMT_Line__c line : [SELECT Id, Client__c FROM DMT_Line__c WHERE Id IN :lineIds]) {
+            if (line.Client__c != null) {
+                clientIds.add(line.Client__c);
+            }
+        }
+        
+        DMT_Line_Helper helper = new DMT_Line_Helper();
+        Set<Id> linesWithProspect = helper.getLineIdsWithProspectInClientOrMultiholder(new Set<Id>(lineIds), clientIds);
+        
+        for (Id lineId : lineIds) {
+            results.add(linesWithProspect.contains(lineId));
+        }
+        return results;
+    }
+
+    /**
+     * @description Bloquea el avance a "Closed Won" de líneas NO-SANCTION que tengan Prospect en cliente o multiholder
+     */
+    public void blockReadyToCloseWithProspectInMultiholder(List<DMT_Line__c> triggerNew, Map<Id, DMT_Line__c> triggerOldMap) {
+        
+        //Filtrar líneas NO-SANCTION cambiando a "Closed Won"
+        Set<Id> lineIdsToValidate = new Set<Id>();
+        Set<Id> clientIds = new Set<Id>();
+        Map<Id, DMT_Line__c> linesToValidate = new Map<Id, DMT_Line__c>();
+        
+        for (DMT_Line__c line : triggerNew) {
+            DMT_Line__c oldLine = triggerOldMap.get(line.Id);
+            
+            if (line.Status__c == DMT_Constants.CLOSED && 
+                line.Closed__c == DMT_Constants.WON &&
+                (oldLine.Status__c != DMT_Constants.CLOSED || oldLine.Closed__c != DMT_Constants.WON) && 
+                line.Client__c != null) {                
+                    lineIdsToValidate.add(line.Id);
+                    clientIds.add(line.Client__c);
+                    linesToValidate.put(line.Id, line);
+            }
+        }
+        
+        if (lineIdsToValidate.isEmpty()) {
+            return;
+        }
+        
+        //Usar el helper para obtener líneas con Prospect
+        Set<Id> linesWithProspect = getLineIdsWithProspectInClientOrMultiholder(lineIdsToValidate, clientIds);
+        
+        //Bloquear líneas que tengan Prospect
+        for (Id lineId : linesWithProspect) {
+            if (linesToValidate.containsKey(lineId)) {
+                DMT_Line__c line = linesToValidate.get(lineId);
+                line.addError('You cannot close a Line if the associated client is a &apos;Prospect&apos;. Closing a Line implies that the contract is signed and the client must be &apos;Onboarded&apos; (or &apos;Active&apos;).');
+            }
+        }
+    }
+    
 
 }

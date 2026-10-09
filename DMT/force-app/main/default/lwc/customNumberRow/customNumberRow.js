@@ -14,6 +14,7 @@ export default class CustomNumberRow extends LightningElement {
     @api disabledAttr;
     @api readonlyAttr;
     @api validateNegative = false;
+    @api fieldlabel;
 
     _initialValue;
     _debounceTimer;
@@ -69,6 +70,9 @@ export default class CustomNumberRow extends LightningElement {
             this.applyValidation(parsed);
         }
 
+        const input = this.template.querySelector('lightning-input');
+        const isFieldValid = input ? input.checkValidity() : true;
+
         if (String(parsed) !== String(this._initialValue)) {
             this.numberValue = parsed;
             this._initialValue = parsed;
@@ -78,7 +82,13 @@ export default class CustomNumberRow extends LightningElement {
                 bubbles: true,
                 cancelable: true,
                 detail: {
-                    data: { context: this.context, value: parsed, fieldname: this.fieldname }
+                    data: { 
+                        context: this.context, 
+                        value: parsed, 
+                        fieldname: this.fieldname,
+                        fieldlabel: this.fieldlabel, 
+                        isFieldValid 
+                    }
                 }
             }));
         }

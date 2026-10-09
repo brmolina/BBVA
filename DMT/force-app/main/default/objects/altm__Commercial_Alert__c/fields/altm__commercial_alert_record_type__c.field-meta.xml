@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>altm__commercial_alert_record_type__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Type (not visible)</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Commercial Task</fullName>
+                <default>false</default>
+                <label>Commercial Task</label>
+            </value>
+            <value>
+                <fullName>Commercial Task IBF</fullName>
+                <default>false</default>
+                <label>Commercial Task IBF</label>
+            </value>
+            <value>
+                <fullName>Commercial Task GM</fullName>
+                <default>false</default>
+                <label>Commercial Task GM</label>
+            </value>
+            <value>
+                <fullName>Commercial Task GTB</fullName>
+                <default>false</default>
+                <label>Commercial Task GTB</label>
+            </value>
+            <value>
+                <fullName>Commercial Task GCC</fullName>
+                <default>false</default>
+                <label>Commercial Task GCC</label>
+            </value>
+            <value>
+                <fullName>Commercial Task FX</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Commercial Task FX</label>
+            </value>
+            <value>
+                <fullName>Notification</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Notification</label>
+            </value>
+            <value>
+                <fullName>Sample</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sample</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

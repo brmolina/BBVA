@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_cust_economic_activity_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Description of the costomer activity.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Custom Economic Activity Desc</label>
+    <length>1500</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>2</visibleLines>
+</CustomField>

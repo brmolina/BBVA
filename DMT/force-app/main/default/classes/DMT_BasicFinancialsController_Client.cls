@@ -1,6 +1,6 @@
 public with sharing class DMT_BasicFinancialsController_Client {
  @AuraEnabled(cacheable=false)
-    public static List<Account> getFinancials(String recordId) {
+    public static List<DMT_Client_Financials__c> getFinancials(String recordId) {
             return [
                     SELECT
                         Id,
@@ -39,8 +39,8 @@ public with sharing class DMT_BasicFinancialsController_Client {
                         Net_Debt_EBITDA_Next_Year_number__c,
                         Net_Debt_EBITDA_Next_Year_1_number__c,
                         Net_Debt_EBITDA_Next_Year_2_number__c
-                    FROM Account 
-                    WHERE Id =: recordId
+                    FROM DMT_Client_Financials__c
+                    WHERE Account__c =: recordId
                     WITH USER_MODE
                     ];
     }

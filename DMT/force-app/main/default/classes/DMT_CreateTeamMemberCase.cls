@@ -22,17 +22,28 @@ public without sharing class DMT_CreateTeamMemberCase implements Queueable {
             return;
         }
 
+        // Si ya estamos en un contexto asíncrono (p.ej. este Flow disparado desde el Case
+        // creado dentro de DMT_Case_Steps_Controller.StartCaseQueueable), no podemos encolar
+        // otro Queueable: el límite de jobs anidados en contexto async es 1, y ya lo consume
+        // el Queueable que nos ha traído hasta aquí. Ejecutamos la lógica de forma síncrona
+        // en su lugar, ya que processCase no hace callouts.
+        Boolean isAlreadyAsync = System.isQueueable() || System.isBatch() || System.isFuture();
+
         for (InputWrapper input : inputIds) {
             if (input == null || input.caseId == null) {
                 continue;
             }
 
-            System.enqueueJob(
-                new DMT_CreateTeamMemberCase(
-                    input.caseId,
-                    input.sanctionEdit == true
-                )
-            );
+            if (isAlreadyAsync) {
+                processCase(input.caseId, input.sanctionEdit == true);
+            } else {
+                System.enqueueJob(
+                    new DMT_CreateTeamMemberCase(
+                        input.caseId,
+                        input.sanctionEdit == true
+                    )
+                );
+            }
         }
     }
 

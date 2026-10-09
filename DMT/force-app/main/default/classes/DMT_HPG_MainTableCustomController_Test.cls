@@ -26,8 +26,6 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
     config.hpgr__No_Risk_Compacted__c = 'ES';
     config.hpgr__Geography__c = 'ESP';
     insert config;
-    TestFactory.createLocalClient();
-
     DMT_Test_DataFactory.generateOpportunity();
 
     List<iaso__GBL_Rest_Services_Url__c> settingsToInsert = new List<iaso__GBL_Rest_Services_Url__c>();
@@ -77,12 +75,13 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
   }
   @isTest
   static void getClientIdTest2() {
-    final Local_Client__c localClient = [SELECT Id, Cib_Client__c, Alpha_code__c FROM Local_Client__c LIMIT 1 ];
+        Account clientAccount = new Account(Name = 'Test Client', g_customer_id__c = 'ES0182000000001');
+        insert clientAccount;
     Test.setMock(HttpCalloutMock.class, new DMT_Integration_MockGenerator());
     Test.startTest();
-      String alphaCode = DMT_HPG_MainTableCustomController.getClientId(localClient.Cib_Client__c);
+            String alphaCode = DMT_HPG_MainTableCustomController.getClientId(clientAccount.Id);
       Test.stopTest();
-      System.assertEquals(localClient.Alpha_code__c, alphaCode, 'getClientIdTest2 - Not passed - alphaCode');
+            System.assertEquals(clientAccount.g_customer_id__c, alphaCode, 'getClientIdTest2 - Not passed - alphaCode');
   }
   @isTest
   static void fetchUsedTablesDataFromServiceTest() {
@@ -172,7 +171,6 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
 
   @isTest
     static void saveOpportunityClientsTest() {
-
         Account acc = new Account(
             Name = 'Test Acc',
             g_customer_id__c = 'ALPHA1'
@@ -196,7 +194,7 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
         Custom_Association_Opportunity__c assoc =
             new Custom_Association_Opportunity__c(
                 Opportunity__c = opp.Id,
-                g_customer_id__c = 'GROUP_OLD',
+                g_customer_id__c = 'NEW_ALPHA',
                 Group__c = groupAcc.Id,
                 gf_customer_group_id__c = 'OLD_GROUP'
             );
@@ -209,11 +207,21 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
             );
         insert existing;
 
+        // Registro existente en el nuevo objeto multiholder, sin g_entific_id__c
+        // (simula un registro creado antes del backfill) para probar la actualización.
+        DMT_Custom_Association_ClientOpportunity__c existingMultiholder =
+            new DMT_Custom_Association_ClientOpportunity__c(
+                DMT_Custom_Association_Opportunity__c = assoc.Id,
+                DMT_g_customer_id__c = 'NEW_ALPHA'
+            );
+        insert existingMultiholder;
+
         Map<String,Object> row = new Map<String,Object>{
             'customerId' => 'NEW_ALPHA',
             'assetAllocationActvyType' => 'ACT',
             'assetAllocationSectorType' => 'SEC',
-            'assetAllocationSubSecType' => 'SUB'
+            'assetAllocationSubSecType' => 'SUB',
+            'countryIfoId' => 'ES'
         };
 
         List<Object> selectedClients = new List<Object>{ row };
@@ -228,14 +236,23 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
         Test.stopTest();
 
         List<DMT_Opportunity_Client__c> records =
-            [SELECT Alpha_Code_Client__c, Counterpart__c
+            [SELECT Alpha_Code_Client__c
             FROM DMT_Opportunity_Client__c
             WHERE DMT_MDE_Opportunity__c = :opp.Id];
 
         System.assertEquals(1, records.size(), 'The result is 1');
         System.assertEquals('NEW_ALPHA', records[0].Alpha_Code_Client__c, 'The result is NEW_ALPHA');
 
-        System.assertEquals('Corporates', records[0].Counterpart__c, 'The result is Corporates');
+        // Verifica el backfill sobre el registro existente de DMT_Custom_Association_ClientOpportunity__c
+        List<DMT_Custom_Association_ClientOpportunity__c> multiholders = [
+            SELECT DMT_g_customer_id__c, DMT_gf_customer_group_id__c, DMT_g_entific_id__c
+            FROM DMT_Custom_Association_ClientOpportunity__c
+            WHERE DMT_Custom_Association_Opportunity__c = :assoc.Id
+        ];
+        System.assertEquals(1, multiholders.size(), 'No debe crearse un duplicado, solo el registro existente');
+        System.assertEquals('ES', multiholders[0].DMT_g_entific_id__c, 'g_entific_id__c debe rellenarse en el backfill');
+        System.assertEquals('OLD_GROUP', multiholders[0].DMT_gf_customer_group_id__c, 'gf_customer_group_id__c debe rellenarse desde la asociación');
+        
     }
 
   @isTest

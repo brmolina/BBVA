@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prevent_Save_When_Finalized</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+ISPICKVAL(arce__Analysis__r.arce__Stage__c, &quot;3&quot;),
+NOT($Setup.arce__Bypass__c.arce__Bypass_ValidationRules__c),
+NOT( 
+OR(
+ISCHANGED(arce__FR_Unit_Type__c),
+ISCHANGED(arce__Customer__c),
+ISCHANGED(DES_Local_Client__c)
+)
+)
+)</errorConditionFormula>
+    <errorMessage>Account has Analysis cannot be created or modified when ARCE is finalized</errorMessage>
+</ValidationRule>

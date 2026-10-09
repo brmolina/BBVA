@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Commercial_Product_Description__c</fullName>
+    <description>CIBGLOBALD-3779: Name of the parent product selected in the Add Product modal (dmt_multipleproducts_otherline) when this row&apos;s child product was added. Populated by DMT_ProductSanctionMigrationController.addProducts(); read-only in the UI, displayed via DMT_LineOtherTemplateConfig__mdt records commercialProductDescription_OL / commercialProductDescription_SANCTION.</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <label>Commercial Product Description</label>
+    <length>255</length>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

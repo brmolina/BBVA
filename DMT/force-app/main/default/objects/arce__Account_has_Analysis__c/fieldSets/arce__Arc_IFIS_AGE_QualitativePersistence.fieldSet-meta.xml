@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FieldSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Arc_IFIS_AGE_QualitativePersistence</fullName>
+    <description>This field set is used to list the qualitative qualities of this object required for the calculation of the rating and that will be used for verification</description>
+    <displayedFields>
+        <field>arce__short_rating_value_type__c</field>
+        <isFieldManaged>false</isFieldManaged>
+        <isRequired>false</isRequired>
+    </displayedFields>
+    <label>Arc_IFIS_AGE_QualitativePersistence</label>
+</FieldSet>

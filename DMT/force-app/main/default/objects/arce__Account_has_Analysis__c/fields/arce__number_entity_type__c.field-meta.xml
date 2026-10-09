@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__number_entity_type__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Number of Banks</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>3</fullName>
+                <default>false</default>
+                <label>Works with more than 10 entities</label>
+            </value>
+            <value>
+                <fullName>2</fullName>
+                <default>false</default>
+                <label>Works with 5 to 10 entities</label>
+            </value>
+            <value>
+                <fullName>1</fullName>
+                <default>false</default>
+                <label>Work with less equal 4 banks</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

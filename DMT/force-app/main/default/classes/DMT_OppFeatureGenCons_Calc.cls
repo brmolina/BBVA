@@ -24,7 +24,12 @@ public with sharing class DMT_OppFeatureGenCons_Calc {
         String foundAssetAllocationSubSecType = null;
         String foundAssetAllocationActvyType = null;
         String foundLeveragedLendingIndType = null;
-        String foundActivityMinimumLevelCodeId = null;
+        String foundActivityMinimumLevelCode = null;
+        String foundScaleLastUpdDate = null;
+        String foundRatingValidityStartDate = null;
+        String foundCurrentRatingToolDate = null;
+        String foundFfssRegulatoryRatingDate = null;
+        Object foundRtFfssvldydtmtNumber = null;
         for (Object item : clientsInGroups) {
             Map<String, Object> row = (Map<String, Object>) item;
             String cid = (String) row.get('customerId');
@@ -42,7 +47,12 @@ public with sharing class DMT_OppFeatureGenCons_Calc {
                 foundAssetAllocationSubSecType  = (String)row.get('assetAllocationSubSecType');
                 foundAssetAllocationActvyType   = (String)row.get('assetAllocationActvyType');
                 foundLeveragedLendingIndType    = (String)row.get('leveragedLendingIndType');
-                foundActivityMinimumLevelCodeId = (String)row.get('activityMinimumLevelCodeId');
+                foundActivityMinimumLevelCode = (String)row.get('activityMinimumLevelCode');
+                foundScaleLastUpdDate           = (String)row.get('scaleLastUpdDate');
+                foundRatingValidityStartDate    = (String)row.get('ratingValidityStartDate');
+                foundCurrentRatingToolDate      = (String)row.get('currentRatingToolDate');
+                foundFfssRegulatoryRatingDate   = (String)row.get('ffssRegulatoryRatingDate');
+                foundRtFfssvldydtmtNumber       = row.get('rtFfssvldydtmtNumber');
                 break; // paramos en la primera coincidencia
             }
         }
@@ -81,7 +91,7 @@ public with sharing class DMT_OppFeatureGenCons_Calc {
             Map<Id,DMT_Opportunity_Tenor__c> tenorsMap = new Map<Id,DMT_Opportunity_Tenor__c>(amortizationPayments);
 
             //Validate Internal Rating
-            Boolean isInternalRatingEqual = oppClient != null && oppClient.g_upd_lmscl_internal_ratg_type__c == foundClientRating;
+            Boolean isInternalRatingEqual = oppClient != null && (foundClientRating == null || oppClient.g_upd_lmscl_internal_ratg_type__c == foundClientRating);
             if(isInternalRatingEqual){
                 listFeatureReturn.add(generateFeatureGenConsideration('Opportunity Internal Rating matches the Client Internal Rating.',DMT_Constants.FEATURE_GC_STATE_GREEN,'Rating matches'));
             }else{
@@ -89,35 +99,37 @@ public with sharing class DMT_OppFeatureGenCons_Calc {
             }
             //Validate Client fields
             Boolean hasOppClient = oppClient != null;
-            Boolean isClientRatingEqual = hasOppClient && oppClient.g_upd_lmscl_internal_ratg_type__c == foundClientRating;
+            Boolean isClientRatingEqual = hasOppClient && (foundClientRating == null || oppClient.g_upd_lmscl_internal_ratg_type__c == foundClientRating);
             Boolean isScoringEqual = hasOppClient
-                && oppClient.DMT_Scoring__c != null
-                && foundScoringRounded != null
-                && oppClient.DMT_Scoring__c == foundScoringRounded;
+                && (foundScoringRounded == null || (oppClient.DMT_Scoring__c != null && oppClient.DMT_Scoring__c == foundScoringRounded));
             String expectedExternalRatingValue = foundUnifiedExtRatgLtFcType == null ? 'NR' : foundUnifiedExtRatgLtFcType;
-            Boolean isExternalRatingEqual = hasOppClient && oppClient.External_Rating__c == expectedExternalRatingValue;
-            Boolean isFitchRatingEqual = hasOppClient && oppClient.DMT_External_Rating_Fitch__c == foundFitchLtRatingLcType;
-            Boolean isMoodysRatingEqual = hasOppClient && oppClient.DMT_External_Rating_Moodys__c == foundMoodysLtRatingLcType;
-            Boolean isSpRatingEqual = hasOppClient && oppClient.DMT_External_Rating_SP__c == foundSpLtRatingLcType;
-            String expectedLeveragedLendingValue = foundLeveragedLendingIndType == null ? 'N/A' : foundLeveragedLendingIndType;
-            Boolean isLeveragedLendingEqual = hasOppClient && oppClient.DMT_Leveraged_Lending__c == expectedLeveragedLendingValue;
-            Boolean isSectorEqual = hasOppClient && oppClient.DMT_Sector__c == foundAssetAllocationSectorType;
-            Boolean isSubsectorEqual = hasOppClient && oppClient.DMT_Subsector__c == foundAssetAllocationSubSecType;
-            Boolean isActivityEqual = hasOppClient && oppClient.DMT_Activity__c == foundAssetAllocationActvyType;
-            Boolean isCamnEqual = hasOppClient && oppClient.DMT_CAMN__c == foundActivityMinimumLevelCodeId;
+            String actualExternalRatingValue = String.isBlank(oppClient?.External_Rating__c)
+                ? 'NR'
+                : oppClient.External_Rating__c;
+            Boolean isExternalRatingEqual = hasOppClient && actualExternalRatingValue == expectedExternalRatingValue;
+            Boolean isFitchRatingEqual = hasOppClient && (foundFitchLtRatingLcType == null || oppClient.DMT_External_Rating_Fitch__c == foundFitchLtRatingLcType);
+            Boolean isMoodysRatingEqual = hasOppClient && (foundMoodysLtRatingLcType == null || oppClient.DMT_External_Rating_Moodys__c == foundMoodysLtRatingLcType);
+            Boolean isSpRatingEqual = hasOppClient && (foundSpLtRatingLcType == null || oppClient.DMT_External_Rating_SP__c == foundSpLtRatingLcType);
+            Boolean isFoundLeveragedYes = String.isNotBlank(foundLeveragedLendingIndType) && foundLeveragedLendingIndType.equalsIgnoreCase('Yes');
+            Boolean isClientLeveragedYes = hasOppClient && String.isNotBlank(oppClient.DMT_Leveraged_Lending__c)&& oppClient.DMT_Leveraged_Lending__c.equalsIgnoreCase('Yes');
+            Boolean isLeveragedLendingEqual = hasOppClient && (String.isBlank(foundLeveragedLendingIndType) || isFoundLeveragedYes == isClientLeveragedYes);
+            Boolean isSectorEqual = hasOppClient && (foundAssetAllocationSectorType == null || oppClient.DMT_Sector__c == foundAssetAllocationSectorType);
+            Boolean isSubsectorEqual = hasOppClient && (foundAssetAllocationSubSecType == null || oppClient.DMT_Subsector__c == foundAssetAllocationSubSecType);
+            Boolean isActivityEqual = hasOppClient && (foundAssetAllocationActvyType == null || oppClient.DMT_Activity__c == foundAssetAllocationActvyType);
+            Boolean isCamnEqual = hasOppClient && (foundActivityMinimumLevelCode == null || oppClient.DMT_CAMN__c == foundActivityMinimumLevelCode);
 
             System.debug('*** allFieldsOriginal - hasOppClient: ' + hasOppClient);
             System.debug('*** allFieldsOriginal - isClientRatingEqual: ' + isClientRatingEqual + ' | oppClient=' + (hasOppClient ? oppClient.g_upd_lmscl_internal_ratg_type__c : null) + ' | expected=' + foundClientRating);
             System.debug('*** allFieldsOriginal - isScoringEqual: ' + isScoringEqual + ' | oppClient=' + (hasOppClient ? oppClient.DMT_Scoring__c : null) + ' | expected=' + foundScoringRounded);
-            System.debug('*** allFieldsOriginal - isExternalRatingEqual: ' + isExternalRatingEqual + ' | oppClient=' + (hasOppClient ? oppClient.External_Rating__c : null) + ' | expected=' + expectedExternalRatingValue);
+            System.debug('*** allFieldsOriginal - isExternalRatingEqual: ' + isExternalRatingEqual + ' | oppClient=' + actualExternalRatingValue + ' | expected=' + expectedExternalRatingValue);
             System.debug('*** allFieldsOriginal - isFitchRatingEqual: ' + isFitchRatingEqual + ' | oppClient=' + (hasOppClient ? oppClient.DMT_External_Rating_Fitch__c : null) + ' | expected=' + foundFitchLtRatingLcType);
             System.debug('*** allFieldsOriginal - isMoodysRatingEqual: ' + isMoodysRatingEqual + ' | oppClient=' + (hasOppClient ? oppClient.DMT_External_Rating_Moodys__c : null) + ' | expected=' + foundMoodysLtRatingLcType);
             System.debug('*** allFieldsOriginal - isSpRatingEqual: ' + isSpRatingEqual + ' | oppClient=' + (hasOppClient ? oppClient.DMT_External_Rating_SP__c : null) + ' | expected=' + foundSpLtRatingLcType);
-            System.debug('*** allFieldsOriginal - isLeveragedLendingEqual: ' + isLeveragedLendingEqual + ' | oppClient=' + (hasOppClient ? oppClient.DMT_Leveraged_Lending__c : null) + ' | expected=' + expectedLeveragedLendingValue);
+            System.debug('*** allFieldsOriginal - isLeveragedLendingEqual: ' + isLeveragedLendingEqual + ' | oppClient=' + (hasOppClient ? oppClient.DMT_Leveraged_Lending__c : null) + ' | expected=' + isFoundLeveragedYes);
             System.debug('*** allFieldsOriginal - isSectorEqual: ' + isSectorEqual + ' | oppClient=' + (hasOppClient ? oppClient.DMT_Sector__c : null) + ' | expected=' + foundAssetAllocationSectorType);
             System.debug('*** allFieldsOriginal - isSubsectorEqual: ' + isSubsectorEqual + ' | oppClient=' + (hasOppClient ? oppClient.DMT_Subsector__c : null) + ' | expected=' + foundAssetAllocationSubSecType);
             System.debug('*** allFieldsOriginal - isActivityEqual: ' + isActivityEqual + ' | oppClient=' + (hasOppClient ? oppClient.DMT_Activity__c : null) + ' | expected=' + foundAssetAllocationActvyType);
-            System.debug('*** allFieldsOriginal - isCamnEqual: ' + isCamnEqual + ' | oppClient=' + (hasOppClient ? oppClient.DMT_CAMN__c : null) + ' | expected=' + foundActivityMinimumLevelCodeId);
+            System.debug('*** allFieldsOriginal - isCamnEqual: ' + isCamnEqual + ' | oppClient=' + (hasOppClient ? oppClient.DMT_CAMN__c : null) + ' | expected=' + foundActivityMinimumLevelCode);
 
             Boolean allFieldsOriginal = hasOppClient
             && isClientRatingEqual
@@ -177,9 +189,9 @@ public with sharing class DMT_OppFeatureGenCons_Calc {
                 }
             }
             if(xSellLimit){
-                listFeatureReturn.add(generateFeatureGenConsideration('One or more Cross SELL records have a Year more than 5 years after the Opportunity Initial Date',DMT_Constants.FEATURE_GC_STATE_YELLOW,'Cross SELL Year is out of range'));
+                listFeatureReturn.add(generateFeatureGenConsideration('One or more Cross SELL records have a Year beyond 5 years from the Opportunity Initial Date',DMT_Constants.FEATURE_GC_STATE_YELLOW,'Cross SELL Year is inconsistent'));
             }else{
-                listFeatureReturn.add(generateFeatureGenConsideration('All Cross SELL records have a Year within 5 years of the Opportunity Initial Date.',DMT_Constants.FEATURE_GC_STATE_GREEN,'Cross SELL Year is within range'));
+                listFeatureReturn.add(generateFeatureGenConsideration('All Cross SELL records have a Year within 5 years from the Opportunity Initial Date.',DMT_Constants.FEATURE_GC_STATE_GREEN,'Cross SELL Year is consistent'));
             }*/
 
             //Validate Tenors
@@ -217,46 +229,28 @@ public with sharing class DMT_OppFeatureGenCons_Calc {
             }
 
             //Validate Opportunity
-            if(opp.DMT_CUR_Notional_Amount__c == opp.DMT_Opportunity_amount__c){
+            if(opp.DMT_CUR_Notional_Amount__c == opp.DMT_CUR_Notional__c){
                 listFeatureReturn.add(generateFeatureGenConsideration('Opportunity Notional Amount matches the sum of Opportunity Products Notional Amounts.',DMT_Constants.FEATURE_GC_STATE_GREEN,'Notional Amount matches'));
             }else{
                 listFeatureReturn.add(generateFeatureGenConsideration('Opportunity Notional Amount does not match the sum of Opportunity Products Notional Amounts.',DMT_Constants.FEATURE_GC_STATE_YELLOW,'Notional Amount does not match'));
             }
 
-            //Validate approver fields 
+            //Validate approver fields
             if(opp.DMT_Approver__c != null && opp.DMT_ApproverGlobalBanker__c != null && opp.DMT_Booking_Unit_Risk_Analyst__c != null){
                 listFeatureReturn.add(generateFeatureGenConsideration('All opportunity approver fields are filled in.',DMT_Constants.FEATURE_GC_STATE_GREEN,'Approver information is complete'));
             }else{
                  listFeatureReturn.add(generateFeatureGenConsideration('The opportunity approvers fields are not filled in.',DMT_Constants.FEATURE_GC_STATE_YELLOW,'The approvers information is inconsistent'));
             }
 
-            //Validate Line Relation to Opp
-            /*  //Deleted 17/03/2026 from end2end review, not require validate des feature
-            List<String> productsNotLinked = new List<String>();
-            String products = '';
-            if(opp.DMT_Sanction__c != null){
-                for(OpportunityLineItem opplineitem: productsMap.values()){
-                    if(opplineitem.DMT_Associated_Line_Product__c == null){
-                        productsNotLinked.add(opplineitem.Name);
-                    }
-                }
-                if(!productsNotLinked.isEmpty()){
-                    for(String productName : productsNotLinked){
-                        if(productsNotLinked.indexOf(productName) == productsNotLinked.size() - 1 ){
-                            products = products + 'and ' + productName;
-                        }else{
-                            products = products + productName + ',';
-                        }
-                    }
-                    listFeatureReturn.add(generateFeatureGenConsideration('The following products have not been linked to risk approval line: ' + products,DMT_Constants.FEATURE_GC_STATE_YELLOW,'Opportunity risk approval'));
-                }else{
-                    listFeatureReturn.add(generateFeatureGenConsideration('All opportunity products have risk approval line coverage' + products,DMT_Constants.FEATURE_GC_STATE_GREEN,'Opportunity risk approval'));
-                }
-            }else{
-                listFeatureReturn.add(generateFeatureGenConsideration('Opportunity risk to be checked under Finantial Program limits' + products,DMT_Constants.FEATURE_GC_STATE_GREEN,'Opportunity risk approval'));
-            } */
-            
-            
+            //Validate rating existence and expiration
+            listFeatureReturn.add(ratingExistenceExpiration(
+                foundScaleLastUpdDate,
+                foundRatingValidityStartDate,
+                foundCurrentRatingToolDate,
+                foundFfssRegulatoryRatingDate,
+                foundRtFfssvldydtmtNumber
+            ));
+
         }
 
         return listFeatureReturn;
@@ -271,7 +265,7 @@ public with sharing class DMT_OppFeatureGenCons_Calc {
         addIfBlank(missingFields, opp.DMT_Entity__c, 'Entity');
         addIfBlank(missingFields, opp.DES_Booking_Geography__c, 'Booking Geography');
         addIfNull(missingFields, opp.DMT_Tenor__c, 'Opportunity Tenor');
-        //addIfNull(missingFields, opp.DMT_Opportunity_amount__c, 'Deal Amount');
+        addIfNull(missingFields, opp.DMT_CUR_Notional__c, 'Deal Amount');
         addIfNull(missingFields, opp.DMT_CUR_Notional_Amount__c, 'Notional Amount');
         addIfBlank(missingFields, opp.DMT_CurrencyText__c, 'Currency');
         addIfBlank(missingFields, opp.DMT_Product_Area__c, 'Product Area');
@@ -295,14 +289,19 @@ public with sharing class DMT_OppFeatureGenCons_Calc {
             missingFields.add('Products');
         }else{
             for(OpportunityLineItem oli : productsMap.values()){
+                Boolean isLineProduct = String.isNotBlank(oli.DMT_Line_Oneoffdeal__c)
+                    && oli.DMT_Line_Oneoffdeal__c.equalsIgnoreCase('Line');
+
                 addIfBlank(missingFields, oli.Name, 'Product Name');
                 addIfNull(missingFields, oli.gf_initial_date__c, 'Product Start Date');
                 addIfNull(missingFields, oli.gf_maturity_date__c, 'Product End Date');
                 addIfBlank(missingFields, oli.DMT_Risk_Type__c, 'Risk Type');
-                addIfBlank(missingFields, oli.gf_amortization_type__c, 'Amortization Type');
                 addIfBlank(missingFields, oli.g_currency_id__c, 'Product Currency');
-                addIfNull(missingFields, oli.gf_accrual_fees_bp__c, 'Accrual Fee (BPS)');
-                addIfNull(missingFields, oli.DMT_Extension_Duration_Fees__c, 'Extension/Duration Fees (BPS)');
+                addIfBlank(missingFields, oli.gf_amortization_type__c, 'Amortization Type');
+                if(!isLineProduct){
+                    addIfNull(missingFields, oli.gf_accrual_fees_bp__c, 'Accrual Fee (BPS)');
+                }
+                //addIfNull(missingFields, oli.DMT_Extension_Duration_Fees__c, 'Extension/Duration Fees (BPS)');
                 addIfBlank(missingFields, oli.Life_Funding_Type__c, 'Time of Cost of Funding');
                 addIfBlank(missingFields, oli.DMT_sustainable_deal_assessment__c, 'Sustainable Deal Assessment');
             }
@@ -333,6 +332,38 @@ public with sharing class DMT_OppFeatureGenCons_Calc {
         featureReturn.state = state;
         featureReturn.name = name;
         return featureReturn;
+    }
+
+    private static DMT_Wrapper_Passport_Abs.FeatureGenConsiderations ratingExistenceExpiration(
+        String scaleLastUpdDate,
+        String ratingValidityStartDate,
+        String currentRatingToolDate,
+        String ffssRegulatoryRatingDate,
+        Object rtFfssvldydtmtNumber) {
+
+        Date ratingDate = null;
+        String ratingValid = null;
+
+        if (scaleLastUpdDate != null) {
+            ratingDate  = Date.valueOf(scaleLastUpdDate);
+            ratingValid = rtFfssvldydtmtNumber == null ? ''
+                : String.valueOf(Date.valueOf(ratingValidityStartDate).addMonths(19) <= Date.today());
+        } else if (currentRatingToolDate != null) {
+            ratingDate  = Date.valueOf(currentRatingToolDate);
+            ratingValid = ffssRegulatoryRatingDate == null ? ''
+                : String.valueOf(Date.valueOf(ffssRegulatoryRatingDate).addMonths(19) <= Date.today());
+        }
+
+        Boolean isYellow = ratingDate == null
+            || ratingDate.addMonths(12) <= Date.today()
+            || String.isEmpty(ratingValid)
+            || Boolean.valueOf(ratingValid);
+
+        return generateFeatureGenConsideration(
+            isYellow ? DMT_Constants.RATING_REDMESSAGE : DMT_Constants.RATING_GREENMESSAGE,
+            isYellow ? DMT_Constants.FEATURE_GC_STATE_YELLOW : DMT_Constants.FEATURE_GC_STATE_GREEN,
+            DMT_Constants.FEATURE_NAME_RATING
+        );
     }
 
     public static String transformSegmentToCounterpart(String segmentValue) {

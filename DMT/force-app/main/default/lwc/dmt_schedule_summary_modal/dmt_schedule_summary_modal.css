@@ -1,0 +1,70 @@
+:host {
+    display: block;
+}
+
+.slds-modal__header h2 {
+    color: #062550;
+    font-size: 1.25rem;
+}
+
+h3.slds-text-heading_small {
+    color: #062550;
+    font-size: 1rem;
+}
+
+.modal-container {
+    max-width: 60rem;
+    width: 90%;
+}
+
+.intro-text {
+    font-size: 0.82rem;
+}
+
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.toggle-label {
+    font-size: 0.82rem;
+    min-width: 16rem;
+}
+
+.close-button {
+    border: 1px solid #c9c9c9;
+    border-radius: 0;
+    background: #ffffff;
+}
+
+.schedule-inline {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 24rem;
+    margin-left: 0.5rem;
+}
+
+.footer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+@media (max-width: 64em) {
+    .schedule-inline {
+        grid-template-columns: 1fr;
+        min-width: 100%;
+        margin-left: 0;
+    }
+
+    .toggle-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

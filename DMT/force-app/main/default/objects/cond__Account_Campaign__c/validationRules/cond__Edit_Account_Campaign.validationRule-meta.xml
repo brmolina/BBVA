@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>cond__Edit_Account_Campaign</fullName>
+    <active>false</active>
+    <description>Control de edición de Name y Currency en account campaign</description>
+    <errorConditionFormula>AND (OR($Profile.Name &lt;&gt; &quot;Desktop Integration&quot;,$Profile.Name = &quot;System Administrator&quot;),OR(ISCHANGED(Name),ISCHANGED(CurrencyIsoCode)))</errorConditionFormula>
+    <errorMessage>Insufficient privileges to edit Name and Currency</errorMessage>
+</ValidationRule>

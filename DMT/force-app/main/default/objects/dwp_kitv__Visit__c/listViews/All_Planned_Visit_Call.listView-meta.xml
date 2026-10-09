@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_Planned_Visit_Call</fullName>
+    <columns>dwp_kitv__visit_start_date__c</columns>
+    <columns>dwp_kitv__account_id__c</columns>
+    <columns>DES_Client_Type__c</columns>
+    <columns>NAME</columns>
+    <columns>dwp_kitv__visit_status_type__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>dwp_kitv__account_id__c</field>
+        <operation>equals</operation>
+        <value>BARCLAYS BANK PLC</value>
+    </filters>
+    <label>All Planned Visit/ Call</label>
+    <sharedTo>
+        <roleAndSubordinatesInternal>Desktop_Management</roleAndSubordinatesInternal>
+    </sharedTo>
+</ListView>

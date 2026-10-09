@@ -6,6 +6,7 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
           import pubsub from "omnistudio/pubsub";
           import { getRecord } from "lightning/uiRecordApi";
           import { OmniscriptBaseMixin } from "omnistudio/omniscriptBaseMixin";
+          
           import data from "./definition";
           
           import styleDef from "./styleDefinition";
@@ -29,10 +30,12 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
               @track record;
               @track _sessionApiVars = {};
               
+              
               pubsubEvent = [];
               customEvent = [];
               
               connectedCallback() {
+                
                 super.connectedCallback();
                 this.setThemeClass(data);
                 this.setStyleDefinition(styleDef);
@@ -44,9 +47,9 @@ import { FlexCardMixin } from "omnistudio/flexCardMixin";
  this.registerEvents();
                 this.setAttribute(
                   "class", (this.getAttribute("class") ? this.getAttribute("class") : "") +
-                  " card-0koKE000000L72tYAC"
+                  " card-0koKE000000L9o6YAC"
                 );
-                this.loadCustomStylesheetAttachement("00PKE000001ZPzO2AW");
+                this.loadCustomStylesheetAttachement("00PKE000002LqG42AK");
                 
                 
               }

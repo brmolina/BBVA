@@ -1,6 +1,7 @@
 public with sharing class DMT_OppToSanctionUtils {
 
     public static List<Integer> cachedEndTermDayOptions;
+    public static Map<String, String> cachedMaxTermLabels;
 
     @InvocableMethod(label='Create Risk Lines and Warranties')
     public static void createRiskLinesAndWarranties(List<OpportunityLineItemWrapper> wrappers) {
@@ -12,14 +13,17 @@ public with sharing class DMT_OppToSanctionUtils {
         Map<Id,DMT_Risk_Line_Term__c> mapIdOppToRisk = new Map<Id,DMT_Risk_Line_Term__c>();
         List<String> listIdOppLineItems = new List<String>();
         List<String> listIdProducts = new List<String>();
+        List<String> listIdOppLineItemsForUnderlyings = new List<String>();
 
         for (OpportunityLineItemWrapper wrapper : wrappers) {
             for(OpportunityLineItem oli: wrapper.listOli){
                 listIdProducts.add(oli.Product2Id);
+                listIdOppLineItemsForUnderlyings.add(oli.Id);
             }
         }
+        Map<Id, List<DMT_Underlying__c>> mapOliToUnderlyings = DMT_Opportunity_Selector.getUnderlyingsByOliIds(listIdOppLineItemsForUnderlyings);
+        Map<Id, List<DMT_Opportunity_Mitigant__c>> mapOliToMitigants = DMT_Opportunity_Selector.getMitigantsByOliIds(listIdOppLineItemsForUnderlyings);
         Map<Id,Product2> mapIdToProduct = DMT_Opportunity_Selector.getProduct2(listIdProducts);
-        List<DMT_PassportProfitabilityProcessor.ProductProfitability> productProf = DMT_PassportProfitabilityProcessor.getProductLevelProfitability(wrappers[0].listOli[0].OpportunityId);
 
         for (OpportunityLineItemWrapper wrapper : wrappers) {
             for(OpportunityLineItem oli: wrapper.listOli){
@@ -37,8 +41,8 @@ public with sharing class DMT_OppToSanctionUtils {
                 riskLine.g_gbl_product_subcategory_id__c =  mapIdToProduct.get(oli.Product2Id).DMT_Product_Subcategory__c;
                 riskLine.g_global_product_subfamily_id__c =  mapIdToProduct.get(oli.Product2Id).DMT_Product_Subfamily__c;
                 riskLine.Name =  mapIdToProduct.get(oli.Product2Id).Name;
-                riskLine.DMT_Comments__c =  oli.DMT_TXT_Comentarios__c;
-                riskLine.DMT_Amount__c =  oli.DMT_Deal_Amount_Tenors__c;
+                riskLine.DMT_Comments__c = buildCommentsText(mapOliToUnderlyings.get(oli.Id),  oli.g_currency_id__c, oli.gf_country_risk__c, mapOliToMitigants.get(oli.Id));
+                riskLine.DMT_Amount__c =  oli.bbva_prtcp_tranche_amount__c;
                 riskLine.CurrencyIsoCode =  oli.g_currency_Id__c;
                 riskLine.DMT_Init_Term__c =  '0';
                 riskLine.DMT_End_Term__c = toMaxAllowedEndTermPicklistValue(oli.gf_initial_date__c, oli.gf_maturity_date__c);
@@ -47,13 +51,9 @@ public with sharing class DMT_OppToSanctionUtils {
                 riskLine.g_line_commitment_level_type__c =  oli.g_line_commitment_level_type__c;
                 riskLine.g_multioperation_ind_type__c =  oli.g_multioperation_ind_type__c;
                 riskLine.gf_payment_frequency__c = oli.gf_payment_frequency__c;
+                riskLine.DMT_Line_Tenor__c = oli.DMT_Line_Tenor__c != null ? oli.DMT_Line_Tenor__c.toPlainString() : null;
+                riskLine.DMT_Operation_Type__c = oli.DMT_Line_Oneoffdeal__c == 'One-off deal' ? 'OPP' : 'LIN';
 
-                for ( DMT_PassportProfitabilityProcessor.ProductProfitability prof : productProf ) {
-                    if ( prof.productId == oli.gf_group_priority_opportunity_id__c) {
-                        riskLine.gf_min_raroec_wo_fcg_per__c = prof.raroec;
-                        riskLine.gf_min_rorc_wo_fcg_per__c = prof.rorc;
-                    }
-                }
                 // Se añade traduccion para el campo de amortization Type
                 if(oli.gf_amortization_type__c == 'Linear'){
                     riskLine.g_amortization_type__c = '03';
@@ -78,7 +78,7 @@ public with sharing class DMT_OppToSanctionUtils {
         }
 
         if (!riskLinesToInsert.isEmpty()) {
-            insert riskLinesToInsert;
+            DMT_WithoutSharingDAO.insertRecords(riskLinesToInsert);
             List<OpportunityLineItem> opliListToUpdate = new List<OpportunityLineItem>();
 
             for(String opliId : listIdOppLineItems){
@@ -87,17 +87,18 @@ public with sharing class DMT_OppToSanctionUtils {
             }
 
             if(!opliListToUpdate.isEmpty()){
-                update opliListToUpdate;
+                DMT_WithoutSharingDAO.updateRecords(opliListToUpdate);
             }
 
             List<DMT_Opportunity_Mitigant__c> listMitigants = [SELECT Id,DMT_Opportunity_Product__c,Mitigant_Type__c, DMT_Opportunity_Product__r.ProductCode, DMT_Opportunity_Product__r.gf_group_priority_opportunity_id__c FROM DMT_Opportunity_Mitigant__c WHERE DMT_Opportunity_Product__c IN :listIdOppLineItems];
             // Crear DMT_Warranty__c por cada Risk Line creado
+            Map<String, String> guaranteeTypeMapCreate = buildGuaranteeTypeMap(listMitigants);
             for (DMT_Opportunity_Mitigant__c mitigant : listMitigants) {
                 DMT_Warranty__c warranty = new DMT_Warranty__c();
                 warranty.DMT_Risk_Line_Term__c = mapIdOppToRisk.get(mitigant.DMT_Opportunity_Product__c).Id;
                 warranty.Name = mitigant.Mitigant_Type__c;
                 warranty.gf_group_priority_line_id__c = mitigant.DMT_Opportunity_Product__r.gf_group_priority_opportunity_id__c ;
-                warranty.g_limits_grid_guarantee_type__c = 'O3';
+                warranty.g_limits_grid_guarantee_type__c = guaranteeTypeMapCreate.get(mitigant.Mitigant_Type__c);
                 warranty.gf_origin_application_type__c = '04' ;
                 warranty.g_entific_id__c = 'HO';
                 // Agrega aquí los demás campos que necesites
@@ -105,7 +106,7 @@ public with sharing class DMT_OppToSanctionUtils {
             }
 
             if (!warrantiesToInsert.isEmpty()) {
-                insert warrantiesToInsert;
+                DMT_WithoutSharingDAO.insertRecords(warrantiesToInsert);
             }
             for(DMT_Risk_Line_Term__c rkl : riskLinesToInsert){
                 DMT_Currency_Provision__c currencyprovision = new DMT_Currency_Provision__c();
@@ -118,9 +119,23 @@ public with sharing class DMT_OppToSanctionUtils {
                 currencyToInsert.add(currencyprovision);
             }
             if(!currencyToInsert.isEmpty()){
-                insert currencyToInsert;
+                DMT_WithoutSharingDAO.insertRecords(currencyToInsert);
             }
         }
+    }
+
+    public static Map<String, String> getCachedMaxTermLabels() {
+        if (cachedMaxTermLabels == null) {
+            Schema.DescribeSObjectResult objectDescribe = DMT_Underlying__c.SObjectType.getDescribe();
+            Schema.DescribeFieldResult fieldDescribe = objectDescribe.fields.getMap().get('DMT_Max_Term__c').getDescribe();
+            cachedMaxTermLabels = new Map<String, String>();
+            for (Schema.PicklistEntry entry : fieldDescribe.getPicklistValues()) {
+                if (String.isNotBlank(entry.getValue())) {
+                    cachedMaxTermLabels.put(entry.getValue(), entry.getLabel());
+                }
+            }
+        }
+        return cachedMaxTermLabels;
     }
 
     public static List<Integer> getCachedEndTermDayOptions() {
@@ -207,6 +222,7 @@ public with sharing class DMT_OppToSanctionUtils {
 
         
         List<Id> existingRiskLineIds = new List<Id>();
+        List<Id> listIdOppLineItemsForUnderlyings = new List<Id>();
         Map<Id,DMT_Risk_Line_Term__c> mapIdOppLineItemToRiskLineTerm = new Map<Id,DMT_Risk_Line_Term__c>();
         for (OpportunityLineItem oli : DMT_Opportunity_Selector.getOpportunityLineItems(oppId)) {
             listIdProducts.add(oli.Product2Id);
@@ -215,7 +231,10 @@ public with sharing class DMT_OppToSanctionUtils {
                 existingRiskLineIds.add(oli.DMT_Associated_Line_Product__c);
                 mapIdOPLToOppLinItem.put(oli.Id, oli);
             }
+            listIdOppLineItemsForUnderlyings.add(oli.Id);
         }
+        Map<Id, List<DMT_Underlying__c>> mapOliToUnderlyings = DMT_Opportunity_Selector.getUnderlyingsByOliIds(listIdOppLineItemsForUnderlyings);
+        Map<Id, List<DMT_Opportunity_Mitigant__c>> mapOliToMitigants = DMT_Opportunity_Selector.getMitigantsByOliIds(listIdOppLineItemsForUnderlyings);
         List<DMT_PassportProfitabilityProcessor.ProductProfitability> productProf = DMT_PassportProfitabilityProcessor.getProductLevelProfitability(oppId);
         // Update Line
         DMT_Line__c line = new DMT_Line__c();
@@ -258,8 +277,8 @@ public with sharing class DMT_OppToSanctionUtils {
                 riskLine.g_gbl_product_subcategory_id__c =  mapIdToProduct.get(oli.Product2Id).DMT_Product_Subcategory__c;
                 riskLine.g_global_product_subfamily_id__c =  mapIdToProduct.get(oli.Product2Id).DMT_Product_Subfamily__c;
                 riskLine.Name =  mapIdToProduct.get(oli.Product2Id).Name;
-                riskLine.DMT_Comments__c =  oli.DMT_TXT_Comentarios__c;
-                riskLine.DMT_Amount__c =  oli.DMT_Deal_Amount_Tenors__c;
+                riskLine.DMT_Comments__c = buildCommentsText(mapOliToUnderlyings.get(oli.Id), oli.g_currency_id__c, oli.gf_country_risk__c, mapOliToMitigants.get(oli.Id));
+                riskLine.DMT_Amount__c =  oli.bbva_prtcp_tranche_amount__c;
                 riskLine.CurrencyIsoCode =  oli.g_currency_Id__c;
                 riskLine.DMT_Init_Term__c =  '0';
                 riskLine.DMT_End_Term__c = toMaxAllowedEndTermPicklistValue(oli.gf_initial_date__c, oli.gf_maturity_date__c);
@@ -268,15 +287,11 @@ public with sharing class DMT_OppToSanctionUtils {
                 riskLine.g_line_commitment_level_type__c =  oli.g_line_commitment_level_type__c;
                 riskLine.g_multioperation_ind_type__c =  oli.g_multioperation_ind_type__c;
                 riskLine.gf_payment_frequency__c = oli.gf_payment_frequency__c;
+                riskLine.DMT_Line_Tenor__c = oli.DMT_Line_Tenor__c != null ? oli.DMT_Line_Tenor__c.toPlainString() : null;
+                riskLine.DMT_Operation_Type__c = oli.DMT_Line_Oneoffdeal__c == 'One-off deal' ? 'OPP' : 'LIN';
                 
             }else{
-              for ( DMT_PassportProfitabilityProcessor.ProductProfitability prof : productProf ) {
-                    if ( prof.productId == oli.gf_group_priority_opportunity_id__c) {
-                        riskLine.Id = mapIdOppLineItemToRiskLineTerm.get(oli.Id)?.Id;
-                        riskLine.gf_min_raroec_wo_fcg_per__c = prof.raroec;
-                        riskLine.gf_min_rorc_wo_fcg_per__c = prof.rorc;
-                    }
-                }  
+                continue;
             }
             
             // Se añade traduccion para el campo de amortization Type
@@ -313,12 +328,13 @@ public with sharing class DMT_OppToSanctionUtils {
                 for (DMT_Warranty__c w : DMT_Opportunity_Selector.getWarrantiesByRiskLineIds(existingRiskLineIds)) {
                     mapGroupPriorityToWarranty.put(w.gf_group_priority_line_id__c, w);
                 }
+                Map<String, String> guaranteeTypeMapUpdate = buildGuaranteeTypeMap(listMitigants);
                 for (DMT_Opportunity_Mitigant__c mitigant : listMitigants) {
                     DMT_Warranty__c warranty = new DMT_Warranty__c();
                     warranty.Id = mapGroupPriorityToWarranty.get(mitigant.DMT_Opportunity_Product__r.gf_group_priority_opportunity_id__c)?.Id;
                     warranty.Name = mitigant.Mitigant_Type__c;
                     warranty.gf_group_priority_line_id__c = mitigant.DMT_Opportunity_Product__r.gf_group_priority_opportunity_id__c ;
-                    warranty.g_limits_grid_guarantee_type__c = 'O3';
+                    warranty.g_limits_grid_guarantee_type__c = guaranteeTypeMapUpdate.get(mitigant.Mitigant_Type__c);
                     warranty.gf_origin_application_type__c = '04' ;
                     warranty.g_entific_id__c = 'HO';
                     // Agrega aquí los demás campos que necesites
@@ -349,6 +365,226 @@ public with sharing class DMT_OppToSanctionUtils {
         }
     }
 
+    private static final String TRUNCATION_MARKER = ' (...)';
+    private static final Integer MAX_LENGTH = 500;
+
+    private static String buildCommentsText(List<DMT_Underlying__c> underlyings, String lineCurrency, String countryRisk, List<DMT_Opportunity_Mitigant__c> mitigants) {
+        String text = '';
+        Boolean truncated = false;
+
+        // Sección Underlyings
+        if (!truncated && underlyings != null && !underlyings.isEmpty()) {
+            List<DMT_Underlying__c> restrictions  = new List<DMT_Underlying__c>();
+            List<DMT_Underlying__c> profitability = new List<DMT_Underlying__c>();
+
+            for (DMT_Underlying__c u : underlyings) {
+                if (u.DMT_Underlying_Type__c == 'Profitability') {
+                    profitability.add(u);
+                } else {
+                    restrictions.add(u);
+                }
+            }
+
+            Boolean hasRestrictions  = !restrictions.isEmpty();
+            Boolean hasProfitability = !profitability.isEmpty();
+
+            // Underlying Restriction
+            if (!truncated && hasRestrictions) {
+                String block = 'Underlying Restriction:\n';
+                Boolean anyLineAdded = false;
+
+                Map<String, String> maxTermLabels = getCachedMaxTermLabels();
+                for (DMT_Underlying__c u : restrictions) {
+                    String termLabel = String.isNotBlank(u.DMT_Max_Term__c) ? (maxTermLabels.containsKey(u.DMT_Max_Term__c) ? maxTermLabels.get(u.DMT_Max_Term__c) : u.DMT_Max_Term__c) : '';
+                    String line = '-' + (u.Name != null ? u.Name : '') + ': max amount ' +
+                        (u.DMT_Max_Amount__c != null ? formatDecimal(u.DMT_Max_Amount__c) : '') +
+                        (String.isNotBlank(lineCurrency) ? ' ' + lineCurrency : '') +
+                        ' and max term ' + termLabel + '\n';
+
+                    if ((text + block + line).length() <= MAX_LENGTH) {
+                        block += line;
+                        anyLineAdded = true;
+                    } else {
+                        truncated = true;
+                        break;
+                    }
+                }
+
+                if (anyLineAdded) text += block;
+            }
+
+
+            if (!truncated && (hasRestrictions || hasProfitability) && (text + '\n').length() <= MAX_LENGTH) {
+                text += '\n';
+            }
+        }
+
+        // Sección Guarantor / Collateral
+        if (!truncated && mitigants != null && !mitigants.isEmpty()) {
+            List<DMT_Opportunity_Mitigant__c> collaterals = new List<DMT_Opportunity_Mitigant__c>();
+            List<DMT_Opportunity_Mitigant__c> guarantors   = new List<DMT_Opportunity_Mitigant__c>();
+
+            for (DMT_Opportunity_Mitigant__c m : mitigants) {
+                if (String.isBlank(m.DMT_Guarantor_Display__c)) {
+                    collaterals.add(m);
+                } else {
+                    guarantors.add(m);
+                }
+            }
+
+            Boolean hasGuarantors  = !guarantors.isEmpty();
+            Boolean hasCollaterals = !collaterals.isEmpty();
+
+            // Guarantor
+            if (!truncated && hasGuarantors) {
+                String block = 'Guarantor:\n';
+                Boolean anyLineAdded = false;
+
+                for (DMT_Opportunity_Mitigant__c m : guarantors) {
+                    String line = '-';
+                    if (m.Garantor_European_ECA__c == true) {
+                        line += 'ECA ';
+                    }
+
+                    line += (String.isNotBlank(m.DMT_Guarantor_Display__c) ? m.DMT_Guarantor_Display__c : '');
+
+                    if (m.Commercial_Percentage__c != null || m.Political_Percentage__c != null) {
+                        line += ' Credit / CountryRisk Coverage:' +
+                            (m.Commercial_Percentage__c != null ? formatDecimal(m.Commercial_Percentage__c) + '%' : '') +
+                            ' / ' +
+                            (m.Political_Percentage__c != null ? formatDecimal(m.Political_Percentage__c) + '%' : '');
+                    }
+                    if (m.End_Date__c != null) {
+                        line += ' EndDate:' + formatDateShort(m.End_Date__c);
+                    }
+                    if (m.Internal_Rating__c != null || m.External_Rating__c != null) {
+                        line += ' Internal / External Rating: ' +
+                            (m.Internal_Rating__c != null ? m.Internal_Rating__c + (m.DMT_Scoring__c != null ? '(' + formatDecimal(m.DMT_Scoring__c) + ')' : '') : '') +
+                            ' / ' +
+                            (m.External_Rating__c != null ? m.External_Rating__c : '');
+                    }
+                    if (String.isNotBlank(m.SCRA__c)) {
+                        line += ' SCRA:' + m.SCRA__c;
+                    }
+                    if (m.AVC_Check__c == true) {
+                        line += ' AVC: Yes';
+                    }
+                    line += '\n';
+
+                    if ((text + block + line).length() <= MAX_LENGTH) {
+                        block += line;
+                        anyLineAdded = true;
+                    } else {
+                        truncated = true;
+                        break;
+                    }
+                }
+
+                if (anyLineAdded) text += block;
+            }
+
+            // Collateral
+            if (!truncated && hasCollaterals) {
+                String block = 'Collateral :\n';
+                Boolean anyLineAdded = false;
+
+                for (DMT_Opportunity_Mitigant__c m : collaterals) {
+                    String line = '-' + (m.Mitigant_Type__c != null ? m.Mitigant_Type__c : '');
+
+                    if (m.Commercial_Percentage__c != null || m.Political_Percentage__c != null) {
+                        line += ' Credit / CountryRisk Coverage:' +
+                            (m.Commercial_Percentage__c != null ? formatDecimal(m.Commercial_Percentage__c) + '%' : '') +
+                            ' / ' +
+                            (m.Political_Percentage__c != null ? formatDecimal(m.Political_Percentage__c) + '%' : '');
+                    }
+                    if (m.End_Date__c != null) {
+                        line += ' EndDate:' + formatDateShort(m.End_Date__c);
+                    }
+                    if (m.Internal_Rating__c != null || m.External_Rating__c != null) {
+                        line += ' Internal / External Rating: ' +
+                            (m.Internal_Rating__c != null ? m.Internal_Rating__c : '') +
+                            ' / ' +
+                            (m.External_Rating__c != null ? m.External_Rating__c : '');
+                    }
+                    line += '\n';
+
+                    if ((text + block + line).length() <= MAX_LENGTH) {
+                        block += line;
+                        anyLineAdded = true;
+                    } else {
+                        truncated = true;
+                        break;
+                    }
+                }
+
+                if (anyLineAdded) text += block;
+            }
+
+            if (!truncated && (hasGuarantors || hasCollaterals) && (text + '\n').length() <= MAX_LENGTH) {
+                text += '\n';
+            }
+        }
+
+        // Sección Country Risk
+        if (!truncated && String.isNotBlank(countryRisk)) {
+            String block = 'Country risk: ' + countryRisk + '\n';
+            if ((text + block).length() <= MAX_LENGTH) {
+                text += block;
+            } else {
+                truncated = true;
+            }
+        }
+
+        // Marcador de truncado
+        if (truncated) {
+            Integer maxBase = MAX_LENGTH - TRUNCATION_MARKER.length();
+            if (text.length() > maxBase) {
+                text = text.substring(0, maxBase);
+            }
+            text += TRUNCATION_MARKER;
+        }
+
+        return text;
+    }
+
+    private static Map<String, String> buildGuaranteeTypeMap(List<DMT_Opportunity_Mitigant__c> mitigants) {
+        Set<String> mitigantNames = new Set<String>();
+        for (DMT_Opportunity_Mitigant__c m : mitigants) {
+            if (String.isNotBlank(m.Mitigant_Type__c)) {
+                mitigantNames.add(m.Mitigant_Type__c);
+            }
+        }
+        Map<String, String> nameToValue = new Map<String, String>();
+        if (mitigantNames.isEmpty()) return nameToValue;
+        for (DMT_Taxonomy_Values__c tax : [
+            SELECT DMT_Name_EN__c, DMT_Value__c
+            FROM DMT_Taxonomy_Values__c
+            WHERE DMT_Catalog__c = 'E895'
+              AND DMT_Name_EN__c IN :mitigantNames
+              AND DMT_Active__c = true
+            WITH SYSTEM_MODE
+            ORDER BY DMT_Value__c
+        ]) {
+            if (!nameToValue.containsKey(tax.DMT_Name_EN__c)) {
+                nameToValue.put(tax.DMT_Name_EN__c, tax.DMT_Value__c);
+            }
+        }
+        return nameToValue;
+    }
+
+    private static String formatDecimal(Decimal d) {
+        if (d == null) return '';
+        return String.valueOf(d.setScale(2));
+    }
+
+    private static String formatDateShort(Date d) {
+        if (d == null) return '';
+        List<String> months = new List<String>{
+            'Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'
+        };
+        return String.valueOf(d.day()) + months[d.month() - 1] + String.valueOf(d.year());
+    }
+
     // Wrapper para recibir OpportunityLineItem desde Flow
     public class OpportunityLineItemWrapper {
         @InvocableVariable(required=true)
@@ -368,4 +604,5 @@ public with sharing class DMT_OppToSanctionUtils {
         5114, 5296, 5479, 5844, 6209, 6575, 6940, 7305, 7670, 8036, 8401, 8766,
         9131, 9497, 9862, 10227, 10592, 10958, 11323, 11688, 12053, 12419, 12784
     };
+
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_backlog_pending_cyr_amount__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Backlog of the Company for last year (t)</description>
+    <externalId>false</externalId>
+    <label>Backlog figure for last year (t)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>1</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

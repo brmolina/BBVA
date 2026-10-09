@@ -320,11 +320,30 @@ export default class Dmt_datatable_copy_paste extends LightningElement {
 
             // Date Parsing
             if (field.toLowerCase().includes('date') || field === 'gf_tenor_date__c') {
-                const eurDateRegex = /^(\d{2})[\/\-](\d{2})[\/\-](\d{4})$/;
                 const isoDateRegex = /^(\d{4})[\/\-](\d{2})[\/\-](\d{2})$/;
+                const slashDateRegex = /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/;
 
-                if (eurDateRegex.test(valueStr)) parsedValue = valueStr.replace(eurDateRegex, "$3-$2-$1");
-                else if (isoDateRegex.test(valueStr)) parsedValue = valueStr.replace(isoDateRegex, "$1-$2-$3");
+                if (isoDateRegex.test(valueStr)) {
+                    parsedValue = valueStr.replace(isoDateRegex, "$1-$2-$3");
+                } else {
+                    const m = valueStr.match(slashDateRegex);
+                    if (m) {
+                        let [, a, b, year] = m;
+                        a = parseInt(a, 10);
+                        b = parseInt(b, 10);
+                        let month, day;
+
+                        if (a > 12 && b <= 12) {
+                            day = a; month = b;
+                        } else if (b > 12 && a <= 12) {
+                            month = a; day = b;
+                        } else {
+                            month = a; day = b;
+                        }
+
+                        parsedValue = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    }
+                }
 
                 // Only validate format here
                 if (valueStr !== '' && !/^\d{4}-\d{2}-\d{2}$/.test(parsedValue)) {
@@ -334,13 +353,45 @@ export default class Dmt_datatable_copy_paste extends LightningElement {
             }
             // Number Parsing
             else if (field.includes('amount') || field.includes('spread') || field.includes('fees')) {
-                const numericRegex = /^-?\d+([.,]?\d{0,2})?$/;
-                if (valueStr === '') parsedValue = 0;
-                else if (!numericRegex.test(valueStr)) {
-                    errorMsg = `Row ${rowIndex + 1}: Invalid Number "${rawValue}".`;
-                    hasError = true;
+                if (valueStr === '') {
+                    parsedValue = 0;
                 } else {
-                    parsedValue = valueStr.replace(',', '.');
+                    // Normalize Excel-formatted numbers (thousands separators, EU/US decimal)
+                    let normalized = valueStr.replace(/[€$£¥\s]/g, '');
+                    const commaCount = (normalized.match(/,/g) || []).length;
+                    const dotCount   = (normalized.match(/\./g) || []).length;
+
+                    if (commaCount > 0 && dotCount > 0) {
+                        const lastComma = normalized.lastIndexOf(',');
+                        const lastDot   = normalized.lastIndexOf('.');
+                        if (lastComma > lastDot) {
+                            // EU format: 1.000,50 → 1000.50
+                            normalized = normalized.replace(/\./g, '').replace(',', '.');
+                        } else {
+                            // US format: 1,000.50 → 1000.50
+                            normalized = normalized.replace(/,/g, '');
+                        }
+                    } else if (commaCount > 0) {
+                        const afterComma = normalized.slice(normalized.lastIndexOf(',') + 1);
+                        if (afterComma.length === 3 && /^\d{3}$/.test(afterComma)) {
+                            // Thousands separator: 1,000 → 1000
+                            normalized = normalized.replace(/,/g, '');
+                        } else {
+                            // Decimal separator: 1,5 → 1.5
+                            normalized = normalized.replace(',', '.');
+                        }
+                    } else if (dotCount > 1) {
+                        // Multiple dots → thousands separators: 1.000.000 → 1000000
+                        normalized = normalized.replace(/\./g, '');
+                    }
+
+                    const parsed = parseFloat(normalized);
+                    if (isNaN(parsed)) {
+                        errorMsg = `Row ${rowIndex + 1}: Invalid Number "${rawValue}".`;
+                        hasError = true;
+                    } else {
+                        parsedValue = parsed;
+                    }
                 }
             }
             // Boolean

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Account_has_AnalysisId__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <deprecated>false</deprecated>
+    <label>Account has Analysis</label>
+    <referenceTo>arce__Account_has_Analysis__c</referenceTo>
+    <relationshipLabel>Overlays</relationshipLabel>
+    <relationshipName>Overlays</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

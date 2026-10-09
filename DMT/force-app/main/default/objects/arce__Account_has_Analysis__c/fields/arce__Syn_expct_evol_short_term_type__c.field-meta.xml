@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Syn_expct_evol_short_term_type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Variable cualitativa que explica la evolución esperada de la empresa a medio plazo (3 años).</description>
+    <label>Evolución esperada en 3 años</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>1</fullName>
+                <default>false</default>
+                <label>Very Good</label>
+            </value>
+            <value>
+                <fullName>2</fullName>
+                <default>false</default>
+                <label>Good</label>
+            </value>
+            <value>
+                <fullName>3</fullName>
+                <default>false</default>
+                <label>Normal</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -28,6 +28,17 @@ public with sharing class DMT_AsyncDispatcher {
         } else if (payload instanceof DMT_RestartApprovalTasksPayload) {
             DMT_RestartApprovalTasksPayload p = (DMT_RestartApprovalTasksPayload) payload;
             DMT_ApprovalChangeStep_Helper.restartTasksForRecord(p.recordId, p.tasksToRestart);
+        } else if (payload instanceof DMT_DocumentTransferPayload) {
+            DMT_DocumentTransferPayload p = (DMT_DocumentTransferPayload) payload;
+            DMT_DocumentTransferService.transferDocuments(p.taskIdByCaseId);
+        } else if (payload instanceof DMT_WutSurveyPayload) {
+            handleWutSurveyPublish((DMT_WutSurveyPayload) payload);
+        } else if (payload instanceof DMT_CalloutTrackableCheckPayload) {
+            DMT_ApprovalChangeStep_Helper.checkCalloutTrackableComponent((DMT_CalloutTrackableCheckPayload) payload);
+        } else if (payload instanceof DMT_StartApprovalCasePayload) {
+            DMT_Case_Steps_Controller.startApprovalCaseFromPayload((DMT_StartApprovalCasePayload) payload);
+        } else if (payload instanceof DMT_CalloutTrackableFreezePayload) {
+            DMT_ApprovalChangeStep_Helper.freezeCalloutTrackableBaseline((DMT_CalloutTrackableFreezePayload) payload);
         } else {
             throw new IllegalArgumentException('Unsupported payload type');
         }
@@ -86,6 +97,21 @@ public with sharing class DMT_AsyncDispatcher {
             // Do NOT let this exception bubble up to the Batch/Queueable.
             System.debug(LoggingLevel.ERROR, ' [DMT] CRITICAL FAILURE: Could not write to Big Object: ' + e.getMessage());
         }
+    }
+
+    // CIBGLOBALD-4295 - Captures WUT survey Platform Events published in test context, for assertion -
+    // the Queueable that carries this dispatch executes at Test.stopTest(), so tests read this after
+    // that call.
+    @TestVisible private static List<DES_pe_SurveyNotification__e> publishedWutSurveyEvents = new List<DES_pe_SurveyNotification__e>();
+
+    private static void handleWutSurveyPublish(DMT_WutSurveyPayload payload) {
+        DES_pe_SurveyNotification__e evt = DES_cls_BotonNoteBookLm.buildSurveyEvent(
+            payload.survey, payload.moduleName, payload.userIds
+        );
+        if (Test.isRunningTest()) {
+            publishedWutSurveyEvents.add(evt);
+        }
+        EventBus.publish(evt);
     }
 
     private static void handleSnapshotLineVersion(DMT_SnapshotPayload payload) {
@@ -194,6 +220,19 @@ public with sharing class DMT_AsyncDispatcher {
             response.setStatusCode(forceStatusCodeForTest != null ? forceStatusCodeForTest : 204);
         } else {
             response = iaso.GBL_Integration_GenericService.invoke(serviceName, requestStr);
+            if (UserInfo.getUserId() == '005KE0000014hDgYAI' || UserInfo.getUserId() == '00557000006ApHLAA0') {
+                DebugMessenger.sendIntegrationInvocation(
+                    serviceName,
+                    requestStr,
+                    'DMT_AsyncDispatcher.handleConsumptionReassign(p); ' + serviceName + ' REQUEST'
+                );
+
+                DebugMessenger.sendIntegrationInvocation(
+                    serviceName,
+                    response.getBody(),
+                    'DMT_AsyncDispatcher.handleConsumptionReassign(p); ' + serviceName + ' RESPONSE'
+                );
+            }
         }
 
         // 5. Evaluate response

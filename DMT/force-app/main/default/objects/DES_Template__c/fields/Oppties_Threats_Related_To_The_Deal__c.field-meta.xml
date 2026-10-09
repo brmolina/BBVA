@@ -8,9 +8,9 @@
 &quot;·&quot; &amp; BR()&amp;
 &quot;·&quot; &amp; BR()</defaultValue>
     <encryptionScheme>None</encryptionScheme>
-    <inlineHelpText>Banker&apos;s insight on the impact of this deal: advantages, opportunities and potential issues - external or internal - which may arise. (Max. 103 characters/line)</inlineHelpText>
+    <inlineHelpText>Banker&apos;s insight on the impact of this deal: advantages, opportunities and potential issues - external or internal - which may arise. (Max. 812 characters)</inlineHelpText>
     <label>Oppties. &amp; Threats Related To The Deal</label>
-    <length>618</length>
+    <length>812</length>
     <trackFeedHistory>false</trackFeedHistory>
     <trackTrending>false</trackTrending>
     <type>LongTextArea</type>

@@ -12,6 +12,10 @@
             onkeydown={handleKeyDown}> 
         </lightning-input>
 
+        <template if:true={selectedSubLabel}>
+            <span class="slds-text-body_small slds-text-color_weak picker-selected-sublabel">{selectedSubLabel}</span>
+        </template>
+
         <template if:true={showDropdown}>
             <div
                 class="slds-dropdown_fluid slds-dropdown_length-5 dropdown slds-scrollable_y"
@@ -26,10 +30,21 @@
                                 role="option"
                                 data-value={opt.value}
                                 data-label={opt.label}
+                                data-sublabel={opt.subLabel}
                                 data-index={index}
                                 onmousedown={handleSelect}
                                 onpointerdown={handleSelect}>
-                                <span class="slds-truncate" title={opt.label}>{opt.label}</span>
+                                <span class="slds-media__body">
+                                    <span class="option-title slds-truncate" title={opt.label}>
+                                        {opt.label}
+                                    </span>
+                                
+                                    <template if:true={opt.showSubLabel}>
+                                        <span class="option-subtitle slds-truncate" title={opt.subLabel}>
+                                            {opt.subLabel}
+                                        </span>
+                                    </template>
+                                </span>
                             </div>
                         </li>
                     </template>

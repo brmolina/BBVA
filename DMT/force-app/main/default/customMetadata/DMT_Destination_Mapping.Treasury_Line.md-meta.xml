@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Treasury Line</label>
+    <protected>false</protected>
+    <values>
+        <field>DMT_Booking_System_Code__c</field>
+        <value xsi:type="xsd:string">MENTOR</value>
+    </values>
+    <values>
+        <field>DMT_Initial_Status__c</field>
+        <value xsi:type="xsd:string">Pendiente de alta en Mentor</value>
+    </values>
+    <values>
+        <field>DMT_KO_Status__c</field>
+        <value xsi:type="xsd:string">Alta cancelada en Mentor</value>
+    </values>
+    <values>
+        <field>DMT_OK_Status__c</field>
+        <value xsi:type="xsd:string">Alta confirmada en Mentor</value>
+    </values>
+    <values>
+        <field>DMT_RecordTypeName__c</field>
+        <value xsi:type="xsd:string">Treasury Line</value>
+    </values>
+</CustomMetadata>

@@ -1,9 +1,9 @@
-public with sharing class DMT_OppBasicRequirementRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_OppBasicRequirementRenderer implements DMT_ViewRenderer {
 
     private class ProfitabilityContext {
         Map<String, Object> summary = new Map<String, Object>();
-        String rorcThresholdText = '';
-        String raroecThresholdText = '';
+        Object rorcThreshold;
+        Object raroecThreshold;
     }
 
     private List<DMT_FormattingUtils.DisplayField> buildRenderFields(DMT_ViewController.LineDataWrapper data) {
@@ -11,8 +11,8 @@ public with sharing class DMT_OppBasicRequirementRenderer implements DMT_ViewRen
         List<DMT_FormattingUtils.DisplayField> fields = new List<DMT_FormattingUtils.DisplayField>();
 
         if (!profitabilityContext.summary.isEmpty()) {
-            fields.add(new DMT_FormattingUtils.DisplayField('Deal RORC', formatProfitabilityMetric(profitabilityContext.summary.get('rorc'), profitabilityContext.rorcThresholdText)));
-            fields.add(new DMT_FormattingUtils.DisplayField('Deal RAROEC', formatProfitabilityMetric(profitabilityContext.summary.get('raroec'), profitabilityContext.raroecThresholdText)));
+            fields.add(new DMT_FormattingUtils.DisplayField('Deal RORC', formatProfitabilityMetric(profitabilityContext.summary.get('rorc'), profitabilityContext.rorcThreshold)));
+            fields.add(new DMT_FormattingUtils.DisplayField('Deal RAROEC', formatProfitabilityMetric(profitabilityContext.summary.get('raroec'), profitabilityContext.raroecThreshold)));
             fields.add(new DMT_FormattingUtils.DisplayField('RORC Prospective CDD', DMT_FormattingUtils.formatPercent(profitabilityContext.summary.get('rorcProspected'))));
         }
         fields.add(new DMT_FormattingUtils.DisplayField(System.Label.dmt_cl_ClientsGlobalRorcLastFY_Title, DMT_FormattingUtils.checkNull(data.oppClient.DMT_CDD_Clients_Global_Rorc_Last_FY__c))); // Client CDD Avge 6m
@@ -49,8 +49,8 @@ public with sharing class DMT_OppBasicRequirementRenderer implements DMT_ViewRen
 
         Map<String, Object> profitability = (Map<String, Object>) feature.get('profitability');
         Map<String, Object> audit = profitability.containsKey('audit') && profitability.get('audit') != null ? (Map<String, Object>) profitability.get('audit') : new Map<String, Object>();
-        context.rorcThresholdText = formatThresholdPercent(audit.get('rorcThreshold'));
-        context.raroecThresholdText = formatThresholdPercent(audit.get('raroecThreshold'));
+        context.rorcThreshold = audit.get('rorcThreshold');
+        context.raroecThreshold = audit.get('raroecThreshold');
 
         List<Object> results = profitability.containsKey('results') ? (List<Object>) profitability.get('results') : null;
         if (results == null || results.isEmpty()) {
@@ -68,20 +68,30 @@ public with sharing class DMT_OppBasicRequirementRenderer implements DMT_ViewRen
         return context;
     }
 
-    private String formatProfitabilityMetric(Object value, String thresholdText) {
+    private String formatProfitabilityMetric(Object value, Object thresholdValue) {
+        Decimal thresholdDecimal = toDecimalOrNull(thresholdValue);
         String formattedValue = DMT_FormattingUtils.formatPercent(value);
-        return String.isBlank(thresholdText) ? formattedValue : formattedValue + ' < ' + thresholdText;
+        if (thresholdDecimal == null) {
+            return formattedValue;
+        }
+
+        Decimal valueDecimal = toDecimalOrNull(value);
+        String comparisonSign = valueDecimal == null ? '<'
+            : valueDecimal > thresholdDecimal ? '>'
+            : valueDecimal < thresholdDecimal ? '<'
+            : '=';
+        return formattedValue + ' ' + comparisonSign + ' ' + DMT_FormattingUtils.formatPercent(thresholdDecimal);
     }
 
-    private String formatThresholdPercent(Object value) {
-        if (value == null) {
-            return '';
+    private Decimal toDecimalOrNull(Object val) {
+        if (val == null) {
+            return null;
         }
 
         try {
-            return DMT_FormattingUtils.formatPercent(Decimal.valueOf(String.valueOf(value)));
+            return Decimal.valueOf(String.valueOf(val));
         } catch (Exception e) {
-            return '';
+            return null;
         }
     }
 
@@ -105,34 +115,6 @@ public with sharing class DMT_OppBasicRequirementRenderer implements DMT_ViewRen
         } catch (Exception e) {
             System.debug('Error in DMT_OppBasicRequirementRenderer renderHtml, ' + e.getMessage() + ' ' + e.getLineNumber());
             return '<div>Error: ' + e.getMessage() + ' - ' + e.getLineNumber() + '</div>';
-        }
-    }
-
-    public Map<String, Object> renderPdfJson(DMT_ViewController.LineDataWrapper data) {
-        if (data == null || data.opportunity == null || data.oppClient == null ||
-            (data.opportunity.getPopulatedFieldsAsMap().isEmpty() && data.oppClient.getPopulatedFieldsAsMap().isEmpty())) {
-            return new Map<String, Object>();
-        }
-
-        try {
-            List<Object> contentList = new List<Object>();
-            Map<String, Object> component = new Map<String, Object>();
-
-            contentList.add(DMT_Create_Pdf_Controller.createTitle('Basic Profitability Metrics'));
-
-            List<DMT_FormattingUtils.DisplayField> fieldsToRender = buildRenderFields(data);
-            contentList.add(DMT_Create_Pdf_Controller.generatePdfList(fieldsToRender));
-
-            component.put('content', contentList);
-            component.put('name', 'Basic Profitability Metrics');
-
-            System.debug('returning component: ' + JSON.serialize(component));
-            return component;
-
-        } catch (Exception e) {
-            System.debug('Error in DMT_OppBasicRequirementRenderer renderPdfJson, ' + e.getMessage() + ' ' + e.getLineNumber());
-            System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(), 'DMT_OppBasicRequirementRenderer', 'renderPdfJson', 'DMT', ''));
-            return new Map<String, Object>();
         }
     }
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__cust_public_private_cmprn_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>An explanation on public and private clients</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Explain clients: public vs. private.</label>
+    <length>500</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>2</visibleLines>
+</CustomField>

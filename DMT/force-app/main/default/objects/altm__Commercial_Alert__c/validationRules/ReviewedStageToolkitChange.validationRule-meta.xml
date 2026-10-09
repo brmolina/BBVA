@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ReviewedStageToolkitChange</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    RecordType.DeveloperName = &quot;Commercial_Task_Toolkit&quot;,
+    OR(
+        AND(
+            ISPICKVAL(altm__alert_stage_type__c, &quot;Reviewed&quot;),
+            OR(
+                ISBLANK(cstk__Reviewed_Comments_html__c),
+                REGEX(cstk__Reviewed_Comments_html__c, &quot;(&lt;[^&gt;]*&gt;|[\\s&amp;nbsp;])*&quot;)
+            )
+        ),
+        AND(
+            NOT(ISPICKVAL(altm__alert_stage_type__c, &quot;Reviewed&quot;)),
+            NOT(ISBLANK(cstk__Reviewed_Comments_html__c)),
+            NOT(REGEX(cstk__Reviewed_Comments_html__c, &quot;(&lt;[^&gt;]*&gt;|[\\s&amp;nbsp;])*&quot;))
+        )
+    )
+)</errorConditionFormula>
+    <errorMessage>Status and Reviewed Comments are inconsistent. Please verify both fields before saving. If Reviewed Comments has text, Status must be Reviewed; if Status is set to Reviewed, a comment in Reviewed Comments is required.</errorMessage>
+</ValidationRule>

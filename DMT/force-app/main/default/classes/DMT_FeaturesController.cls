@@ -77,6 +77,8 @@ public with sharing class DMT_FeaturesController {
         return featuresList;
     }
 
+    /*
+    // DEPRECATED: sustituido por DMT_Semaphore_Logic + validateSemaphoreRulesForStageChange (dmt_custom_path_opp)
      //Añadido para el caso de uso específico de validar características obligatorias en oportunidades cerradas ganadas
     @AuraEnabled(cacheable=false)
     public static List<Map<String, Object>> getObligatoryFeaturesClosedWon(String lineOrOpportunityId) {
@@ -224,5 +226,172 @@ public with sharing class DMT_FeaturesController {
             result.put('isValid', true);
             return result;
         }
+    }*/
+
+    @AuraEnabled(cacheable=false)
+    public static Map<String, Object> validateSemaphoreRulesForStageChange(String opportunityId, String targetStatus) {
+        Map<String, Object> result = new Map<String, Object>();
+        result.put('isValid', true);
+        result.put('incompleteFeatures', new List<String>());
+
+        try {
+
+            if ('Closed Lost'.equalsIgnoreCase(targetStatus)) {
+                return result;
+            }
+            List<Map<String, Object>> features = getObligatoryFeatures(opportunityId);
+            if (features == null || features.isEmpty()) {
+                return result;
+            }
+
+            // Quedarnos solo con las features cuya regla aplica a este cambio de estado concreto
+            List<Map<String, Object>> applicableFeatures = new List<Map<String, Object>>();
+            List<String> featureIdsWithTasks = new List<String>();
+
+            for (Map<String, Object> feature : features) {
+                String requiredType = (String) feature.get('requiredType');
+                String reqColorCap  = (String) feature.get('requiredColorCapability');
+                String reqColorWF   = (String) feature.get('requiredColorWorkflow');
+
+                // Incluir si tiene config de semáforo nueva O si es obligatoria por el campo legado
+                Boolean hasNewSemaphoreConfig = String.isNotBlank(reqColorCap) || String.isNotBlank(reqColorWF);
+                Boolean isMandatory = 'Y'.equalsIgnoreCase(requiredType) && hasNewSemaphoreConfig;
+                if (!isMandatory) continue;
+
+                // Solo evaluar si la regla aplica al targetStatus recibido
+                String featureRequiredStatus = (String) feature.get('requiredStatus');
+                if (featureRequiredStatus == null) {
+                    continue;
+                }
+
+                Boolean matchesTargetStatus = featureRequiredStatus.equalsIgnoreCase(targetStatus);
+
+                // Caso especial: si se avanza a Closed Won, aceptamos también que el JSON envíe requiredStatus = "Closed" (sin distinguir Won/Lost) como equivalente.
+                // No aplica a Closed Lost.
+                if (!matchesTargetStatus && 'Closed Won'.equalsIgnoreCase(targetStatus)) {
+                    matchesTargetStatus = 'Closed'.equalsIgnoreCase(featureRequiredStatus);
+                }
+
+                if (!matchesTargetStatus) {
+                    continue;
+                }
+
+                applicableFeatures.add(feature);
+
+                List<Object> tasks = (List<Object>) feature.get('tasks');
+                if (tasks != null && !tasks.isEmpty()) {
+                    featureIdsWithTasks.add((String) feature.get('id'));
+                }
+            }
+
+            if (applicableFeatures.isEmpty()) {
+                return result;
+            }
+
+            // Resolver el color de Workflow usando la MISMA fuente que ya pinta el color
+            // en el LWC del Passport (DMT_Case_Steps_Controller es "without sharing"),
+            // para evitar que las reglas de sharing del usuario oculten Cases que sí existen.
+            Map<String, String> featureToWorkflowColor = new Map<String, String>();
+            Opportunity opp = DMT_Features_Selector.getOpportunityExternalIdById(opportunityId);
+            String oppExternalId = opp != null ? opp.DMT_Opp_Id__c : null;
+
+            if (!featureIdsWithTasks.isEmpty() && String.isNotBlank(oppExternalId)) {
+                List<DMT_Case_Steps_Controller.WRAPPER_Step> steps =
+                    DMT_Case_Steps_Controller.getCurrentStepFromFeaturesOpp(featureIdsWithTasks, oppExternalId);
+
+                // Aplanar igual que hace el LWC: Closed/Finished usan subitems, el resto se usa directamente
+                List<DMT_Case_Steps_Controller.WRAPPER_Step> flattenedSteps = new List<DMT_Case_Steps_Controller.WRAPPER_Step>();
+                for (DMT_Case_Steps_Controller.WRAPPER_Step step : steps) {
+                    Boolean isClosedOrFinished = step.itemKey == 'Closed' || step.itemKey == 'Finished';
+                    if (isClosedOrFinished && step.subitems != null) {
+                        flattenedSteps.addAll(step.subitems);
+                    } else {
+                        flattenedSteps.add(step);
+                    }
+                }
+
+                for (DMT_Case_Steps_Controller.WRAPPER_Step step : flattenedSteps) {
+                    if (step.featureId != null) {
+                        featureToWorkflowColor.put(step.featureId, resolveWorkflowColor(step.caseStatus, step.rawresult));
+                    }
+                }
+            }
+
+            // Evaluar cada feature aplicable contra su regla de semáforo
+            List<String> blockingFeatureNames = new List<String>();
+
+            for (Map<String, Object> feature : applicableFeatures) {
+                String featureId   = (String) feature.get('id');
+                String stateName   = (String) feature.get('stateName');
+                String reqColorCap = (String) feature.get('requiredColorCapability');
+                String reqColorWF  = (String) feature.get('requiredColorWorkflow');
+                List<Object> tasks = (List<Object>) feature.get('tasks');
+
+                DMT_Semaphore_Logic.SemaphoreRule rule = new DMT_Semaphore_Logic.SemaphoreRule();
+                rule.requiredColorCapability  = reqColorCap;
+                rule.requiredColorWorkflow    = reqColorWF;
+                rule.colorLogicalOperatorType = (String) feature.get('colorLogicalOperatorType');
+                String currentCapabilityColor = DMT_Semaphore_Logic.normalizeToShortColor(stateName);
+
+                // Cuando no hay Case en Salesforce para la feature
+                // sin Case + tiene tasks = YEL.
+                String rawWorkflowColor;
+                if (featureToWorkflowColor.containsKey(featureId)) {
+                    rawWorkflowColor = featureToWorkflowColor.get(featureId);
+                } else if (tasks != null && !tasks.isEmpty()) {
+                    rawWorkflowColor = 'YEL';
+                } else {
+                    rawWorkflowColor = null;
+                }
+                String currentWorkflowColor = DMT_Semaphore_Logic.normalizeToShortColor(rawWorkflowColor);
+
+                System.debug('SEMAPHORE_DEBUG feature=' + feature.get('name')
+                                + ' stateName=' + stateName
+                                + ' currentCapabilityColor=' + currentCapabilityColor
+                                + ' requiredColorCapability=' + reqColorCap
+                                + ' currentWorkflowColor=' + currentWorkflowColor
+                                + ' requiredColorWorkflow=' + reqColorWF
+                                + ' operator=' + rule.colorLogicalOperatorType);
+
+                Boolean isBlocking = !DMT_Semaphore_Logic.evaluate(rule, currentCapabilityColor, currentWorkflowColor);
+
+                System.debug('SEMAPHORE_DEBUG result isBlocking=' + isBlocking);
+
+                if (isBlocking) {
+                    blockingFeatureNames.add((String) feature.get('name'));
+                }
+            }
+
+            if (!blockingFeatureNames.isEmpty()) {
+                result.put('isValid', false);
+                result.put('incompleteFeatures', blockingFeatureNames);
+            }
+
+            return result;
+
+        } catch (Exception e) {
+            System.enqueueJob(new DMT_LogExceptionQueueable(
+                e.getMessage(), e.getStackTraceString(), e.getLineNumber(),
+                e.getTypeName(), 'DMT_FeaturesController', 'validateSemaphoreRulesForStageChange', 'DMT', ''
+            ));
+            result.put('isValid', true);
+            return result;
+        }
+    }
+
+    /**
+     * Deriva el color de Workflow desde el status del Case y el resultado de la Task más reciente.
+     */
+    @TestVisible
+    private static String resolveWorkflowColor(String caseStatus, String rawResult) {
+        if ('Finished'.equals(caseStatus)) {
+            if ('No'.equals(rawResult)) return 'RED';
+            if ('Yes'.equals(rawResult)) return 'GRE';
+            return null;
+        }
+        if ('Pending'.equals(caseStatus) || 'In Progress'.equals(caseStatus)) {
+            return 'YEL';
+        }
+        return null;
     }
 }

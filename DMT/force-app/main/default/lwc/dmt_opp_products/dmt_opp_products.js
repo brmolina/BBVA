@@ -19,7 +19,9 @@ const FIELDS          = [DMT_STAGE_NAME_FIELD, DMT_REQUESTED_PASSPORT_FIELD];
 const EDITABLE_STAGES = new Set(['Draft', 'Ready to close']);
 
 const PRODUCT_NAME_FIELD = 'DMT_TXT_ProductNameOLI__c';
-const AMOUNT_FIELD       = 'DMT_Deal_Amount_Tenors__c';
+const LINE_AMOUNT_FIELD  = 'bbva_prtcp_tranche_amount__c';
+const ONEOFF_AMOUNT_FIELD = 'DMT_Deal_Amount_Tenors__c';
+const TAB_AMOUNT_FIELD   = '_tabAmount';
 const CURRENCY_FIELD     = 'g_currency_id__c';
 
 export default class Dmt_opp_products extends LightningElement {
@@ -43,11 +45,18 @@ export default class Dmt_opp_products extends LightningElement {
     _taxonomyCatalogValues  = {};
     _assessmentOptions      = [];
     _subtypeOptions         = [];
+    _oneoffDealOptions      = [];
+    _lineTypeOptions        = [
+        { label: 'Committed', value: 'Committed' },
+        { label: 'Uncommitted', value: 'Uncommitted' }
+    ];
+    _lineTenorOptions       = [];
+    _useOfProceedsOptions   = [];
 
     // ─── Computed ─────────────────────────────────────────────────────────────
 
-    get activeProductName() { return this.activeProduct?.DES_Product_Name__c; }
-    get activeProductCode() { return this.activeProduct?.ProductCode; }
+    get activeProductName() { const v = this.activeProduct?.DES_Product_Name__c; return v != null ? v : undefined; }
+    get activeProductCode() { const v = this.activeProduct?.ProductCode;          return v != null ? v : undefined; }
 
     get hasLineItems() { return this.lineItems && this.lineItems.length > 0; }
 
@@ -64,18 +73,39 @@ export default class Dmt_opp_products extends LightningElement {
         return this.lineItems.find(li => li.Id === this.activeTabId) || null;
     }
 
+    get showOneOffDealDetails() {
+        const rawValue = this.activeProduct?.DMT_Line_Oneoffdeal__c;
+        const normalized = this._normalizeLineOneoffValue(rawValue);
+        return normalized === 'oneoffdeal' || normalized === 'oneoff';
+    }
+
+    get showLineDetails() {
+        return !this.showOneOffDealDetails;
+    }
+
     get tabsConfig() {
+        const products = this._sortByPriority(this.lineItems).map(p => {
+            const normalized = this._normalizeLineOneoffValue(p.DMT_Line_Oneoffdeal__c);
+            const isOneOff   = normalized === 'oneoffdeal' || normalized === 'oneoff';
+            return Object.assign({}, p, {
+                [TAB_AMOUNT_FIELD]: isOneOff ? p[ONEOFF_AMOUNT_FIELD] : p[LINE_AMOUNT_FIELD]
+            });
+        });
         return {
             nameField    : PRODUCT_NAME_FIELD,
-            amountField  : AMOUNT_FIELD,
+            amountField  : TAB_AMOUNT_FIELD,
             currencyField: CURRENCY_FIELD,
-            products     : this._sortByPriority(this.lineItems)
+            products
         };
     }
 
     get productFieldOptions() {
         return {
             riskTypeOptions       : this._riskTypeOptions        || [],
+            oneoffDealOptions     : this._oneoffDealOptions      || [],
+            lineTypeOptions       : this._lineTypeOptions        || [],
+            lineTenorOptions      : this._lineTenorOptions       || [],
+            useOfProceedsOptions  : this._useOfProceedsOptions   || [],
             productLineTypeOptions: this._productLineTypeOptions || [],
             catalogValues         : this._taxonomyCatalogValues,
             assessmentOptions     : this._assessmentOptions      || [],
@@ -152,11 +182,29 @@ export default class Dmt_opp_products extends LightningElement {
         else if (error) console.error('[dmt_opp_products] getPicklistValues (subtype) error:', error);
     }
 
+    @wire(getPicklistValues, { fieldName: 'DMT_Line_Oneoffdeal__c' })
+    wiredOneoffDealOptions({ data, error }) {
+        if (data)  this._oneoffDealOptions = this._mapToOptions(data);
+        else if (error) console.error('[dmt_opp_products] getPicklistValues (oneoff deal) error:', error);
+    }
+
+    @wire(getPicklistValues, { fieldName: 'DMT_Line_Tenor__c' })
+    wiredLineTenorOptions({ data, error }) {
+        if (data)  this._lineTenorOptions = this._mapToOptions(data);
+        else if (error) console.error('[dmt_opp_products] getPicklistValues (line tenor) error:', error);
+    }
+
+    @wire(getPicklistValues, { fieldName: 'DMT_Use_of_Proceeds__c' })
+    wiredUseOfProceedsOptions({ data, error }) {
+        if (data)  this._useOfProceedsOptions = this._mapToOptions(data);
+        else if (error) console.error('[dmt_opp_products] getPicklistValues (use of proceeds) error:', error);
+    }
+
     // ─── Event handlers ───────────────────────────────────────────────────────
 
     async handleTabChange(event) {
         const newTabId = event.detail.tabId;
-        const component = this.refs.oppProductDetails;
+        const component = this.refs.oppProductDetails || this.refs.oppProductDetailsLine;
 
         const isEditing = component?.getEditMode();
 
@@ -237,6 +285,7 @@ export default class Dmt_opp_products extends LightningElement {
                 // Refresh first so lineItems already contains the cloned product before switching tabs
                 this.activeTabId = newId;
                 await refreshApex(this.wiredProductList);
+                this.dispatchEvent(new CustomEvent('productchanged', { bubbles: true, composed: true }));
                 this._toast('Product Cloned', 'Product was cloned successfully.', 'success');
             } else {
                 this._toast('Error', result.errorMessage || 'There was a problem cloning the product.', 'error');
@@ -265,6 +314,7 @@ export default class Dmt_opp_products extends LightningElement {
             if (result) {
                 this.activeTabId = nextActive;
                 await refreshApex(this.wiredProductList);
+                this.dispatchEvent(new CustomEvent('productdeleted', { bubbles: true, composed: true }));
                 this._toast('Product Deleted', 'Product was deleted successfully.', 'success');
             } else {
                 this._toast('Error', 'There was a problem deleting the product.', 'error');
@@ -305,6 +355,11 @@ export default class Dmt_opp_products extends LightningElement {
     _mapToOptions(data) {
         if (!Array.isArray(data)) return [];
         return data.map(entry => ({ label: entry.label, value: entry.value }));
+    }
+
+    _normalizeLineOneoffValue(value) {
+        if (value === null || value === undefined) return '';
+        return String(value).toLowerCase().replace(/[^a-z]/g, '');
     }
 
     _toast(title, message, variant = 'info') {

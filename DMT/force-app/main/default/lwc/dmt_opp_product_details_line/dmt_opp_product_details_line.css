@@ -1,0 +1,9 @@
+.delete-border {
+    border-top-color: rgb(255, 255, 255) !important;
+}
+
+.underlyings-layer {
+    position: relative;
+    z-index: 40;
+    overflow: visible !important;
+}

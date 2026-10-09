@@ -1,0 +1,153 @@
+/* Modal styling overrides */
+.slds-modal__content,
+.slds-p-around_medium {
+    padding: 0;
+}
+
+.slds-card .slds-card,
+.slds-card .slds-card-wrapper {
+    padding: 0;
+    margin: 0;
+}
+
+/* YES button - green (selected) */
+.buttonYES {
+    --slds-c-button-color-background: rgb(69, 198, 90);
+    --slds-c-button-neutral-color-background: rgb(69, 198, 90);
+    --slds-c-button-neutral-color-background-hover: rgb(69, 198, 90);
+    --slds-c-button-text-color: #FFFFFF;
+    --slds-c-button-neutral-text-color: #FFFFFF;
+    --slds-c-button-radius-border: 2rem;
+}
+
+/* NO button - red (selected) */
+.buttonNO {
+    --slds-c-button-color-background: #fe5c4c;
+    --slds-c-button-neutral-color-background: #fe5c4c;
+    --slds-c-button-neutral-color-background-hover: #fe5c4c;
+    --slds-c-button-text-color: #FFFFFF;
+    --slds-c-button-neutral-text-color: #FFFFFF;
+    --slds-c-button-radius-border: 2rem;
+}
+
+/* NA button - gray (selected) */
+.buttonNA {
+    --slds-c-button-color-background: #747474;
+    --slds-c-button-neutral-color-background: #747474;
+    --slds-c-button-neutral-color-background-hover: #747474;
+    --slds-c-button-text-color: #FFFFFF;
+    --slds-c-button-neutral-text-color: #FFFFFF;
+    --slds-c-button-radius-border: 2rem;
+}
+
+/* YES button hover state (unselected) */
+.buttonYEShover {
+    --slds-c-button-color-background-hover: #58ed48;
+    --slds-c-button-color-border-hover: #38e537;
+    --slds-c-button-radius-border: 2rem;
+}
+
+/* Round buttons (unselected No/NA) */
+.buttonRound {
+    --slds-c-button-radius-border: 2rem !important;
+}
+
+/* Clip text utility */
+.clip-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Footer styling */
+.slds-docked-form-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+}
+/* ============================================================
+   HACK PARA SALESFORCE MOBILE: BLOQUEO DE SCROLL Y FONDO MODAL
+   ============================================================ */
+
+/* 1. Bloquear que el usuario pueda deslizar la pantalla de fondo */
+.slds-modal, .slds-backdrop {
+    touch-action: none !important; 
+}
+
+/* 2. Permitir deslizar solo el interior del modal (por si tiene mucho texto) */
+.slds-modal__content {
+    touch-action: pan-y !important; 
+}
+
+/* 3. Forzar que el fondo oscuro sea gigante para que NUNCA se vea un corte 
+      incluso si el contenedor nativo de Salesforce hace un salto */
+.slds-backdrop, .slds-backdrop_open {
+    position: fixed !important;
+    top: -100vh !important;
+    left: -100vw !important;
+    width: 300vw !important;
+    height: 300vh !important;
+    transform: translateZ(0); /* Aceleración por hardware para fijarlo mejor */
+    z-index: 8999 !important;  /* ← Está DETRÁS del modal (9000) */
+    pointer-events: none !important;  /* ← No bloquea clicks */
+}
+
+/* ============================================================
+   MODAL CLOSE TASK STYLING
+   ============================================================ */
+
+/* Modal container - ensure white background and visibility */
+.slds-modal {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 9000 !important;  /* ← ENCIMA del backdrop */
+    pointer-events: auto !important;  /* ← Permite clicks */
+}
+
+.slds-modal__container {
+    background-color: #ffffff !important;
+    position: relative !important;
+    z-index: 9001 !important;
+    box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.15) !important;
+    border-radius: 4px !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    pointer-events: auto !important;  /* ← Permite interacción */
+}
+
+.dmt-close-task-shell .slds-modal__container {
+    width: 45rem !important;
+    max-width: 45rem !important;
+    min-width: 35rem !important;
+}
+
+/* Asegurar que TODOS los elementos del modal puedan recibir clicks */
+.slds-modal button,
+.slds-modal input,
+.slds-modal lightning-combobox,
+.slds-modal lightning-button,
+.slds-modal lightning-input {
+    pointer-events: auto !important;
+}
+
+.page-docked-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw; /* Spans full viewport width */
+    z-index: 9999; /* Ensures it floats above all other record page elements */
+    background-color: #f3f3f3; /* Standard SLDS footer background */
+    border-top: 1px solid #c9c9c9;
+    padding: 0.75rem 2rem;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.footer-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem; /* Space between each button */
+}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__Arc_Gen_Group_Status_Classification__c</fullName>
+    <deprecated>false</deprecated>
+    <label>Group Status Classification</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Core</fullName>
+                <default>false</default>
+                <label>Core</label>
+            </value>
+            <value>
+                <fullName>Highly Strategic</fullName>
+                <default>false</default>
+                <label>Highly Strategic</label>
+            </value>
+            <value>
+                <fullName>Strategically Important</fullName>
+                <default>false</default>
+                <label>Strategically Important</label>
+            </value>
+            <value>
+                <fullName>Moderately Strategic</fullName>
+                <default>false</default>
+                <label>Moderately Strategic</label>
+            </value>
+            <value>
+                <fullName>Nonstrategic</fullName>
+                <default>false</default>
+                <label>Nonstrategic</label>
+            </value>
+            <value>
+                <fullName>NA</fullName>
+                <default>false</default>
+                <label>Not Applied</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

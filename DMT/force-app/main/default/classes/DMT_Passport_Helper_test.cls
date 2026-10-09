@@ -199,82 +199,6 @@ public with sharing class DMT_Passport_Helper_test {
     }
 	
     @isTest
-    static void testOpportunityTransactionOverviewRenderer() {
-        Opportunity opp = [SELECT Id FROM Opportunity WHERE DMT_Opp_Id__c = '00001'];
-
-        OpportunityLineItem oli = [SELECT Id FROM OpportunityLineItem LIMIT 1];
-        oli.DMT_Deal_Amount_Tenors__c = 1010;
-        oli.DMT_ExpectedFinal_Take__c = 1234;
-        oli.DMT_ExpectedFinal_Take__c = 2345;
-        oli.DMT_NewMoney_BBVA__c = 3456;
-        oli.DMT_OldMoney_BBVA__c = 4567;
-        oli.DES_Tenor_years__c = 1;
-        update oli;
-
-      List<DMT_ViewController.ItemWrapper> selectedItems = new List<DMT_ViewController.ItemWrapper>{
-          new DMT_ViewController.ItemWrapper('Component', 'Transaction Overview',  11, '')
-      };
-
-        // Simulación del controlador
-        Test.startTest();
-        DMT_ViewController controller = new DMT_ViewController();
-        String items = JSON.serialize(selectedItems);
-        String type = 'Opportunity';
-        String recordTypeDeveloperName = 'DMT_Opportunity';
-
-        String response = DMT_ViewController.loadComponentsForView(opp.Id, type, items, '', '');
-        Test.stopTest();
-
-        // Validaciones
-        Assert.isNotNull(response, 'response should not be null.');
-    }
-	
-    @isTest
-    static void testTransactionOverviewRenderer_noHtmlData() {
-
-        Test.startTest();
-        try{
-            DMT_TransactionOverviewRenderer renderer = new DMT_TransactionOverviewRenderer();
-            String response = renderer.renderHtml(null);
-        } catch (Exception e) {
-            System.debug('Expected exception caught: ' + e.getMessage());
-            Assert.isTrue(e.getMessage().contains('Data not provided'), 'Exception message should indicate that data was not provided.');
-        }
-        Test.stopTest();
-    }
-
-    @isTest
-    static void testTransactionOverviewRenderer_html_noRecordtypeId() {
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = null;
-
-        Test.startTest();
-        try{
-            DMT_TransactionOverviewRenderer renderer = new DMT_TransactionOverviewRenderer();
-            String response = renderer.renderHtml(data);
-        } catch (Exception e) {
-            System.debug('Expected exception caught: ' + e.getMessage());
-            Assert.isTrue(e.getMessage().contains('No Transaction Overview renderer'), 'Exception message should indicate that there is no renderer for the provided record type id.');
-        }
-        Test.stopTest();
-    }
-
-    @isTest
-    static void testOpportunityTransactionOverviewRenderer_noPdfData() {
-
-        Test.startTest();
-        Map<String, Object> pdfData = new Map<String, Object>();
-        try{
-            DMT_TransactionOverviewRenderer renderer = new DMT_TransactionOverviewRenderer();
-            pdfData = renderer.renderPdfJson(null);
-        } catch (Exception e) {
-            System.debug('Expected exception caught: ' + e.getMessage());
-            Assert.isTrue(pdfData.isEmpty(), 'No pdfData should be returned.');
-        }
-        Test.stopTest();
-    }
-
-    @isTest
     static void testOpportunityEconomicsRenderer() {
         Opportunity opp = [SELECT Id FROM Opportunity WHERE DMT_Opp_Id__c = '00001'];
 
@@ -326,38 +250,6 @@ public with sharing class DMT_Passport_Helper_test {
         } catch (Exception e) {
             System.debug('Expected exception caught: ' + e.getMessage());
             Assert.isTrue(e.getMessage().contains('No Economics renderer'), 'Exception message should indicate that there is no renderer for the provided record type id.');
-        }
-        Test.stopTest();
-    }
-
-    @isTest
-    static void testEconomicsRenderer_noPdfData() {
-
-        Test.startTest();
-        Map<String, Object> pdfData = new Map<String, Object>();
-        try{
-            DMT_EconomicsRenderer renderer = new DMT_EconomicsRenderer();
-            pdfData = renderer.renderPdfJson(null);
-        } catch (Exception e) {
-            System.debug('Expected exception caught: ' + e.getMessage());
-            Assert.isTrue(pdfData.isEmpty(), 'No pdfData should be returned.');
-        }
-        Test.stopTest();
-    }
-
-    @isTest
-    static void testEconomicsRenderer_pdf_NoRecordtypeId() {
-        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
-        data.recordTypeId = null;
-
-        Test.startTest();
-        Map<String, Object> pdfData = new Map<String, Object>();
-        try{
-            DMT_EconomicsRenderer renderer = new DMT_EconomicsRenderer();
-            pdfData = renderer.renderPdfJson(data);
-        } catch (Exception e) {
-            System.debug('Expected exception caught: ' + e.getMessage());
-            Assert.isTrue(pdfData.isEmpty(), 'No pdfData should be returned.');
         }
         Test.stopTest();
     }
@@ -750,8 +642,8 @@ public with sharing class DMT_Passport_Helper_test {
         Case caseAfterExecution = [SELECT Status FROM Case WHERE Id = :case1.Id];
         Task taskAfterExecution = [SELECT Status FROM Task WHERE Id = :task1.Id];
 
-        System.assertEquals('Finished', caseAfterExecution.Status, 'El Case debe pasar a Finished en Approval.');
-        System.assertEquals('Cancelled', taskAfterExecution.Status, 'La Task debe pasar a Cancelled en Approval.');
+        Assert.areEqual('Pending', caseAfterExecution.Status, 'Approval stage is a no-op in the new implementation; case must remain Pending.');
+        Assert.areEqual('In Progress', taskAfterExecution.Status, 'Approval stage is a no-op in the new implementation; task must remain In Progress.');
 
         TriggerBypass.removeBypass();
     }
@@ -772,7 +664,7 @@ public with sharing class DMT_Passport_Helper_test {
         String bodyResponse = JSON.serialize(new Map<String, Object>{
             'data' => new Map<String, Object>{
                 'features' => new List<Object>{
-                    new Map<String, Object>{'id' => '403', 'name' => 'Feature Test', 'passportSanction' => 'passport', 'requiredType' => 'N'}
+                    new Map<String, Object>{'id' => '403', 'name' => 'Feature Test', 'passportSanction' => 'passport', 'requiredType' => 'N', 'indicatorId' => 'Y'}
                 }
             }
         });
@@ -784,8 +676,8 @@ public with sharing class DMT_Passport_Helper_test {
         Case caseAfterExecution = [SELECT Status FROM Case WHERE Id = :case1.Id];
         Task taskAfterExecution = [SELECT Status FROM Task WHERE Id = :task1.Id];
 
-        System.assertEquals('Finished', caseAfterExecution.Status, 'El Case debe pasar a Finished en Ready to close.');
-        System.assertEquals('Cancelled', taskAfterExecution.Status, 'La Task debe pasar a Cancelled en Ready to close.');
+        Assert.areEqual('Finished', caseAfterExecution.Status, 'Ready to close with indicatorId Y must set case to Finished.');
+        Assert.areEqual('Cancelled', taskAfterExecution.Status, 'Ready to close with indicatorId Y must set task to Cancelled.');
 
         TriggerBypass.removeBypass();
     }
@@ -828,7 +720,7 @@ public with sharing class DMT_Passport_Helper_test {
         TriggerBypass.setBypass();
 
         Opportunity opp = [SELECT Id FROM Opportunity WHERE DMT_Opp_Id__c = '00001' LIMIT 1];
-        opp.StageName = 'Approval';
+        opp.StageName = 'Ready to close';
         update opp;
 
         Case case1 = [SELECT Id FROM Case WHERE opportunity_id__c = :opp.Id LIMIT 1];
@@ -839,7 +731,7 @@ public with sharing class DMT_Passport_Helper_test {
         String bodyResponse = JSON.serialize(new Map<String, Object>{
             'data' => new Map<String, Object>{
                 'features' => new List<Object>{
-                    new Map<String, Object>{'id' => '403', 'name' => 'Feature Null Test', 'passportSanction' => 'passport', 'requiredType' => null}
+                    new Map<String, Object>{'id' => '403', 'name' => 'Feature Null Test', 'passportSanction' => 'passport', 'requiredType' => null, 'indicatorId' => 'Y'}
                 }
             }
         });
@@ -851,9 +743,8 @@ public with sharing class DMT_Passport_Helper_test {
         Case caseAfterExecution = [SELECT Status FROM Case WHERE Id = :case1.Id];
         Task taskAfterExecution = [SELECT Status FROM Task WHERE Id = :task1.Id];
 
-        System.assertEquals('Finished', caseAfterExecution.Status, 'El Case debe pasar a Finished cuando requiredType es null (no obligatoria).');
-
-        System.assertEquals('Cancelled', taskAfterExecution.Status, 'La Task debe pasar a Cancelled cuando requiredType es null (no obligatoria).');
+        Assert.areEqual('Finished', caseAfterExecution.Status, 'Ready to close with indicatorId Y and null requiredType must set case to Finished.');
+        Assert.areEqual('Cancelled', taskAfterExecution.Status, 'Ready to close with indicatorId Y and null requiredType must set task to Cancelled.');
 
         TriggerBypass.removeBypass();
     }
@@ -1088,10 +979,11 @@ public with sharing class DMT_Passport_Helper_test {
     }
 
     @isTest
-    static void testResolveMainHolderAccountId_withAssocAndLocalClient() {
+    static void testResolveMainHolderAccountId_withAssocAndCustomerId() {
         Opportunity opp = [SELECT Id, AccountId FROM Opportunity WHERE DMT_Opp_Id__c = '00001' LIMIT 1];
         Account acc = [SELECT Id FROM Account WHERE Id = :opp.AccountId LIMIT 1];
         acc.DES_Structure_Type__c = 'Subsidiary';
+        acc.g_customer_id__c = 'TEST123';
         update acc;
 
         Custom_Association_Opportunity__c assoc = new Custom_Association_Opportunity__c(
@@ -1106,9 +998,9 @@ public with sharing class DMT_Passport_Helper_test {
         Test.stopTest();
 
         Assert.isNotNull(result, 'Result map should not be null');
-        Assert.isNotNull(result.get('AccountId'), 'AccountId should be set via local client path');
+        Assert.isNotNull(result.get('AccountId'), 'AccountId should be set via Account.g_customer_id__c');
         Assert.areEqual('Subsidiary', (String) result.get('ClientType'),
-            'ClientType should come from DES_Client_Type__c on account found via Local_Client');
+            'ClientType should come from DES_Client_Type__c on account found via g_customer_id__c');
     }
 
     @isTest
@@ -1161,21 +1053,45 @@ public with sharing class DMT_Passport_Helper_test {
     static void testSetPayloadPassport_opportunity_buildsXsells() {
         Opportunity opp = [SELECT Id FROM Opportunity WHERE DMT_Opp_Id__c = '00001' LIMIT 1];
         DMT_Opportunity_Client__c oppClient = [
-            SELECT Id, DMT_Currency__c,
-                Past2_FY_Child_X_Sell_amount__c,
-                Past_FY_Child_X_Sell_amount__c,
-                Current_FY_Child_X_Sell_amount__c,
-                Next_FY_Child_X_Sell_amount__c, DMT_Xsell_Cost_to_Income__c
+            SELECT Id, Alpha_Code_Client__c
             FROM DMT_Opportunity_Client__c
             WHERE DMT_MDE_Opportunity__c = :opp.Id
             LIMIT 1
         ];
-        oppClient.DMT_Currency__c = 'EUR';
-        oppClient.Past2_FY_Child_X_Sell_amount__c = 10;
-        oppClient.Past_FY_Child_X_Sell_amount__c = 20;
-        oppClient.Current_FY_Child_X_Sell_amount__c = 30;
-        oppClient.Next_FY_Child_X_Sell_amount__c = 40;
+        oppClient.Alpha_Code_Client__c = 'TEST123';
         update oppClient;
+
+        Integer currentYear = Date.today().year();
+        List<DMT_Opportunity_Business_Plan__c> bpRecords = new List<DMT_Opportunity_Business_Plan__c>();
+        bpRecords.add(new DMT_Opportunity_Business_Plan__c(
+            DMT_Opportunity__c = opp.Id,
+            DMT_Year__c = String.valueOf(currentYear - 2),
+            DMT_Booking_Geography__c = 'GLOBAL',
+            DMT_Currency__c = 'EUR',
+            Current_FY_Total_X_Sell_amount__c = 10
+        ));
+        bpRecords.add(new DMT_Opportunity_Business_Plan__c(
+            DMT_Opportunity__c = opp.Id,
+            DMT_Year__c = String.valueOf(currentYear - 1),
+            DMT_Booking_Geography__c = 'GLOBAL',
+            DMT_Currency__c = 'EUR',
+            Current_FY_Total_X_Sell_amount__c = 20
+        ));
+        bpRecords.add(new DMT_Opportunity_Business_Plan__c(
+            DMT_Opportunity__c = opp.Id,
+            DMT_Year__c = String.valueOf(currentYear),
+            DMT_Booking_Geography__c = 'GLOBAL',
+            DMT_Currency__c = 'EUR',
+            Current_FY_Total_X_Sell_amount__c = 30
+        ));
+        bpRecords.add(new DMT_Opportunity_Business_Plan__c(
+            DMT_Opportunity__c = opp.Id,
+            DMT_Year__c = String.valueOf(currentYear + 1),
+            DMT_Booking_Geography__c = 'GLOBAL',
+            DMT_Currency__c = 'EUR',
+            Current_FY_Total_X_Sell_amount__c = 40
+        ));
+        insert bpRecords;
 
         Test.startTest();
         String payload = DMT_Passport_Helper.setPayloadPassport(opp.Id, '[]');
@@ -1189,9 +1105,9 @@ public with sharing class DMT_Passport_Helper_test {
         Assert.areEqual(4, xsells.size(), 'Expected one xsell item per populated fiscal year amount.');
 
         Map<String, Object> firstXsell = (Map<String, Object>) xsells[0];
-        Assert.areEqual(Date.today().year() - 2, Integer.valueOf(String.valueOf(firstXsell.get('year'))), 'First xsell year should be current year minus 2.');
-        Assert.areEqual(10, Decimal.valueOf(String.valueOf(firstXsell.get('amount'))), 'First xsell amount should match the opportunity client value.');
-        Assert.areEqual('EUR', String.valueOf(firstXsell.get('currencyId')), 'Xsell currency should match the opportunity client currency.');
+        Assert.areEqual(currentYear - 2, Integer.valueOf(String.valueOf(firstXsell.get('year'))), 'First xsell year should be current year minus 2.');
+        Assert.areEqual(10, Decimal.valueOf(String.valueOf(firstXsell.get('amount'))), 'First xsell amount should match the BP record value.');
+        Assert.areEqual('EUR', String.valueOf(firstXsell.get('currencyId')), 'Xsell currency should match the BP record currency.');
     }
 
     /*@isTest

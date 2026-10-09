@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>arce__gf_visit_desc__c</fullName>
+    <deprecated>false</deprecated>
+    <description>comment of the visit</description>
+    <encryptionScheme>None</encryptionScheme>
+    <label>Comments in the visit</label>
+    <length>500</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>2</visibleLines>
+</CustomField>

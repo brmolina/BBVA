@@ -51,6 +51,11 @@ export default class DmtOppProductDetailsCountryRisk extends LightningElement {
         this.isEditMode = false;
     }
 
+    @api validate() {
+        const renderer = this.template.querySelector('c-dmt_form_renderer');
+        return renderer?.validate?.() ?? true;
+    }
+
     @api setReadOnlyMode(readOnly) {
         if (readOnly) {
             if (!this._readOnlySnapshot) {
@@ -95,12 +100,12 @@ export default class DmtOppProductDetailsCountryRisk extends LightningElement {
     }
 
     handleFieldChange(event) {
-        const { fieldId, value } = event.detail;
+        const { fieldId, value, isFieldValid } = event.detail;
         const idx = this.fields.findIndex(f => f.id === fieldId);
         if (idx === -1) return;
         const field  = this.fields[idx];
         const newArr = this.fields.slice();
-        newArr[idx]  = { ...field, value };
+        newArr[idx]  = { ...field, value, isFieldValid };
         this.fields  = newArr;
         this.dispatchEvent(new CustomEvent('sectionchange', {
             detail: { apiName: field.apiName, value }

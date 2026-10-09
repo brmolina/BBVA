@@ -1,0 +1,39 @@
+<template>
+    <c-dmt_form_renderer
+        fields={fields}
+        is-edit-mode={isEditMode}
+        oneditmodechange={handleEditModeChange}
+        onfieldchange={handleFieldChange}>
+    </c-dmt_form_renderer>
+
+    <div class="slds-p-horizontal_small slds-p-top_medium slds-p-bottom_small">
+        <c-dmt_business_plan_table_geography
+            lwc:ref="tableBusinessPlan"
+            is-edit-mode={isEditMode}
+            is-client={isClient}
+            is-opportunity={isOpportunity}
+            opportunity-client-id={opportunityClientId}
+            group-id={groupId}
+            is-read-only-user={isReadOnlyUser}
+            is-opp-view={isOppView}
+            stage-name={stageName}
+            close-date={closeDate}
+            is-closed={isClosed}
+            preloaded-records={_bpRecords}
+            preloaded-account-records={_accountBpRecords}
+            record-id={recordId}
+            booking-geography={bookingGeography}
+            onredosave={_handleRedoSave}
+            onfieldchange={_handleTableFieldChange}
+            oneditmodechange={handleEditModeChange}
+            ongeographychange={_handleTableGeographyChange}>
+        </c-dmt_business_plan_table_geography>
+    </div>
+
+    <c-dmt_form_renderer
+        fields={extraFields}
+        is-edit-mode={isEditMode}
+        oneditmodechange={handleEditModeChange}
+        onfieldchange={handleExtraFieldChange}>
+    </c-dmt_form_renderer>
+</template>

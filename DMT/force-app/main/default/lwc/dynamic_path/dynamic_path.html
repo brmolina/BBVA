@@ -1,0 +1,105 @@
+<template>
+    <div class="slds-p-bottom_x-small">
+        <div class="slds-grid slds-grid_vertical-align-center slds-gutters_small">
+            <div class="slds-col slds-grow">
+                <template lwc:if={renderLightningPath}>
+                    <lightning-progress-indicator current-step={activeStep} type="path">
+                        <template for:each={stepsForRender} for:item="step">
+                            <lightning-progress-step
+                                key={step.value}
+                                label={step.label}
+                                value={step.value}
+                                onclick={handleStepClick}>
+                            </lightning-progress-step>
+                        </template>
+                    </lightning-progress-indicator>
+                </template>
+                <template lwc:else>
+                    <div class="slds-path slds-p-horizontal_medium slds-p-bottom_x-small">
+                        <div class="slds-grid slds-path__track">
+                            <div class="slds-grid slds-path__scroller-container">
+                                <div class="slds-path__scroller">
+                                    <div class="slds-path__scroller_inner">
+                                        <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal" aria-labelledby="stageLabel">
+                                            <template for:each={stepsUi} for:item="step">
+                                                <li key={step.value} class={step.liClass} role="presentation">
+                                                    <a class="slds-path__link"
+                                                        href="#"
+                                                        role="option"
+                                                        aria-selected={step.ariaSelected}
+                                                        tabindex="0"
+                                                        data-step-key={step.value}
+                                                        onclick={handleStepClick}>
+                                                        <span class="slds-path__stage">
+                                                            <template lwc:if={step.isComplete}>
+                                                                <span>{step.label}</span>
+                                                            </template>
+                                                            <template lwc:else>
+                                                                <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                                                                    <use xlink:href={checkIconHref}></use>
+                                                                </svg>
+                                                            </template>
+                                                        </span>
+                                                        <span class="slds-path__title">{step.label}</span>
+                                                    </a>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-grid slds-m-top_small slds-gutters_x-small">
+                            <div class="slds-col">
+                                <div>
+                                    <!-- Guidance for Success and Key Fields (Native Salesforce collapsible section) -->
+                                    <template lwc:if={hasGuidance}>
+                                        <!-- Reusable SLOT that maps content dynamically based on current selected step -->
+                                        <slot name="guidance">
+                                            <p class="slds-text-color_weak slds-italic">No guidance specified for this stage.</p>
+                                        </slot>
+                                    </template>
+                                </div>
+                            </div>
+                            <div>
+                                <div>
+                                    <div>
+                                        <span id="stageLabelCustom" class="slds-path__stage-name slds-m-right_medium">
+                                            Stage: {selectedStepLabel}
+                                        </span>
+
+                                        <button
+                                            lwc:if={displayButton}
+                                            class="slds-button slds-button_brand slds-path__mark-complete"
+                                            onclick={handleMarkComplete}
+                                            disabled={disableMarkComplete}>
+                                            <svg class="slds-button__icon slds-button__icon_left" aria-hidden="true">
+                                                <use xlink:href={checkIconHref}></use>
+                                            </svg>
+                                            {buttonLabel}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </template>
+            </div>
+
+            <div lwc:if={renderLightningPath} class="slds-col slds-no-flex slds-grid slds-grid_vertical-align-center slds-gutters_x-small">
+                <span id="stageLabelLightning" class="slds-path__stage-name">Stage: {selectedStepLabel}</span>
+                <lightning-button
+                    lwc:if={displayButton}
+                    variant="brand"
+                    icon-name="utility:check"
+                    label={buttonLabel}
+                    onclick={handleMarkComplete}
+                    disabled={disableMarkComplete}>
+                </lightning-button>
+            </div>
+        </div>
+        
+        
+    </div>
+</template>

@@ -1,0 +1,1011 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>acpl__Question_Catalog</fullName>
+    <active>true</active>
+    <label>Question Catalog</label>
+    <picklistValues>
+        <picklist>acpl__Group_has_PF__c</picklist>
+        <values>
+            <fullName>No</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Yes</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>acpl__business_area_desc__c</picklist>
+        <values>
+            <fullName>Cross-border Head</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GCC Global Head</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GCC Local Head</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GTB Head</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Others</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>acpl__country_id__c</picklist>
+        <values>
+            <fullName>Others</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>acpl__gf_account_planning_name__c</picklist>
+        <values>
+            <fullName>Full</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Light</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>acpl__gf_ap_launch_name__c</picklist>
+        <values>
+            <fullName>Automatic</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Event driven</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>General period</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Period by wave</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>acpl__gf_ap_prev_validated_ind_type__c</picklist>
+        <values>
+            <fullName>No</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Yes</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>acpl__gf_ap_priority_type_name__c</picklist>
+        <values>
+            <fullName>Wave 1</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 10</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 100</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 11</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 12</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 13</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 14</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 15</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 16</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 17</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 18</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 19</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 2</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 20</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 21</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 22</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 23</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 24</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 25</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 26</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 27</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 28</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 3</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 30</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 31</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 32</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 33</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 34</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 35</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 36</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 37</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 38</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 39</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 4</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 40</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 41</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 42</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 43</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 44</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 45</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 46</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 47</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 48</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 49</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 5</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 50</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 51</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 52</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 53</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 54</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 55</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 56</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 57</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 58</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 59</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 6</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 60</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 61</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 62</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 63</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 64</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 65</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 66</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 67</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 68</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 69</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 7</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 70</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 71</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 72</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 73</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 74</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 75</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 76</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 77</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 78</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 79</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 8</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 80</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 81</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 82</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 83</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 84</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 85</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 86</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 87</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 88</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 89</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 9</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 90</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 91</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 92</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 93</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 94</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 95</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 96</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 97</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 98</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wave 99</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>acpl__gf_ap_req_validation_ind_type__c</picklist>
+        <values>
+            <fullName>No</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Yes</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>acpl__gf_ap_status_type_name__c</picklist>
+        <values>
+            <fullName>In Progress</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Not started</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Pending Validation</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Validated</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>acpl__gf_ap_substatus_type_name__c</picklist>
+        <values>
+            <fullName>AP team invited</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AP team not invited</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Expired</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>In place</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Not started</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Pending pre-validation</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pending review</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pending validation</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pre-validated</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>acpl__gf_mandatory_type__c</picklist>
+        <values>
+            <fullName>Mandatory</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Optional</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>country_name__c</picklist>
+        <values>
+            <fullName>Arab Emirates</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Argentina</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Belgium</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Brazil</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chile</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>China</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Colombia</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Compass</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>France</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Germany</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Global</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Hong Kong</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>India</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Indonesia</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Italy</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Japan</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Mexico</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Paraguay</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Peru</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Portugal</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Puerto Rico</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Russia</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Singapore</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>South Korea</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Spain</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Taiwan</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Turkey</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>USA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>United Kingdom</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Uruguay</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Venezuela</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>customer_business_country_id__c</picklist>
+        <values>
+            <fullName>AE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CL</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Compass</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>DE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ES</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GB</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Global</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HK</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ID</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IN</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>IT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JP</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>KR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MX</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PT</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RU</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SG</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TW</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>US</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>UY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>VE</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>industry_type__c</picklist>
+        <values>
+            <fullName>Agriculture</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Banks</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Central Banks %26 SWF</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Construction</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Consumer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Energy</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Financial Services</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Financial Sponsors</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Frequent Borrowers</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Funds</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Industrials</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Infrastructure%2FEnergy Funds</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Insurance</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Metals %26 Mining</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Others</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pension Funds</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Private Equity Funds</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Real Estate</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sector</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sovereign Wealth Funds</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Sub-nationals</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TMT</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>tier_desc__c</picklist>
+        <values>
+            <fullName>BEeIG - Others</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>BEeIG-GCB</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CIB-Bronze</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CIB-Geographic</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CIB-Gold</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CIB-Platinum</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CIB-Silver</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Core%2FESG Advanced</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Core%2FESG Moderate -Strong</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Core%2FESG Poor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Core%2FESG not defined</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GC Standard</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Not Defined</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Progress%2FESG Advanced</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Progress%2FESG Moderate - Strong</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Progress%2FESG Poor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Progress%2FESG not defined</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Value%2FESG Advanced</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Value%2FESG Moderate - Strong</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Value%2FESG Poor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Value%2FESG not defined</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>
