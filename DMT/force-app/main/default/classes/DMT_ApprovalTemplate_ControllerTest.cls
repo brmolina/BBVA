@@ -1,142 +1,226 @@
+/**
+ * CIBGLOBALD-4117: first test coverage this class has ever had. Focused on the parts refactored to
+ * call the shared single-responsibility services (DMT_TaskCompletionService, DMT_CaseClosureService,
+ * DMT_RelatedTaskFinisherService, DMT_DraftStatusService, DMT_DocumentTransferService via
+ * DMT_AsyncOrchestrator) - not an exhaustive test of every loadData formula branch. 14/10/2026
+ */
 @IsTest
 private class DMT_ApprovalTemplate_ControllerTest {
 
-    private static Id approvalTaskRecordTypeId() {
-        return Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName()
-            .get('DMT_Step_Approval').getRecordTypeId();
+    private static Id approvalStepRtId() {
+        return Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
     }
 
-    private static DMT_Task_Type__c createTaskType(String externalId, Boolean approvalEdit, Boolean taskIndicator) {
-        DMT_Task_Type__c taskType = new DMT_Task_Type__c(
-            Name = 'UT Task ' + externalId,
-            CurrencyIsoCode = 'EUR',
-            DMT_External_Id__c = externalId,
-            DMT_Yes_Flag__c = 'YES',
-            DMT_No_Flag__c = 'NO',
-            DMT_NA_Flag__c = 'NA',
-            DMT_ApprovalEdit__c = approvalEdit,
-            gf_task_ind_type__c = taskIndicator
-        );
-        insert taskType;
-        return taskType;
+    private static Map<String, DMT_Task_Type__c> taskTypesByExternalId() {
+        Set<Id> taskTypeIds = new Set<Id>();
+        for (DMT_Task_Type__c taskType : DMT_Test_DataFactory.generateTaskTypes()) {
+            taskTypeIds.add(taskType.Id);
+        }
+
+        Map<String, DMT_Task_Type__c> taskTypes = new Map<String, DMT_Task_Type__c>();
+        for (DMT_Task_Type__c taskType : [
+            SELECT Id, Name, DMT_External_Id__c, DMT_Approver_Field__c, DMT_ApprovalEdit__c
+            FROM DMT_Task_Type__c
+            WHERE Id IN :taskTypeIds
+        ]) {
+            taskTypes.put(taskType.DMT_External_Id__c, taskType);
+        }
+        return taskTypes;
     }
 
-    private static Case createCase() {
-        Opportunity opportunity = DMT_Test_DataFactory.generateOpportunity();
-        Case caseRecord = DMT_Test_DataFactory.generateCase(null, opportunity.Id, UserInfo.getUserId());
-        caseRecord.DMT_Passport_Sanction__c = 'approval';
-        caseRecord.Status = 'In Progress';
-        update caseRecord;
-        return caseRecord;
-    }
-
-    private static Task createTask(Id caseId, Id taskTypeId, String result, String status) {
-        Task taskRecord = new Task(
-            WhatId = caseId,
-            RecordTypeId = approvalTaskRecordTypeId(),
-            Subject = 'UT Approval Task',
-            Status = status,
-            ActivityDate = Date.today(),
-            Description = 'Initial comments',
-            DMT_Task_Type__c = taskTypeId,
-            DMT_Step_Result__c = result,
-            DMT_Not_Restart__c = false,
-            DMT_Committee_Label__c = 'Committee'
-        );
-        insert taskRecord;
+    private static Task createPendingTask(Id caseId, Id taskTypeId, Id ownerId) {
+        Task taskRecord = DMT_Test_DataFactory.generateTasksWithOwner(ownerId, approvalStepRtId(), caseId, 1)[0];
+        taskRecord.DMT_Task_Type__c = taskTypeId;
+        taskRecord.Status = 'In Progress';
+        taskRecord.Subject = 'UT Task';
+        taskRecord.ActivityDate = Date.today();
+        update taskRecord;
         return taskRecord;
     }
 
-    @IsTest
-    static void loadData_withoutCase_returnsNoRecord() {
-        Test.startTest();
-        Map<String, Object> result = DMT_ApprovalTemplate_Controller.loadData(null);
-        Test.stopTest();
+    private static Case createCaseRecord(Id lineId, Id ownerId) {
+        return DMT_Test_DataFactory.generateCase(lineId, null, ownerId);
+    }
 
-        System.assertEquals('norecord', result.get('taskId'));
+    private static String fakeCaseId() {
+        return Case.SObjectType.getDescribe().getKeyPrefix() + '000000000000';
     }
 
     @IsTest
-    static void loadData_withoutTask_returnsPermissionsAndNoRecord() {
-        Case caseRecord = createCase();
+    static void testGetCloseTaskInitialDataHappyPath() {
+        Group ownerGroup = new Group(Name = 'UT Init Data Group', DeveloperName = 'UT_Init_Data_Grp', Type = 'Queue');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            insert ownerGroup;
+            insert new QueueSobject(QueueId = ownerGroup.Id, SobjectType = 'Task');
+            insert new QueueSobject(QueueId = ownerGroup.Id, SobjectType = 'Case');
+        }
 
-        Test.startTest();
-        Map<String, Object> result = DMT_ApprovalTemplate_Controller.loadData(caseRecord.Id);
-        Test.stopTest();
-
-        System.assertEquals('norecord', result.get('taskId'));
-        System.assert(result.containsKey('hasEditCaseRole'));
-        System.assert(result.containsKey('hasLineGodAccess'));
-    }
-
-    @IsTest
-    static void loadData_withTaskAndRelations_returnsConfiguration() {
-        Case caseRecord = createCase();
-        DMT_Task_Type__c currentType = createTaskType('UT_CURRENT', false, false);
-        DMT_Task_Type__c nextType = createTaskType('UT_NEXT', true, true);
-        insert new DMT_Task_Relationship__c(
-            DMT_From_Task_Type__c = currentType.Id,
-            DMT_To_Task_Type__c = nextType.Id
+        DMT_Approver__c approver = DMT_Test_DataFactory.generateApprover();
+        approver.DMT_Group__c = ownerGroup.DeveloperName;
+        update approver;
+        insert new DMT_Approver_Member__c(
+            DMT_Approver__c = approver.Id,
+            DMT_User__c = UserInfo.getUserId(),
+            DMT_Access_Level__c = 'Edit'
         );
-        Task relatedTask = createTask(caseRecord.Id, nextType.Id, 'No', 'In Progress');
-        Task currentTask = createTask(caseRecord.Id, currentType.Id, 'Yes', 'In Progress');
-        Datetime baseCreatedDate = Datetime.now();
-        Test.setCreatedDate(relatedTask.Id, baseCreatedDate.addMinutes(-1));
-        Test.setCreatedDate(currentTask.Id, baseCreatedDate);
+
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Map<String, DMT_Task_Type__c> taskTypes = taskTypesByExternalId();
+        DMT_Task_Type__c taskType = taskTypes.get('1');
+        DMT_Task_Type__c defaultType = taskTypes.get('6');
+        taskType.gf_task_ind_type__c = true;
+        defaultType.DMT_ApprovalEdit__c = true;
+        defaultType.DMT_Approver_Field__c = 'DMT_Approver__c';
+        update new List<DMT_Task_Type__c>{ taskType, defaultType };
+
+        Case caseRecord = new Case(
+            DMT_Line__c = line.Id,
+            DMT_Feature_Id__c = 'Test',
+            DMT_Related_feature_name__c = 'Test1',
+            Amount__c = 45,
+            CurrencyIsoCode = 'EUR',
+            Subject = 'Test Subject',
+            DMT_ConditionsCloseCase__c = '{"dateMaximum": "2025-11-13","maximumLinePeriod": "365","maximumProductMaturity": "45000","products": ["Derivatives","Equities","Depos"],"clients": ["G00000000000200"], "derivativesAmount":"3", "dvpAmount":"3", "fdAmount":"0"}',
+            RecordTypeId = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get(DMT_Constants.CASE_RT_APPROVAL).getRecordTypeId(),
+            OwnerId = ownerGroup.Id,
+            DMT_Passport_Sanction__c = 'approval',
+            DMT_Closing_Tasks__c = '[{"id":"1"}]'
+        );
+        insert caseRecord;
+
+        Case relatedCase = createCaseRecord(line.Id, ownerGroup.Id);
+        Task relatedApprovalTask = createPendingTask(relatedCase.Id, defaultType.Id, ownerGroup.Id);
+        Task siblingTask = createPendingTask(caseRecord.Id, defaultType.Id, ownerGroup.Id);
+        Task taskRecord = createPendingTask(caseRecord.Id, taskType.Id, ownerGroup.Id);
+        taskRecord.DMT_Step_Result__c = 'No';
+        update taskRecord;
+
+        insert new List<DMT_Task_Relationship__c>{
+            new DMT_Task_Relationship__c(
+                DMT_From_Task_Type__c = taskType.Id,
+                DMT_Order_Number__c = 0,
+                DMT_To_Task_Type__c = defaultType.Id
+            )
+        };
 
         Test.startTest();
-        Map<String, Object> result = DMT_ApprovalTemplate_Controller.loadData(caseRecord.Id);
+        DMT_ApprovalTemplate_Controller.CloseTaskInitDTO initData = DMT_ApprovalTemplate_Controller.getCloseTaskInitialData(caseRecord.Id);
+    Map<String, Object> loadData = DMT_ApprovalTemplate_Controller.loadData(caseRecord.Id);
         Test.stopTest();
 
-        System.assertEquals(currentTask.Id, result.get('taskId'));
-        System.assertEquals('Initial comments', result.get('comments'));
-        System.assertEquals(false, result.get('buttonDisabled'));
-        System.assert(result.containsKey('toTask'));
-        System.assert(result.containsKey('validations'));
-        System.assert(result.containsKey('proposalValidations'));
-        System.assert(result.containsKey('relatedTasks'));
-        System.assertEquals(true, ((List<Object>) result.get('relatedTasks')).size() > 0);
-        System.assertNotEquals(null, relatedTask.Id);
+        System.assertEquals(caseRecord.Id, initData.caseId, 'The initial data must return the Case Id.');
+        System.assertNotEquals(null, initData.taskId, 'The initial data must return a current Task Id.');
+        System.assertEquals('Edit', initData.accessLevel, 'The owner queue membership must resolve Edit access.');
+        System.assertEquals(true, initData.hasRelatedApprovalTask, 'A sibling approval task on the same line must be detected.');
+        System.assertEquals(defaultType.DMT_External_Id__c, initData.defaultStepSelected, 'The order-zero relationship must drive the default step.');
+        System.assertEquals(relatedApprovalTask.Id != null, true, 'The setup must leave a related approval task in place.');
+        System.assertEquals(taskRecord.Id, loadData.get('taskId'), 'loadData must return the active task id on the happy path.');
+        System.assertEquals(false, loadData.get('finishStep'), 'loadData must compute finishStep for the close-task state.');
+        System.assertEquals(false, loadData.get('returnToProposalDisabled'), 'loadData must enable return to proposal for approval tasks.');
+        System.assertEquals(1, ((List<Object>) loadData.get('toTask')).size(), 'loadData must expose one destination task.');
+        System.assertEquals(1, ((List<Object>) loadData.get('relatedTasks')).size(), 'loadData must return sibling case tasks.');
     }
 
     @IsTest
-    static void saveStep_updatesTaskAndCase() {
-        Case caseRecord = createCase();
-        DMT_Task_Type__c currentType = createTaskType('UT_SAVE', false, false);
-        Task taskRecord = createTask(caseRecord.Id, currentType.Id, null, 'In Progress');
-        String recordsJson = JSON.serialize(new Map<String, Object>{
+    static void testGetCloseTaskInitialDataThrowsOnMissingCase() {
+        String missingCaseId = fakeCaseId();
+        Boolean threwNull = false;
+        Boolean threwMissing = false;
+        Boolean threwNoTask = false;
+        Map<String, Object> missingLoadData;
+        Map<String, Object> noTaskLoadData;
+
+        Test.startTest();
+        try {
+            DMT_ApprovalTemplate_Controller.getCloseTaskInitialData(null);
+        } catch (AuraHandledException ex) {
+            threwNull = true;
+            System.assertEquals('recordId is required.', ex.getMessage(), 'Null recordId must surface the expected error.');
+        }
+
+        try {
+            DMT_ApprovalTemplate_Controller.getCloseTaskInitialData(missingCaseId);
+        } catch (AuraHandledException ex) {
+            threwMissing = true;
+            System.assertEquals('Case not found.', ex.getMessage(), 'Missing Case must surface the expected error.');
+        }
+
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Case noTaskCase = createCaseRecord(line.Id, UserInfo.getUserId());
+        missingLoadData = DMT_ApprovalTemplate_Controller.loadData(missingCaseId);
+        noTaskLoadData = DMT_ApprovalTemplate_Controller.loadData(noTaskCase.Id);
+        try {
+            DMT_ApprovalTemplate_Controller.getCloseTaskInitialData(noTaskCase.Id);
+        } catch (AuraHandledException ex) {
+            threwNoTask = true;
+            System.assertEquals('No active Task found.', ex.getMessage(), 'A Case without an active Task must raise an AuraHandledException.');
+        }
+        Test.stopTest();
+
+        System.assert(threwNull, 'Null recordId must raise an AuraHandledException.');
+        System.assert(threwMissing, 'Missing Case must raise an AuraHandledException.');
+        System.assert(threwNoTask, 'A Case without an active Task must raise an AuraHandledException.');
+        System.assertEquals('norecord', missingLoadData.get('taskId'), 'Missing Cases must return the no-record payload.');
+        System.assertEquals('norecord', noTaskLoadData.get('taskId'), 'Cases without an open task must return the no-record payload.');
+    }
+
+    @IsTest
+    static void testSaveStepUpdatesTaskAndCase() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Case caseRecord = createCaseRecord(line.Id, UserInfo.getUserId());
+        DMT_Task_Type__c taskType = taskTypesByExternalId().get('1');
+        Task taskRecord = createPendingTask(caseRecord.Id, taskType.Id, UserInfo.getUserId());
+
+        Map<String, Object> records = new Map<String, Object>{
             'taskId' => taskRecord.Id,
             'caseId' => caseRecord.Id,
-            'stepResult' => 'No',
-            'comments' => 'Saved comments',
-            'Committee_Label' => 'Saved committee',
-            'caseStatus' => 'Finished',
-            'doNotAskCheck' => true,
-            'stepSelected' => currentType.DMT_External_Id__c
-        });
+            'caseStatus' => 'In Progress',
+            'stepResult' => 'Yes',
+            'comments' => 'UT comment'
+        };
 
         Test.startTest();
-        Map<String, Object> result = DMT_ApprovalTemplate_Controller.saveStep(recordsJson);
+        DMT_ApprovalTemplate_Controller.saveStep(JSON.serialize(records));
         Test.stopTest();
 
-        System.assertNotEquals(null, result);
-        Task updatedTask = [SELECT Description, DMT_Step_Result__c, DMT_Not_Restart__c FROM Task WHERE Id = :taskRecord.Id];
-        System.assertEquals('Saved comments', updatedTask.Description);
-        System.assertEquals('No', updatedTask.DMT_Step_Result__c);
-        System.assertEquals(true, updatedTask.DMT_Not_Restart__c);
-        System.assertEquals('Finished', [SELECT Status FROM Case WHERE Id = :caseRecord.Id].Status);
+        Assert.areEqual('Yes', [SELECT DMT_Step_Result__c FROM Task WHERE Id = :taskRecord.Id].DMT_Step_Result__c, 'saveStep must persist the step result on Task.');
+        Assert.areEqual('In Progress', [SELECT Status FROM Case WHERE Id = :caseRecord.Id].Status, 'saveStep must update Case status.');
     }
 
     @IsTest
-    static void saveAndCloseStep_returnsFreshButtonState() {
-        Case caseRecord = createCase();
-        DMT_Task_Type__c taskType = createTaskType('UT_CLOSE', false, false);
-        Task taskRecord = createTask(caseRecord.Id, taskType.Id, null, 'In Progress');
+    static void testSaveAndCloseStep() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Case caseRecord = createCaseRecord(line.Id, UserInfo.getUserId());
+        DMT_Task_Type__c taskType = taskTypesByExternalId().get('1');
+        Task taskRecord = createPendingTask(caseRecord.Id, taskType.Id, UserInfo.getUserId());
+
+        Map<String, Object> records = new Map<String, Object>{
+            'taskId' => taskRecord.Id,
+            'caseId' => caseRecord.Id,
+            'caseStatus' => 'Finished',
+            'stepResult' => 'Yes'
+        };
+
+        Test.startTest();
+        Map<String, Object> result = DMT_ApprovalTemplate_Controller.saveAndCloseStep(JSON.serialize(records));
+        Test.stopTest();
+
+        Assert.areEqual('TRUE', result.get('saveCloseTask'), 'saveAndCloseStep must signal success.');
+        Assert.areEqual('Finished', [SELECT Status FROM Case WHERE Id = :caseRecord.Id].Status, 'saveAndCloseStep must update the Case to Finished.');
+    }
+
+    @IsTest
+    static void saveAndCloseStepReturnsFreshButtonState() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Case caseRecord = createCaseRecord(line.Id, UserInfo.getUserId());
+        DMT_Task_Type__c taskType = taskTypesByExternalId().get('1');
+        Task taskRecord = createPendingTask(caseRecord.Id, taskType.Id, UserInfo.getUserId());
         String recordsJson = JSON.serialize(new Map<String, Object>{
             'taskId' => taskRecord.Id,
             'caseId' => caseRecord.Id,
             'stepResult' => 'Yes',
             'comments' => 'Closed comments',
+            'Committee_Label' => 'Closed committee',
             'caseStatus' => 'In Progress'
         });
 
@@ -144,226 +228,468 @@ private class DMT_ApprovalTemplate_ControllerTest {
         Map<String, Object> result = DMT_ApprovalTemplate_Controller.saveAndCloseStep(recordsJson);
         Test.stopTest();
 
-        System.assertEquals('TRUE', result.get('saveCloseTask'));
-        System.assertEquals(false, result.get('buttonDisabled'));
+        System.assertEquals('TRUE', result.get('saveCloseTask'), 'saveAndCloseStep must return the saveCloseTask flag.');
+        System.assertEquals(false, result.get('buttonDisabled'), 'Button must be enabled after saving a step result.');
+        Task updatedTask = [SELECT Description, DMT_Step_Result__c, DMT_Committee_Label__c FROM Task WHERE Id = :taskRecord.Id];
+        System.assertEquals('Closed comments', updatedTask.Description, 'Task comments must be persisted.');
+        System.assertEquals('Yes', updatedTask.DMT_Step_Result__c, 'Task result must be persisted.');
+        System.assertEquals('Closed committee', updatedTask.DMT_Committee_Label__c, 'Task committee label must be persisted.');
     }
 
     @IsTest
-    static void finishAndReturnPaths_updateCaseAndRelatedTasks() {
-        Case caseRecord = createCase();
-        DMT_Task_Type__c taskType = createTaskType('UT_FINISH', false, false);
-        Task taskRecord = createTask(caseRecord.Id, taskType.Id, 'Yes', 'In Progress');
-        String contextJson = JSON.serialize(new Map<String, Object>{
-            'DMT_LineOpportunity__c' => 'O',
-            'OpportunityId' => [SELECT opportunity_id__c FROM Case WHERE Id = :caseRecord.Id].opportunity_id__c,
-            'relatedTasks' => new List<Object>{ new Map<String, Object>{
-                'taskId' => taskRecord.Id,
-                'taskStatus' => 'Completed'
-            }}
-        });
+    static void testReturnToProposalMovesLineToDraft() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Case caseRecord = createCaseRecord(line.Id, UserInfo.getUserId());
+        DMT_Task_Type__c taskType = taskTypesByExternalId().get('1');
+        Task selectedTask = createPendingTask(caseRecord.Id, taskType.Id, UserInfo.getUserId());
+        DMT_Line__c proposalLine = DMT_Test_DataFactory.generateTestOtherLines();
+        Case proposalCase = createCaseRecord(proposalLine.Id, UserInfo.getUserId());
+        Task proposalTask = createPendingTask(proposalCase.Id, taskType.Id, UserInfo.getUserId());
 
-        Test.startTest();
-        DMT_ApprovalTemplate_Controller.finishCaseCondition(
-            caseRecord.Id, taskRecord.Id, '{}', contextJson
-        );
-        Test.stopTest();
-
-        // Case automation normalizes related task status to 'Finished' once the case closes
-        System.assertEquals('Finished', [SELECT Status FROM Case WHERE Id = :caseRecord.Id].Status);
-        System.assertEquals('Finished', [SELECT Status FROM Task WHERE Id = :taskRecord.Id].Status);
-    }
-
-    @IsTest
-    static void returnToProposal_updatesOpportunityToDraft() {
-        Case caseRecord = createCase();
-        Id opportunityId = [SELECT opportunity_id__c FROM Case WHERE Id = :caseRecord.Id].opportunity_id__c;
-        DMT_Task_Type__c taskType = createTaskType('UT_RETURN', false, false);
-        Task taskRecord = createTask(caseRecord.Id, taskType.Id, 'Yes', 'In Progress');
-        String contextJson = JSON.serialize(new Map<String, Object>{
-            'DMT_LineOpportunity__c' => 'O',
-            'OpportunityId' => opportunityId,
-            'relatedTasks' => new List<Object>()
-        });
+        Map<String, Object> context = new Map<String, Object>{
+            'DMT_LineOpportunity__c' => 'L',
+            'LineId' => line.Id
+        };
+        Map<String, Object> proposalContext = new Map<String, Object>{
+            'DMT_LineOpportunity__c' => 'L',
+            'LineId' => proposalLine.Id
+        };
 
         Test.startTest();
         DMT_ApprovalTemplate_Controller.returnToProposal(
-            caseRecord.Id, taskRecord.Id, '{}', contextJson, 'Draft'
+            caseRecord.Id, selectedTask.Id, JSON.serialize(new Map<String, Object>()), JSON.serialize(context), 'Draft'
+        );
+        DMT_ApprovalTemplate_Controller.returnToProposal(
+            proposalCase.Id, proposalTask.Id, JSON.serialize(new Map<String, Object>()), JSON.serialize(proposalContext), 'Proposal'
         );
         Test.stopTest();
 
-        System.assertEquals('Finished', [SELECT Status FROM Case WHERE Id = :caseRecord.Id].Status);
-        System.assertEquals('Draft', [SELECT StageName FROM Opportunity WHERE Id = :opportunityId].StageName);
+        Assert.areEqual('Draft', [SELECT Status__c FROM DMT_Line__c WHERE Id = :line.Id].Status__c, 'Line must move to Draft when returning to proposal.');
+        Assert.areEqual('Finished', [SELECT Status FROM Case WHERE Id = :caseRecord.Id].Status, 'Case must be finished after returnToProposal.');
+        DMT_Line__c updatedProposalLine = [SELECT Status__c, Allowed__c FROM DMT_Line__c WHERE Id = :proposalLine.Id];
+        Assert.areEqual('Proposal', updatedProposalLine.Status__c, 'Proposal status must use the dedicated line update branch.');
+        Assert.areEqual(false, updatedProposalLine.Allowed__c, 'The temporary Allowed flag must be reset after moving back to Proposal.');
+        Assert.areEqual('Finished', [SELECT Status FROM Case WHERE Id = :proposalCase.Id].Status, 'The proposal Case must also be finished.');
     }
 
     @IsTest
-    static void approverAndValidationHelpers_coverEmptyAndMissingBranches() {
-        Test.startTest();
-        List<Map<String, Object>> emptyResult = DMT_ApprovalTemplate_Controller.getApproversForStep('', null);
-        List<Map<String, Object>> koResult = DMT_ApprovalTemplate_Controller.getApproversForStep('KO', null);
-        List<Map<String, Object>> missingResult = DMT_ApprovalTemplate_Controller.getApproversForStep('DOES_NOT_EXIST', null);
-        String validationMessage = DMT_ApprovalTemplate_Controller.extractValidationMessage('plain validation message');
-        Test.stopTest();
-
-        System.assertEquals(0, emptyResult.size());
-        System.assertEquals(0, koResult.size());
-        System.assertEquals(0, missingResult.size());
-        System.assertEquals(
-            'There is an incorrect value in the line, which is why the approval process cannot be completed.',
-            validationMessage
-        );
-    }
-
-    @IsTest
-    static void getApproversForStep_withRelationship_returnsApproverList() {
-        DMT_Task_Type__c fromType = createTaskType('UT_APP_FROM', false, false);
-        DMT_Task_Type__c toType = createTaskType('UT_APP_TO', false, false);
-        insert new DMT_Task_Relationship__c(
-            DMT_From_Task_Type__c = fromType.Id,
-            DMT_To_Task_Type__c = toType.Id
-        );
-        DMT_Approver__c approver = new DMT_Approver__c(
-            Name = 'UT Approver',
-            DMT_External_Id__c = 'UT_APPROVER_EXT',
-            DMT_Approver_Code__c = '12222233199'
-        );
-        insert approver;
-        insert new DMT_Task_Approver_Relationship__c(
-            DMT_Task_Type__c = toType.Id,
-            DMT_Approver__c = approver.Id
-        );
-
-        Test.startTest();
-        List<Map<String, Object>> result = DMT_ApprovalTemplate_Controller.getApproversForStep(fromType.DMT_External_Id__c, null);
-        Test.stopTest();
-
-        System.assertEquals(1, result.size());
-        System.assertEquals('UT_APPROVER_EXT', result[0].get('value'));
-    }
-
-    @IsTest
-    static void loadData_withGroupOwnerAndApproverMember_returnsAccessLevel() {
-        Group ownerGroup = new Group(Name = 'UT Owner Group', DeveloperName = 'UT_Owner_Group', Type = 'Queue');
-        System.runAs(new User(Id = UserInfo.getUserId())) {
-            insert ownerGroup;
-            insert new QueueSobject(QueueId = ownerGroup.Id, SobjectType = 'Case');
-        }
-
-        Opportunity opportunity = DMT_Test_DataFactory.generateOpportunity();
-        Case caseRecord = DMT_Test_DataFactory.generateCase(null, opportunity.Id, ownerGroup.Id);
-        caseRecord.DMT_Passport_Sanction__c = 'approval';
-        caseRecord.Status = 'In Progress';
-        update caseRecord;
-        DMT_Task_Type__c currentType = createTaskType('UT_ACCESS', false, false);
-        createTask(caseRecord.Id, currentType.Id, 'Yes', 'In Progress');
-
-        DMT_Approver__c approver = new DMT_Approver__c(
-            Name = 'UT Access Approver',
-            DMT_External_Id__c = 'UT_ACCESS_APPROVER',
-            DMT_Approver_Code__c = '12222233198',
-            DMT_Group__c = ownerGroup.DeveloperName
-        );
-        insert approver;
-        // The After_Trigger_DMT_Approver flow may overwrite DMT_Group__c, so restore it
-        DMT_Approver__c reloadedApprover = [SELECT Id, DMT_Group__c FROM DMT_Approver__c WHERE Id = :approver.Id LIMIT 1];
-        if (reloadedApprover.DMT_Group__c != ownerGroup.DeveloperName) {
-            reloadedApprover.DMT_Group__c = ownerGroup.DeveloperName;
-            update reloadedApprover;
-        }
-        insert new DMT_Approver_Member__c(
-            DMT_Approver__c = approver.Id,
-            DMT_User__c = UserInfo.getUserId(),
-            DMT_Access_Level__c = 'Edit'
-        );
-
-        Test.startTest();
-        Map<String, Object> result = DMT_ApprovalTemplate_Controller.loadData(caseRecord.Id);
-        Test.stopTest();
-
-        System.assertEquals('Edit', result.get('accessLevel'));
-    }
-
-    @IsTest
-    static void loadData_withLineOpportunityAndClosingTasks_computesFormulas() {
-        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
-        Case caseRecord = DMT_Test_DataFactory.generateCase(line.Id, null, UserInfo.getUserId());
-        caseRecord.DMT_Passport_Sanction__c = 'approval';
-        caseRecord.Status = 'In Progress';
-        DMT_Task_Type__c currentType = createTaskType('UT_LINE', false, true);
-        caseRecord.DMT_Closing_Tasks__c = JSON.serialize(new List<Object>{
-            new Map<String, Object>{ 'id' => currentType.DMT_External_Id__c }
-        });
-        update caseRecord;
-        Task currentTask = createTask(caseRecord.Id, currentType.Id, 'No', 'In Progress');
-
-        Test.startTest();
-        Map<String, Object> result = DMT_ApprovalTemplate_Controller.loadData(caseRecord.Id);
-        Test.stopTest();
-
-        System.assertEquals(false, result.get('returnToProposalDisabled'));
-        System.assertEquals(false, result.get('finishStep'));
-    }
-
-    @IsTest
-    static void saveStep_withNextApprover_setsTaskOwnerFromGroup() {
-        Group approverGroup = new Group(Name = 'UT Next Approver Group', DeveloperName = 'UT_Next_Approver_Grp', Type = 'Queue');
+    static void testCloseTaskWithApproverInsertsNextStepTask() {
+        Group approverGroup = new Group(Name = 'UT Close Approver Group', DeveloperName = 'UT_Close_Approver_Grp', Type = 'Queue');
         System.runAs(new User(Id = UserInfo.getUserId())) {
             insert approverGroup;
             insert new QueueSobject(QueueId = approverGroup.Id, SobjectType = 'Task');
+            insert new QueueSobject(QueueId = approverGroup.Id, SobjectType = 'Case');
         }
 
         DMT_Approver__c approver = new DMT_Approver__c(
-            Name = 'UT Next Approver',
-            DMT_External_Id__c = 'UT_NEXT_APPROVER',
-            DMT_Approver_Code__c = '12222233197',
+            Name = 'UT Close Approver',
+            DMT_External_Id__c = 'UT_CLOSE_APPROVER',
+            DMT_Approver_Code__c = '12222233196',
             DMT_Group__c = approverGroup.DeveloperName
         );
         insert approver;
-        // The After_Trigger_DMT_Approver flow may overwrite DMT_Group__c, so restore it
         DMT_Approver__c reloadedApprover = [SELECT Id, DMT_Group__c FROM DMT_Approver__c WHERE Id = :approver.Id LIMIT 1];
         if (reloadedApprover.DMT_Group__c != approverGroup.DeveloperName) {
             reloadedApprover.DMT_Group__c = approverGroup.DeveloperName;
             update reloadedApprover;
         }
 
-        Case caseRecord = createCase();
-        DMT_Task_Type__c currentType = createTaskType('UT_NEXTAPP', false, false);
-        Task taskRecord = createTask(caseRecord.Id, currentType.Id, null, 'In Progress');
-        String recordsJson = JSON.serialize(new Map<String, Object>{
-            'taskId' => taskRecord.Id,
-            'caseId' => caseRecord.Id,
-            'stepResult' => 'Yes',
-            'comments' => 'Comments',
-            'caseStatus' => 'In Progress',
-            'stepSelected' => currentType.DMT_External_Id__c,
-            'nextApprover' => approver.DMT_External_Id__c
-        });
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Case caseRecord = createCaseRecord(line.Id, UserInfo.getUserId());
+        Map<String, DMT_Task_Type__c> taskTypes = taskTypesByExternalId();
+        DMT_Task_Type__c currentType = taskTypes.get('1');
+        DMT_Task_Type__c nextType = taskTypes.get('6');
+        Task taskRecord = createPendingTask(caseRecord.Id, currentType.Id, approverGroup.Id);
+        insert new DMT_Task_Relationship__c(
+            DMT_From_Task_Type__c = currentType.Id,
+            DMT_Order_Number__c = 1,
+            DMT_To_Task_Type__c = nextType.Id
+        );
 
         Test.startTest();
-        DMT_ApprovalTemplate_Controller.saveStep(recordsJson);
+        DMT_ApprovalTemplate_Controller.CloseTaskResult result =
+            DMT_ApprovalTemplate_Controller.executeCloseTask(
+                caseRecord.Id,
+                taskRecord.Id,
+                nextType.DMT_External_Id__c,
+                approver.DMT_External_Id__c
+            );
         Test.stopTest();
 
-        Task updatedTask = [SELECT OwnerId FROM Task WHERE Id = :taskRecord.Id];
-        System.assertEquals(approverGroup.Id, updatedTask.OwnerId);
+        Case updatedCase = [SELECT Status, OwnerId FROM Case WHERE Id = :caseRecord.Id];
+        Task updatedCurrentTask = [SELECT Status FROM Task WHERE Id = :taskRecord.Id];
+        List<Task> nextTasks = [
+            SELECT Id, OwnerId, DMT_Task_Type__c, Status
+            FROM Task
+            WHERE WhatId = :caseRecord.Id AND DMT_Task_Type__c = :nextType.Id
+        ];
+
+        System.assertEquals(true, result.success, 'Close task flow should succeed.');
+        System.assertEquals('Pending', updatedCase.Status, 'Case should move to Pending.');
+        System.assertEquals(approverGroup.Id, updatedCase.OwnerId, 'Case owner should move to the approver queue.');
+        System.assertEquals('Completed', updatedCurrentTask.Status, 'Current task should be completed.');
+        System.assertEquals(1, nextTasks.size(), 'One next-step task should be created.');
+        System.assertEquals(approverGroup.Id, nextTasks[0].OwnerId, 'Next task should be assigned to the approver queue.');
     }
 
     @IsTest
-    static void closeTaskWithApprover_updatesTaskAndCaseStatus() {
-        Case caseRecord = createCase();
-        DMT_Task_Type__c currentType = createTaskType('UT_CLOSEAPP', false, false);
-        Task taskRecord = createTask(caseRecord.Id, currentType.Id, null, 'In Progress');
-        String recordsJson = JSON.serialize(new Map<String, Object>{
-            'taskId' => taskRecord.Id,
-            'caseId' => caseRecord.Id,
-            'stepResult' => 'Yes',
-            'comments' => 'Approver comments',
-            'stepSelected' => currentType.DMT_External_Id__c
-        });
-
+    static void testGetApproversForStepBlankReturnsEmpty() {
+        Id nullRecordId = null;
+        String blankStep = '';
+        Boolean threw = false;
         Test.startTest();
-        DMT_ApprovalTemplate_Controller.closeTaskWithApprover(caseRecord.Id, taskRecord.Id, recordsJson, '{}');
+        try {
+            DMT_ApprovalTemplate_Controller.getCloseTaskApprovers(nullRecordId, blankStep);
+        } catch (AuraHandledException e) {
+            threw = true;
+        }
         Test.stopTest();
 
-        System.assertEquals('In Progress', [SELECT Status FROM Case WHERE Id = :caseRecord.Id].Status);
-        System.assertEquals('Approver comments', [SELECT Description FROM Task WHERE Id = :taskRecord.Id].Description);
+        Assert.isTrue(threw, 'Blank step selection must raise an AuraHandledException.');
+    }
+
+    @IsTest
+    static void approverAndValidationHelpersCoverEmptyAndMissingBranches() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Case caseRecord = createCaseRecord(line.Id, UserInfo.getUserId());
+        DMT_Task_Type__c currentType = taskTypesByExternalId().get('1');
+        createPendingTask(caseRecord.Id, currentType.Id, UserInfo.getUserId());
+
+        Test.startTest();
+        try {
+            DMT_ApprovalTemplate_Controller.getCloseTaskApprovers(null, currentType.DMT_External_Id__c);
+            System.assert(false, 'Expected AuraHandledException for null recordId');
+        } catch (AuraHandledException ex) {
+            System.assertEquals('recordId is required.', ex.getMessage(), 'Null recordId must raise the expected error.');
+        }
+
+        try {
+            DMT_ApprovalTemplate_Controller.getCloseTaskApprovers(caseRecord.Id, null);
+            System.assert(false, 'Expected AuraHandledException for blank stepSelected');
+        } catch (AuraHandledException ex) {
+            System.assertEquals('stepSelected is required.', ex.getMessage(), 'Blank stepSelected must raise the expected error.');
+        }
+
+        try {
+            DMT_ApprovalTemplate_Controller.getCloseTaskApprovers(caseRecord.Id, 'DOES_NOT_EXIST');
+            System.assert(false, 'Expected AuraHandledException for missing task type');
+        } catch (AuraHandledException ex) {
+            System.assertEquals('Selected Task Type not found.', ex.getMessage(), 'Unknown external id must raise the expected error.');
+        }
+
+        String validationMessage = DMT_ApprovalTemplate_Controller.extractValidationMessage('plain validation message');
+        Test.stopTest();
+
+        System.assertEquals(
+            'There is an incorrect value in the line, which is why the approval process cannot be completed.',
+            validationMessage,
+            'Validation message must be normalized from the raw text.'
+        );
+    }
+
+    @IsTest
+    static void getApproversForStepWithRelationshipReturnsApproverList() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Case caseRecord = createCaseRecord(line.Id, UserInfo.getUserId());
+        Map<String, DMT_Task_Type__c> taskTypes = taskTypesByExternalId();
+        DMT_Task_Type__c fromType = taskTypes.get('1');
+        DMT_Task_Type__c toType = taskTypes.get('6');
+        toType.DMT_Approver_Field__c = 'DMT_Approver__c';
+        toType.DMT_ApprovalEdit__c = true;
+        update toType;
+        createPendingTask(caseRecord.Id, fromType.Id, UserInfo.getUserId());
+        insert new DMT_Task_Relationship__c(
+            DMT_From_Task_Type__c = fromType.Id,
+            DMT_Order_Number__c = 1,
+            DMT_To_Task_Type__c = toType.Id
+        );
+        String approverExternalId = 'UT_APPROVER_' + String.valueOf(Math.abs(Crypto.getRandomLong()));
+        DMT_Approver__c approver = new DMT_Approver__c(
+            Name = 'UT Approver',
+            DMT_External_Id__c = approverExternalId,
+            DMT_Approver_Code__c = 'UTC' + String.valueOf(Math.abs(Crypto.getRandomLong()))
+        );
+        insert approver;
+        Case relatedCase = createCaseRecord(line.Id, UserInfo.getUserId());
+        createPendingTask(relatedCase.Id, toType.Id, UserInfo.getUserId());
+        insert new DMT_Task_Approver_Relationship__c(
+            DMT_Task_Type__c = toType.Id,
+            DMT_Approver__c = approver.Id
+        );
+
+        Test.startTest();
+        DMT_ApprovalTemplate_Controller.TaskSelectionDTO result =
+            DMT_ApprovalTemplate_Controller.getCloseTaskApprovers(caseRecord.Id, toType.DMT_External_Id__c);
+        Test.stopTest();
+
+        System.assertEquals(1, result.approvers.size(), 'The selected task type should return one approver.');
+        System.assertEquals(approverExternalId, result.approvers[0].value, 'The approver external id must be returned as the value.');
+        System.assertEquals(true, result.showApprovers, 'Without approval-line state, the approver selector must stay visible.');
+    }
+
+    @IsTest
+    static void testSaveStepThrowsAuraHandledExceptionOnBadJson() {
+        Boolean threw = false;
+        Test.startTest();
+        try {
+            DMT_ApprovalTemplate_Controller.saveStep('not valid json');
+        } catch (AuraHandledException e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        Assert.isTrue(threw, 'Malformed JSON input must surface as an AuraHandledException.');
+    }
+
+    @IsTest
+    static void testSaveAndCloseStepThrowsOnBadJson() {
+        Boolean threw = false;
+        Test.startTest();
+        try {
+            DMT_ApprovalTemplate_Controller.saveAndCloseStep('not valid json');
+        } catch (AuraHandledException e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        Assert.isTrue(threw, 'Malformed JSON input must surface as an AuraHandledException.');
+    }
+
+    @IsTest
+    static void testFinishCaseConditionThrowsOnBadJson() {
+        String fakeCaseIdValue = fakeCaseId();
+        String nullTaskId = null;
+        Boolean threw = false;
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Case caseRecord = createCaseRecord(line.Id, UserInfo.getUserId());
+        DMT_Task_Type__c currentType = taskTypesByExternalId().get('1');
+        Task currentTask = createPendingTask(caseRecord.Id, currentType.Id, UserInfo.getUserId());
+        Task relatedTask = createPendingTask(caseRecord.Id, currentType.Id, UserInfo.getUserId());
+        Map<String, Object> context = new Map<String, Object>{
+            'DMT_LineOpportunity__c' => 'L',
+            'LineId' => line.Id
+        };
+
+        Test.startTest();
+        DMT_ApprovalTemplate_Controller.finishCaseCondition(caseRecord.Id, currentTask.Id, '{}', JSON.serialize(context));
+        try {
+            DMT_ApprovalTemplate_Controller.finishCaseCondition(fakeCaseIdValue, nullTaskId, '{}', 'not valid json');
+        } catch (AuraHandledException e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        Assert.isTrue(threw, 'Malformed JSON input must surface as an AuraHandledException.');
+        Assert.areEqual('Finished', [SELECT Status FROM Case WHERE Id = :caseRecord.Id].Status, 'finishCaseCondition must finish the Case on the happy path.');
+        Assert.areEqual('Finished', [SELECT Status FROM Task WHERE Id = :currentTask.Id].Status, 'finishCaseCondition must finish the current task through the related-task finisher.');
+        Assert.areEqual('Finished', [SELECT Status FROM Task WHERE Id = :relatedTask.Id].Status, 'finishCaseCondition must finish sibling tasks on the same Case.');
+    }
+
+    @IsTest
+    static void testReturnToProposalThrowsOnBadJson() {
+        String fakeCaseIdValue = fakeCaseId();
+        String nullTaskId = null;
+        Boolean threw = false;
+        Test.startTest();
+        try {
+            DMT_ApprovalTemplate_Controller.returnToProposal(fakeCaseIdValue, nullTaskId, '{}', 'not valid json', 'Draft');
+        } catch (AuraHandledException e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        Assert.isTrue(threw, 'Malformed JSON input must surface as an AuraHandledException.');
+    }
+
+    @IsTest
+    static void testCloseTaskWithApproverThrowsOnBadJson() {
+        String fakeCaseIdValue = fakeCaseId();
+        Id nullTaskId = null;
+        Boolean threw = false;
+        Test.startTest();
+        try {
+            DMT_ApprovalTemplate_Controller.executeCloseTask(fakeCaseIdValue, nullTaskId, 'not valid json', '{}');
+        } catch (AuraHandledException e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        Assert.isTrue(threw, 'Malformed JSON input must surface as an AuraHandledException.');
+    }
+
+    @IsTest
+    static void testGetApproversForStepWithoutRelationshipReturnsEmpty() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Case caseRecord = createCaseRecord(line.Id, UserInfo.getUserId());
+        DMT_Task_Type__c stepType = taskTypesByExternalId().get('1');
+
+        Test.startTest();
+        DMT_ApprovalTemplate_Controller.TaskSelectionDTO selection =
+            DMT_ApprovalTemplate_Controller.getCloseTaskApprovers(caseRecord.Id, stepType.DMT_External_Id__c);
+        Test.stopTest();
+
+        Assert.areEqual(0, selection.approvers.size(), 'Without a task-approver relationship, no approvers should be returned.');
+    }
+
+    @IsTest
+    static void closeTaskWithApproverUpdatesTaskAndCaseStatus() {
+        DMT_Approver__c approver = new DMT_Approver__c(
+            Name = 'UT Close Approver',
+            DMT_External_Id__c = 'UT_CLOSE_APPROVER',
+            DMT_Approver_Code__c = '12222233196'
+        );
+        insert approver;
+        DMT_Approver__c reloadedApprover = [SELECT Id, DMT_Group__c FROM DMT_Approver__c WHERE Id = :approver.Id LIMIT 1];
+        Group approverGroup = [SELECT Id, DeveloperName FROM Group WHERE DeveloperName = :reloadedApprover.DMT_Group__c LIMIT 1];
+        String missingApproverExternalId = 'UT_MISSING_APPROVER_' + approver.Id;
+        String missingTaskTypeExternalId = 'UT_MISSING_TASK_TYPE_' + approver.Id;
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            if ([SELECT COUNT() FROM QueueSobject WHERE QueueId = :approverGroup.Id AND SobjectType = 'Task'] == 0) {
+                insert new QueueSobject(QueueId = approverGroup.Id, SobjectType = 'Task');
+            }
+            if ([SELECT COUNT() FROM QueueSobject WHERE QueueId = :approverGroup.Id AND SobjectType = 'Case'] == 0) {
+                insert new QueueSobject(QueueId = approverGroup.Id, SobjectType = 'Case');
+            }
+        }
+
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Case caseRecord = createCaseRecord(line.Id, UserInfo.getUserId());
+        Map<String, DMT_Task_Type__c> taskTypes = taskTypesByExternalId();
+        DMT_Task_Type__c currentType = taskTypes.get('1');
+        DMT_Task_Type__c nextType = taskTypes.get('6');
+        Task taskRecord = createPendingTask(caseRecord.Id, currentType.Id, approverGroup.Id);
+        insert new DMT_Task_Relationship__c(
+            DMT_From_Task_Type__c = currentType.Id,
+            DMT_Order_Number__c = 1,
+            DMT_To_Task_Type__c = nextType.Id
+        );
+
+        Test.startTest();
+        DMT_ApprovalTemplate_Controller.CloseTaskResult result =
+            DMT_ApprovalTemplate_Controller.executeCloseTask(
+                caseRecord.Id,
+                taskRecord.Id,
+                nextType.DMT_External_Id__c,
+                approver.DMT_External_Id__c
+            );
+        Test.stopTest();
+
+        Case updatedCase = [SELECT Status, OwnerId FROM Case WHERE Id = :caseRecord.Id];
+        Task updatedCurrentTask = [SELECT Status FROM Task WHERE Id = :taskRecord.Id];
+        List<Task> nextTasks = [
+            SELECT Id, OwnerId, DMT_Task_Type__c, Status
+            FROM Task
+            WHERE WhatId = :caseRecord.Id AND DMT_Task_Type__c = :nextType.Id
+        ];
+
+        System.assertEquals(true, result.success, 'Close task flow should succeed.');
+        System.assertEquals('Pending', updatedCase.Status, 'Case should move to Pending.');
+        System.assertEquals(approverGroup.Id, updatedCase.OwnerId, 'Case owner should move to the approver queue.');
+        System.assertEquals('Completed', updatedCurrentTask.Status, 'Current task should be completed.');
+        System.assertEquals(1, nextTasks.size(), 'One next-step task should be created.');
+        System.assertEquals(approverGroup.Id, nextTasks[0].OwnerId, 'Next task should be assigned to the approver queue.');
+    }
+
+    @IsTest
+    static void testExecuteCloseTaskFlowValidatesRequiredParameters() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Case caseRecord = createCaseRecord(line.Id, UserInfo.getUserId());
+        DMT_Task_Type__c currentType = taskTypesByExternalId().get('1');
+        Task taskRecord = createPendingTask(caseRecord.Id, currentType.Id, UserInfo.getUserId());
+
+        DMT_Approver__c approver = new DMT_Approver__c(
+            Name = 'UT Validation Approver',
+            DMT_External_Id__c = 'UT_VALIDATION_APPROVER',
+            DMT_Approver_Code__c = '12222233197'
+        );
+        insert approver;
+
+        Boolean threwCase = false;
+        Boolean threwTask = false;
+        Boolean threwStep = false;
+        Boolean threwApprover = false;
+
+        Test.startTest();
+        try {
+            DMT_TaskApprovalFlowService.executeCloseTaskFlow(null, taskRecord.Id, currentType.DMT_External_Id__c, approver.DMT_External_Id__c);
+        } catch (AuraHandledException ex) {
+            threwCase = true;
+            System.assertEquals('Case Id is required.', ex.getMessage(), 'Null caseId must be rejected.');
+        }
+
+        try {
+            DMT_TaskApprovalFlowService.executeCloseTaskFlow(caseRecord.Id, null, currentType.DMT_External_Id__c, approver.DMT_External_Id__c);
+        } catch (AuraHandledException ex) {
+            threwTask = true;
+            System.assertEquals('Current Task Id is required.', ex.getMessage(), 'Null currentTaskId must be rejected.');
+        }
+
+        try {
+            DMT_TaskApprovalFlowService.executeCloseTaskFlow(caseRecord.Id, taskRecord.Id, '', approver.DMT_External_Id__c);
+        } catch (AuraHandledException ex) {
+            threwStep = true;
+            System.assertEquals('You must select a Task.', ex.getMessage(), 'Blank stepSelected must be rejected.');
+        }
+
+        try {
+            DMT_TaskApprovalFlowService.executeCloseTaskFlow(caseRecord.Id, taskRecord.Id, currentType.DMT_External_Id__c, '');
+        } catch (AuraHandledException ex) {
+            threwApprover = true;
+            System.assertEquals('You must select an Approver.', ex.getMessage(), 'Blank approverSelected must be rejected.');
+        }
+        Test.stopTest();
+
+        System.assert(threwCase, 'The flow must validate a null case id.');
+        System.assert(threwTask, 'The flow must validate a null current task id.');
+        System.assert(threwStep, 'The flow must validate a blank step selection.');
+        System.assert(threwApprover, 'The flow must validate a blank approver selection.');
+    }
+
+    @IsTest
+    static void testExecuteCloseTaskFlowThrowsWhenApproverOrTaskTypeMissing() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Case caseRecord = createCaseRecord(line.Id, UserInfo.getUserId());
+        DMT_Task_Type__c currentType = taskTypesByExternalId().get('1');
+        Task taskRecord;
+
+        DMT_Approver__c approver = new DMT_Approver__c(
+            Name = 'UT Missing Branch Approver',
+            DMT_External_Id__c = 'UT_MISSING_BRANCH_APPROVER',
+            DMT_Approver_Code__c = '12222233198'
+        );
+        insert approver;
+        DMT_Approver__c reloadedApprover = [SELECT Id, DMT_Group__c FROM DMT_Approver__c WHERE Id = :approver.Id LIMIT 1];
+        Group approverGroup = [SELECT Id, DeveloperName FROM Group WHERE DeveloperName = :reloadedApprover.DMT_Group__c LIMIT 1];
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            if ([SELECT COUNT() FROM QueueSobject WHERE QueueId = :approverGroup.Id AND SobjectType = 'Task'] == 0) {
+                insert new QueueSobject(QueueId = approverGroup.Id, SobjectType = 'Task');
+            }
+            if ([SELECT COUNT() FROM QueueSobject WHERE QueueId = :approverGroup.Id AND SobjectType = 'Case'] == 0) {
+                insert new QueueSobject(QueueId = approverGroup.Id, SobjectType = 'Case');
+            }
+        }
+        taskRecord = createPendingTask(caseRecord.Id, currentType.Id, approverGroup.Id);
+        String missingApproverExternalId = approver.DMT_External_Id__c + '_NOT_FOUND';
+        String missingTaskTypeExternalId = currentType.DMT_External_Id__c + '_NOT_FOUND';
+
+        Boolean threwMissingApprover = false;
+        Boolean threwMissingTaskType = false;
+
+        Test.startTest();
+        try {
+            DMT_TaskApprovalFlowService.executeCloseTaskFlow(caseRecord.Id, taskRecord.Id, currentType.DMT_External_Id__c, missingApproverExternalId);
+        } catch (AuraHandledException ex) {
+            threwMissingApprover = true;
+        }
+
+        try {
+            DMT_TaskApprovalFlowService.executeCloseTaskFlow(caseRecord.Id, taskRecord.Id, missingTaskTypeExternalId, approver.DMT_External_Id__c);
+        } catch (AuraHandledException ex) {
+            threwMissingTaskType = true;
+        }
+        Test.stopTest();
+
+        System.assert(threwMissingApprover, 'The flow must reject an unknown approver.');
+        System.assert(threwMissingTaskType, 'The flow must reject an unknown task type.');
     }
 }

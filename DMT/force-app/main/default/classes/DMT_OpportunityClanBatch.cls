@@ -1,5 +1,10 @@
-public with sharing class DMT_OpportunityClanBatch implements Database.Batchable<sObject>, Database.Stateful, Database.AllowsCallouts {
+public with sharing class DMT_OpportunityClanBatch implements Database.Batchable<sObject>, Database.Stateful, Database.AllowsCallouts, System.Schedulable {
 
+    // Método necesario para poder programar el Batch
+    public void execute(System.SchedulableContext sc) {
+        DMT_OpportunityClanBatch batch = new DMT_OpportunityClanBatch();
+        Database.executeBatch(batch, 50);
+    }
     public Database.QueryLocator start(Database.BatchableContext bc) {
         // Obtenemos de forma segura el RecordTypeId
         Id dmtRecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName()

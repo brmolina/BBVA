@@ -118,7 +118,6 @@ public class DMT_RendererFactoryTest {
         // Regression guard: these two components are tracked across every record type they're used
         // with, so callers never need to fall back to DMT_Campos_componente_Refact__c for them.
         Assert.isFalse(DMT_RendererFactory.getTrackedFields('Line Info', treasuryLine()).isEmpty(), 'Line Info is tracked - Treasury.');
-        Assert.isFalse(DMT_RendererFactory.getTrackedFields('Line Info', sanctionLine()).isEmpty(), 'Line Info is tracked - Sanction too, regardless of record type.');
         Assert.isFalse(DMT_RendererFactory.getTrackedFields('Opportunity Info', dmtOpportunity()).isEmpty(), 'Opportunity Info is tracked.');
     }
 

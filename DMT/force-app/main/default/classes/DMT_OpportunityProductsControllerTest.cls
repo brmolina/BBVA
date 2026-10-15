@@ -574,6 +574,60 @@ static Map<String, Object> createFullTestSetup() {
         System.assert(result.size() >= 0, 'Result should be a valid map');
     }
 
+    @isTest
+    static void testGetTaxonomyCatalogValues_E895Attr1AndActiveFilter() {
+        List<String> codes = new List<String>{ 'T4624R', 'T4624P', 'T4624I' };
+        List<String> attributes = new List<String>{ 'REAL', 'PERSONAL', 'REAL' };
+        List<DMT_Taxonomy_Values__c> records = new List<DMT_Taxonomy_Values__c>();
+
+        for (Integer i = 0; i < codes.size(); i++) {
+            records.add(new DMT_Taxonomy_Values__c(
+                DMT_Name__c = 'Mitigant ' + codes[i],
+                DMT_Name_EN__c = 'Mitigant ' + codes[i],
+                DMT_External_Id__c = codes[i],
+                CurrencyIsoCode = 'EUR',
+                DMT_Catalog__c = 'E895',
+                DMT_Value__c = codes[i],
+                gf_catalog_atrb_val1_name_c__c = attributes[i],
+                DMT_Active__c = i < 2
+            ));
+        }
+        insert records;
+
+        Test.startTest();
+        Map<String, List<Map<String, String>>> result =
+            DMT_OpportunityProductsController.getTaxonomyCatalogValues();
+        Test.stopTest();
+
+        System.assert(result.containsKey('E895'), 'E895 catalog should be present');
+
+        Map<String, Map<String, String>> optionsByValue =
+            new Map<String, Map<String, String>>();
+        for (Map<String, String> option : result.get('E895')) {
+            optionsByValue.put(option.get('value'), option);
+        }
+
+        System.assert(optionsByValue.containsKey(records[0].DMT_Value__c),
+            'Active REAL mitigant should be returned');
+        System.assert(optionsByValue.containsKey(records[1].DMT_Value__c),
+            'Active PERSONAL mitigant should be returned');
+        System.assert(!optionsByValue.containsKey(records[2].DMT_Value__c),
+            'Inactive mitigant should not be returned');
+
+        System.assertEquals('REAL',
+            optionsByValue.get(records[0].DMT_Value__c).get('attr1'),
+            'REAL Attribute 1 should be exposed');
+        System.assertEquals('PERSONAL',
+            optionsByValue.get(records[1].DMT_Value__c).get('attr1'),
+            'PERSONAL Attribute 1 should be exposed');
+
+        for (Integer i = 0; i < 2; i++) {
+            System.assertEquals(records[i].DMT_Name_EN__c,
+                optionsByValue.get(records[i].DMT_Value__c).get('label'),
+                'Label should preserve the English taxonomy name');
+        }
+    }
+
     // ═══════════════════════════════════════════════════════════════════════════
     // getGuarantorFieldConfiguration
     // ═══════════════════════════════════════════════════════════════════════════

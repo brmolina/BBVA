@@ -1,3 +1,8 @@
+/**
+ * @description       : APex class aux for clone DMT Opportunity and related data. Call services for retrieve information when clone to a different account.
+ * @author            : BBVA
+ * @last modified on  : 10-08-2026
+ **/
 public without sharing class DMT_OpportunityCloneUtil {
     public class CloneInput {
         @InvocableVariable
@@ -30,7 +35,7 @@ public without sharing class DMT_OpportunityCloneUtil {
         @InvocableVariable public Id newOpportunityId;
     }
     
-    private class MainHolderSelection {
+    public class MainHolderSelection {
         public Id accountId;
         public String customerId;
         public String groupId;
@@ -38,6 +43,16 @@ public without sharing class DMT_OpportunityCloneUtil {
         public DMT_HPG_GlobalPosition.Data clientData;
     }
     
+    /**
+     * @description clone DMT Opportunity and related data. Call services for retrieve information when clone to a different account.
+     * TODO: Clase de test cobertura 90% con asserts que comprueben el resultado: Happy path y algun error.
+     * Review nombre de variables para mejorar comprension, si se puede optimizar el código,
+     * si se puede hacer más legible, si se puede dividir en métodos más pequeños.
+     * Limpiar system debugs antes de añadir a la rama. y codigo comentado / obsoleto
+     * @author BBVA | 10-08-2026
+     * @param inputs recieved from flow
+     * @return List<CloneResult>
+     **/
     @InvocableMethod(label='Clonar oportunidad y datos relacionados desde Flow')
     public static List<CloneResult> clone(List<CloneInput> inputs) {
         
@@ -62,74 +77,76 @@ public without sharing class DMT_OpportunityCloneUtil {
                 ow.oppOriginalEntific= input?.originalOpportunity.Entific__c;
                 System.debug('WRAPPER RELLENO OW=>'+ow);
             }//FOR
-            Boolean isSameAccount = ow.oppOriginal.AccountId == ow.oppLocalClient.Id;
-            Boolean isSubsidiaryTarget = ow.oppLocalClient.DES_Client_Type__c == 'Subsidiary';
+            Boolean isSameAccount = ow.oppOriginal.AccountId == ow.oppLocalClient.Id ? true : false;
+             System.debug('******ow.oppOriginal.AccountId =>'+ow.oppOriginal.AccountId +'///'+'ow.oppLocalClient.Id =>'+ow.oppLocalClient.Id );
+            Boolean isSubsidiaryTarget = ow.oppLocalClient.DES_Structure_Type__c == 'Subsidiary' ? true : false;
             Date lastDate;
             String lastDatetxt;
             MainHolderSelection mainHolderSelection;
             DMT_HPG_GlobalPosition.Wrapper subsidiaryWrapper;
-
+            
+            System.debug('******isSubsidiaryTarget'+ow.oppLocalClient.DES_Structure_Type__c);
             // Same-account clones preserve the original data snapshot. For a different target,
             // all destination-data service calls must complete before the first DML operation.
             if (!isSameAccount) {
                 lastDatetxt = DMT_HPG_Utils.lastDate();
                 lastDate = Date.valueOf(lastDatetxt);
-
+                
                 if (isSubsidiaryTarget) {
                     System.debug('Clonamos hacia un cliente subsidiaria');
                     subsidiaryWrapper = DMT_HPG_MainTableCustomController.fetchClientDataFromServiceLine(
                         null,
-                        '1',
-                        '5000',
-                        new List<String>(),
-                        lastDate,
-                        'Y',
-                        ow.oppLocalClient.Id
-                    );
-
+                    '1',
+                    '5000',
+                    new List<String>(),
+                    lastDate,
+                    'Y',
+                    ow.oppLocalClient.Id
+                        );
+                    
                     System.debug('Account subsidiaria DATA SERVICIO =>'+subsidiaryWrapper);
                     System.debug('ID CUENTA EN LA QUE VAMOS A CLONAR =>'+ow.oppLocalClient.Id );
                     Map<String, Object> comparisonResult = DMT_Opportunity_Utils.getComparisonAccount(
-                        new Map<String, Object>{ 'oppAccountId' => ow.oppLocalClient.Id },
-                        new Map<String, Object>(),
-                        null
-                    );
+                    new Map<String, Object>{ 'oppAccountId' => ow.oppLocalClient.Id },
+                    new Map<String, Object>(),
+                    null
+                        );
                     Id comparisonAccountId = (Id) comparisonResult.get('comparisonAccountId');
                     System.debug('***** COMPARISON ACCOUNT ID clonada (La cuenta "padre" de la que saca data)=>'+comparisonAccountId);
-
+                    
                     clientValues = DMT_CreateOpportunityService.getClientValues(ow.oppLocalClient.Id, comparisonAccountId);
                     System.debug('***** clientValues ID clonada=>'+clientValues);
-
+                    
                     leveragedLendingOutput = DMT_Callout_LeveragedLending.callLeveragedLendingService(
                         clientValues.groupCode, lastDatetxt, new Map<String, Object>()
-                    );
+                        );
                 } else {
                     mainHolderSelection = resolveMainHolderSelection(
                         ow.oppLocalClient.Id,
-                        ow.oppOriginal.Entific__c,
-                        lastDate
-                    );
+                    ow.oppOriginal.Entific__c,
+                    lastDate
+                        );
                     System.debug('MAIN HOLDER SELECTION =>'+mainHolderSelection);
-
+                    
                     Map<String, Object> comparisonResult = DMT_Opportunity_Utils.getComparisonAccount(
-                        new Map<String, Object>{ 'oppAccountId' => mainHolderSelection.accountId },
-                        new Map<String, Object>(),
-                        null
-                    );
+                    new Map<String, Object>{ 'oppAccountId' => mainHolderSelection.accountId },
+                    new Map<String, Object>(),
+                    null
+                        );
                     Id comparisonAccountId = (Id) comparisonResult.get('comparisonAccountId');
                     clientValues = DMT_CreateOpportunityService.getClientValues(
                         mainHolderSelection.accountId,
-                        comparisonAccountId
-                    );
+                    comparisonAccountId
+                        );
                     leveragedLendingOutput = DMT_Callout_LeveragedLending.callLeveragedLendingService(
                         clientValues.groupCode, lastDatetxt, new Map<String, Object>()
-                    );
+                        );
                 }
             }
             
             //OPP clonada
             oppCloned = ow.oppOriginal.clone(false, false, false, false);
-
+            
             //vaciar campo documentos clonados
             oppCloned.CoreDocsTaxonomyValues__c  ='';
             oppCloned.AccountId = ow.oppLocalClient.Id;
@@ -141,7 +158,7 @@ public without sharing class DMT_OpportunityCloneUtil {
             oppCloned.DMT_Sanction__c = null;
             oppCloned.DMT_Parent_Opportunity__c = null;
             oppCloned.DMT_Opp_User_Lock__c = null;
-            
+            oppCloned.DMT_Requested_Passport__c=false;
             insert oppCloned;
             
             result.newOpportunityId = oppCloned.Id;
@@ -163,10 +180,10 @@ public without sharing class DMT_OpportunityCloneUtil {
                     oppClientClone.DMT_MDE_Opportunity__c = ow.oppCloned.Id;
                     insert oppClientClone;
                 }
-
+                
                 //RELATED
                 cloneRelatedRecords(oppCloned, ow);
-
+                
                 //ASSO
                 List<Custom_Association_Opportunity__c> customAssoOpp = [SELECT Id, Name,CreatedDate, Opportunity__c, Group__c, g_customer_id__c, g_group_id__c, gf_customer_group_id__c, gf_cutoff_date__c, gf_origin_application_type__c, g_entific_id__c 
                                                                      FROM Custom_Association_Opportunity__c 
@@ -215,7 +232,7 @@ public without sharing class DMT_OpportunityCloneUtil {
                 
                 result.success = true;
                 results.add(result);
-
+                
                 System.debug('END IF MISMA CUENTA');
             }else{
                 System.debug('Diferente cuenta');
@@ -223,41 +240,43 @@ public without sharing class DMT_OpportunityCloneUtil {
                 if(isSubsidiaryTarget){
                     System.debug('Diferente a subsidiary');
                     if(ow.oppLocalClient != null) {
-
+                        
                         //Servicio leveraged lending
                         String leveragedLendingIndType = (leveragedLendingOutput != null) ? (String) leveragedLendingOutput.get('leveragedLendingIndType') : null;
                         if (subsidiaryWrapper == null || !subsidiaryWrapper.success || subsidiaryWrapper.data == null || subsidiaryWrapper.data.isEmpty()) {
                             throw new CloneException('The service did not return client data.');
                         }
-
-                        DMT_Opportunity_Client__c dmtClient = DMT_CreateOpportunityService.buildOpportunityClient(
+                        
+                        /*  DMT_Opportunity_Client__c dmtClient = DMT_CreateOpportunityService.buildOpportunityClient(
                         oppCloned.Id,
                         clientValues,
                         subsidiaryWrapper.data[0],
                         leveragedLendingIndType,
-                        null);
-
+                        null); */
+                            DMT_Opportunity_Client__c dmtClient =   DMT_CreateOpportunityService.buildOpportunityClient(oppCloned.Id,clientValues,subsidiaryWrapper.data[0],leveragedLendingIndType,null,ow.oppCloneClient,true);
+                        
                         System.debug('···················Opportunity client clonado =>'+dmtClient);
                         insert dmtClient;
                     }
-
+                    
                     cloneRelatedRecords(oppCloned, ow);
                     
                     result.success = true;
                     results.add(result);
                     
                 }else{
-                     System.debug('Diferente a un grupo');
-                    if (ow.oppLocalClient.DES_Client_Type__c != 'Subsidiary') {
+                    System.debug('Diferente a un grupo');
+                    if (ow.oppLocalClient.DES_Structure_Type__c != 'Subsidiary') {
                         String leveragedLendingIndType = leveragedLendingOutput != null
                             ? (String) leveragedLendingOutput.get('leveragedLendingIndType')
                             : null;
                         createMainHolderAssociations(
                             oppCloned,
-                            mainHolderSelection,
-                            clientValues,
-                            leveragedLendingIndType
-                        );
+                        mainHolderSelection,
+                        clientValues,
+                        leveragedLendingIndType,
+                        ow.oppCloneClient
+                            );
                     }
                     
                     if(oppCloned != null) {
@@ -280,7 +299,7 @@ public without sharing class DMT_OpportunityCloneUtil {
         System.debug('RESULTS =>>'+results);
         return results;
     }
-    
+    @TestVisible
     private static MainHolderSelection resolveMainHolderSelection(Id localClientId, String sourceEntific, Date lastDate) {
         System.debug('Resolving main holder selection for local client ' + localClientId + ' and source Entific ' + sourceEntific);
         if (localClientId == null || String.isBlank(sourceEntific)) {
@@ -343,11 +362,12 @@ public without sharing class DMT_OpportunityCloneUtil {
         throw new CloneException('No Salesforce Account was found for Entific ' + normalizedEntific + '.');
     }
     
-    private static void createMainHolderAssociations(
+    public static void createMainHolderAssociations(
         Opportunity oppCloned,
-        MainHolderSelection selection,
-        DMT_CreateOpportunityService.ClientValues clientValues,
-        String leveragedLendingIndType
+    MainHolderSelection selection,
+    DMT_CreateOpportunityService.ClientValues clientValues,
+    String leveragedLendingIndType,
+    DMT_Opportunity_Client__c oppCloneClient
     ) {
         if (oppCloned == null || selection == null || selection.accountId == null) {
             throw new CloneException('Cannot create associations without a resolved main holder.');
@@ -362,13 +382,15 @@ public without sharing class DMT_OpportunityCloneUtil {
         gf_customer_group_id__c = oppCloned.DMT_Opp_Id__c);
         insert association;
         
-        DMT_Opportunity_Client__c opportunityClient = DMT_CreateOpportunityService.buildOpportunityClient(
-            oppCloned.Id,
-            clientValues,
-            selection.clientData,
-            leveragedLendingIndType,
-            null
-        );
+        /* DMT_Opportunity_Client__c opportunityClient = DMT_CreateOpportunityService.buildOpportunityClient(
+        oppCloned.Id,
+        clientValues,
+        selection.clientData,
+        leveragedLendingIndType,
+        null
+            ); */
+            DMT_Opportunity_Client__c opportunityClient = DMT_CreateOpportunityService.buildOpportunityClient(oppCloned.Id,clientValues,selection.clientData,leveragedLendingIndType,null,oppCloneClient,true);
+        
         opportunityClient.Custom_Association__c = association.Id;
         opportunityClient.Alpha_Code_Client__c = selection.customerId;
         insert opportunityClient;
@@ -384,6 +406,7 @@ public without sharing class DMT_OpportunityCloneUtil {
     
     
     private static void cloneRelatedRecords(Opportunity newOpp, OppWrapper ow) {
+        
         Map<Id, Id> oldOLItoNewOLI = new Map<Id, Id>();
         List<SObject> recordsToInsert = new List<SObject>();
         if(ow.OLIs != null) {
@@ -493,10 +516,57 @@ public without sharing class DMT_OpportunityCloneUtil {
                 }
             }
         }
+        
         if (!recordsToInsert.isEmpty()) {
             insert recordsToInsert;
         }
         cloneParticipants(newOpp, ow.oppParticipants, ow.oppOriginal.AccountId);
+        
+        
+        List<DMT_Global_Structure__c> auxGsList =new List<DMT_Global_Structure__c>();
+        List<DMT_Global_Structure__c> globalStructure = DMT_ApprovalDataController.getGlobalStructure(ow.oppOriginal.Id);
+        for(DMT_Global_Structure__c gs : globalStructure){
+            DMT_Global_Structure__c auxGs = gs.clone(false,false,false,false);
+            auxGs.DMT_Opportunity__c = ow.oppCloned.Id;
+            auxGsList.add(auxGs);
+        }
+        insert auxGsList;
+        
+        List<DMT_Banking_Pool_Structure__c> auxBpsList=new List<DMT_Banking_Pool_Structure__c>();
+        List<DMT_Banking_Pool_Structure__c> bankingPool = DMT_ApprovalDataController.getBankingPool(ow.oppOriginal.Id);
+        for(DMT_Banking_Pool_Structure__c bps : bankingPool){
+            
+            DMT_Banking_Pool_Structure__c auxBpsRecord = bps.clone(false,false,false,false);
+            auxBpsRecord.DMT_Opportunity__c = ow.oppCloned.Id;
+            auxBpsList.add(auxBpsRecord);
+        }
+        insert auxBpsList;
+        // DMT_Opportunity_Business_Plan__c
+        List<DMT_Opportunity_Business_Plan__c> auxBusinessPlanList=new  List<DMT_Opportunity_Business_Plan__c>();
+        List<DMT_Opportunity_Business_Plan__c> oppBPList = [
+                SELECT  Id,  Name, DMT_Currency__c, DMT_Booking_Geography__c, Current_FY_Cash_Management_amount__c, 
+                Current_FY_Child_X_Sell_amount__c, Current_FY_Client_Resources_amount__c, Current_FY_Corp_Synd_Lending_amount__c,
+                Current_FY_Credit_Equity_amount__c, Current_FY_DCM_amount__c, Current_FY_ECM_M_A_Amount__c, 
+                Current_FY_FX_CCS_amount__c, Current_FY_GTF_amount__c, Current_FY_Rates_amount__c, 
+                Current_FY_Securities_Services_amount__c, Current_FY_Str_Trade_Finance_amount__c,
+                Current_FY_Structured_Finance_amount__c, Current_FY_Total_Non_X_Sell_amount__c, 
+                Current_FY_Total_Revenues_amount__c, Current_FY_Total_X_Sell_amount__c, 
+                Current_FY_Working_Capital_amount__c, DMT_Debt_EBITDA_number__c, DMT_EBITDA_number__c, 
+                DMT_EBIT_number__c, DMT_Free_Cash_Flow_number__c, DMT_Net_Debt_EBITDA_number__c,
+                DMT_Net_Income_number__c, DMT_Revenues_number__c, gf_kpi_trans_fees_2ya_amount__c, 
+                gf_kpi_trans_fees_cyr_amount__c, gf_kpi_trans_fees_ly_amount__c, gf_kpi_trans_fees_nxy_amount__c, 
+                gf_xb_cust_ope_revenue_2ya_per__c, gf_xb_cust_ope_revenue_cyr_per__c, gf_xb_cust_ope_revenue_ly_per__c, 
+                gf_xb_cust_ope_revenue_nxy_per__c, Current_FY_M_A_amount__c, DMT_Opportunity__c, DMT_Year__c, DMT_QAOTER__c,
+                DMT_Client__c, DMT_Xsell_Cost_to_Income__c, DMT_Active__c 
+                FROM DMT_Opportunity_Business_Plan__c WHERE DMT_Opportunity__c =: ow.oppOriginal.Id];
+
+        for(DMT_Opportunity_Business_Plan__c obp : oppBPList){
+            DMT_Opportunity_Business_Plan__c auxObpRecord = obp.clone(false,false,false,false);
+            auxObpRecord.DMT_Opportunity__c = ow.oppCloned.Id;
+            auxBusinessPlanList.add(auxObpRecord);
+        }
+        insert auxBusinessPlanList;
+        
     }
     
     public static void cloneParticipants(Opportunity newOpp, List<DMT_TeamMember__c> participants, Id originalAccountId) {

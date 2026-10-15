@@ -149,8 +149,28 @@ public with sharing class DMT_Passport_Selector {
     }
 
     public static Id getAppproverId(String approverId) {
-        String queueDeveloperName = [SELECT Id,DMT_Group__c FROM DMT_Approver__c WHERE DMT_External_Id__c =: approverId WITH USER_MODE LIMIT 1]?.DMT_Group__c;
-         return [SELECT Id FROM Group WHERE Type = 'Queue' and DeveloperName = :queueDeveloperName LIMIT 1]?.Id;
+        if (String.isBlank(approverId)) {
+            return null;
+        }
+
+        List<DMT_Approver__c> approvers = [
+            SELECT DMT_Group__c
+            FROM DMT_Approver__c
+            WHERE DMT_External_Id__c = :approverId
+            WITH USER_MODE
+            LIMIT 1
+        ];
+        if (approvers.isEmpty() || String.isBlank(approvers[0].DMT_Group__c)) {
+            return null;
+        }
+
+        List<Group> queues = [
+            SELECT Id
+            FROM Group
+            WHERE Type = 'Queue' AND DeveloperName = :approvers[0].DMT_Group__c
+            LIMIT 1
+        ];
+        return queues.isEmpty() ? null : queues[0].Id;
     }
     public static DMT_Approver__c getApprover(String approverId) {
         List<DMT_Approver__c> approvers = [SELECT Id,DMT_ApproverType__r.name FROM DMT_Approver__c WHERE DMT_External_Id__c =: approverId WITH USER_MODE LIMIT 1];
@@ -164,8 +184,7 @@ public with sharing class DMT_Passport_Selector {
     public static List<DMT_Task_Type__c> getTaskType(String taskId) {
         List<DMT_Task_Type__c> taskTypes = [SELECT Id,Name, DMT_ApprovalEdit__c FROM DMT_Task_Type__c WHERE DMT_External_Id__c =: taskId WITH USER_MODE LIMIT 1];
         if(taskTypes.isEmpty()){
-            System.debug(System.LoggingLevel.ERROR, 'No task type found for taskId: ' + taskId + '. DMT_Passport_Selector.getTaskType() returning null.');
-            return null;
+            System.debug(System.LoggingLevel.ERROR, 'No task type found for taskId: ' + taskId + '. DMT_Passport_Selector.getTaskType() returning an empty list.');
         }
         return taskTypes;
     }

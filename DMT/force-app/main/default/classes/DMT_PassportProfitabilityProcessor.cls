@@ -1,4 +1,31 @@
+/**
+ * @description       : 
+ * @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+ * @group             : 
+ * @last modified on  : 10-13-2026
+ * @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+**/
 public with sharing class DMT_PassportProfitabilityProcessor {
+
+    private static final String PROFITABILITY_ENGINE_FEATURE_NAME = 'Profitability Engine';
+    private static final Set<String> SELECTABLE_FEATURE_STATES = new Set<String>{
+        'GREEN', 'YELLOW', 'RED'
+    };
+
+    public class ProfitabilityFeatureEligibility {
+        @AuraEnabled public Boolean featureFound;
+        @AuraEnabled public Boolean featureEmpty;
+        @AuraEnabled public String stateName;
+        @AuraEnabled public Boolean hasValidations;
+        @AuraEnabled public Boolean canSelect;
+        @AuraEnabled public Boolean canCalculate;
+        @AuraEnabled public String blockingReason;
+    }
+
+    private class ParsedProfitabilityData {
+        public Map<String, Object> aggregateResult;
+        public Map<String, Map<String, Object>> productMap;
+    }
 
     private static Decimal safeToDecimal(Object value, Integer integerPart, Integer decimalPart) {
         if (value == null) return null;
@@ -66,20 +93,79 @@ public with sharing class DMT_PassportProfitabilityProcessor {
      * Returns null if not found.
      */
     private static Map<String, Object> findProfitabilityFeature(Map<String, Object> jsonData) {
+        if (jsonData == null || !(jsonData.get('data') instanceof Map<String, Object>)) return null;
+
         Map<String, Object> data = (Map<String, Object>) jsonData.get('data');
-        if (data == null) return null;
+        if (!(data.get('features') instanceof List<Object>)) return null;
         
         List<Object> features = (List<Object>) data.get('features');
-        if (features == null) return null;
         
         for (Object feat : features) {
+            if (!(feat instanceof Map<String, Object>)) continue;
+
             Map<String, Object> feature = (Map<String, Object>) feat;
             String featureName = (String) feature.get('name');
-            if (featureName == 'Profitability Engine') {
+            if (featureName == PROFITABILITY_ENGINE_FEATURE_NAME) {
                 return feature;
             }
         }
         return null;
+    }
+
+    /**
+     * Evaluates whether a Passport's Profitability Engine feature is available for
+     * the Scenario selector and for executing a calculation.
+     */
+    public static ProfitabilityFeatureEligibility evaluateProfitabilityFeature(String passportJson) {
+        ProfitabilityFeatureEligibility eligibility = new ProfitabilityFeatureEligibility();
+        eligibility.featureFound = false;
+        eligibility.featureEmpty = false;
+        eligibility.hasValidations = false;
+        eligibility.canSelect = false;
+        eligibility.canCalculate = false;
+
+        if (String.isBlank(passportJson)) {
+            eligibility.blockingReason = 'Passport data is not available.';
+            return eligibility;
+        }
+
+        try {
+            Map<String, Object> jsonData = (Map<String, Object>) JSON.deserializeUntyped(passportJson);
+            Map<String, Object> feature = findProfitabilityFeature(jsonData);
+            if (feature == null) {
+                eligibility.blockingReason = 'Profitability Engine is not available in the Passport.';
+                return eligibility;
+            }
+
+            eligibility.featureFound = true;
+            Object stateName = feature.get('stateName');
+            eligibility.stateName = stateName == null ? '' : String.valueOf(stateName).trim().toUpperCase();
+
+            Object validations = feature.get('validations');
+            eligibility.hasValidations = validations instanceof List<Object>
+                && !((List<Object>) validations).isEmpty();
+            eligibility.featureEmpty = String.isBlank(eligibility.stateName) && !eligibility.hasValidations;
+
+            Boolean hasSelectableState = SELECTABLE_FEATURE_STATES.contains(eligibility.stateName);
+            eligibility.canSelect = hasSelectableState || eligibility.hasValidations;
+            eligibility.canCalculate = hasSelectableState && !eligibility.hasValidations;
+
+            if (!eligibility.canCalculate) {
+                if (eligibility.hasValidations) {
+                    eligibility.blockingReason = 'Profitability Engine has pending validations in the Passport.';
+                } else if (eligibility.featureEmpty) {
+                    eligibility.blockingReason = 'Profitability Engine is empty in the Passport.';
+                } else {
+                    eligibility.blockingReason = 'Profitability Engine must have a green, yellow, or red status.';
+                }
+            }
+        } catch (System.JSONException ex) {
+            eligibility.blockingReason = 'Passport data is invalid.';
+        } catch (System.TypeException ex2) {
+            eligibility.blockingReason = 'Passport data is invalid.';
+        }
+
+        return eligibility;
     }
 
     // ============================================================================
@@ -96,6 +182,97 @@ public with sharing class DMT_PassportProfitabilityProcessor {
             return;
         }
 
+        updateProfitabilityFields(new List<Passport__c>{
+            new Passport__c(
+                Opportunity__c = opportunityId,
+                DMT_Passport_Save__c = bodyResponse
+            )
+        });
+    }
+
+    /**
+     * Bulk entry point used by batch migration.
+     * Processes multiple Passport records with a single Opportunity/OLI query.
+     */
+    public static void updateProfitabilityFields(List<Passport__c> passports) {
+        if (passports == null || passports.isEmpty()) {
+            return;
+        }
+
+        Map<Id, Passport__c> passportByOpportunityId = new Map<Id, Passport__c>();
+        Set<Id> opportunityIds = new Set<Id>();
+
+        for (Passport__c passport : passports) {
+            if (passport == null || passport.Opportunity__c == null || String.isBlank(passport.DMT_Passport_Save__c)) {
+                continue;
+            }
+
+            passportByOpportunityId.put(passport.Opportunity__c, passport);
+            opportunityIds.add(passport.Opportunity__c);
+        }
+
+        if (opportunityIds.isEmpty()) {
+            return;
+        }
+
+        Map<Id, Opportunity> opportunitiesById = new Map<Id, Opportunity>([
+            SELECT Id, (SELECT Id, gf_group_priority_opportunity_id__c FROM OpportunityLineItems)
+            FROM Opportunity
+            WHERE Id IN :opportunityIds
+        ]);
+
+        List<Opportunity> oppToUpdate = new List<Opportunity>();
+        List<OpportunityLineItem> oliToUpdate = new List<OpportunityLineItem>();
+
+        for (Id opportunityId : passportByOpportunityId.keySet()) {
+            Passport__c passport = passportByOpportunityId.get(opportunityId);
+            Opportunity opp = opportunitiesById.get(opportunityId);
+
+            if (opp == null) {
+                continue;
+            }
+
+            ParsedProfitabilityData parsedData = parseProfitabilityData(passport.DMT_Passport_Save__c);
+            if (parsedData == null) {
+                continue;
+            }
+
+            Map<String, OpportunityLineItem> oliByProductId = new Map<String, OpportunityLineItem>();
+            for (OpportunityLineItem oli : opp.OpportunityLineItems) {
+                if (oli.gf_group_priority_opportunity_id__c != null) {
+                    oliByProductId.put(oli.gf_group_priority_opportunity_id__c, oli);
+                }
+            }
+
+            if (parsedData.aggregateResult != null) {
+                mapProfitabilityToOpportunity(opp, parsedData.aggregateResult);
+            }
+
+            for (String productId : parsedData.productMap.keySet()) {
+                if (oliByProductId.containsKey(productId)) {
+                    OpportunityLineItem oli = oliByProductId.get(productId);
+                    mapProfitabilityToLineItem(oli, parsedData.productMap.get(productId));
+                    oliToUpdate.add(oli);
+                }
+            }
+
+            oppToUpdate.add(opp);
+        }
+
+        if (!oppToUpdate.isEmpty()) {
+            update oppToUpdate;
+        }
+
+        if (!oliToUpdate.isEmpty()) {
+            update oliToUpdate;
+        }
+    }
+
+    private static ParsedProfitabilityData parseProfitabilityData(String bodyResponse) {
+        if (String.isBlank(bodyResponse)) {
+            return null;
+        }
+
         try {
             // Parse JSON
             Map<String, Object> jsonData = (Map<String, Object>) JSON.deserializeUntyped(bodyResponse);
@@ -103,14 +280,14 @@ public with sharing class DMT_PassportProfitabilityProcessor {
             
             if (profitabilityFeature == null) {
                 System.debug('Profitability Engine feature not found in JSON');
-                return;
+                return null;
             }
 
             Map<String, Object> profitability = (Map<String, Object>) profitabilityFeature.get('profitability');
-            if (profitability == null) return;
+            if (profitability == null) return null;
 
             List<Object> results = (List<Object>) profitability.get('results');
-            if (results == null || results.isEmpty()) return;
+            if (results == null || results.isEmpty()) return null;
 
             // Separate aggregate (no productId) from per-product results
             Map<String, Object> aggregateResult = null;
@@ -125,48 +302,15 @@ public with sharing class DMT_PassportProfitabilityProcessor {
                 }
             }
 
-            // Build product map with deduplication (prioritize isLine=true)
-            Map<String, Map<String, Object>> productMap = buildProductResultByProductId(productResults);
+            ParsedProfitabilityData parsedData = new ParsedProfitabilityData();
+            parsedData.aggregateResult = aggregateResult;
+            parsedData.productMap = buildProductResultByProductId(productResults);
 
-            // Fetch Opportunity and related OpportunityLineItems
-            Opportunity opp = [
-                SELECT Id, (SELECT Id, gf_group_priority_opportunity_id__c FROM OpportunityLineItems)
-                FROM Opportunity
-                WHERE Id = :opportunityId
-                LIMIT 1
-            ];
-
-            // Map OLI by product ID
-            Map<String, OpportunityLineItem> oliByProductId = new Map<String, OpportunityLineItem>();
-            for (OpportunityLineItem oli : opp.OpportunityLineItems) {
-                if (oli.gf_group_priority_opportunity_id__c != null) {
-                    oliByProductId.put(oli.gf_group_priority_opportunity_id__c, oli);
-                }
-            }
-
-            // Update Opportunity with aggregate result
-            if (aggregateResult != null) {
-                mapProfitabilityToOpportunity(opp, aggregateResult);
-            }
-
-            // Update OpportunityLineItems with product results
-            List<OpportunityLineItem> oliToUpdate = new List<OpportunityLineItem>();
-            for (String productId : productMap.keySet()) {
-                if (oliByProductId.containsKey(productId)) {
-                    OpportunityLineItem oli = oliByProductId.get(productId);
-                    mapProfitabilityToLineItem(oli, productMap.get(productId));
-                    oliToUpdate.add(oli);
-                }
-            }
-
-            // Save changes
-            update opp;
-            if (!oliToUpdate.isEmpty()) {
-                update oliToUpdate;
-            }
+            return parsedData;
 
         } catch (Exception e) {
             System.debug(LoggingLevel.ERROR, 'Error in updateProfitabilityFields: ' + e.getMessage() + ' at ' + e.getStackTraceString());
+            return null;
         }
     }
 

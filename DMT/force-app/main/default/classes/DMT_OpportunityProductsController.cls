@@ -33,6 +33,7 @@ public with sharing class DMT_OpportunityProductsController {
         'E895' => new Map<String, String>{
             'labelField'   => 'DMT_Name_EN__c',
             'valueField'   => 'DMT_Value__c',
+            'attr1Field'   => 'gf_catalog_atrb_val1_name_c__c',
             'orderBy'      => 'DMT_Name_EN__c',
             'orderByType'  => 'ASC'
         },
@@ -308,7 +309,7 @@ public with sharing class DMT_OpportunityProductsController {
             }
 
             List<DMT_Taxonomy_Values__c> optionRows = [
-                SELECT DMT_Value__c, DMT_Key__c, DMT_Name__c, DMT_Name_EN__c
+                SELECT DMT_Value__c, DMT_Key__c, DMT_Name__c, DMT_Name_EN__c, gf_catalog_atrb_val1_name_c__c
                 FROM DMT_Taxonomy_Values__c
                 WHERE DMT_Catalog__c = 'D744'
                   AND DMT_Active__c = true
@@ -320,7 +321,7 @@ public with sharing class DMT_OpportunityProductsController {
 
             if (optionRows.isEmpty()) {
                 optionRows = [
-                    SELECT DMT_Value__c, DMT_Key__c, DMT_Name__c, DMT_Name_EN__c
+                    SELECT DMT_Value__c, DMT_Key__c, DMT_Name__c, DMT_Name_EN__c, gf_catalog_atrb_val1_name_c__c
                     FROM DMT_Taxonomy_Values__c
                     WHERE DMT_Catalog__c = 'D744'
                       AND DMT_Active__c = true
@@ -332,7 +333,7 @@ public with sharing class DMT_OpportunityProductsController {
 
             if (optionRows.isEmpty()) {
                 optionRows = [
-                    SELECT DMT_Value__c, DMT_Key__c, DMT_Name__c, DMT_Name_EN__c
+                    SELECT DMT_Value__c, DMT_Key__c, DMT_Name__c, DMT_Name_EN__c, gf_catalog_atrb_val1_name_c__c
                     FROM DMT_Taxonomy_Values__c
                     WHERE DMT_Catalog__c = 'D744'
                       AND (DMT_Value__c IN :taxonomyValues OR DMT_Key__c IN :taxonomyValues)
@@ -343,7 +344,7 @@ public with sharing class DMT_OpportunityProductsController {
 
             if (optionRows.isEmpty() && !fallbackTaxonomyValues.isEmpty()) {
                 optionRows = [
-                    SELECT DMT_Value__c, DMT_Key__c, DMT_Name__c, DMT_Name_EN__c
+                    SELECT DMT_Value__c, DMT_Key__c, DMT_Name__c, DMT_Name_EN__c, gf_catalog_atrb_val1_name_c__c
                     FROM DMT_Taxonomy_Values__c
                     WHERE DMT_Catalog__c = 'D744'
                       AND DMT_Active__c = true
@@ -359,7 +360,7 @@ public with sharing class DMT_OpportunityProductsController {
 
                 if (optionRows.isEmpty()) {
                     optionRows = [
-                        SELECT DMT_Value__c, DMT_Key__c, DMT_Name__c, DMT_Name_EN__c
+                        SELECT DMT_Value__c, DMT_Key__c, DMT_Name__c, DMT_Name_EN__c, gf_catalog_atrb_val1_name_c__c
                         FROM DMT_Taxonomy_Values__c
                         WHERE DMT_Catalog__c = 'D744'
                           AND (
@@ -378,7 +379,7 @@ public with sharing class DMT_OpportunityProductsController {
             // If attr9 contains ALL, include every active D744 product whose attr7 contains U.
             if (includeAllUnderlyingsByU) {
                 List<DMT_Taxonomy_Values__c> allUProducts = [
-                    SELECT DMT_Value__c, DMT_Key__c, DMT_Name__c, DMT_Name_EN__c
+                    SELECT DMT_Value__c, DMT_Key__c, DMT_Name__c, DMT_Name_EN__c, gf_catalog_atrb_val1_name_c__c
                     FROM DMT_Taxonomy_Values__c
                     WHERE DMT_Catalog__c = 'D744'
                       AND DMT_Active__c = true
@@ -389,7 +390,7 @@ public with sharing class DMT_OpportunityProductsController {
 
                 if (allUProducts.isEmpty()) {
                     allUProducts = [
-                        SELECT DMT_Value__c, DMT_Key__c, DMT_Name__c, DMT_Name_EN__c
+                        SELECT DMT_Value__c, DMT_Key__c, DMT_Name__c, DMT_Name_EN__c, gf_catalog_atrb_val1_name_c__c
                         FROM DMT_Taxonomy_Values__c
                         WHERE DMT_Catalog__c = 'D744'
                           AND gf_catalog_atrb_val7_name__c LIKE '%U%'
@@ -406,6 +407,9 @@ public with sharing class DMT_OpportunityProductsController {
                 String selectedUnderlying = String.isBlank(rec.DMT_Value__c)
                     ? (String.isBlank(rec.DMT_Key__c) ? rec.DMT_Name__c : rec.DMT_Key__c)
                     : rec.DMT_Value__c;
+                String underlyingProductCode = String.isBlank(rec.gf_catalog_atrb_val1_name_c__c)
+                    ? selectedUnderlying
+                    : rec.gf_catalog_atrb_val1_name_c__c;
                 if (String.isBlank(selectedUnderlying) || seenValues.contains(selectedUnderlying)) {
                     continue;
                 }
@@ -415,7 +419,8 @@ public with sharing class DMT_OpportunityProductsController {
                 seenValues.add(selectedUnderlying);
                 options.add(new Map<String, String>{
                     'label' => displayLabel,
-                    'value' => selectedUnderlying
+                    'value' => selectedUnderlying,
+                    'productCode' => underlyingProductCode
                 });
             }
 
@@ -602,10 +607,16 @@ public with sharing class DMT_OpportunityProductsController {
                             }
                             seenKeys.add(value);
                         }
-                        values.add(new Map<String, String>{
+                        Map<String, String> option = new Map<String, String>{
                             'label' => label,
                             'value' => value
-                        });
+                        };
+                        // CIBGLOBALD-4624: E895 exposes Attribute 1 (PERSONAL/REAL) for mitigant classification
+                        String attr1FieldName = fieldConfig.get('attr1Field');
+                        if (String.isNotBlank(attr1FieldName)) {
+                            option.put('attr1', getFieldValue(rec, attr1FieldName));
+                        }
+                        values.add(option);
                     }
                     catalogMap.put(catalogCode, values);
                 }

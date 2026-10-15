@@ -269,7 +269,7 @@ public class DMT_LineController_Test {
 
     @isTest
     static void testCheckEditPermissionOppTeamMemberEdit() {
-        Profile p = [SELECT Id FROM Profile WHERE Name != 'System Administrator' LIMIT 1];
+        Profile p = [SELECT Id FROM Profile WHERE Name = 'BBVA Standard User' LIMIT 1];
         User user = new User(
             FirstName = 'TeamEdit', LastName = 'Opp',
             Email = 'teamEditOpp@example.com',
@@ -307,7 +307,7 @@ public class DMT_LineController_Test {
 
     @isTest
     static void testCheckEditPermissionOppTeamMemberRead() {
-        Profile p = [SELECT Id FROM Profile WHERE Name != 'System Administrator' LIMIT 1];
+        Profile p = [SELECT Id FROM Profile WHERE Name = 'BBVA Standard User' LIMIT 1];
         User user = new User(
             FirstName = 'TeamRead', LastName = 'Opp',
             Email = 'teamReadOpp@example.com',

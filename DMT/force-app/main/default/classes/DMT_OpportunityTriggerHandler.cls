@@ -204,6 +204,33 @@ public without sharing class DMT_OpportunityTriggerHandler {
         }
     }
 
+    public void enqueueAutoWorkflowOnStageChange(List<Opportunity> newOpps, Map<Id, Opportunity> oldMapOpps) {
+        if (newOpps == null || newOpps.isEmpty() || oldMapOpps == null) {
+            return;
+        }
+
+        Id dmtRecordTypeId = Schema.SObjectType.Opportunity
+            .getRecordTypeInfosByDeveloperName()
+            .get('DMT_Opportunity')
+            ?.getRecordTypeId();
+        Map<Id, String> stageByOpportunityId = new Map<Id, String>();
+
+        for (Opportunity opp : newOpps) {
+            Opportunity oldOpp = oldMapOpps.get(opp.Id);
+            Boolean isSupportedStage = opp.StageName == DMT_Constants.PROPOSAL
+                || opp.StageName == DMT_Constants.APPROVAL
+                || opp.StageName == DMT_Constants.READYTOCLOSE;
+            if (oldOpp != null && opp.RecordTypeId == dmtRecordTypeId
+                && opp.StageName != oldOpp.StageName && isSupportedStage) {
+                stageByOpportunityId.put(opp.Id, opp.StageName);
+            }
+        }
+
+        if (!stageByOpportunityId.isEmpty()) {
+            DMT_Case_Steps_Controller.enqueueAutoWorkflowCasesForOpportunities(stageByOpportunityId);
+        }
+    }
+
     /**
      */
     public void updatePassport_OppStatusChanged(List<Opportunity> newOpps, Map<Id, Opportunity> oldMapOpps) {
@@ -582,27 +609,4 @@ public without sharing class DMT_OpportunityTriggerHandler {
         ));
     }
 
-    /**
-     * CIBGLOBALD-4477 - AFTER UPDATE. When a DMT Opportunity changes stage, starts the approval Case of the Passport feature
-     * flagged for automatic start (see DMT_Case_Steps_Controller.enqueueAutoWorkflowCases).
-     *
-     * Collects every qualifying Opportunity and hands them over in ONE call, so the Passport and Case
-     * lookups are done once for the whole save. The Case creation is deferred to DMT_AsyncOrchestrator
-     * (one payload per Opportunity, each in its own transaction); the trigger flushes it at the end of
-     * the DMT Opportunity after-update block.
-     */
-    public void enqueueAutoWorkflowOnStageChange(List<Opportunity> newOpps, Map<Id, Opportunity> oldOppMap) {
-        Id dmtOppRTId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get(DMT_Constants.RT_OPP_DMT_NAME)?.getRecordTypeId();
-        Map<Id, String> stageByOppId = new Map<Id, String>();
-        for (Opportunity opp : newOpps) {
-            if (opp.RecordTypeId != dmtOppRTId) continue;
-            Opportunity oldOpp = oldOppMap.get(opp.Id);
-            if (oldOpp != null && opp.StageName != oldOpp.StageName) {
-                stageByOppId.put(opp.Id, opp.StageName);
-            }
-        }
-        if (!stageByOppId.isEmpty()) {
-            DMT_Case_Steps_Controller.enqueueAutoWorkflowCases(stageByOppId, true);
-        }
-    }
 }

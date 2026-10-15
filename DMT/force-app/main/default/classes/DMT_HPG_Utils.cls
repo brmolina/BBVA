@@ -35,6 +35,12 @@ public with sharing class DMT_HPG_Utils {
         } else {
             response = iaso.GBL_Integration_GenericService.invoke(serviceName, requestStr);
         }
+        System.debug('DMT_HPG_Utils.callService: ' + serviceName + ' request: ' + requestStr + ' response: ' + response.getBody());
+        System.debug(
+            'DMT_HPG_Utils.callService consumerrequestid: ' +
+            response.getHeader('consumerrequestid')
+        );
+
         return response;
     }
 

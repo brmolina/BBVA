@@ -24,6 +24,77 @@ private class DMT_LinesBulkActionControllerTest {
     }
 
     @isTest
+    static void testGetEditableLineIdsForOwnerAndTeamMemberEdit() {
+        Id originalUserId = UserInfo.getUserId();
+        Profile standardProfile = [
+            SELECT Id
+            FROM Profile
+            WHERE Name != 'System Administrator'
+            LIMIT 1
+        ];
+        User userWithoutViewAll = new User(
+            FirstName = 'Bulk',
+            LastName = 'Permissions',
+            Email = 'bulk.permissions@example.com',
+            Username = 'bulk.permissions.' + System.currentTimeMillis() + '@example.com',
+            Alias = 'blkperm',
+            TimeZoneSidKey = 'Europe/Madrid',
+            LocaleSidKey = 'es_ES',
+            EmailEncodingKey = 'UTF-8',
+            ProfileId = standardProfile.Id,
+            LanguageLocaleKey = 'en_US',
+            ID_User__c = 'BULK-PERM-01',
+            DMT_User_Role__c = 'DMT_Proyecto'
+        );
+        insert userWithoutViewAll;
+
+        DMT_Line__c ownerLine = new DMT_Line__c(
+            Line_Id__c = 'BULK-OWNER-01',
+            OwnerId = userWithoutViewAll.Id
+        );
+        DMT_Line__c editLine = new DMT_Line__c(
+            Line_Id__c = 'BULK-EDIT-01',
+            OwnerId = originalUserId
+        );
+        DMT_Line__c readLine = new DMT_Line__c(
+            Line_Id__c = 'BULK-READ-01',
+            OwnerId = originalUserId
+        );
+        insert new List<DMT_Line__c>{ ownerLine, editLine, readLine };
+
+        insert new List<DMT_TeamMember__c>{
+            new DMT_TeamMember__c(
+                Line__c = editLine.Id,
+                User__c = userWithoutViewAll.Id,
+                AccessLevel__c = 'Edit'
+            ),
+            new DMT_TeamMember__c(
+                Line__c = readLine.Id,
+                User__c = userWithoutViewAll.Id,
+                AccessLevel__c = 'Read'
+            )
+        };
+
+        System.runAs(userWithoutViewAll) {
+            Test.startTest();
+            Set<String> editableLineIds = new Set<String>(
+                DMT_LinesBulkActionController.getEditableLineIds(
+                    new List<String>{
+                        ownerLine.Line_Id__c,
+                        editLine.Line_Id__c,
+                        readLine.Line_Id__c
+                    }
+                )
+            );
+            Test.stopTest();
+
+            Assert.isTrue(editableLineIds.contains(ownerLine.Line_Id__c));
+            Assert.isTrue(editableLineIds.contains(editLine.Line_Id__c));
+            Assert.isFalse(editableLineIds.contains(readLine.Line_Id__c));
+        }
+    }
+
+    @isTest
     static void testProcessRenewAndProcessLinesRenewHappyPath() {
         Test.setMock(HttpCalloutMock.class, new DMT_Integration_MockGenerator());
 

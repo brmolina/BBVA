@@ -122,21 +122,21 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                     resolution.trackedComponentNames.add(item.DMT_Component_Item__c);
                 }
                 Map<String, List<String>> fieldsByObject = DMT_RendererFactory.getTrackedFieldsByObject(item.DMT_Component_Item__c, record);
-                if (!fieldsByObject.isEmpty()) {
-                    // Multi-object renderer already says which object each field belongs to, so
-                    // don't prefix with sObjectApiName like the single-object branch below.
-                    for (String objectName : fieldsByObject.keySet()) {
-                        for (String fieldName : fieldsByObject.get(objectName)) {
-                            fields.add(objectName + '.' + fieldName);
-                        }
+                // Multi-object renderer already says which object each field belongs to, so
+                // don't prefix with sObjectApiName like the single-object fields below.
+                for (String objectName : fieldsByObject.keySet()) {
+                    for (String fieldName : fieldsByObject.get(objectName)) {
+                        fields.add(objectName + '.' + fieldName);
                     }
-                } else {
-                    List<String> trackedFields = DMT_RendererFactory.getTrackedFields(item.DMT_Component_Item__c, record);
-                    if (!trackedFields.isEmpty()) {
-                        for (String fieldName : trackedFields) {
-                            fields.add(sObjectApiName + '.' + fieldName);
-                        }
-                    }
+                }
+                // CIBGLOBALD-4117 - always added as well, never as an else of the block above: the
+                // restart gate (DMT_ApprovalChangeStep_Helper.isTaskStale) compares getTrackedFields()
+                // for every component, so a component that returns BOTH (Opportunity 'Approval
+                // Process Data': SPPI fields + Financial Sponsors on the Opportunity, rest on child
+                // objects) must also freeze them, or they read as changed on every resubmission.
+                // Duplicates with the map above are removed by the contains() check further down.
+                for (String fieldName : DMT_RendererFactory.getTrackedFields(item.DMT_Component_Item__c, record)) {
+                    fields.add(sObjectApiName + '.' + fieldName);
                 }
             }
             //We obtain the Object Name and Field Name for each and store it in the Map

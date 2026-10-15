@@ -209,6 +209,12 @@ global with sharing class DMT_Passport_Handler implements Callable {
 
     @AuraEnabled()
     public static Map<String, Object> startCase(String externalLineid, String approverId,String taskId, List<Map<String, Object>> taskList, String featureId, String featureName, String comment, String passportSanction) {
+        Map<String, Object> result = startCaseInternal(externalLineid, approverId, taskId, taskList, featureId, featureName, comment, passportSanction, true);
+        DMT_AsyncOrchestrator.flush();
+        return result;
+    }
+
+        public static Map<String, Object> startCaseInternal(String externalLineid, String approverId,String taskId, List<Map<String, Object>> taskList, String featureId, String featureName, String comment, String passportSanction, Boolean deferTaskStatus) {
             String errorMessage = '';
             final String SUCCESS = 'success';
             final String MESSAGE = 'message';
@@ -230,7 +236,8 @@ global with sharing class DMT_Passport_Handler implements Callable {
             
             DMT_Line__c line;
             Opportunity opp;
-            Id aproverId = DMT_Passport_Selector.getAppproverId(approverId);
+            String externalApproverId = approverId;
+            Id approverQueueId = DMT_Passport_Selector.getAppproverId(externalApproverId);
             List<DMT_Task_Type__c> taskType = DMT_Passport_Selector.getTaskType(taskId);
             List<DMT_Line__c> lineFromQuery = DMT_Passport_Selector.getLineByExternalId(externalLineid);
             
@@ -244,7 +251,7 @@ global with sharing class DMT_Passport_Handler implements Callable {
                     opp = oppFromQuery[0];
                     lineOppId = opp.Id;
                     if(opp.StageName == STATUSOPPAPPROVAL){
-                        String lineid = DMT_Passport_Helper.createSanctionFromOpp(opp.Id,approverId);
+                        String lineid = DMT_Passport_Helper.createSanctionFromOpp(opp.Id, externalApproverId);
                         if(lineid != null){
                             line = new DMT_Line__c(Id = lineid, Client__c = opp.AccountId);
                         }
@@ -263,14 +270,14 @@ global with sharing class DMT_Passport_Handler implements Callable {
             List<Task> approvalEditTasks = DMT_Passport_Selector.getApprovalEditTasks(lineOppId);
             List<Case> featureCase = DMT_Passport_Selector.getCaseByLineFeature(lineOppId, featureId);
 
-            if( aproverId==null ){
+            if (approverQueueId == null) {
                 errorMessage=TXT_ERROR_MSG_NO_APPROVER;
                 result.put(SUCCESS, false);
                 result.put(MESSAGE, errorMessage);
                 return result;
             }
 
-            if(taskType.isEmpty()){
+            if (taskType == null || taskType.isEmpty()) {
                 errorMessage=TXT_ERROR_MSG_NO_TASK_TYPE;
                 result.put(SUCCESS, false);
                 result.put(MESSAGE, errorMessage);
@@ -292,10 +299,10 @@ global with sharing class DMT_Passport_Handler implements Callable {
                 return result;
 
             }else{
-                Case newCase = DMT_Passport_Helper.createCase(line, opp, aproverId, featureId,featureName, taskList, comment, passportSanction);
-                System.debug('DMT_Passport_Handler.startCase newCase: ' + newCase.id + 'aproverId  ' + aproverId + 'taskType  '+  taskType[0]);
+                Case newCase = DMT_Passport_Helper.createCase(line, opp, approverQueueId, featureId,featureName, taskList, comment, passportSanction);
+                System.debug('DMT_Passport_Handler.startCase newCase: ' + newCase.id + 'approverQueueId  ' + approverQueueId + 'taskType  '+  taskType[0]);
                 caseId = newCase.Id;
-                Task newTask = DMT_Passport_Helper.createTask(newCase.Id, aproverId, taskType[0]);
+                Task newTask = DMT_Passport_Helper.createTask(newCase.Id, approverQueueId, taskType[0], deferTaskStatus);
                 taskIdSf = newTask.Id;
             }
 
@@ -317,6 +324,7 @@ global with sharing class DMT_Passport_Handler implements Callable {
 
             result.put(SUCCESS, false);
             result.put(MESSAGE, String.isBlank(errorMessage) ? e.getMessage() : errorMessage);
+            result.put('exceptionLogged', true);
             return result;
 
 

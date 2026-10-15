@@ -830,7 +830,8 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
 
     Test.stopTest();
 
-    Assert.isTrue(true, 'Queueable execute covered');
+    Assert.areEqual(0, [SELECT COUNT() FROM Case WHERE DMT_Feature_Id__c IN ('FEATURE-001', 'FEATURE-002')],
+        'Invalid records do not create Cases');
 }
 
     @isTest
@@ -1336,9 +1337,62 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
                 '"tasks":[{"id":"6","name":"T6","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY1","name":"A1"}]}]},' +
             '{"id":"30","name":"F30","passportSanction":"passport","orderNumber":1,"autoWorkflowRequest":"Y",' +
                 '"tasks":[{"id":"7","name":"T7","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY2","name":"A2"}]}]},' +
+            '{"id":"32","name":"F32","passportSanction":"approval","orderNumber":3,"autoWorkflowRequest":"Y",' +
+                '"tasks":[{"id":"9","name":"T9","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY1","name":"A1"}]}]},' +
+            '{"id":"33","name":"F33","passportSanction":"ReadyToClose","orderNumber":4,"autoWorkflowRequest":"Y",' +
+                '"tasks":[{"id":"10","name":"T10","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY1","name":"A1"}]}]},' +
             '{"id":"29","name":"F29","passportSanction":"passport","orderNumber":0,' +
                 '"tasks":[{"id":"8","name":"T8","status":"OPEN","approvers":[{"id":"TestExternalIdDATAFACTORY2","name":"A2"}]}]}' +
             ']}}';
+    }
+
+    private static String autoWorkflowOpportunityPassportJson(String externalId) {
+        List<List<Object>> featureDefinitions = new List<List<Object>>{
+            new List<Object>{ '11', 'Passport', 'passport', 1 },
+            new List<Object>{ '22', 'Approval first', 'approval', 1 },
+            new List<Object>{ '24', 'Approval next', 'approval', 2 },
+            new List<Object>{ '25', 'Approval after next', 'approval', 3 },
+            new List<Object>{ '33', 'Ready to close', 'ReadyToClose', 1 }
+        };
+        Map<String, Object> task = new Map<String, Object>{
+            'id' => '6', 'name' => 'Approval task', 'status' => 'OPEN',
+            'approvers' => new List<Object>{ new Map<String, Object>{
+                'id' => 'TestExternalIdDATAFACTORY1', 'name' => 'Test approver'
+            }}
+        };
+        List<Object> features = new List<Object>();
+        for (List<Object> definition : featureDefinitions) {
+            features.add(new Map<String, Object>{
+                'id' => definition[0],
+                'name' => definition[1],
+                'passportSanction' => definition[2],
+                'orderNumber' => definition[3],
+                'autoWorkflowRequest' => 'Y',
+                'active' => 'Y',
+                'tasks' => new List<Object>{ task }
+            });
+        }
+        return JSON.serialize(new Map<String, Object>{
+            'data' => new Map<String, Object>{ 'opportunityId' => externalId, 'features' => features }
+        });
+    }
+
+    private static Opportunity insertOpportunityWithAutoWorkflowPassport() {
+        TriggerBypass.setBypass();
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+        insert new Passport__c(
+            Opportunity__c = opp.Id,
+            DMT_Passport_Save__c = autoWorkflowOpportunityPassportJson(opp.DMT_Opp_Id__c)
+        );
+        Id approvalRecordTypeId = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
+        insert new Case(
+            RecordTypeId = approvalRecordTypeId,
+            opportunity_id__c = opp.Id,
+            Status = 'Pending',
+            DMT_Feature_Id__c = '22'
+        );
+        TriggerBypass.removeBypass();
+        return [SELECT Id, RecordTypeId, StageName, DMT_Opp_Id__c FROM Opportunity WHERE Id = :opp.Id];
     }
 
     private static List<DMT_Line__c> insertLinesWithAutoWorkflowPassport(Integer count) {
@@ -1357,6 +1411,33 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
     }
 
     @isTest
+    static void testIsAutoWorkflowCaseForContext() {
+        DMT_PassportLineWrapper contextPassport = new DMT_PassportLineWrapper();
+        contextPassport.data = new DMT_PassportLineWrapper.Data();
+        DMT_PassportLineWrapper.Feature matchingFeature = new DMT_PassportLineWrapper.Feature();
+        matchingFeature.id = 'FEATURE-101';
+        matchingFeature.autoWorkflowRequest = 'Y';
+        contextPassport.data.features = new List<DMT_PassportLineWrapper.Feature>{ matchingFeature };
+        Case caseRecord = new Case(DMT_Feature_Id__c = 'FEATURE-101');
+
+        Assert.areEqual(true, DMT_Case_Steps_Controller.isAutoWorkflowCaseForContext(true, contextPassport, caseRecord),
+            'A matching Passport feature marked Y is an auto-workflow Case in Opportunity context');
+
+        matchingFeature.autoWorkflowRequest = 'N';
+        Assert.areEqual(false, DMT_Case_Steps_Controller.isAutoWorkflowCaseForContext(true, contextPassport, caseRecord),
+            'A matching feature marked N is not an auto-workflow Case');
+
+        matchingFeature.autoWorkflowRequest = 'Y';
+        matchingFeature.id = 'FEATURE-OTHER';
+        Assert.areEqual(false, DMT_Case_Steps_Controller.isAutoWorkflowCaseForContext(true, contextPassport, caseRecord),
+            'An unmatched Passport feature ID is not an auto-workflow Case');
+
+        matchingFeature.id = 'FEATURE-101';
+        Assert.areEqual(false, DMT_Case_Steps_Controller.isAutoWorkflowCaseForContext(false, contextPassport, caseRecord),
+            'A Line context is not an auto-workflow Case');
+    }
+
+    @isTest
     static void testEnqueueAutoWorkflowCases_bulkUsesFixedQueriesAndPicksLowestOrder() {
         List<DMT_Line__c> lines = insertLinesWithAutoWorkflowPassport(5);
         Map<Id, String> stageByLineId = new Map<Id, String>();
@@ -1372,14 +1453,74 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         Test.stopTest();
 
         Assert.areEqual(2, queriesUsed, 'Passports and existing Cases are queried once each, whatever the number of Lines');
-        Assert.areEqual(5, DMT_AsyncOrchestrator.payloadBuffer.size(), 'One payload per Line');
+        Assert.areEqual(10, DMT_AsyncOrchestrator.payloadBuffer.size(), 'One payload for each eligible Y feature on every Line');
+        Map<String, Integer> payloadCountByFeatureId = new Map<String, Integer>();
         for (DMT_AsyncPayload p : DMT_AsyncOrchestrator.payloadBuffer) {
             Assert.isTrue(p instanceof DMT_StartApprovalCasePayload, 'Payload type');
             DMT_StartApprovalCasePayload startPayload = (DMT_StartApprovalCasePayload) p;
-            Assert.areEqual('30', startPayload.featureId, 'Flagged feature with the lowest order number wins; unflagged F29 is ignored');
+            payloadCountByFeatureId.put(startPayload.featureId,
+                (payloadCountByFeatureId.containsKey(startPayload.featureId) ? payloadCountByFeatureId.get(startPayload.featureId) : 0) + 1);
             Assert.areEqual('passport', startPayload.passportSanction, 'Sanction of the feature');
         }
+        Assert.areEqual(5, payloadCountByFeatureId.get('30'), 'Feature 30 is enqueued for all Lines');
+        Assert.areEqual(5, payloadCountByFeatureId.get('31'), 'Feature 31 is also enqueued for all Lines');
+        Assert.isFalse(payloadCountByFeatureId.containsKey('29'), 'Unflagged F29 is ignored');
         DMT_AsyncOrchestrator.payloadBuffer.clear();
+    }
+
+    @isTest
+    static void testEnqueueAutoWorkflowCases_opportunityMatchesStageSanctionWithFixedQueries() {
+        Opportunity opp = insertOpportunityWithAutoWorkflowPassport();
+        Map<String, List<String>> expectedFeaturesByStage = new Map<String, List<String>>{
+            DMT_Constants.PROPOSAL => new List<String>{ '11' },
+            DMT_Constants.APPROVAL => new List<String>{ '24', '25' },
+            DMT_Constants.READYTOCLOSE => new List<String>{ '33' }
+        };
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+
+        Test.startTest();
+        for (String stage : expectedFeaturesByStage.keySet()) {
+            Integer queriesBefore = Limits.getQueries();
+            DMT_Case_Steps_Controller.enqueueAutoWorkflowCasesForOpportunities(new Map<Id, String>{ opp.Id => stage });
+            Integer queriesUsed = Limits.getQueries() - queriesBefore;
+            List<String> expectedFeatureIds = expectedFeaturesByStage.get(stage);
+            Assert.areEqual(expectedFeatureIds.size(), DMT_AsyncOrchestrator.payloadBuffer.size(), 'All eligible features are enqueued for the target stage ' + stage);
+            for (Integer i = 0; i < expectedFeatureIds.size(); i++) {
+                DMT_StartApprovalCasePayload payload = (DMT_StartApprovalCasePayload) DMT_AsyncOrchestrator.payloadBuffer[i];
+                Assert.areEqual(expectedFeatureIds[i], payload.featureId, 'Eligible features are enqueued in orderNumber order');
+            }
+            DMT_AsyncOrchestrator.payloadBuffer.clear();
+        }
+        Test.stopTest();
+    }
+
+    @isTest
+    static void testEnqueueAutoWorkflowCases_lineMatchesStageSanctionWithFixedQueries() {
+        List<DMT_Line__c> lines = insertLinesWithAutoWorkflowPassport(1);
+        Map<String, List<String>> expectedFeaturesByStage = new Map<String, List<String>>{
+            DMT_Constants.PROPOSAL => new List<String>{ '30', '31' },
+            DMT_Constants.APPROVAL => new List<String>{ '32' },
+            DMT_Constants.READYTOCLOSE => new List<String>{ '33' }
+        };
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+
+        Test.startTest();
+        for (String stage : expectedFeaturesByStage.keySet()) {
+            Integer queriesBefore = Limits.getQueries();
+            DMT_Case_Steps_Controller.enqueueAutoWorkflowCases(
+                new Map<Id, String>{ lines[0].Id => stage }, false
+            );
+            Integer queriesUsed = Limits.getQueries() - queriesBefore;
+            Assert.areEqual(2, queriesUsed, 'Line Passport and Case selectors remain fixed-query bulk operations');
+            List<String> expectedFeatureIds = expectedFeaturesByStage.get(stage);
+            Assert.areEqual(expectedFeatureIds.size(), DMT_AsyncOrchestrator.payloadBuffer.size(), 'Only features with a matching sanction are enqueued');
+            for (Integer i = 0; i < expectedFeatureIds.size(); i++) {
+                DMT_StartApprovalCasePayload payload = (DMT_StartApprovalCasePayload) DMT_AsyncOrchestrator.payloadBuffer[i];
+                Assert.areEqual(expectedFeatureIds[i], payload.featureId, 'Matching features are enqueued in orderNumber order');
+            }
+            DMT_AsyncOrchestrator.payloadBuffer.clear();
+        }
+        Test.stopTest();
     }
 
     @isTest
@@ -1391,7 +1532,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         DMT_Case_Steps_Controller.enqueueAutoWorkflowCases(lines[0].Id, DMT_Constants.PROPOSAL, false);
         Test.stopTest();
 
-        Assert.areEqual(1, DMT_AsyncOrchestrator.payloadBuffer.size(), 'Single-record overload enqueues one payload');
+        Assert.areEqual(2, DMT_AsyncOrchestrator.payloadBuffer.size(), 'Single Line enqueues every feature matching Proposal');
         DMT_AsyncOrchestrator.payloadBuffer.clear();
     }
 
@@ -1446,7 +1587,28 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         DMT_AsyncDispatcher.dispatch(payload);
         Test.stopTest();
 
-        Assert.isTrue(DMT_AsyncOrchestrator.payloadBuffer.isEmpty(), 'startCase reports the missing record in its result and does not raise');
+        Assert.areEqual(1, DMT_AsyncOrchestrator.payloadBuffer.size(), 'A returned startCase failure is logged once');
+        Assert.isTrue(DMT_AsyncOrchestrator.payloadBuffer[0] instanceof DMT_LogExceptionPayload, 'Failure is logged through the async orchestrator');
+        DMT_LogExceptionPayload failure = (DMT_LogExceptionPayload) DMT_AsyncOrchestrator.payloadBuffer[0];
+        Assert.isTrue(failure.message.contains('No record'), 'Log includes the startCase failure reason');
+        Assert.isTrue(failure.message.contains('featureId=FEATURE-001'), 'Log includes the feature ID');
+        Assert.isTrue(failure.message.contains('approverId=APPROVER-001'), 'Log includes the approver ID');
+        Assert.isTrue(failure.message.contains('taskId=TASK-001'), 'Log includes the task ID');
+        Assert.isTrue(failure.message.contains('externalLineId=EXT-NOT-FOUND'), 'Log includes the external record ID');
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+    }
+
+    @isTest
+    static void testStartCaseQueueableExecutesStartCaseOutsideBatch() {
+        DMT_Case_Steps_Controller.StartCaseQueueable queueable = new DMT_Case_Steps_Controller.StartCaseQueueable(
+            'EXT-NOT-FOUND', 'APPROVER-001', 'TASK-001', '[{"id":"1"},{"id":"2"}]', 'FEATURE-001', 'Feature', '', 'approval'
+        );
+
+        Test.startTest();
+        System.enqueueJob(queueable);
+        Test.stopTest();
+
+        Assert.areEqual(0, [SELECT COUNT() FROM Case WHERE DMT_Feature_Id__c = 'FEATURE-001'], 'Missing Opportunity leaves no Case behind');
     }
 
     @isTest
@@ -1485,10 +1647,12 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
     @isTest
     static void testStartCase_failureIsReportedThroughOrchestratorAndNeverThrows() {
         Profile minimalProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];
+        String uniqueUserSuffix = String.valueOf(DateTime.now().getTime()).right(12);
         User noAccessUser = new User(
             Alias = 'noacc', Email = 'noaccess.startcase@example.com', EmailEncodingKey = 'UTF-8', LastName = 'NoAccess',
             LanguageLocaleKey = 'en_US', LocaleSidKey = 'en_US', ProfileId = minimalProfile.Id,
-            TimeZoneSidKey = 'America/Los_Angeles', UserName = 'noaccess.startcase' + System.currentTimeMillis() + '@example.com'
+            TimeZoneSidKey = 'America/Los_Angeles', UserName = 'noaccess.startcase' + System.currentTimeMillis() + '@example.com',
+            ID_User__c = 'NOACC-' + uniqueUserSuffix
         );
         insert noAccessUser;
 
@@ -1536,6 +1700,26 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         Assert.isTrue(DMT_AsyncOrchestrator.payloadBuffer.isEmpty(), 'No stage change, nothing to start');
     }
 
+    @isTest
+    static void testOpportunityHandlerEnqueueAutoWorkflowOnStageChange_startsMatchingFeature() {
+        Opportunity opp = insertOpportunityWithAutoWorkflowPassport();
+        Opportunity oldOpp = opp.clone(true, true, true, true);
+        oldOpp.StageName = DMT_Constants.DRAFT;
+        opp.StageName = DMT_Constants.APPROVAL;
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+
+        Test.startTest();
+        new DMT_OpportunityTriggerHandler().enqueueAutoWorkflowOnStageChange(
+            new List<Opportunity>{ opp }, new Map<Id, Opportunity>{ opp.Id => oldOpp }
+        );
+        Test.stopTest();
+
+        Assert.areEqual(2, DMT_AsyncOrchestrator.payloadBuffer.size(), 'A supported changed stage enqueues every eligible feature');
+        Assert.areEqual('24', ((DMT_StartApprovalCasePayload) DMT_AsyncOrchestrator.payloadBuffer[0]).featureId, 'Lowest-order unstarted Approval feature is first');
+        Assert.areEqual('25', ((DMT_StartApprovalCasePayload) DMT_AsyncOrchestrator.payloadBuffer[1]).featureId, 'Next unstarted Approval feature is also enqueued');
+        DMT_AsyncOrchestrator.payloadBuffer.clear();
+    }
+
     // CIBGLOBALD-4477 - known approver, unknown task type: startCase stops before creating anything.
     @isTest
     static void testStartCase_taskTypeNotFoundReturnsFailure() {
@@ -1576,8 +1760,8 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         helper.enqueueAutoWorkflowOnStatusChange((DMT_Line__c) null, (DMT_Line__c) null);
         Test.stopTest();
 
-        Assert.areEqual(2, afterListCall, 'Two of the three Lines changed status');
-        Assert.areEqual(1, afterSingleCall, 'Single-record overload enqueues one payload');
+        Assert.areEqual(4, afterListCall, 'Two changed Lines enqueue both matching Proposal features');
+        Assert.areEqual(2, afterSingleCall, 'Single-record overload enqueues both matching Proposal features');
         DMT_AsyncOrchestrator.payloadBuffer.clear();
     }
 

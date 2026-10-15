@@ -121,6 +121,20 @@ public with sharing class DMT_ApprovalChangeStep_test {
         Assert.isTrue(tasksModified.DMT_ViewStatusAtClose__c != null, 'Error creating taskStatus');
     }
 
+    @isTest
+    private static void testDispatcherTaskStatusSnapshotPayload() {
+        TriggerBypass.setBypass();
+        Group queueId = [SELECT Id FROM Group WHERE Type = 'Queue' and Name LIKE '%TestApproverDataFactory%' LIMIT 1];
+        Task task = [SELECT Id FROM Task WHERE OwnerId = :queueId.Id LIMIT 1];
+
+        Test.startTest();
+        DMT_AsyncDispatcher.dispatch(new DMT_TaskStatusSnapshotPayload(task.Id));
+        Test.stopTest();
+
+        Task refreshedTask = [SELECT DMT_ViewStatusAtClose__c FROM Task WHERE Id = :task.Id];
+        Assert.isNotNull(refreshedTask.DMT_ViewStatusAtClose__c, 'Dispatching the deferred snapshot associates it with the Task');
+    }
+
 
 @isTest
     public static void testPreviewCompareTasksFromCase() {
@@ -305,5 +319,36 @@ public with sharing class DMT_ApprovalChangeStep_test {
     private static void testResolveApproverViewIdNullInputsReturnNull() {
         Assert.isNull(DMT_ApprovalChangeStep_Handler.resolveApproverViewId(null, new Case()));
         Assert.isNull(DMT_ApprovalChangeStep_Handler.resolveApproverViewId(new DMT_Approver__c(), null));
+    }
+
+    /**
+     * CIBGLOBALD-4117 - Opportunity 'Approval Process Data' returns its parent fields (SPPI Test,
+     * Financial Sponsors) from getTrackedFields() AND its child-object fields from
+     * getTrackedFieldsByObject(). resolveTrackedFieldsForItems used to take only the latter when
+     * it was non-empty, so the parent fields were never frozen while the restart gate still
+     * compared them - every resubmission looked like a change. Both sources must be frozen.
+     */
+    @isTest
+    private static void testResolveTrackedFieldsForItemsKeepsParentFieldsOfMultiObjectComponent() {
+        Opportunity oppRecord = new Opportunity(
+            RecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId()
+        );
+        List<DMT_Items__c> items = new List<DMT_Items__c>{
+            new DMT_Items__c(DMT_Component_Item__c = 'Approval Process Data')
+        };
+
+        DMT_ApprovalChangeStep_Handler.ItemFieldResolution resolution =
+            DMT_ApprovalChangeStep_Handler.resolveTrackedFieldsForItems(items, oppRecord, 'Opportunity');
+
+        Assert.isTrue(resolution.trackedComponentNames.contains('Approval Process Data'), 'The component must be listed as tracked for this snapshot.');
+        List<String> parentFields = resolution.fieldMapFromObject.get('Opportunity');
+        Assert.isNotNull(parentFields, 'Opportunity-level fields of a multi-object component must be frozen.');
+        for (String expectedField : new List<String>{
+            'DMT_SPPI_Status__c', 'DMT_SPPI_User__c', 'DMT_SPPI_File_Uploaded__c', 'DMT_Financial_Sponsors__c'
+        }) {
+            Assert.isTrue(parentFields.contains(expectedField), expectedField + ' must be frozen on the Opportunity section.');
+        }
+        Assert.isTrue(resolution.fieldMapFromObject.containsKey('DMT_Opportunity_Client__c'), 'Child-object fields must still be frozen.');
+        Assert.isTrue(resolution.allFields.contains('Opportunity.DMT_SPPI_Status__c'), 'allFields must carry the parent fields so the preview compares them too.');
     }
 }

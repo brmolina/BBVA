@@ -6,6 +6,12 @@
  */
 public with sharing class DMT_TaskApprovalFlowService {
 
+    private static AuraHandledException handledException(String message) {
+        AuraHandledException exceptionInstance = new AuraHandledException(message);
+        exceptionInstance.setMessage(message);
+        return exceptionInstance;
+    }
+
     /**
      * @description Obtiene contexto completo para el flujo de cierre de task.
      * Lógica extraída de DMT_CloseTask_Controller.getInitialData().
@@ -15,7 +21,7 @@ public with sharing class DMT_TaskApprovalFlowService {
     @AuraEnabled(cacheable=true)
     public static CloseTaskContextDTO getCloseTaskContext(Id recordId) {
         if (recordId == null) {
-            throw new AuraHandledException('recordId is required.');
+            throw handledException('recordId is required.');
         }
 
         CloseTaskContextDTO response = new CloseTaskContextDTO();
@@ -23,7 +29,7 @@ public with sharing class DMT_TaskApprovalFlowService {
         // CASE + CURRENT TASK
         Case caseRecord = DMT_ApprovalTemplate_Selector.getCaseWithCurrentTask(recordId);
         if (caseRecord == null) {
-            throw new AuraHandledException('Case not found.');
+            throw handledException('Case not found.');
         }
 
         response.caseId = caseRecord.Id;
@@ -33,7 +39,7 @@ public with sharing class DMT_TaskApprovalFlowService {
 
         Task currentTask = caseRecord.Tasks.isEmpty() ? null : caseRecord.Tasks[0];
         if (currentTask == null) {
-            throw new AuraHandledException('No active Task found.');
+            throw handledException('No active Task found.');
         }
 
         response.taskId = currentTask.Id;
@@ -44,7 +50,7 @@ public with sharing class DMT_TaskApprovalFlowService {
         // CURRENT TASK TYPE
         DMT_Task_Type__c currentTaskType = DMT_ApprovalTemplate_Selector.getTaskType(currentTask.DMT_Task_Type__c);
         if (currentTaskType == null) {
-            throw new AuraHandledException('Current Task Type not found.');
+            throw handledException('Current Task Type not found.');
         }
 
         response.currentTaskTypeId = currentTaskType.Id;
@@ -53,14 +59,6 @@ public with sharing class DMT_TaskApprovalFlowService {
 
         // TASK RELATIONSHIPS
         List<DMT_Task_Relationship__c> relationships = DMT_ApprovalTemplate_Selector.getTaskRelationships(currentTaskType.Id);
-
-        // DEFAULT RELATIONSHIP
-        DMT_Task_Relationship__c defaultRelationship = resolveDefaultRelationship(relationships);
-
-        if (defaultRelationship != null) {
-            response.defaultRelationshipId = defaultRelationship.Id;
-            response.defaultTaskTypeId = defaultRelationship.DMT_To_Task_Type__c;
-        }
 
         // TASK TYPE IDs
         Set<Id> nextTaskTypeIds = new Set<Id>();
@@ -74,6 +72,15 @@ public with sharing class DMT_TaskApprovalFlowService {
         // NEXT TASK TYPES
         List<DMT_Task_Type__c> nextTaskTypes = DMT_ApprovalTemplate_Selector.getTaskTypesByIds(nextTaskTypeIds);
         Map<Id, DMT_Task_Type__c> taskTypeById = new Map<Id, DMT_Task_Type__c>(nextTaskTypes);
+
+        // DEFAULT RELATIONSHIP
+        DMT_Task_Relationship__c defaultRelationship = resolveDefaultRelationship(relationships, taskTypeById);
+
+        if (defaultRelationship != null) {
+            response.defaultRelationshipId = defaultRelationship.Id;
+            response.defaultTaskTypeId = defaultRelationship.DMT_To_Task_Type__c;
+            response.defaultStepSelected = taskTypeById.get(response.defaultTaskTypeId).DMT_External_Id__c;
+        }
 
         // OPTIONS
         response.validations = new List<TaskOptionDTO>();
@@ -96,12 +103,6 @@ public with sharing class DMT_TaskApprovalFlowService {
             response.validations.add(option);
             processedTaskTypes.add(targetId);
         }
-
-        // DEFAULT STEP SELECTED
-        if (response.defaultTaskTypeId != null && taskTypeById.containsKey(response.defaultTaskTypeId)) {
-            response.defaultStepSelected = taskTypeById.get(response.defaultTaskTypeId).DMT_External_Id__c;
-        }
-
         // ACCESS LEVEL
         response.accessLevel = resolveAccessLevel(caseRecord);
 
@@ -121,18 +122,24 @@ public with sharing class DMT_TaskApprovalFlowService {
     @AuraEnabled(cacheable=true)
     public static TaskApproverSelectionDTO getApproversForStep(Id recordId, String stepSelected) {
         if (recordId == null) {
-            throw new AuraHandledException('recordId is required.');
+            AuraHandledException ex= new AuraHandledException('RecordId is required.');
+            ex.setMessage('RecordId is required.');
+            throw ex;
         }
 
         if (String.isBlank(stepSelected)) {
-            throw new AuraHandledException('stepSelected is required.');
+            AuraHandledException ex = new AuraHandledException('stepSelected is required.');
+            ex.setMessage('StepSelected is required.');
+            throw ex;
         }
 
         // SELECTED TASK TYPE
         DMT_Task_Type__c selectedTaskType = DMT_ApprovalTemplate_Selector.getTaskTypeByExternalId(stepSelected);
 
         if (selectedTaskType == null) {
-            throw new AuraHandledException('Selected Task Type not found.');
+            AuraHandledException ex = new AuraHandledException('Selected Task Type not found.');
+            ex.setMessage('Selected Task Type not found.');
+            throw ex;
         }
 
         TaskApproverSelectionDTO response = new TaskApproverSelectionDTO();
@@ -222,7 +229,7 @@ public with sharing class DMT_TaskApprovalFlowService {
 
         } catch (Exception e) {
             Database.rollback(savepointToken);
-            throw new AuraHandledException('Error executing Close Task: ' + e.getMessage());
+            throw handledException('Error executing Close Task: ' + e.getMessage());
         }
     }
 
@@ -233,7 +240,7 @@ public with sharing class DMT_TaskApprovalFlowService {
      */
     private static void updateValuesToTask(Id currentTaskId) {
         if (currentTaskId == null) {
-            throw new AuraHandledException('currentTaskId is required.');
+            throw handledException('currentTaskId is required.');
         }
         DMT_ApprovalChangeStep_Handler.updateTaskWithStatus(String.valueOf(currentTaskId), true);
     }
@@ -243,7 +250,7 @@ public with sharing class DMT_TaskApprovalFlowService {
      */
     private static void completeCurrentTask(Id taskId) {
         if (taskId == null) {
-            throw new AuraHandledException('currentTaskId is required.');
+            throw handledException('currentTaskId is required.');
         }
 
         DMT_TaskCompletionService.TaskCompletionRequest request =
@@ -261,17 +268,17 @@ public with sharing class DMT_TaskApprovalFlowService {
         DMT_Approver__c approver = DMT_ApprovalTemplate_Selector.getApproverByExternalId(approverExternalId);
 
         if (approver == null) {
-            throw new AuraHandledException('Approver not found: ' + approverExternalId);
+            throw handledException('Approver not found: ' + approverExternalId);
         }
 
         if (String.isBlank(approver.DMT_Group__c)) {
-            throw new AuraHandledException('Approver does not have DMT_Group__c.');
+            throw handledException('Approver does not have DMT_Group__c.');
         }
 
         Group ownerGroup = DMT_ApprovalTemplate_Selector.getGroupByDeveloperName(approver.DMT_Group__c);
 
         if (ownerGroup == null) {
-            throw new AuraHandledException('Group not found: ' + approver.DMT_Group__c);
+            throw handledException('Group not found: ' + approver.DMT_Group__c);
         }
 
         return ownerGroup;
@@ -284,13 +291,13 @@ public with sharing class DMT_TaskApprovalFlowService {
         DMT_Task_Type__c taskType = DMT_ApprovalTemplate_Selector.getTaskTypeByExternalId(stepSelected);
 
         if (taskType == null) {
-            throw new AuraHandledException('Task Type not found: ' + stepSelected);
+            throw handledException('Task Type not found: ' + stepSelected);
         }
 
         Schema.RecordTypeInfo recordTypeInfo = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval');
 
         if (recordTypeInfo == null) {
-            throw new AuraHandledException('Record Type DMT_Step_Approval does not exist.');
+            throw handledException('Record Type DMT_Step_Approval does not exist.');
         }
 
         DMT_TaskCompletionService.TaskCompletionRequest request =
@@ -316,7 +323,7 @@ public with sharing class DMT_TaskApprovalFlowService {
         ];
 
         if (createdTasks.isEmpty()) {
-            throw new AuraHandledException('Created Task could not be resolved after insert.');
+            throw handledException('Created Task could not be resolved after insert.');
         }
 
         return createdTasks[0].Id;
@@ -327,7 +334,7 @@ public with sharing class DMT_TaskApprovalFlowService {
      */
     private static void updateNewTaskStatus(Id newTaskId) {
         if (newTaskId == null) {
-            throw new AuraHandledException('Task Id is required.');
+            throw handledException('Task Id is required.');
         }
         DMT_ApprovalChangeStep_Handler.updateTaskWithStatus(String.valueOf(newTaskId), false);
     }
@@ -344,19 +351,19 @@ public with sharing class DMT_TaskApprovalFlowService {
      */
     private static void validateCloseTaskRequest(Id caseId, Id currentTaskId, String stepSelected, String approverSelected) {
         if (caseId == null) {
-            throw new AuraHandledException('Case Id is required.');
+            throw handledException('Case Id is required.');
         }
 
         if (currentTaskId == null) {
-            throw new AuraHandledException('Current Task Id is required.');
+            throw handledException('Current Task Id is required.');
         }
 
         if (String.isBlank(stepSelected)) {
-            throw new AuraHandledException('You must select a Task.');
+            throw handledException('You must select a Task.');
         }
 
         if (String.isBlank(approverSelected)) {
-            throw new AuraHandledException('You must select an Approver.');
+            throw handledException('You must select an Approver.');
         }
     }
 
@@ -375,34 +382,35 @@ public with sharing class DMT_TaskApprovalFlowService {
     }
 
     /**
-     * @description Resolves default relationship using lowest order number and latest creation date as tiebreaker
+     * @description Resolves the default relationship from order 0 only, using latest creation date as tiebreaker.
      */
-    private static DMT_Task_Relationship__c resolveDefaultRelationship(List<DMT_Task_Relationship__c> relationships) {
-        if (relationships == null || relationships.isEmpty()) {
+    private static DMT_Task_Relationship__c resolveDefaultRelationship(
+        List<DMT_Task_Relationship__c> relationships,
+        Map<Id, DMT_Task_Type__c> taskTypeById
+    ) {
+        if (relationships == null || relationships.isEmpty() || taskTypeById == null || taskTypeById.isEmpty()) {
             return null;
         }
 
-        DMT_Task_Relationship__c defaultRelationship = relationships[0];
+        DMT_Task_Relationship__c defaultRelationship = null;
 
         for (DMT_Task_Relationship__c relationship : relationships) {
-            if (relationship == null || relationship.DMT_Order_Number__c == null) {
-                continue;
-            }
-
-            if (defaultRelationship == null || defaultRelationship.DMT_Order_Number__c == null) {
-                defaultRelationship = relationship;
-                continue;
-            }
-
-            if (relationship.DMT_Order_Number__c < defaultRelationship.DMT_Order_Number__c) {
-                defaultRelationship = relationship;
-                continue;
-            }
-
             if (
-                relationship.DMT_Order_Number__c == defaultRelationship.DMT_Order_Number__c &&
-                relationship.CreatedDate > defaultRelationship.CreatedDate
+                relationship == null ||
+                relationship.DMT_Order_Number__c == null ||
+                relationship.DMT_Order_Number__c != 0 ||
+                relationship.DMT_To_Task_Type__c == null
             ) {
+                continue;
+            }
+
+            DMT_Task_Type__c taskType = taskTypeById.get(relationship.DMT_To_Task_Type__c);
+
+            if (taskType == null || String.isBlank(taskType.DMT_External_Id__c)) {
+                continue;
+            }
+
+            if (defaultRelationship == null || relationship.CreatedDate > defaultRelationship.CreatedDate) {
                 defaultRelationship = relationship;
             }
         }
