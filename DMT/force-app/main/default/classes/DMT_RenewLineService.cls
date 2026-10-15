@@ -127,7 +127,7 @@ public with sharing class DMT_RenewLineService {
             if (newTeamMembers.isEmpty()) {
                 newTeamMembers.add(buildDefaultTeamMember(newLine.Id));
             }
-            Database.insert(newTeamMembers, AccessLevel.USER_MODE);
+            DMT_TeamMember_Service.insertMembers(newTeamMembers, AccessLevel.USER_MODE);
 
             return newLine.Id;
         } catch (Exception e) {
@@ -360,21 +360,22 @@ public with sharing class DMT_RenewLineService {
         return newItem;
     }
 
+    // CIBGLOBALD-4374 - members are built through DMT_TeamMember_Service
     private static DMT_TeamMember__c buildNewTeamMember(DMT_TeamMember__c source, Id newLineId) {
-        DMT_TeamMember__c newMember = new DMT_TeamMember__c();
-        newMember.Name = source.Name;
-        newMember.User__c = source.User__c != null ? source.User__c : UserInfo.getUserId();
-        newMember.AccessLevel__c = String.isNotBlank(source.AccessLevel__c) ? source.AccessLevel__c : DEFAULT_TEAM_ACCESS_LEVEL;
-        newMember.Line__c = newLineId;
-        return newMember;
+        return DMT_TeamMember_Service.buildLineMember(
+            source.User__c != null ? source.User__c : UserInfo.getUserId(),
+            newLineId,
+            source.Name,
+            String.isNotBlank(source.AccessLevel__c) ? source.AccessLevel__c : DEFAULT_TEAM_ACCESS_LEVEL,
+            null,
+            null
+        );
     }
 
     private static DMT_TeamMember__c buildDefaultTeamMember(Id newLineId) {
-        DMT_TeamMember__c newMember = new DMT_TeamMember__c();
-        newMember.User__c = UserInfo.getUserId();
-        newMember.AccessLevel__c = DEFAULT_TEAM_ACCESS_LEVEL;
-        newMember.Line__c = newLineId;
-        return newMember;
+        return DMT_TeamMember_Service.buildLineMember(
+            UserInfo.getUserId(), newLineId, null, DEFAULT_TEAM_ACCESS_LEVEL, null, null
+        );
     }
 
     // =========================================================

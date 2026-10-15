@@ -39,4 +39,15 @@ trigger SER_Case_TRIGGER on Case (before insert, after insert, before update, af
 
     handler.resetSkipValidations(Trigger.new);
   }
+
+  // CIBGLOBALD-4374 - DMT approval Case automation (replaces the flow Case_After_Trigger_Flow). It sits
+  // outside the CIB_skip_trigger__c block on purpose: the flow it replaces ignored that bypass, so
+  // keeping it here preserves behavior. It can be moved inside the block later if the team wants the
+  // bypass to apply. Only TriggerBypass.bypassTrigger (checked at the top) disables it.
+  if (Trigger.isAfter && Trigger.isInsert) {
+    DMT_Case_TriggerHandler.afterInsert(Trigger.new);
+  }
+  if (Trigger.isAfter && Trigger.isUpdate) {
+    DMT_Case_TriggerHandler.afterUpdate(Trigger.new, Trigger.oldMap);
+  }
 }

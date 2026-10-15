@@ -6,7 +6,7 @@
 // firing them all into the same transaction - a managed package's post-callout DML (e.g. IASO's
 // application log) can make a second callout in the same transaction throw "You have uncommitted
 // work pending". See DMT_ApprovalChangeStep_Helper.checkCalloutTrackableComponent for the chain logic.
-public class DMT_CalloutTrackableCheckPayload implements DMT_AsyncPayload {
+public class DMT_CalloutTrackableCheckPayload implements DMT_CalloutPayload {
     public Id recordId { get; set; }
     public Id taskId { get; set; }
     public String componentName { get; set; }

@@ -34,14 +34,27 @@ trigger Task on Task (before insert, after insert, after delete, after update, b
          // }
     }
 
+    // CIBGLOBALD-4374 - DMT approval step automation (replaces the flow DMT_After_Task_Trigger). Like the
+    // flow it did, it is not affected by CIB_skip_trigger__c; it only honors TriggerBypass.bypassTrigger.
+    if (Trigger.isUpdate && Trigger.isBefore && !TriggerBypass.bypassTrigger)
+    {
+        DMT_Task_TriggerHandler.beforeUpdate(Trigger.new, Trigger.oldMap);
+    }
+
     if (Trigger.isInsert && Trigger.isAfter)
     {
         DTM_Task_Helper.processTask(Trigger.new, null, 'CREATE');
+        if (!TriggerBypass.bypassTrigger) {
+            DMT_Task_TriggerHandler.afterInsert(Trigger.new);
+        }
     }
 
     if (Trigger.isUpdate && Trigger.isAfter)
     {
         DTM_Task_Helper.processTask(Trigger.new, Trigger.oldMap, 'MODIFY');
+        if (!TriggerBypass.bypassTrigger) {
+            DMT_Task_TriggerHandler.afterUpdate(Trigger.new, Trigger.oldMap);
+        }
         if (byPass.CIB_skip_trigger__c) {
             List<Task> dmtTasks = DES_RecordType_Utils.filter((List<SObject>) Trigger.new, 'Task', 'DMT_Step_Approval');
             if (!dmtTasks.isEmpty()) {

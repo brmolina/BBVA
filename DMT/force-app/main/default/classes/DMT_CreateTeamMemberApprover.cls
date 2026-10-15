@@ -68,13 +68,11 @@ public without sharing class DMT_CreateTeamMemberApprover {
                 if (!teamMembersLineMapUser.isEmpty()) {
                     for (DMT_Approver_Member__c approverMember : listCreatedApproverMembers) {
                         if ((!teamMembersLineMapUser.containsKey(approverMember.DMT_User__c) && !processedApproverMembersSetId.contains(approverMember.DMT_User__c))) {
-                            DMT_TeamMember__c newTeamMember = new DMT_TeamMember__c();
-                            newTeamMember.User__c = approverMember.DMT_User__c;
-                            newTeamMember.AccessLevel__c = 'Read';
-                            newTeamMember.Team_Role__c = 'approver';
-                            newTeamMember.Name = approverMember.DMT_User__r.Name;
-                            newTeamMember.Line__c = lineId;
-                            newTeamMembers.add(newTeamMember);
+                            // CIBGLOBALD-4374 - members are built through DMT_TeamMember_Service
+                            newTeamMembers.add(DMT_TeamMember_Service.buildLineMember(
+                                approverMember.DMT_User__c, lineId, approverMember.DMT_User__r.Name,
+                                DMT_TeamMember_Service.READ_ACCESS, DMT_TeamMember_Service.ROLE_APPROVER, null
+                            ));
                             processedApproverMembersSetId.add(approverMember.DMT_User__c);
                         }
                     }
@@ -87,12 +85,8 @@ public without sharing class DMT_CreateTeamMemberApprover {
                     }
                 }
             }
-            if (!newTeamMembers.isEmpty()) {
-                insert newTeamMembers;
-            }
-            if (!teamMembersToDelete.isEmpty()) {
-                delete teamMembersToDelete;
-            }
+            DMT_TeamMember_Service.insertMembers(newTeamMembers);
+            DMT_TeamMember_Service.deleteMembers(teamMembersToDelete);
         } catch (Exception e) {
             DES_Exception_Utils.logException(e,'DMT_CreateTeamMemberApprover', 'invokeCreateTeamMember', 'DMT', '');
         }

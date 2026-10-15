@@ -6,7 +6,7 @@
 // taskListJson is the feature's full task list; the first task is the one startCase creates
 // itself (taskId), so DMT_Case_Steps_Controller.startApprovalCaseFromPayload drops it before
 // calling startCase - same convention as DMT_Case_Steps_Controller.StartCaseQueueable.
-public class DMT_StartApprovalCasePayload implements DMT_AsyncPayload {
+public class DMT_StartApprovalCasePayload implements DMT_CalloutPayload {
     public String externalLineId { get; set; }
     public String approverId { get; set; }
     public String taskId { get; set; }

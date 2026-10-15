@@ -44,31 +44,20 @@ public class DMT_AsyncQueueJob implements Queueable, Database.AllowsCallouts {
             return;
         }
 
-        // CIBGLOBALD-4117 - at most one DMT_CalloutTrackableCheckPayload dispatched inline per
-        // execute() call - two of these landing in the same transaction can throw "You have
-        // uncommitted work pending" (a managed package's post-callout DML). Extras are re-buffered
-        // for the trailing flush() below instead, so each gets its own fresh transaction.
+        // CIBGLOBALD-4117 / CIBGLOBALD-4374 - at most one DMT_CalloutPayload (any payload that can make a
+        // callout, see the marker interface) dispatched inline per execute() call - two of them landing
+        // in the same transaction can throw "You have uncommitted work pending" (a managed package's
+        // post-callout DML). Extras are re-buffered for the trailing flush() below instead, so each gets
+        // its own fresh transaction.
         List<DMT_AsyncPayload> toDispatchNow = new List<DMT_AsyncPayload>();
-        Boolean calloutTrackableCheckAlreadyClaimed = false;
-        // CIBGLOBALD-4477 - same idea for DMT_StartApprovalCasePayload: each one runs DMT_Passport_Handler.startCase
-        // (a couple of dozen queries plus Case/Task/snapshot DML), so only one is dispatched
-        // inline per transaction; the rest are re-buffered and flush() gives each its own
-        // Batch chunk.
-        Boolean startApprovalCaseAlreadyClaimed = false;
+        Boolean calloutPayloadAlreadyClaimed = false;
         for (DMT_AsyncPayload p : payloads) {
-            if (p instanceof DMT_StartApprovalCasePayload) {
-                if (startApprovalCaseAlreadyClaimed) {
+            if (p instanceof DMT_CalloutPayload) {
+                if (calloutPayloadAlreadyClaimed) {
                     DMT_AsyncOrchestrator.enqueue(p);
                     continue;
                 }
-                startApprovalCaseAlreadyClaimed = true;
-            }
-            if (p instanceof DMT_CalloutTrackableCheckPayload) {
-                if (calloutTrackableCheckAlreadyClaimed) {
-                    DMT_AsyncOrchestrator.enqueue(p);
-                    continue;
-                }
-                calloutTrackableCheckAlreadyClaimed = true;
+                calloutPayloadAlreadyClaimed = true;
             }
             toDispatchNow.add(p);
         }

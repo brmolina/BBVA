@@ -12,6 +12,27 @@ public with sharing class  DMT_Test_DataFactory {
     static String taskStepRecordTypeID = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
     static String opportunityRecordTypeID = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
 
+    private static final DES_UtilTestClass DES_FACTORY = new DES_UtilTestClass();
+
+
+    /**
+     * Builds a DMT Lines product on top of the DES Product2 defaults.
+     * DML remains with the caller so existing bulk inserts are preserved.
+     */
+    private static Product2 buildDmtLineProduct(String productName, String productCode, String globalProductId) {
+        return DMT_Test_DataFactoryBuild.buildProduct(new Map<Schema.SObjectField, Object>{
+            Product2.Name => productName,
+            Product2.ProductCode => productCode,
+            Product2.DMT_Product_family__c => '01',
+            Product2.DMT_Product_Subfamily__c => '02',
+            Product2.DMT_Product_category__c => '02',
+            Product2.DMT_Product_Subcategory__c => '01',
+            Product2.DMT_Global_Product_Id__c => globalProductId,
+            Product2.CurrencyIsoCode => 'EUR',
+            Product2.Family => 'DMT Lines'
+        });
+    }
+
     // Método para setear custom settings
     public static iaso__GBL_Rest_Services_Url__c setIasoCustomSetting(String name, String url, String partition) {
         // Default behavior: perform insert
@@ -40,191 +61,148 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static DMT_Line__c generateTestTreasuryLines() {
 
-        Account accTest1 = new Account();
-        accTest1.account_client__c='N';
-        accTest1.Advising__c=false;
-        accTest1.BBVA_Entity__c='BBVA SA';
-        accTest1.BillingCity='MADRID';
-        accTest1.BillingCountry='ES';
-        accTest1.BillingPostalCode='28033';
-        accTest1.BillingState='MADRID';
-        accTest1.BillingStreet='AV GRAN Test DE HORTALEZA 0321';
-        accTest1.CurrencyIsoCode='EUR';
-        accTest1.cust_first_income_country_amount__c=4508815;
-        accTest1.cust_first_income_country_name__c='ESPAÑA (2222815.0 EUR)';
-        accTest1.DES_Activity__c='NDA';
-        accTest1.Name='Test company 1';
-        accTest1.CIB_Commercial_Prospect__c='Commercial';
-
+        Account accTest1 = DMT_Test_DataFactoryBuild.buildAccount(
+            new Map<Schema.SObjectField, Object>{
+                Account.CIB_Commercial_Prospect__c => 'Commercial'
+            }
+        );
         insert accTest1;
 
         List<DMT_Line__c> linesInsert = new List<DMT_Line__c>();
 
-        DMT_Line__c lineTest = new DMT_Line__c();
-        lineTest.Allowed__c =false ;
-        lineTest.Booking_Geography__c   ='ES' ;
-        lineTest.Clearing__c    =false ;
-        lineTest.Client_Code__c ='ES0182054986618' ;
-        lineTest.CurrencyIsoCode    ='EUR';
-        lineTest.DMT_Client_Entific__c  = 'ES';
-        lineTest.DMT_Comments__c    ='Test comments' ;
-        lineTest.DvP_Amount__c  = 100 ;
-        lineTest.DvP_Currency__c    ='EUR' ;
-        lineTest.End_Date__c    = date.newInstance(2024, 12, 21);
-        lineTest.FD_Amount__c   = 100;
-        lineTest.FD_Currency__c ='EUR' ;
-        lineTest.Line_Id__c ='00001' ;
-        lineTest.Name   ='Line Test ENERGIA FINANCIACION' ;
-        lineTest.Start_Date__c  =date.newInstance(2024, 11, 21);
-        lineTest.Status__c  ='Draft';
-        lineTest.Treasury_Currency__c ='EUR' ;
-        lineTest.Waiver__c =false;
-        lineTest.Repos_Limit_6M__c=120000;
-        lineTest.Repos_Limit__c=120000;
-        lineTest.Client__c  = accTest1.Id;
-        lineTest.RecordTypeId   = treasuryLineRecordTypeID;
+        DMT_Line__c lineTest = DMT_Test_DataFactoryBuild.buildLine(
+            accTest1.Id,
+            treasuryLineRecordTypeID,
+            '00001',
+            new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Allowed__c => false,
+                DMT_Line__c.Booking_Geography__c => 'ES',
+                DMT_Line__c.Clearing__c => false,
+                DMT_Line__c.Client_Code__c => 'ES0182054986618',
+                DMT_Line__c.CurrencyIsoCode => 'EUR',
+                DMT_Line__c.DMT_Client_Entific__c => 'ES',
+                DMT_Line__c.DMT_Comments__c => 'Test comments',
+                DMT_Line__c.DvP_Amount__c => 100,
+                DMT_Line__c.DvP_Currency__c => 'EUR',
+                DMT_Line__c.End_Date__c => date.newInstance(2024, 12, 21),
+                DMT_Line__c.FD_Amount__c => 100,
+                DMT_Line__c.FD_Currency__c => 'EUR',
+                DMT_Line__c.Name => 'Line Test ENERGIA FINANCIACION',
+                DMT_Line__c.Start_Date__c => date.newInstance(2024, 11, 21),
+                DMT_Line__c.Status__c => 'Draft',
+                DMT_Line__c.Treasury_Currency__c => 'EUR',
+                DMT_Line__c.Waiver__c => false,
+                DMT_Line__c.Repos_Limit_6M__c => 120000,
+                DMT_Line__c.Repos_Limit__c => 120000
+            }
+        );
 
         linesInsert.add(lineTest);
 
-        DMT_Line__c lineTest2 = new DMT_Line__c();
-        lineTest2.Allowed__c =false ;
-        lineTest2.Booking_Geography__c   ='ES' ;
-        lineTest2.Clearing__c    =false ;
-        lineTest2.Client_Code__c ='ES0182054986618' ;
-        lineTest2.CurrencyIsoCode    ='EUR';
-        lineTest2.DMT_Client_Entific__c  = 'ES';
-        lineTest2.DMT_Comments__c    ='Test comments' ;
-        lineTest2.DvP_Amount__c  = 100 ;
-        lineTest2.DvP_Currency__c    ='EUR' ;
-        lineTest2.End_Date__c    = date.newInstance(2024, 12, 21);
-        lineTest2.FD_Amount__c   = 100;
-        lineTest2.FD_Currency__c ='EUR' ;
-        lineTest2.Line_Id__c ='00002' ;
-        lineTest2.Name   ='Line Test ENERGIA FINANCIACION' ;
-        lineTest2.Start_Date__c  =date.newInstance(2024, 11, 21);
-        lineTest2.Status__c  ='Draft';
-        lineTest2.Treasury_Currency__c ='EUR' ;
-        lineTest2.Waiver__c =false;
-        lineTest2.Repos_Limit_6M__c=120000;
-        lineTest2.Repos_Limit__c=120000;
-        lineTest2.Client__c  = accTest1.Id;
-        lineTest2.RecordTypeId   = treasuryLineRecordTypeID;
-        lineTest2.DMT_Parent_Line__c = lineTest.Id;
+        DMT_Line__c lineTest2 = DMT_Test_DataFactoryBuild.buildLine(
+            accTest1.Id,
+            treasuryLineRecordTypeID,
+            '00002',
+            new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Allowed__c => false,
+                DMT_Line__c.Booking_Geography__c => 'ES',
+                DMT_Line__c.Clearing__c => false,
+                DMT_Line__c.Client_Code__c => 'ES0182054986618',
+                DMT_Line__c.CurrencyIsoCode => 'EUR',
+                DMT_Line__c.DMT_Client_Entific__c => 'ES',
+                DMT_Line__c.DMT_Comments__c => 'Test comments',
+                DMT_Line__c.DvP_Amount__c => 100,
+                DMT_Line__c.DvP_Currency__c => 'EUR',
+                DMT_Line__c.End_Date__c => date.newInstance(2024, 12, 21),
+                DMT_Line__c.FD_Amount__c => 100,
+                DMT_Line__c.FD_Currency__c => 'EUR',
+                DMT_Line__c.Name => 'Line Test ENERGIA FINANCIACION',
+                DMT_Line__c.Start_Date__c => date.newInstance(2024, 11, 21),
+                DMT_Line__c.Status__c => 'Draft',
+                DMT_Line__c.Treasury_Currency__c => 'EUR',
+                DMT_Line__c.Waiver__c => false,
+                DMT_Line__c.Repos_Limit_6M__c => 120000,
+                DMT_Line__c.Repos_Limit__c => 120000,
+                DMT_Line__c.DMT_Parent_Line__c => lineTest.Id
+            }
+        );
 
         linesInsert.add(lineTest2);
         insert linesInsert;
 
         List<DMT_Feature__c> featureList = new List<DMT_Feature__c>{
-            new DMT_Feature__c(
-                gf_capability_engine_id_number__c = '123',
-                gf_feature_name_desc__c = 'Feature Test A',
-                gf_feature_deal_type__c = 'Type1',
-                gf_global_feature_id_number__c = 'GF001',
-                gf_approver_apply_ind_type__c = 'Test1',
-                gf_user_audit_id__c = 'UserTest1',
-                gf_audit_date__c = Date.today(),
-                gf_code_value_id__c = '20'
+            DMT_Test_DataFactoryBuild.buildFeature(
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Feature__c.gf_capability_engine_id_number__c => '123',
+                    DMT_Feature__c.gf_feature_name_desc__c => 'Feature Test A',
+                    DMT_Feature__c.gf_feature_deal_type__c => 'Type1',
+                    DMT_Feature__c.gf_global_feature_id_number__c => 'GF001',
+                    DMT_Feature__c.gf_approver_apply_ind_type__c => 'Test1',
+                    DMT_Feature__c.gf_user_audit_id__c => 'UserTest1',
+                    DMT_Feature__c.gf_code_value_id__c => '20'
+                }
             ),
-            new DMT_Feature__c(
-                gf_capability_engine_id_number__c = '456',
-                gf_feature_name_desc__c = 'Feature Test B',
-                gf_feature_deal_type__c = 'Type2',
-                gf_global_feature_id_number__c = 'GF002',
-                gf_approver_apply_ind_type__c = 'Test2',
-                gf_user_audit_id__c = 'UserTest2',
-                gf_audit_date__c = Date.today(),
-                gf_code_value_id__c = '21'
+            DMT_Test_DataFactoryBuild.buildFeature(
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Feature__c.gf_capability_engine_id_number__c => '456',
+                    DMT_Feature__c.gf_feature_name_desc__c => 'Feature Test B',
+                    DMT_Feature__c.gf_feature_deal_type__c => 'Type2',
+                    DMT_Feature__c.gf_global_feature_id_number__c => 'GF002',
+                    DMT_Feature__c.gf_approver_apply_ind_type__c => 'Test2',
+                    DMT_Feature__c.gf_user_audit_id__c => 'UserTest2',
+                    DMT_Feature__c.gf_code_value_id__c => '21'
+                }
             )
         };
         insert featureList;
 
         insert new List<DMT_Selected_Features__c>{
-            new DMT_Selected_Features__c(
-                Line__c = lineTest.Id,
-                Feature__c = featureList[0].Id
+            DMT_Test_DataFactoryBuild.buildSelectedFeature(
+                featureList[0].Id,
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Selected_Features__c.Line__c => lineTest.Id
+                }
             ),
-            new DMT_Selected_Features__c(
-                Line__c = lineTest2.Id,
-                Feature__c = featureList[1].Id
+            DMT_Test_DataFactoryBuild.buildSelectedFeature(
+                featureList[1].Id,
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Selected_Features__c.Line__c => lineTest2.Id
+                }
             )
         };
 
 
 
         //Risk line terms
-        DMT_Risk_Line_Term__c rsklt1 = new DMT_Risk_Line_Term__c();
-        rsklt1.DMT_Line__c = lineTest2.Id;
-        rsklt1.Name='Line test ENERGIA FINANCIACION	rsk line term 1';
-        rsklt1.DMT_Init_Term__c='0';
-        rsklt1.DMT_End_Term__c ='3';
-        rsklt1.DMT_Amount__c   = 100000;
-        rsklt1.CurrencyIsoCode ='EUR';
-        rsklt1.gf_group_priority_line_id__c = '01';
-        rsklt1.DMT_Risk_Type__c='Derivatives';
+        DMT_Risk_Line_Term__c rsklt1 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            lineTest2.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '3',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 100000,
+                DMT_Risk_Line_Term__c.gf_group_priority_line_id__c => '01',
+                DMT_Risk_Line_Term__c.DMT_Risk_Type__c => 'Derivatives'
+            }
+        );
 
         List<DMT_Risk_Line_Term__c> listRsklt = new List<DMT_Risk_Line_Term__c>{rsklt1};
         insert listRsklt;
 
         Pricebook2 pb2 = generatePricebook2();
         //Productos
-        Product2 p1 = new Product2(
-            Name='DEPO',
-            ProductCode='1611170000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='00',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p1 = buildDmtLineProduct('DEPO', '1611170000', '00');
 
-        Product2 p2 = new Product2(
-            Name='Derivatives',
-            ProductCode='1600000000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='01',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p2 = buildDmtLineProduct('Derivatives', '1600000000', '01');
 
-        Product2 p3 = new Product2(
-            Name='Equity',
-            ProductCode='1610000000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='02',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p3 = buildDmtLineProduct('Equity', '1610000000', '02');
 
-        Product2 p4 = new Product2(
-            Name='Repo',
-            ProductCode='1611190000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='00',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p4 = buildDmtLineProduct('Repo', '1611190000', '00');
 
         List<Product2> listProducts = new List<Product2>{p1, p2, p3, p4};
         insert listProducts;
 
-        DMT_Line_Product_Item__c pli1 = new DMT_Line_Product_Item__c(
-            Name ='Product line item DEPO',
-            CurrencyIsoCode ='EUR',
-            Line__c =lineTest2.Id,
-            Product__c =p1.Id,
-            Max_Tenor_WC__c = '7',
-            DMT_DerivativeRestriction__c = true,
-            DMT_DVPRestriction__c = true,
-            DMT_FDRestriction__c = true,
-            Product_Code_Value__c = 'DEPO'
-        );
+        DMT_Line_Product_Item__c pli1 = DMT_Test_DataFactoryBuild.buildLineProductItem(lineTest2.Id, p1.Id);
 
         insert pli1;
 
@@ -233,103 +211,91 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static DMT_Line__c generateTestOtherLines() {
 
-        Account accTest1 = new Account();
-        accTest1.account_client__c='N';
-        accTest1.Advising__c=false;
-        accTest1.BBVA_Entity__c='BBVA SA';
-        accTest1.BillingCity='MADRID';
-        accTest1.BillingCountry='ES';
-        accTest1.BillingPostalCode='28033';
-        accTest1.BillingState='MADRID';
-        accTest1.BillingStreet='AV GRAN Test DE HORTALEZA 0321';
-        accTest1.CurrencyIsoCode='EUR';
-        accTest1.cust_first_income_country_amount__c=4508815;
-        accTest1.cust_first_income_country_name__c='ESPAÑA (2222815.0 EUR)';
-        accTest1.DES_Activity__c='Electric Power Generation';
-        accTest1.Name='Test company 1';
-
+        Account accTest1 = DMT_Test_DataFactoryBuild.buildAccount(
+            new Map<Schema.SObjectField, Object>{
+                Account.DES_Activity__c => 'Electric Power Generation'
+            }
+        );
         insert accTest1;
 
         Account accTest1Update = [SELECT Id FROM Account LIMIT 1];
 
-        DMT_Line__c lineTest = new DMT_Line__c();
-        lineTest.Allowed__c =false ;
-        lineTest.Booking_Geography__c   ='ES' ;
-        lineTest.Clearing__c    =false ;
-        lineTest.Client_Code__c ='ES0182054986618' ;
-        lineTest.CurrencyIsoCode    ='EUR';
-        lineTest.DMT_Client_Entific__c  = 'ES';
-        lineTest.DMT_Comments__c    ='Test comments' ;
-        lineTest.DvP_Amount__c  = 100 ;
-        lineTest.DvP_Currency__c    ='EUR' ;
-        lineTest.End_Date__c    = date.newInstance(2024, 12, 21);
-        lineTest.FD_Amount__c   = 100;
-        lineTest.FD_Currency__c ='EUR' ;
-        lineTest.Line_Id__c ='00003' ;
-        lineTest.Name   ='Line Test ENERGIA FINANCIACION' ;
-        lineTest.Start_Date__c  =date.newInstance(2024, 11, 21);
-        lineTest.Status__c  ='Draft';
-        lineTest.Treasury_Currency__c ='EUR' ;
-        lineTest.Waiver__c =false;
-        lineTest.Repos_Limit_6M__c=120000;
-        lineTest.Repos_Limit__c=120000;
-        lineTest.DMT_LastLevelId__c = '61000';
-        lineTest.Amount__c = 1000;
-
-        lineTest.Client__c  = accTest1Update.Id;
-        lineTest.RecordTypeId   = otherLineRecordTypeID;
+        DMT_Line__c lineTest = DMT_Test_DataFactoryBuild.buildLine(
+            accTest1Update.Id,
+            otherLineRecordTypeID,
+            '00003',
+            new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Allowed__c => false,
+                DMT_Line__c.Booking_Geography__c => 'ES',
+                DMT_Line__c.Clearing__c => false,
+                DMT_Line__c.Client_Code__c => 'ES0182054986618',
+                DMT_Line__c.CurrencyIsoCode => 'EUR',
+                DMT_Line__c.DMT_Client_Entific__c => 'ES',
+                DMT_Line__c.DMT_Comments__c => 'Test comments',
+                DMT_Line__c.DvP_Amount__c => 100,
+                DMT_Line__c.DvP_Currency__c => 'EUR',
+                DMT_Line__c.End_Date__c => date.newInstance(2024, 12, 21),
+                DMT_Line__c.FD_Amount__c => 100,
+                DMT_Line__c.FD_Currency__c => 'EUR',
+                DMT_Line__c.Name => 'Line Test ENERGIA FINANCIACION',
+                DMT_Line__c.Start_Date__c => date.newInstance(2024, 11, 21),
+                DMT_Line__c.Status__c => 'Draft',
+                DMT_Line__c.Treasury_Currency__c => 'EUR',
+                DMT_Line__c.Waiver__c => false,
+                DMT_Line__c.Repos_Limit_6M__c => 120000,
+                DMT_Line__c.Repos_Limit__c => 120000,
+                DMT_Line__c.DMT_LastLevelId__c => '61000',
+                DMT_Line__c.Amount__c => 1000
+            }
+        );
 
         insert lineTest;
         List<DMT_Feature__c> featureList = new List<DMT_Feature__c>{
-            new DMT_Feature__c(
-                gf_capability_engine_id_number__c = '999',
-                gf_feature_name_desc__c = 'Feature Test C',
-                gf_feature_deal_type__c = 'Type3',
-                gf_global_feature_id_number__c = 'GF003',
-                gf_approver_apply_ind_type__c = 'Test3',
-                gf_user_audit_id__c = 'UserTest',
-                gf_audit_date__c = Date.today(),
-                gf_code_value_id__c = '22'
+            DMT_Test_DataFactoryBuild.buildFeature(
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Feature__c.gf_capability_engine_id_number__c => '999',
+                    DMT_Feature__c.gf_feature_name_desc__c => 'Feature Test C',
+                    DMT_Feature__c.gf_feature_deal_type__c => 'Type3',
+                    DMT_Feature__c.gf_global_feature_id_number__c => 'GF003',
+                    DMT_Feature__c.gf_approver_apply_ind_type__c => 'Test3',
+                    DMT_Feature__c.gf_user_audit_id__c => 'UserTest',
+                    DMT_Feature__c.gf_code_value_id__c => '22'
+                }
             )
         };
         insert featureList;
 
         insert new List<DMT_Selected_Features__c>{
-            new DMT_Selected_Features__c(
-                Line__c = lineTest.Id,
-                Feature__c = featureList[0].Id
+            DMT_Test_DataFactoryBuild.buildSelectedFeature(
+                featureList[0].Id,
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Selected_Features__c.Line__c => lineTest.Id
+                }
             )
         };
 
         Pricebook2 pb2 = generatePricebook2();
          //Productos
-        Product2 p1 = new Product2(
-            Name='DEPO',
-            ProductCode='2611170000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='00',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p1 = buildDmtLineProduct('DEPO', '2611170000', '00');
 
 
         List<Product2> listProducts = new List<Product2>{p1};
         insert listProducts;
 
         //Risk line terms
-        DMT_Risk_Line_Term__c rsklt1 = new DMT_Risk_Line_Term__c();
-        rsklt1.DMT_Line__c = lineTest.Id;
-        rsklt1.Name='Line test ENERGIA FINANCIACION	rsk line term 1';
-        rsklt1.DMT_Init_Term__c='0';
-        rsklt1.DMT_End_Term__c ='3';
-        rsklt1.DMT_Amount__c   = 100000;
-        rsklt1.CurrencyIsoCode ='EUR';
-        rsklt1.DMT_LastLevelId__c = '61000';
-        rsklt1.DMT_Risk_Type__c='';
-        rsklt1.gf_group_priority_line_id__c = '01';
-        rsklt1.DMT_Product__c = p1.Id;
+        DMT_Risk_Line_Term__c rsklt1 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            lineTest.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '3',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 100000,
+                DMT_Risk_Line_Term__c.DMT_LastLevelId__c => '61000',
+                DMT_Risk_Line_Term__c.DMT_Risk_Type__c => '',
+                DMT_Risk_Line_Term__c.gf_group_priority_line_id__c => '01',
+                DMT_Risk_Line_Term__c.DMT_Product__c => p1.Id
+            }
+        );
 
 
         List<DMT_Risk_Line_Term__c> listRsklt = new List<DMT_Risk_Line_Term__c>{rsklt1};
@@ -337,17 +303,7 @@ public with sharing class  DMT_Test_DataFactory {
 
 
 
-        DMT_Line_Product_Item__c pli1 = new DMT_Line_Product_Item__c(
-            Name ='Product line item DEPO',
-            CurrencyIsoCode ='EUR',
-            Line__c =lineTest.Id,
-            Product__c =p1.Id,
-            Max_Tenor_WC__c = '7',
-            DMT_DerivativeRestriction__c = true,
-            DMT_DVPRestriction__c = true,
-            DMT_FDRestriction__c = true,
-            Product_Code_Value__c = 'DEPO'
-        );
+        DMT_Line_Product_Item__c pli1 = DMT_Test_DataFactoryBuild.buildLineProductItem(lineTest.Id, p1.Id);
 
         insert pli1;
 
@@ -356,214 +312,171 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static DMT_Line__c generateTestTreasurySingularLines() {
 
-        Account accTest1 = new Account();
-        accTest1.account_client__c='N';
-        accTest1.Advising__c=false;
-        accTest1.BBVA_Entity__c='BBVA SA';
-        accTest1.BillingCity='MADRID';
-        accTest1.BillingCountry='ES';
-        accTest1.BillingPostalCode='28033';
-        accTest1.BillingState='MADRID';
-        accTest1.BillingStreet='AV GRAN Test DE HORTALEZA 0321';
-        accTest1.CurrencyIsoCode='EUR';
-        accTest1.cust_first_income_country_amount__c=4508815;
-        accTest1.cust_first_income_country_name__c='ESPAÑA (2222815.0 EUR)';
-        accTest1.DES_Activity__c='NDA';
-        accTest1.Name='Test company 1';
-
+        Account accTest1 = DMT_Test_DataFactoryBuild.buildAccount();
         insert accTest1;
         Account accTest1Update = [SELECT Id FROM Account WHERE Id =: accTest1.Id LIMIT 1 FOR UPDATE];
 
-        DMT_Line__c lineTest = new DMT_Line__c();
-        lineTest.Allowed__c =false ;
-        lineTest.Booking_Geography__c   ='ES' ;
-        lineTest.Clearing__c    =false ;
-        lineTest.Client_Code__c ='ES0182054986618' ;
-        lineTest.CurrencyIsoCode    ='EUR';
-        lineTest.DMT_Client_Entific__c  = 'ES';
-        lineTest.DMT_Comments__c    ='Test comments' ;
-        lineTest.DvP_Amount__c  = 100 ;
-        lineTest.DvP_Currency__c    ='EUR' ;
-        lineTest.End_Date__c    = date.newInstance(2024, 12, 21);
-        lineTest.FD_Amount__c   = 100;
-        lineTest.FD_Currency__c ='EUR' ;
-        lineTest.Line_Id__c ='00004' ;
-        lineTest.Name   ='Line Test ENERGIA FINANCIACION' ;
-        lineTest.Start_Date__c  =date.newInstance(2024, 11, 21);
-        lineTest.Status__c  = 'Closed';
-        lineTest.Closed__c = 'Won';
-        lineTest.Treasury_Currency__c ='EUR' ;
-        lineTest.Waiver__c =false;
-        lineTest.Repos_Limit_6M__c=120000;
-        lineTest.Repos_Limit__c=120000;
-
-        lineTest.Client__c = accTest1Update.Id;
-        lineTest.RecordTypeId = treasuryLineRecordTypeID;
+        DMT_Line__c lineTest = DMT_Test_DataFactoryBuild.buildLine(
+            accTest1Update.Id,
+            treasuryLineRecordTypeID,
+            '00004',
+            new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Allowed__c => false,
+                DMT_Line__c.Booking_Geography__c => 'ES',
+                DMT_Line__c.Clearing__c => false,
+                DMT_Line__c.Client_Code__c => 'ES0182054986618',
+                DMT_Line__c.CurrencyIsoCode => 'EUR',
+                DMT_Line__c.DMT_Client_Entific__c => 'ES',
+                DMT_Line__c.DMT_Comments__c => 'Test comments',
+                DMT_Line__c.DvP_Amount__c => 100,
+                DMT_Line__c.DvP_Currency__c => 'EUR',
+                DMT_Line__c.End_Date__c => date.newInstance(2024, 12, 21),
+                DMT_Line__c.FD_Amount__c => 100,
+                DMT_Line__c.FD_Currency__c => 'EUR',
+                DMT_Line__c.Name => 'Line Test ENERGIA FINANCIACION',
+                DMT_Line__c.Start_Date__c => date.newInstance(2024, 11, 21),
+                DMT_Line__c.Status__c => 'Closed',
+                DMT_Line__c.Closed__c => 'Won',
+                DMT_Line__c.Treasury_Currency__c => 'EUR',
+                DMT_Line__c.Waiver__c => false,
+                DMT_Line__c.Repos_Limit_6M__c => 120000,
+                DMT_Line__c.Repos_Limit__c => 120000
+            }
+        );
 
         insert lineTest;
 
         DMT_Line__c lineTestUpdate = [SELECT Id FROM DMT_Line__c WHERE Id =: lineTest.Id LIMIT 1 FOR UPDATE];
 
-        DMT_Line__c lineTest2 = new DMT_Line__c();
-        lineTest2.Allowed__c =false ;
-        lineTest2.Booking_Geography__c   ='PE' ;
-        lineTest2.Clearing__c    =false ;
-        lineTest2.Client_Code__c ='ES0182054986618' ;
-        lineTest2.CurrencyIsoCode    ='EUR';
-        lineTest2.DMT_Client_Entific__c  = 'PE';
-        lineTest2.DMT_Comments__c    ='Test comments' ;
-        lineTest2.DvP_Amount__c  = 100 ;
-        lineTest2.DvP_Currency__c    ='EUR' ;
-        lineTest2.End_Date__c    = date.newInstance(2024, 12, 21);
-        lineTest2.FD_Amount__c   = 100;
-        lineTest2.FD_Currency__c ='EUR' ;
-        lineTest2.Line_Id__c ='00005' ;
-        lineTest2.Name   ='Line Test ENERGIA FINANCIACION' ;
-        lineTest2.Start_Date__c  =date.newInstance(2024, 11, 21);
-        lineTest2.Status__c  ='Closed';
-        lineTest2.Closed__c  ='Won';
-        lineTest2.Treasury_Currency__c ='EUR' ;
-        lineTest2.Waiver__c =false;
-        lineTest2.Repos_Limit_6M__c=120000;
-        lineTest2.Repos_Limit__c=120000;
-
-        lineTest2.Client__c  = accTest1Update.Id;
-        lineTest2.RecordTypeId   = treasuryLineRecordTypeID;
-        lineTest2.DMT_Parent_Line__c = lineTest.Id;
+        DMT_Line__c lineTest2 = DMT_Test_DataFactoryBuild.buildLine(
+            accTest1Update.Id,
+            treasuryLineRecordTypeID,
+            '00005',
+            new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Allowed__c => false,
+                DMT_Line__c.Booking_Geography__c => 'PE',
+                DMT_Line__c.Clearing__c => false,
+                DMT_Line__c.Client_Code__c => 'ES0182054986618',
+                DMT_Line__c.CurrencyIsoCode => 'EUR',
+                DMT_Line__c.DMT_Client_Entific__c => 'PE',
+                DMT_Line__c.DMT_Comments__c => 'Test comments',
+                DMT_Line__c.DvP_Amount__c => 100,
+                DMT_Line__c.DvP_Currency__c => 'EUR',
+                DMT_Line__c.End_Date__c => date.newInstance(2024, 12, 21),
+                DMT_Line__c.FD_Amount__c => 100,
+                DMT_Line__c.FD_Currency__c => 'EUR',
+                DMT_Line__c.Name => 'Line Test ENERGIA FINANCIACION',
+                DMT_Line__c.Start_Date__c => date.newInstance(2024, 11, 21),
+                DMT_Line__c.Status__c => 'Closed',
+                DMT_Line__c.Closed__c => 'Won',
+                DMT_Line__c.Treasury_Currency__c => 'EUR',
+                DMT_Line__c.Waiver__c => false,
+                DMT_Line__c.Repos_Limit_6M__c => 120000,
+                DMT_Line__c.Repos_Limit__c => 120000,
+                DMT_Line__c.DMT_Parent_Line__c => lineTest.Id
+            }
+        );
 
         insert lineTest2;
 
         DMT_Line__c lineTest2Update = [SELECT Id FROM DMT_Line__c WHERE Id =: lineTest2.Id LIMIT 1 FOR UPDATE];
 
         //Risk line terms
-        DMT_Risk_Line_Term__c rsklt1 = new DMT_Risk_Line_Term__c();
-        rsklt1.DMT_Line__c =lineTest2Update.Id;
-        rsklt1.Name='Line test ENERGIA FINANCIACION	rsk line term 1';
-        rsklt1.DMT_Init_Term__c='0';
-        rsklt1.DMT_End_Term__c ='3';
-        rsklt1.DMT_Amount__c   = 100000;
-        rsklt1.CurrencyIsoCode ='EUR';
-        rsklt1.DMT_Risk_Type__c='Derivatives';
+        DMT_Risk_Line_Term__c rsklt1 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            lineTest2Update.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '3',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 100000,
+                DMT_Risk_Line_Term__c.DMT_Risk_Type__c => 'Derivatives'
+            }
+        );
 
-        DMT_Risk_Line_Term__c rsklt2 = new DMT_Risk_Line_Term__c();
-        rsklt2.DMT_Line__c =lineTest2Update.Id;
-        rsklt2.Name='Line test ENERGIA FINANCIACION	rsk line term 2';
-        rsklt2.DMT_Init_Term__c='0';
-        rsklt2.DMT_End_Term__c ='5';
-        rsklt2.DMT_Amount__c   = 100000;
-        rsklt2.CurrencyIsoCode ='EUR';
-        rsklt2.DMT_Singular__c = true;
-        rsklt2.DMT_Singular_Operation__c = 'Operation Name';
-        rsklt2.DMT_Max_Date__c = Date.today().addDays(-1);
-        rsklt2.DMT_Risk_Type__c='Derivatives';
+        DMT_Risk_Line_Term__c rsklt2 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            lineTest2Update.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 2',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '5',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 100000,
+                DMT_Risk_Line_Term__c.DMT_Singular__c => true,
+                DMT_Risk_Line_Term__c.DMT_Singular_Operation__c => 'Operation Name',
+                DMT_Risk_Line_Term__c.DMT_Max_Date__c => Date.today().addDays(-1),
+                DMT_Risk_Line_Term__c.DMT_Risk_Type__c => 'Derivatives'
+            }
+        );
 
-        DMT_Risk_Line_Term__c rsklt3 = new DMT_Risk_Line_Term__c();
-        rsklt3.DMT_Line__c =lineTest2Update.Id;
-        rsklt3.Name='Line test ENERGIA FINANCIACION	rsk line term 3';
-        rsklt3.DMT_Init_Term__c='0';
-        rsklt3.DMT_End_Term__c ='7';
-        rsklt3.DMT_Amount__c   = 100000;
-        rsklt3.CurrencyIsoCode ='EUR';
-        rsklt3.DMT_Risk_Type__c='Depos';
+        DMT_Risk_Line_Term__c rsklt3 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            lineTest2Update.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 3',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '7',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 100000,
+                DMT_Risk_Line_Term__c.DMT_Risk_Type__c => 'Depos'
+            }
+        );
 
-        DMT_Risk_Line_Term__c rsklt4 = new DMT_Risk_Line_Term__c();
-        rsklt4.DMT_Line__c =lineTest2Update.Id;
-        rsklt4.Name='Line test ENERGIA FINANCIACION	rsk line term 4';
-        rsklt4.DMT_Init_Term__c='0';
-        rsklt4.DMT_End_Term__c ='9';
-        rsklt4.DMT_Amount__c   = 10000;
-        rsklt4.CurrencyIsoCode ='EUR';
-        rsklt4.DMT_Risk_Type__c='Depos';
+        DMT_Risk_Line_Term__c rsklt4 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            lineTest2Update.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 4',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '9',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 10000,
+                DMT_Risk_Line_Term__c.DMT_Risk_Type__c => 'Depos'
+            }
+        );
 
-        DMT_Risk_Line_Term__c rsklt5 = new DMT_Risk_Line_Term__c();
-        rsklt5.DMT_Line__c =lineTest2Update.Id;
-        rsklt5.Name='Line test ENERGIA FINANCIACION	rsk line term 5';
-        rsklt5.DMT_Init_Term__c='0';
-        rsklt5.DMT_End_Term__c ='6';
-        rsklt5.DMT_Amount__c   = 10000;
-        rsklt5.CurrencyIsoCode ='EUR';
-        rsklt5.DMT_Risk_Type__c='Equities';
+        DMT_Risk_Line_Term__c rsklt5 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            lineTest2Update.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 5',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '6',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 10000,
+                DMT_Risk_Line_Term__c.DMT_Risk_Type__c => 'Equities'
+            }
+        );
 
-        DMT_Risk_Line_Term__c rsklt6 = new DMT_Risk_Line_Term__c();
-        rsklt6.DMT_Line__c = lineTest2Update.Id;
-        rsklt6.Name='Line test ENERGIA FINANCIACION	rsk line term 6';
-        rsklt6.DMT_Init_Term__c='6';
-        rsklt6.DMT_End_Term__c ='30';
-        rsklt6.DMT_Amount__c   = 1000000;
-        rsklt6.CurrencyIsoCode ='EUR';
-        rsklt6.DMT_Risk_Type__c='Equities';
+        DMT_Risk_Line_Term__c rsklt6 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            lineTest2Update.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 6',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '6',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '30',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 1000000,
+                DMT_Risk_Line_Term__c.DMT_Risk_Type__c => 'Equities'
+            }
+        );
 
         List<DMT_Risk_Line_Term__c> listRsklt = new List<DMT_Risk_Line_Term__c>{rsklt1,rsklt2,rsklt3,rsklt4,rsklt5,rsklt6};
         insert listRsklt;
 
         Pricebook2 pb2 = generatePricebook2();
         //Productos
-        Product2 p1 = new Product2(
-            Name='DEPO',
-            ProductCode='1611170000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='00',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p1 = buildDmtLineProduct('DEPO', '1611170000', '00');
 
-        Product2 p2 = new Product2(
-            Name='Derivatives',
-            ProductCode='1600000000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='01',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p2 = buildDmtLineProduct('Derivatives', '1600000000', '01');
 
-        Product2 p3 = new Product2(
-            Name='Equity',
-            ProductCode='1610000000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='02',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p3 = buildDmtLineProduct('Equity', '1610000000', '02');
 
-        Product2 p4 = new Product2(
-            Name='Repo',
-            ProductCode='1611190000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='03',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p4 = buildDmtLineProduct('Repo', '1611190000', '03');
 
-        Product2 p5 = new Product2(
-            Name='Repo',
-            ProductCode='1647895623',
-            DMT_Global_Product_Id__c='04',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p5 = DMT_Test_DataFactoryBuild.buildProduct(new Map<Schema.SObjectField, Object>{
+            Product2.Name => 'Repo',
+            Product2.ProductCode => '1647895623',
+            Product2.DMT_Global_Product_Id__c => '04',
+            Product2.CurrencyIsoCode => 'EUR',
+            Product2.Family => 'DMT Lines'
+        });
 
         List<Product2> listProducts = new List<Product2>{p1,p2,p3,p4,p5};
 
         insert listProducts;
 
-        DMT_Line_Product_Item__c pli1 = new DMT_Line_Product_Item__c(
-            Name ='Product line item DEPO',
-            CurrencyIsoCode ='EUR',
-            Line__c =lineTest2.Id,
-            Product__c =p1.Id,
-            Max_Tenor_WC__c = '7',
-            DMT_DerivativeRestriction__c = true,
-            DMT_DVPRestriction__c = true,
-            DMT_FDRestriction__c = true,
-            Product_Code_Value__c = 'DEPO'
-        );
+        DMT_Line_Product_Item__c pli1 = DMT_Test_DataFactoryBuild.buildLineProductItem(lineTest2.Id, p1.Id);
 
         insert pli1;
 
@@ -572,67 +485,144 @@ public with sharing class  DMT_Test_DataFactory {
 
 
     public static Account generateAccount() {
-        Account accTest1 = new Account();
-        accTest1.account_client__c='N';
-        accTest1.Advising__c=false;
-        accTest1.BBVA_Entity__c='BBVA SA';
-        accTest1.BillingCity='MADRID';
-        accTest1.BillingCountry='ES';
-        accTest1.BillingPostalCode='28033';
-        accTest1.BillingState='MADRID';
-        accTest1.BillingStreet='AV GRAN Test DE HORTALEZA 0321';
-        accTest1.CurrencyIsoCode='EUR';
-        accTest1.cust_first_income_country_amount__c=4508815;
-        accTest1.cust_first_income_country_name__c='ESPAÑA (2222815.0 EUR)';
-        accTest1.DES_Activity__c='NDA';
-        accTest1.Name='Test company 1';
-        //accTest1.Past2_FY_Corp_Synd_Lending_amount__c = 13;
-        accTest1.Revenues_Last_Year_number__c = 13;
-        accTest1.DES_Group_Code__c = 'G20180109100427';
+        return generateAccount(null);
+    }
 
+    public static Account generateAccount(
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        Map<Schema.SObjectField, Object> accountOverrides =
+            new Map<Schema.SObjectField, Object>{
+                Account.Revenues_Last_Year_number__c => 13,
+                Account.DES_Group_Code__c => 'G20180109100427'
+            };
+
+        // Keep intentionally disabled forever for this factory scenario.
+        // accountOverrides.put(Account.Past2_FY_Corp_Synd_Lending_amount__c, 13);
+
+        if (overrides != null) {
+            accountOverrides.putAll(overrides);
+        }
+
+        Account accTest1 =
+            DMT_Test_DataFactoryBuild.buildAccount(accountOverrides);
         insert accTest1;
-        Account accTest1Update = [SELECT Id FROM Account WHERE Id =: accTest1.Id LIMIT 1 FOR UPDATE];
+
+        Account accTest1Update = [
+            SELECT Id
+            FROM Account
+            WHERE Id = :accTest1.Id
+            LIMIT 1
+            FOR UPDATE
+        ];
 
         return accTest1Update;
     }
 
-    public static Opportunity generateOpportunity() {
-        Account testAcc = generateAccount();
+    /**
+     * Creates a DES Group Account and optionally links subsidiary Accounts
+     * and a Global Banker.
+     *
+     * DES_UtilTestClass owns the Group/Subsidiary relationship logic.
+     *
+     * @param groupAccountName   Name of the Group Account.
+     * @param subsidiaryAccountIds Account Ids to relate as subsidiaries.
+     *                             Pass null to create the Group without subsidiaries.
+     * @param globalBankerUserId User Id for the Global Banker.
+     *                           Pass null when no Global Banker is required.
+     */
+    public static Account generateGroupAccount(
+        String groupAccountName,
+        Set<Id> subsidiaryAccountIds,
+        Id globalBankerUserId
+    ) {
+        return DES_FACTORY.createGroupClient(
+            groupAccountName,
+            subsidiaryAccountIds,
+            globalBankerUserId
+        );
+    }
 
-        Opportunity testOpportunity = new Opportunity();
-        testOpportunity.StageName = 'Draft Opp';
-        testOpportunity.CloseDate = Date.today();
-        testOpportunity.Name = 'Test Opp';
-        testOpportunity.AccountId = testAcc.Id;
-        testOpportunity.DMT_Opp_Id__c = '00001';
-        testOpportunity.RecordTypeId = opportunityRecordTypeID;
-        testOpportunity.DMT_CUR_Notional_Amount__c = 100;
-        testOpportunity.DMT_CurrencyText__c = 'EUR';
-        testOpportunity.DMT_DATE_Initial_Date__c = Date.today();
-        testOpportunity.DMT_DATE_Maturity_Date__c = Date.today() + 1;
-        testOpportunity.Entific__c='ES';
-        testOpportunity.DMT_Entity__c='ES0182';
-        testOpportunity.DMT_Product_Area__c='GTB';
-        testOpportunity.DMT_Threshold_Type__c='Global';
+    /**
+     * Creates the standard DMT Opportunity for an existing Account.
+     *
+     * The Account may be a regular/subsidiary Account or a DES Group Account.
+     */
+    public static Opportunity generateOpportunityForAccount(
+        Id accountId
+    ) {
+        return generateOpportunityForAccount(accountId, null);
+    }
 
-
+    public static Opportunity generateOpportunityForAccount(
+        Id accountId,
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        Opportunity testOpportunity =
+            DMT_Test_DataFactoryBuild.buildOpportunity(
+                accountId,
+                overrides
+            );
         insert testOpportunity;
-        Opportunity testOpportunityUpdate = [SELECT Id,AccountId,DMT_Opp_Id__c FROM Opportunity WHERE Id =: testOpportunity.Id LIMIT 1 FOR UPDATE];
+
+        Opportunity testOpportunityUpdate = [
+            SELECT Id, AccountId, DMT_Opp_Id__c
+            FROM Opportunity
+            WHERE Id = :testOpportunity.Id
+            LIMIT 1
+            FOR UPDATE
+        ];
         return testOpportunityUpdate;
     }
 
-    public static DMT_Opportunity_Client__c generateOpportunityClient(String oppId) {
+    /**
+     * Backward-compatible helper.
+     * Preserves the existing behavior: create a DMT Account first and then
+     * create the standard DMT Opportunity for that Account.
+     */
+    public static Opportunity generateOpportunity() {
+        return generateOpportunity(null);
+    }
 
-        DMT_Opportunity_Client__c oppCl = new DMT_Opportunity_Client__c();
-        oppCl.DMT_MDE_Opportunity__c = oppId;
-        //oppCl.Past2_FY_Corp_Synd_Lending_amount__c = 14;
-        oppCl.Revenues_Last_Year_number__c = 14;
-        oppCl.Counterpart__c='Corporates';
-        oppCl.DMT_Sector__c='N';
-        oppCl.g_upd_lmscl_internal_ratg_type__c='-A';
+    public static Opportunity generateOpportunity(
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        Account testAcc = generateAccount();
+        return generateOpportunityForAccount(testAcc.Id, overrides);
+    }
+
+    public static DMT_Opportunity_Client__c generateOpportunityClient(String oppId) {
+        return generateOpportunityClient(
+            oppId,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Opportunity_Client__c.Past2_FY_Corp_Synd_Lending_amount__c => 14,
+                DMT_Opportunity_Client__c.Revenues_Last_Year_number__c => 14,
+                DMT_Opportunity_Client__c.Counterpart__c => 'Corporates',
+                DMT_Opportunity_Client__c.DMT_Sector__c => 'N',
+                DMT_Opportunity_Client__c.g_upd_lmscl_internal_ratg_type__c => '-A'
+            }
+        );
+    }
+
+    public static DMT_Opportunity_Client__c generateOpportunityClient(
+        String oppId,
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        DMT_Opportunity_Client__c oppCl =
+            DMT_Test_DataFactoryBuild.buildOpportunityClient(
+                oppId,
+                overrides
+            );
 
         insert oppCl;
-        DMT_Opportunity_Client__c oppClUpdate = [SELECT Id FROM DMT_Opportunity_Client__c WHERE Id =: oppCl.Id LIMIT 1 FOR UPDATE];
+
+        DMT_Opportunity_Client__c oppClUpdate = [
+            SELECT Id
+            FROM DMT_Opportunity_Client__c
+            WHERE Id = :oppCl.Id
+            LIMIT 1
+            FOR UPDATE
+        ];
         return oppClUpdate;
     }
 
@@ -641,31 +631,37 @@ public with sharing class  DMT_Test_DataFactory {
 
         // 8 records of Uses
         for(Integer i = 0; i < 8; i++) {
-            DMT_Global_Structure__c gs = new DMT_Global_Structure__c();
-            gs.Name = 'Uses ' + i;
-            gs.DMT_Opportunity__c = oppId;
-            gs.DMT_Type__c = 'Uses';
-            gs.DMT_Funds__c = Integer.valueof((Math.random() * 10000)); // Random number
+            DMT_Global_Structure__c gs = DMT_Test_DataFactoryBuild.buildGlobalStructure(
+                oppId,
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Global_Structure__c.Name => 'Uses ' + i,
+                    DMT_Global_Structure__c.DMT_Type__c => 'Uses'
+                }
+            );
             gsList.add(gs);
         }
 
         // 4 records of Funding Debt
         for(Integer i = 0; i < 4; i++) {
-            DMT_Global_Structure__c gs = new DMT_Global_Structure__c();
-            gs.Name = 'Debt Fund ' + i;
-            gs.DMT_Opportunity__c = oppId;
-            gs.DMT_Type__c = 'Funding Debt';
-            gs.DMT_Funds__c = Integer.valueof((Math.random() * 10000));
+            DMT_Global_Structure__c gs = DMT_Test_DataFactoryBuild.buildGlobalStructure(
+                oppId,
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Global_Structure__c.Name => 'Debt Fund ' + i,
+                    DMT_Global_Structure__c.DMT_Type__c => 'Funding Debt'
+                }
+            );
             gsList.add(gs);
         }
 
         // 4 records of Funding Equity
         for(Integer i = 0; i < 4; i++) {
-            DMT_Global_Structure__c gs = new DMT_Global_Structure__c();
-            gs.Name = 'Equity Fund ' + i;
-            gs.DMT_Opportunity__c = oppId;
-            gs.DMT_Type__c = 'Funding Equity';
-            gs.DMT_Funds__c = Integer.valueof((Math.random() * 10000));
+            DMT_Global_Structure__c gs = DMT_Test_DataFactoryBuild.buildGlobalStructure(
+                oppId,
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Global_Structure__c.Name => 'Equity Fund ' + i,
+                    DMT_Global_Structure__c.DMT_Type__c => 'Funding Equity'
+                }
+            );
             gsList.add(gs);
         }
 
@@ -675,109 +671,79 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static void generateTestSanctionLines(){
 
-        Account accTest1 = new Account();
-        accTest1.account_client__c='N';
-        accTest1.Advising__c=false;
-        accTest1.BBVA_Entity__c='BBVA SA';
-        accTest1.BillingCity='MADRID';
-        accTest1.BillingCountry='ES';
-        accTest1.BillingPostalCode='28033';
-        accTest1.BillingState='MADRID';
-        accTest1.BillingStreet='AV GRAN Test DE HORTALEZA 0321';
-        accTest1.CurrencyIsoCode='EUR';
-        accTest1.cust_first_income_country_amount__c=4508815;
-        accTest1.cust_first_income_country_name__c='ESPAÑA (2222815.0 EUR)';
-        accTest1.DES_Activity__c='NDA';
-        accTest1.Name='Test company 1';
-        accTest1.DES_Structure_Type__c = 'Subsidiary';
-
+        Account accTest1 = DMT_Test_DataFactoryBuild.buildAccount(
+            new Map<Schema.SObjectField, Object>{
+                Account.DES_Structure_Type__c => 'Subsidiary'
+            }
+        );
         insert accTest1;
         Account accTest1Update = [SELECT Id FROM Account WHERE Id =: accTest1.Id LIMIT 1 FOR UPDATE];
 
-        DMT_Line__c testLine = new DMT_Line__c(
-                Name = 'Test Line ',
-                Status__c = 'Draft',
-                Client__c = accTest1Update.Id,
-                Line_Id__c ='00009' ,
-                DMT_Origin__c = 'AMIWEB',
-                g_line_status_type__c = 'AP',
-                Booking_Geography__c = 'ES' ,
-                DMT_Client_Entific__c = 'ES',
-                RecordTypeId = otherLineRecordTypeID,
-                Client_Code__c = 'G00000000000201'
-            );
+        DMT_Line__c testLine = DMT_Test_DataFactoryBuild.buildLine(
+            accTest1Update.Id,
+            otherLineRecordTypeID,
+            '00009',
+            new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Name => 'Test Line ',
+                DMT_Line__c.Status__c => 'Draft',
+                DMT_Line__c.DMT_Origin__c => 'AMIWEB',
+                DMT_Line__c.g_line_status_type__c => 'AP',
+                DMT_Line__c.Booking_Geography__c => 'ES',
+                DMT_Line__c.DMT_Client_Entific__c => 'ES',
+                DMT_Line__c.Client_Code__c => 'G00000000000201'
+            }
+        );
 
         insert testLine;
         DMT_Line__c testLineUpdate = [SELECT Id FROM DMT_Line__c WHERE Id =: testLine.Id LIMIT 1 FOR UPDATE];
 
         Pricebook2 pb2 = generatePricebook2();
 
-        Product2 p1 = new Product2(
-            Name='DEPO',
-            ProductCode='1611170000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='00',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p1 = buildDmtLineProduct('DEPO', '1611170000', '00');
 
-        Product2 p2 = new Product2(
-            Name='Derivatives',
-            ProductCode='1600000000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='01',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p2 = buildDmtLineProduct('Derivatives', '1600000000', '01');
 
-        Product2 p3 = new Product2(
-            Name='Equity',
-            ProductCode='1610000000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='02',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p3 = buildDmtLineProduct('Equity', '1610000000', '02');
 
         List<Product2> listProducts = new List<Product2>{p1,p2,p3};
 
         insert listProducts;
 
-        DMT_Risk_Line_Term__c rsklt1 = new DMT_Risk_Line_Term__c();
-        rsklt1.DMT_Line__c =testLineUpdate.Id;
-        rsklt1.Name='Line test ENERGIA FINANCIACION	rsk line term 1';
-        rsklt1.DMT_Init_Term__c='0';
-        rsklt1.DMT_End_Term__c ='3';
-        rsklt1.DMT_Amount__c   = 1000000;
-        rsklt1.CurrencyIsoCode = 'EUR';
-        rsklt1.DMT_Product__c = p1.Id;
-        rsklt1.DMT_LastLevelId__c = '20';
+        DMT_Risk_Line_Term__c rsklt1 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            testLineUpdate.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '3',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 1000000,
+                DMT_Risk_Line_Term__c.DMT_Product__c => p1.Id,
+                DMT_Risk_Line_Term__c.DMT_LastLevelId__c => '20'
+            }
+        );
 
-        DMT_Risk_Line_Term__c rsklt2 = new DMT_Risk_Line_Term__c();
-        rsklt2.DMT_Line__c =testLineUpdate.Id;
-        rsklt2.Name='Line test ENERGIA FINANCIACION	rsk line term 2';
-        rsklt2.DMT_Init_Term__c='0';
-        rsklt2.DMT_End_Term__c ='5';
-        rsklt2.DMT_Amount__c   = 100000;
-        rsklt2.CurrencyIsoCode ='EUR';
-        rsklt2.DMT_Product__c =  p2.Id;
-        rsklt2.DMT_LastLevelId__c = '30';
+        DMT_Risk_Line_Term__c rsklt2 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            testLineUpdate.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 2',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '5',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 100000,
+                DMT_Risk_Line_Term__c.DMT_Product__c => p2.Id,
+                DMT_Risk_Line_Term__c.DMT_LastLevelId__c => '30'
+            }
+        );
 
-        DMT_Risk_Line_Term__c rsklt3 = new DMT_Risk_Line_Term__c();
-        rsklt3.DMT_Line__c =testLineUpdate.Id;
-        rsklt3.Name='Line test ENERGIA FINANCIACION	rsk line term 3';
-        rsklt3.DMT_Init_Term__c='0';
-        rsklt3.DMT_End_Term__c ='7';
-        rsklt3.DMT_Amount__c   = 1000000;
-        rsklt3.CurrencyIsoCode ='EUR';
-        rsklt3.DMT_Product__c = p3.Id;
-        rsklt3.DMT_LastLevelId__c = '40';
+        DMT_Risk_Line_Term__c rsklt3 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            testLineUpdate.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 3',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '7',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 1000000,
+                DMT_Risk_Line_Term__c.DMT_Product__c => p3.Id,
+                DMT_Risk_Line_Term__c.DMT_LastLevelId__c => '40'
+            }
+        );
 
         List<DMT_Risk_Line_Term__c> listRsklt = new List<DMT_Risk_Line_Term__c>{rsklt1,rsklt2,rsklt3};
 
@@ -785,157 +751,122 @@ public with sharing class  DMT_Test_DataFactory {
     }
     public static void generateTestRiskApprovalLines(Id accountId){
 
-        DMT_Line__c testLine = new DMT_Line__c(
-                Name = 'Test Line ',
-                Status__c = 'Draft',
-                Client__c = accountId,
-                Line_Id__c ='00089' ,
-                Allowed__c = true ,
-                DMT_Origin__c = 'Salesforce',
-                g_line_status_type__c = 'AP',
-                Booking_Geography__c = 'ES' ,
-                DMT_Client_Entific__c = 'ES',
-                RecordTypeId = riskApprovalLineRecordTypeID,
-                Client_Code__c = 'G00000000000201'
-            );
+        DMT_Line__c testLine = DMT_Test_DataFactoryBuild.buildLine(
+            accountId,
+            riskApprovalLineRecordTypeID,
+            '00089',
+            new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Name => 'Test Line ',
+                DMT_Line__c.Status__c => 'Draft',
+                DMT_Line__c.Allowed__c => true,
+                DMT_Line__c.DMT_Origin__c => 'Salesforce',
+                DMT_Line__c.g_line_status_type__c => 'AP',
+                DMT_Line__c.Booking_Geography__c => 'ES',
+                DMT_Line__c.DMT_Client_Entific__c => 'ES',
+                DMT_Line__c.Client_Code__c => 'G00000000000201'
+            }
+        );
 
         insert testLine;
 
         Pricebook2 pb2 = generatePricebook2();
 
-        Product2 p1 = new Product2(
-            Name='DEPO',
-            ProductCode='1611170000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='00',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p1 = buildDmtLineProduct('DEPO', '1611170000', '00');
         List<Product2> listProducts = new List<Product2>{p1};
 
         insert listProducts;
 
-        DMT_Risk_Line_Term__c rsklt1 = new DMT_Risk_Line_Term__c();
-        rsklt1.DMT_Line__c =testLine.Id;
-        rsklt1.Name='Line test ENERGIA FINANCIACION	rsk line term 1';
-        rsklt1.DMT_Init_Term__c='0';
-        rsklt1.DMT_End_Term__c ='3';
-        rsklt1.DMT_Amount__c   = 1000000;
-        rsklt1.CurrencyIsoCode = 'EUR';
-        rsklt1.DMT_Product__c = p1.Id;
-        rsklt1.DMT_LastLevelId__c = '20';
+        DMT_Risk_Line_Term__c rsklt1 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            testLine.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '3',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 1000000,
+                DMT_Risk_Line_Term__c.DMT_Product__c => p1.Id,
+                DMT_Risk_Line_Term__c.DMT_LastLevelId__c => '20'
+            }
+        );
 
         insert rsklt1;
     }
 
     public static void generateTestRiskApprovalLines(){
 
-        Account accTest1 = new Account();
-        accTest1.account_client__c='N';
-        accTest1.Advising__c=false;
-        accTest1.BBVA_Entity__c='BBVA SA';
-        accTest1.BillingCity='MADRID';
-        accTest1.BillingCountry='ES';
-        accTest1.BillingPostalCode='28033';
-        accTest1.BillingState='MADRID';
-        accTest1.BillingStreet='AV GRAN Test DE HORTALEZA 0321';
-        accTest1.CurrencyIsoCode='EUR';
-        accTest1.cust_first_income_country_amount__c=4508815;
-        accTest1.cust_first_income_country_name__c='ESPAÑA (2222815.0 EUR)';
-        accTest1.DES_Activity__c='NDA';
-        accTest1.Name='Test company 1';
-        accTest1.DES_Structure_Type__c = 'Subsidiary';
-
+        Account accTest1 = DMT_Test_DataFactoryBuild.buildAccount(
+            new Map<Schema.SObjectField, Object>{
+                Account.DES_Structure_Type__c => 'Subsidiary'
+            }
+        );
         insert accTest1;
         Account accTest1Update = [SELECT Id FROM Account WHERE Id =: accTest1.Id LIMIT 1 FOR UPDATE];
 
-        DMT_Line__c testLine = new DMT_Line__c(
-                Name = 'Test Line ',
-                Status__c = 'Draft',
-                Client__c = accTest1Update.Id,
-                Line_Id__c ='00089' ,
-                Allowed__c = true ,
-                DMT_Origin__c = 'Salesforce',
-                g_line_status_type__c = 'AP',
-                Booking_Geography__c = 'ES' ,
-                DMT_Client_Entific__c = 'ES',
-                RecordTypeId = riskApprovalLineRecordTypeID,
-                Client_Code__c = 'G00000000000201'
-            );
+        DMT_Line__c testLine = DMT_Test_DataFactoryBuild.buildLine(
+            accTest1Update.Id,
+            riskApprovalLineRecordTypeID,
+            '00089',
+            new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Name => 'Test Line ',
+                DMT_Line__c.Status__c => 'Draft',
+                DMT_Line__c.Allowed__c => true,
+                DMT_Line__c.DMT_Origin__c => 'Salesforce',
+                DMT_Line__c.g_line_status_type__c => 'AP',
+                DMT_Line__c.Booking_Geography__c => 'ES',
+                DMT_Line__c.DMT_Client_Entific__c => 'ES',
+                DMT_Line__c.Client_Code__c => 'G00000000000201'
+            }
+        );
 
         insert testLine;
         DMT_Line__c testLineUpdate = [SELECT Id FROM DMT_Line__c WHERE Id =: testLine.Id LIMIT 1 FOR UPDATE];
 
         Pricebook2 pb2 = generatePricebook2();
 
-        Product2 p1 = new Product2(
-            Name='DEPO',
-            ProductCode='1611170000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='00',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p1 = buildDmtLineProduct('DEPO', '1611170000', '00');
 
-        Product2 p2 = new Product2(
-            Name='Derivatives',
-            ProductCode='1600000000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='01',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p2 = buildDmtLineProduct('Derivatives', '1600000000', '01');
 
-        Product2 p3 = new Product2(
-            Name='Equity',
-            ProductCode='1610000000',
-            DMT_Product_family__c='01',
-            DMT_Product_Subfamily__c='02',
-            DMT_Product_category__c='02',
-            DMT_Product_Subcategory__c='01',
-            DMT_Global_Product_Id__c='02',
-            CurrencyIsoCode='EUR',
-            family='DMT Lines');
+        Product2 p3 = buildDmtLineProduct('Equity', '1610000000', '02');
 
         List<Product2> listProducts = new List<Product2>{p1,p2,p3};
 
         insert listProducts;
 
-        DMT_Risk_Line_Term__c rsklt1 = new DMT_Risk_Line_Term__c();
-        rsklt1.DMT_Line__c =testLineUpdate.Id;
-        rsklt1.Name='Line test ENERGIA FINANCIACION	rsk line term 1';
-        rsklt1.DMT_Init_Term__c='0';
-        rsklt1.DMT_End_Term__c ='3';
-        rsklt1.DMT_Amount__c   = 1000000;
-        rsklt1.CurrencyIsoCode = 'EUR';
-        rsklt1.DMT_Product__c = p1.Id;
-        rsklt1.DMT_LastLevelId__c = '20';
+        DMT_Risk_Line_Term__c rsklt1 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            testLineUpdate.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '3',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 1000000,
+                DMT_Risk_Line_Term__c.DMT_Product__c => p1.Id,
+                DMT_Risk_Line_Term__c.DMT_LastLevelId__c => '20'
+            }
+        );
 
-        DMT_Risk_Line_Term__c rsklt2 = new DMT_Risk_Line_Term__c();
-        rsklt2.DMT_Line__c =testLineUpdate.Id;
-        rsklt2.Name='Line test ENERGIA FINANCIACION	rsk line term 2';
-        rsklt2.DMT_Init_Term__c='0';
-        rsklt2.DMT_End_Term__c ='5';
-        rsklt2.DMT_Amount__c   = 100000;
-        rsklt2.CurrencyIsoCode ='EUR';
-        rsklt2.DMT_Product__c =  p2.Id;
-        rsklt2.DMT_LastLevelId__c = '30';
+        DMT_Risk_Line_Term__c rsklt2 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            testLineUpdate.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 2',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '5',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 100000,
+                DMT_Risk_Line_Term__c.DMT_Product__c => p2.Id,
+                DMT_Risk_Line_Term__c.DMT_LastLevelId__c => '30'
+            }
+        );
 
-        DMT_Risk_Line_Term__c rsklt3 = new DMT_Risk_Line_Term__c();
-        rsklt3.DMT_Line__c =testLineUpdate.Id;
-        rsklt3.Name='Line test ENERGIA FINANCIACION	rsk line term 3';
-        rsklt3.DMT_Init_Term__c='0';
-        rsklt3.DMT_End_Term__c ='7';
-        rsklt3.DMT_Amount__c   = 1000000;
-        rsklt3.CurrencyIsoCode ='EUR';
-        rsklt3.DMT_Product__c = p3.Id;
-        rsklt3.DMT_LastLevelId__c = '40';
+        DMT_Risk_Line_Term__c rsklt3 = DMT_Test_DataFactoryBuild.buildRiskLineTerm(
+            testLineUpdate.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 3',
+                DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '7',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 1000000,
+                DMT_Risk_Line_Term__c.DMT_Product__c => p3.Id,
+                DMT_Risk_Line_Term__c.DMT_LastLevelId__c => '40'
+            }
+        );
 
         List<DMT_Risk_Line_Term__c> listRsklt = new List<DMT_Risk_Line_Term__c>{rsklt1,rsklt2,rsklt3};
 
@@ -944,19 +875,20 @@ public with sharing class  DMT_Test_DataFactory {
 
 
     public static DMT_Approver__c generateApprover() {
-        DMT_Approver__c approver = new DMT_Approver__c();
-        approver.Name = 'TestApproverDataFactory';
-        approver.DMT_External_Id__c = 'TestExternalIdDATAFACTORY' + Integer.valueof((Math.random() * 100000000));
-        approver.DMT_Approver_Code__c = '12222233134';
+        DMT_Approver__c approver = DMT_Test_DataFactoryBuild.buildApprover(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Approver__c.Name => 'TestApproverDataFactory',
+                DMT_Approver__c.DMT_External_Id__c => 'TestExternalIdDATAFACTORY' + Integer.valueof((Math.random() * 100000000)),
+                DMT_Approver__c.DMT_Approver_Code__c => '12222233134'
+            }
+        );
         insert approver;
 
         DMT_Approver__c approverUpdate = [SELECT Id FROM DMT_Approver__c WHERE Id =: approver.Id LIMIT 1 FOR UPDATE];
         return approverUpdate;
     }
     public static DMT_Approver_Type__c generateApproverTypeRisk() {
-        DMT_Approver_Type__c  approverType = new DMT_Approver_Type__c ();
-        approverType.Name = DMT_Constants.APPROVER_TYPE_RISK;
-        approverType.DMT_External_Id__c = '1';
+        DMT_Approver_Type__c approverType = DMT_Test_DataFactoryBuild.buildApproverType(DMT_Constants.APPROVER_TYPE_RISK, '1');
         insert approverType;
 
         DMT_Approver_Type__c approverTypeUpdate = [SELECT Id FROM DMT_Approver_Type__c WHERE Id =: approverType.Id LIMIT 1 FOR UPDATE];
@@ -964,9 +896,7 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static DMT_Approver_Type__c generateApproverTypeBusiness() {
-        DMT_Approver_Type__c  approverType = new DMT_Approver_Type__c ();
-        approverType.Name = DMT_Constants.APPROVER_TYPE_BUSINESS;
-        approverType.DMT_External_Id__c = '32';
+        DMT_Approver_Type__c approverType = DMT_Test_DataFactoryBuild.buildApproverType(DMT_Constants.APPROVER_TYPE_BUSINESS, '32');
         insert approverType;
         System.debug('**** Approver type bsn In Factory: ' + approverType);
         DMT_Approver_Type__c approverTypeUpdate = [SELECT Id FROM DMT_Approver_Type__c WHERE Id =: approverType.Id LIMIT 1 FOR UPDATE];
@@ -974,11 +904,14 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static DMT_Approver__c generateApproverBussines() {
-        DMT_Approver__c approver = new DMT_Approver__c();
-        approver.Name = 'TestApproverDataFactoryBusiness';
-        approver.DMT_External_Id__c = 'TestExternalIdDATAFACTORY32';
-        approver.DMT_Approver_Code__c = '12222233135';
-        approver.DMT_ApproverType__c = generateApproverTypeBusiness().Id;
+        DMT_Approver__c approver = DMT_Test_DataFactoryBuild.buildApprover(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Approver__c.Name => 'TestApproverDataFactoryBusiness',
+                DMT_Approver__c.DMT_External_Id__c => 'TestExternalIdDATAFACTORY32',
+                DMT_Approver__c.DMT_Approver_Code__c => '12222233135',
+                DMT_Approver__c.DMT_ApproverType__c => generateApproverTypeBusiness().Id
+            }
+        );
         System.debug('**** Approver In Factory: ' + approver);
         insert approver;
 
@@ -987,11 +920,14 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static DMT_Approver__c generateApproverRisk() {
-        DMT_Approver__c approver = new DMT_Approver__c();
-        approver.Name = 'TestApproverDataFactoryRisk';
-        approver.DMT_External_Id__c = 'TestExternalIdDATAFACTORY1';
-        approver.DMT_Approver_Code__c = '12222233136';
-        approver.DMT_ApproverType__c = generateApproverTypeRisk().Id;
+        DMT_Approver__c approver = DMT_Test_DataFactoryBuild.buildApprover(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Approver__c.Name => 'TestApproverDataFactoryRisk',
+                DMT_Approver__c.DMT_External_Id__c => 'TestExternalIdDATAFACTORY1',
+                DMT_Approver__c.DMT_Approver_Code__c => '12222233136',
+                DMT_Approver__c.DMT_ApproverType__c => generateApproverTypeRisk().Id
+            }
+        );
         insert approver;
 
         DMT_Approver__c approverUpdate = [SELECT Id FROM DMT_Approver__c WHERE Id =: approver.Id LIMIT 1 FOR UPDATE];
@@ -1000,10 +936,7 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static DMT_Approver_Member__c generateApproverMember() {
         DMT_Approver__c approver = generateApprover();
-        DMT_Approver_Member__c member = new DMT_Approver_Member__c();
-        member.DMT_Access_Level__c = 'Edit';
-        member.DMT_Approver__c = approver.Id;
-        member.DMT_User__c = UserInfo.getUserId();
+        DMT_Approver_Member__c member = DMT_Test_DataFactoryBuild.buildApproverMember(approver.Id, UserInfo.getUserId());
         insert member;
 
         DMT_Approver_Member__c memberUpdate = [SELECT Id FROM DMT_Approver_Member__c WHERE Id =: member.Id LIMIT 1 FOR UPDATE];
@@ -1012,11 +945,13 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static DMT_Approver_Member__c generateApproverMemberForUserWithUOS(Id userId, String uosCode) {
         DMT_Approver__c approver = generateApprover();
-        DMT_Approver_Member__c member = new DMT_Approver_Member__c();
-        member.DMT_Access_Level__c = 'Edit';
-        member.DMT_Approver__c = approver.Id;
-        member.DMT_User__c = userId;
-        member.DMT_ApproverByUOs__c = uosCode;
+        DMT_Approver_Member__c member = DMT_Test_DataFactoryBuild.buildApproverMember(
+            approver.Id,
+            userId,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Approver_Member__c.DMT_ApproverByUOs__c => uosCode
+            }
+        );
         insert member;
 
         DMT_Approver_Member__c memberUpdate = [SELECT Id FROM DMT_Approver_Member__c WHERE Id =: member.Id LIMIT 1 FOR UPDATE];
@@ -1024,20 +959,22 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static Case generateCase(Id lineId, Id opportunityId, Id ownerId) {
-        Case c = new Case();
+        Map<Schema.SObjectField, Object> caseOverrides = new Map<Schema.SObjectField, Object>{
+            Case.DMT_Feature_Id__c => 'Test',
+            Case.DMT_Related_feature_name__c => 'Test1',
+            Case.Amount__c => 45
+        };
         if (lineId != null) {
-            c.DMT_Line__c = lineId;
+            caseOverrides.put(Case.DMT_Line__c, lineId);
         } else {
-            c.opportunity_id__c = opportunityId;
+            caseOverrides.put(Case.opportunity_id__c, opportunityId);
         }
-        c.DMT_Feature_Id__c = 'Test';
-        c.DMT_Related_feature_name__c = 'Test1';
-        c.Amount__c = 45;
-        c.CurrencyIsoCode = 'EUR';
-        c.Subject = 'Test Subject';
-        c.DMT_ConditionsCloseCase__c = '{"dateMaximum": "2025-11-13","maximumLinePeriod": "365","maximumProductMaturity": "45000","products": ["Derivatives","Equities","Depos"],"clients": ["G00000000000200"], "derivativesAmount":"3", "dvpAmount":"3", "fdAmount":"0"}';
-        c.RecordTypeId = approvalCaseRecordTypeID;
-        c.OwnerId = ownerId;
+
+        Case c = DMT_Test_DataFactoryBuild.buildCase(
+            ownerId,
+            approvalCaseRecordTypeID,
+            caseOverrides
+        );
         insert c;
 
         //Case caseUpdate = [SELECT Id FROM Case WHERE Id =: c.Id LIMIT 1 FOR UPDATE];
@@ -1045,17 +982,17 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static Case generateCaseOppLine(Id lineId, Id opportunityId, Id ownerId) {
-        Case c = new Case();
-        c.DMT_Line__c = lineId;
-        c.opportunity_id__c = opportunityId;
-        c.DMT_Feature_Id__c = 'Test';
-        c.DMT_Related_feature_name__c = 'Test1';
-        c.Amount__c = 45;
-        c.CurrencyIsoCode = 'EUR';
-        c.Subject = 'Test Subject';
-        c.DMT_ConditionsCloseCase__c = '{"dateMaximum": "2025-11-13","maximumLinePeriod": "365","maximumProductMaturity": "45000","products": ["Derivatives","Equities","Depos"],"clients": ["G00000000000200"], "derivativesAmount":"3", "dvpAmount":"3", "fdAmount":"0"}';
-        c.RecordTypeId = approvalCaseRecordTypeID;
-        c.OwnerId = ownerId;
+        Case c = DMT_Test_DataFactoryBuild.buildCase(
+            ownerId,
+            approvalCaseRecordTypeID,
+            new Map<Schema.SObjectField, Object>{
+                Case.DMT_Line__c => lineId,
+                Case.opportunity_id__c => opportunityId,
+                Case.DMT_Feature_Id__c => 'Test',
+                Case.DMT_Related_feature_name__c => 'Test1',
+                Case.Amount__c => 45
+            }
+        );
         insert c;
 
         //Case caseUpdate = [SELECT Id FROM Case WHERE Id =: c.Id LIMIT 1 FOR UPDATE];
@@ -1065,32 +1002,36 @@ public with sharing class  DMT_Test_DataFactory {
     public static void generatePassportCase(Id lineId, Id opportunityId, Id ownerId, Integer num) {
         List<DMT_Task_Type__c> taskTypes = generateTaskTypes();
         for (Integer i = 0; i < num; i++) {
-        Case c = new Case();
+        Map<Schema.SObjectField, Object> caseOverrides = new Map<Schema.SObjectField, Object>{
+            Case.DMT_Feature_Id__c => String.valueOf(num),
+            Case.DMT_Related_feature_name__c => 'Test' + String.valueOf(num),
+            Case.Amount__c => 100000,
+            Case.DMT_Passport_Sanction__c => 'passport',
+            Case.Status => DMT_Constants.FINISHED
+        };
         if (lineId != null) {
-            c.DMT_Line__c = lineId;
+            caseOverrides.put(Case.DMT_Line__c, lineId);
         } else {
-            c.opportunity_id__c = opportunityId;
+            caseOverrides.put(Case.opportunity_id__c, opportunityId);
         }
-        c.DMT_Feature_Id__c = String.valueOf(num);
-        c.DMT_Related_feature_name__c = 'Test' + String.valueOf(num);
-        c.Amount__c = 100000;
-        c.CurrencyIsoCode = 'EUR';
-        c.Subject = 'Test Subject';
-        c.DMT_ConditionsCloseCase__c = '{"dateMaximum": "2025-11-13","maximumLinePeriod": "365","maximumProductMaturity": "45000","products": ["Derivatives","Equities","Depos"],"clients": ["G00000000000200"], "derivativesAmount":"3", "dvpAmount":"3", "fdAmount":"0"}';
-        c.RecordTypeId = approvalCaseRecordTypeID;
-        c.OwnerId = ownerId;
-        c.DMT_Passport_Sanction__c = 'passport';
-        c.Status = DMT_Constants.FINISHED;
+
+        Case c = DMT_Test_DataFactoryBuild.buildCase(
+            ownerId,
+            approvalCaseRecordTypeID,
+            caseOverrides
+        );
         insert c;
-        Task t = new Task();
-            t.OwnerId = ownerId;
-            t.RecordTypeId = taskStepRecordTypeID;
-            t.Status = DMT_Constants.FINISHED;
-            t.Description = 'Test Description';
-            t.WhatId = c.Id;
-            t.Subject = 'Task' + i;
-            t.DMT_Task_Type__c = taskTypes[i].Id;
-            t.DMT_Step_Result__c = 'Yes';
+        Task t = DMT_Test_DataFactoryBuild.buildTask(
+            ownerId,
+            taskStepRecordTypeID,
+            c.Id,
+            new Map<Schema.SObjectField, Object>{
+                Task.Status => DMT_Constants.FINISHED,
+                Task.Subject => 'Task' + i,
+                Task.DMT_Task_Type__c => taskTypes[i].Id,
+                Task.DMT_Step_Result__c => 'Yes'
+            }
+        );
         }
 
         //Case caseUpdate = [SELECT Id FROM Case WHERE Id =: c.Id LIMIT 1 FOR UPDATE];
@@ -1100,32 +1041,36 @@ public with sharing class  DMT_Test_DataFactory {
     public static void generateApprovalCase(Id lineId, Id opportunityId, Id ownerId, Integer num) {
         List<DMT_Task_Type__c> taskTypes = generateTaskTypes();
         for (Integer i = 0; i < num; i++) {
-        Case c = new Case();
+        Map<Schema.SObjectField, Object> caseOverrides = new Map<Schema.SObjectField, Object>{
+            Case.DMT_Feature_Id__c => String.valueOf(num),
+            Case.DMT_Related_feature_name__c => 'Test' + String.valueOf(num),
+            Case.Amount__c => 100000,
+            Case.DMT_Passport_Sanction__c => 'approval',
+            Case.Status => DMT_Constants.FINISHED
+        };
         if (lineId != null) {
-            c.DMT_Line__c = lineId;
+            caseOverrides.put(Case.DMT_Line__c, lineId);
         } else {
-            c.opportunity_id__c = opportunityId;
+            caseOverrides.put(Case.opportunity_id__c, opportunityId);
         }
-        c.DMT_Feature_Id__c = String.valueOf(num);
-        c.DMT_Related_feature_name__c = 'Test' + String.valueOf(num);
-        c.Amount__c = 100000;
-        c.CurrencyIsoCode = 'EUR';
-        c.Subject = 'Test Subject';
-        c.DMT_ConditionsCloseCase__c = '{"dateMaximum": "2025-11-13","maximumLinePeriod": "365","maximumProductMaturity": "45000","products": ["Derivatives","Equities","Depos"],"clients": ["G00000000000200"], "derivativesAmount":"3", "dvpAmount":"3", "fdAmount":"0"}';
-        c.RecordTypeId = approvalCaseRecordTypeID;
-        c.OwnerId = ownerId;
-        c.DMT_Passport_Sanction__c = 'approval';
-        c.Status = DMT_Constants.FINISHED;
+
+        Case c = DMT_Test_DataFactoryBuild.buildCase(
+            ownerId,
+            approvalCaseRecordTypeID,
+            caseOverrides
+        );
         insert c;
-        Task t = new Task();
-            t.OwnerId = ownerId;
-            t.RecordTypeId = taskStepRecordTypeID;
-            t.Status = DMT_Constants.FINISHED;
-            t.Description = 'Test Description';
-            t.WhatId = c.Id;
-            t.Subject = 'Task' + i;
-            t.DMT_Task_Type__c = taskTypes[i].Id;
-            t.DMT_Step_Result__c = 'Yes';
+        Task t = DMT_Test_DataFactoryBuild.buildTask(
+            ownerId,
+            taskStepRecordTypeID,
+            c.Id,
+            new Map<Schema.SObjectField, Object>{
+                Task.Status => DMT_Constants.FINISHED,
+                Task.Subject => 'Task' + i,
+                Task.DMT_Task_Type__c => taskTypes[i].Id,
+                Task.DMT_Step_Result__c => 'Yes'
+            }
+        );
         }
 
         //Case caseUpdate = [SELECT Id FROM Case WHERE Id =: c.Id LIMIT 1 FOR UPDATE];
@@ -1136,13 +1081,15 @@ public with sharing class  DMT_Test_DataFactory {
     public static List<Task> generateTasksWithOwner(Id ownerId, Id recordTypeId, Id whatId, Integer numTasks) {
         List<Task> tasks = new List<Task>();
         for (Integer i = 0; i < numTasks; i++) {
-            Task t = new Task();
-            t.OwnerId = ownerId;
-            t.RecordTypeId = recordTypeId;
-            t.Status = 'In Progress';
-            t.Description = 'Test Description';
-            t.WhatId = whatId;
-            t.Subject = 'Task' + i;
+            Task t = DMT_Test_DataFactoryBuild.buildTask(
+                ownerId,
+                recordTypeId,
+                whatId,
+                new Map<Schema.SObjectField, Object>{
+                    Task.Status => 'In Progress',
+                    Task.Subject => 'Task' + i
+                }
+            );
             tasks.add(t);
         }
 
@@ -1154,33 +1101,36 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static List<DMT_Task_Type__c> generateTaskTypes() {
 
-        DMT_Task_Type__c tskType1 = new DMT_Task_Type__c(
-            Name='Global Risk',
-            CurrencyIsoCode='EUR',
-            DMT_External_Id__c='1',
-            DMT_Closing_Capacity__c=false,
-            DMT_Yes_Flag__c='YES_YES_Global Risk',
-            DMT_No_Flag__c='NO_NO_Global Risk',
-            DMT_NA_Flag__c='NA_NA_Global Risk'
+        DMT_Task_Type__c tskType1 = DMT_Test_DataFactoryBuild.buildTaskType(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Task_Type__c.Name => 'Global Risk',
+                DMT_Task_Type__c.DMT_External_Id__c => '1',
+                DMT_Task_Type__c.DMT_Closing_Capacity__c => false,
+                DMT_Task_Type__c.DMT_Yes_Flag__c => 'YES_YES_Global Risk',
+                DMT_Task_Type__c.DMT_No_Flag__c => 'NO_NO_Global Risk',
+                DMT_Task_Type__c.DMT_NA_Flag__c => 'NA_NA_Global Risk'
+            }
         );
 
-        DMT_Task_Type__c tskType2 = new DMT_Task_Type__c(
-            Name='Local Risk',
-            CurrencyIsoCode='EUR',
-            DMT_External_Id__c='6',
-            DMT_Closing_Capacity__c=true,
-            DMT_Yes_Flag__c='YES_YES_Local Risk',
-            DMT_No_Flag__c='NO_NO_Local Risk',
-            DMT_NA_Flag__c='NA_NA_Local Risk'
+        DMT_Task_Type__c tskType2 = DMT_Test_DataFactoryBuild.buildTaskType(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Task_Type__c.Name => 'Local Risk',
+                DMT_Task_Type__c.DMT_External_Id__c => '6',
+                DMT_Task_Type__c.DMT_Closing_Capacity__c => true,
+                DMT_Task_Type__c.DMT_Yes_Flag__c => 'YES_YES_Local Risk',
+                DMT_Task_Type__c.DMT_No_Flag__c => 'NO_NO_Local Risk',
+                DMT_Task_Type__c.DMT_NA_Flag__c => 'NA_NA_Local Risk'
+            }
         );
-        DMT_Task_Type__c tskType3 = new DMT_Task_Type__c(
-            Name='Risk review 1',
-            CurrencyIsoCode='EUR',
-            DMT_External_Id__c='3',
-            DMT_Closing_Capacity__c=false,
-            DMT_Yes_Flag__c='YES_YES_Risk',
-            DMT_No_Flag__c='NO_NO_Risk',
-            DMT_NA_Flag__c='NA_NA_Risk'
+        DMT_Task_Type__c tskType3 = DMT_Test_DataFactoryBuild.buildTaskType(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Task_Type__c.Name => 'Risk review 1',
+                DMT_Task_Type__c.DMT_External_Id__c => '3',
+                DMT_Task_Type__c.DMT_Closing_Capacity__c => false,
+                DMT_Task_Type__c.DMT_Yes_Flag__c => 'YES_YES_Risk',
+                DMT_Task_Type__c.DMT_No_Flag__c => 'NO_NO_Risk',
+                DMT_Task_Type__c.DMT_NA_Flag__c => 'NA_NA_Risk'
+            }
         );
 
         List<DMT_Task_Type__c> taskTypes = new List<DMT_Task_Type__c>{tskType1,tskType2,tskType3};
@@ -1193,46 +1143,47 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static Id generateView() {
 
-        DMT_ApproversView__c approverView = new DMT_ApproversView__c(
-            Name='PruebaLinea',
-            DMT_DeveloperName__c='DMT_PruebaLinea'
-            );
+        DMT_ApproversView__c approverView = DMT_Test_DataFactoryBuild.buildApproversView();
         insert approverView;
 
         DMT_ApproversView__c approverViewUpdate = [SELECT Id FROM DMT_ApproversView__c WHERE Id =: approverView.Id LIMIT 1 FOR UPDATE];
 
         // If more items are added, remember to update the Assert on DMT_SnapshotEvaluationVersionsTest.testGetFilteredComponentItemOptionByVersionView_Positive
-        DMT_Items__c item = new DMT_Items__c();
-        item.Name = 'Basic client';
-        item.DMT_Component_Item__c = 'Treasury Line';
-        item.DMT_order_display__c = 1;
-        item.DMT_Text__c = 'Esto es un texto normal';
-        item.Type_Item__c = 'Component';
-        item.DMT_View__c = approverViewUpdate.Id;
+        DMT_Items__c item = DMT_Test_DataFactoryBuild.buildItem(
+            approverViewUpdate.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Items__c.Name => 'Basic client',
+                DMT_Items__c.DMT_Component_Item__c => 'Treasury Line',
+                DMT_Items__c.DMT_order_display__c => 1
+            }
+        );
 
-        DMT_Items__c item2 = new DMT_Items__c();
-        item2.Name = 'Basic client2';
-        item2.DMT_Component_Item__c = 'Participants';
-        item2.DMT_order_display__c = 2;
-        item2.DMT_Text__c = 'Esto es un texto normal';
-        item2.Type_Item__c = 'Component';
-        item2.DMT_View__c = approverViewUpdate.Id;
+        DMT_Items__c item2 = DMT_Test_DataFactoryBuild.buildItem(
+            approverViewUpdate.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Items__c.Name => 'Basic client2',
+                DMT_Items__c.DMT_Component_Item__c => 'Participants',
+                DMT_Items__c.DMT_order_display__c => 2
+            }
+        );
 
-        DMT_Items__c item3 = new DMT_Items__c();
-        item3.Name = 'Basic client3';
-        item3.DMT_Component_Item__c = 'Client';
-        item3.DMT_order_display__c = 3;
-        item3.DMT_Text__c = 'Esto es un texto normal';
-        item3.Type_Item__c = 'Component';
-        item3.DMT_View__c = approverViewUpdate.Id;
+        DMT_Items__c item3 = DMT_Test_DataFactoryBuild.buildItem(
+            approverViewUpdate.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Items__c.Name => 'Basic client3',
+                DMT_Items__c.DMT_Component_Item__c => 'Client',
+                DMT_Items__c.DMT_order_display__c => 3
+            }
+        );
 
-        DMT_Items__c item4 = new DMT_Items__c();
-        item4.Name = 'Basic client4';
-        item4.DMT_Component_Item__c = 'Products';
-        item4.DMT_order_display__c = 4;
-        item4.DMT_Text__c = 'Esto es un texto normal';
-        item4.Type_Item__c = 'Component';
-        item4.DMT_View__c = approverViewUpdate.Id;
+        DMT_Items__c item4 = DMT_Test_DataFactoryBuild.buildItem(
+            approverViewUpdate.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Items__c.Name => 'Basic client4',
+                DMT_Items__c.DMT_Component_Item__c => 'Products',
+                DMT_Items__c.DMT_order_display__c => 4
+            }
+        );
 
         insert new List<DMT_Items__c>{item, item2, item3, item4};
 
@@ -1241,11 +1192,14 @@ public with sharing class  DMT_Test_DataFactory {
 
 
     public static DMT_Approver__c generateApproverWithView(Id approverViewId) {
-        DMT_Approver__c approver = new DMT_Approver__c();
-        approver.Name = 'TestApproverDataFactory';
-        approver.DMT_External_Id__c = 'TestExternalIdDATAFACTORY' + Integer.valueof((Math.random() * 100000000));
-        approver.DMT_Approver_Code__c = '12222233134';
-        approver.Approvers_View_Treasury__c=approverViewId;
+        DMT_Approver__c approver = DMT_Test_DataFactoryBuild.buildApprover(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Approver__c.Name => 'TestApproverDataFactory',
+                DMT_Approver__c.DMT_External_Id__c => 'TestExternalIdDATAFACTORY' + Integer.valueof((Math.random() * 100000000)),
+                DMT_Approver__c.DMT_Approver_Code__c => '12222233134',
+                DMT_Approver__c.Approvers_View_Treasury__c => approverViewId
+            }
+        );
         //approver.DMT_Group__c='TestApproverDataFactory';
 
         insert approver;
@@ -1254,14 +1208,54 @@ public with sharing class  DMT_Test_DataFactory {
         return approverUpdate;
     }
 
+    public static Custom_Association_Opportunity__c generateCustomAssociationOpportunity(
+        Id opportunityId,
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        Custom_Association_Opportunity__c association =
+            DMT_Test_DataFactoryBuild.buildCustomAssociationOpportunity(
+                opportunityId,
+                overrides
+            );
+        insert association;
+        return association;
+    }
+
+    public static DMT_Custom_Association_ClientOpportunity__c generateCustomAssociationClientOpportunity(
+        Id customAssociationOpportunityId,
+        Id clientId,
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        DMT_Custom_Association_ClientOpportunity__c association =
+            DMT_Test_DataFactoryBuild.buildCustomAssociationClientOpportunity(
+                customAssociationOpportunityId,
+                clientId,
+                overrides
+            );
+        insert association;
+        return association;
+    }
+
+    public static Local_Client__c generateLocalClient(
+        Id accountId,
+        String alphaCode
+    ) {
+        Local_Client__c localClient =
+            DMT_Test_DataFactoryBuild.buildLocalClient(
+                accountId,
+                alphaCode
+            );
+        insert localClient;
+        return localClient;
+    }
+
     public static Custom_Association__c generateCustomAssociation(Id lineId, Id accountId) {
 
-        Custom_Association__c ca = new Custom_Association__c();
+        Custom_Association__c ca = DMT_Test_DataFactoryBuild.buildCustomAssociation(
+            lineId,
+            accountId
+        );
         //ca.Name = 'TestCA';
-        ca.Group__c = accountId;
-        ca.DMT_Line__c = lineId;
-        ca.gf_customer_group_id__c = 'ESCD25LIN00006610ES';
-        ca.g_group_id__c = 'TestCustomerGroupId';
 
         insert ca;
 
@@ -1274,54 +1268,89 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static Custom_Association_Client__c generateCustomAssociationClient(Id caId) {
-        Custom_Association_Client__c cac = new Custom_Association_Client__c();
-        cac.alpha_code_client__c = 'ES0182000170441';
-        cac.custom_association__c = caId;
-        cac.Name = 'GRIFOLS S.A.';
-        cac.CurrencyIsoCode = 'EUR';
+        Custom_Association_Client__c cac = DMT_Test_DataFactoryBuild.buildCustomAssociationClient(caId);
         insert cac;
 
         return cac;
     }
 
     public static User generateUserWithoutPermissions() {
-        User userTest = new User();
-        userTest.ProfileId = [SELECT Id FROM Profile WHERE Name = 'Read Only'].Id;
-        userTest.FirstName = 'User Name Test';
-        userTest.LastName = 'Without Permissions';
-        userTest.Alias = 'ATest';
-        userTest.Email = 'useremail@test.comm';
-        userTest.username= String.valueof(DateTime.now().getTime()) + 'useremail@test.comm';
-        userTest.CommunityNickname = 'useremail@test.comm';
-        userTest.EmailEncodingKey = 'UTF-8';
-        userTest.Timezonesidkey='Europe/London';
-        userTest.Localesidkey ='en_US';
-        userTest.languagelocalekey='en_US';
-        userTest.ID_User__c ='iduserTest'+Integer.valueof((Math.random() * 100000000));
+        return generateUserWithoutPermissions(null);
+    }
 
-        insert userTest;
+    public static User generateUserWithoutPermissions(
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        Id profileId = [SELECT Id FROM Profile WHERE Name = 'Read Only'].Id;
 
-        return userTest;
+        Map<Schema.SObjectField, Object> userOverrides =
+            new Map<Schema.SObjectField, Object>{
+                User.FirstName => 'User Name Test',
+                User.LastName => 'Without Permissions',
+                User.Alias => 'ATest',
+                User.Email => 'useremail@test.comm',
+                User.Username =>
+                    String.valueof(DateTime.now().getTime()) +
+                    'useremail@test.comm',
+                User.CommunityNickname => 'useremail@test.comm',
+                User.ID_User__c =>
+                    'iduserTest' +
+                    Integer.valueof((Math.random() * 100000000))
+            };
+
+        if (overrides != null) {
+            userOverrides.putAll(overrides);
+        }
+
+        User user = DMT_Test_DataFactoryBuild.buildUser(
+            String.valueOf(profileId),
+            userOverrides
+        );
+        insert user;
+        return user;
     }
 
     public static User generateDesktopIntegrationUser() {
-        User userTest = new User();
-        // Targeting the profile that bypasses the Validation Rule in Opportunity 'NotBackFromApproval'
-        userTest.ProfileId = [SELECT Id FROM Profile WHERE Name = 'Desktop Integration' LIMIT 1].Id;
-        userTest.FirstName = 'Integration';
-        userTest.LastName = 'User';
-        userTest.Alias = 'DskInt';
-        userTest.Email = 'desktop-int@test.bbva.com';
-        userTest.Username = 'desktop-int' + DateTime.now().getTime() + '@test.bbva.com';
-        userTest.CommunityNickname = 'desktopint' + DateTime.now().getTime();
-        userTest.EmailEncodingKey = 'UTF-8';
-        userTest.Timezonesidkey = 'Europe/London';
-        userTest.Localesidkey = 'en_US';
-        userTest.languagelocalekey = 'en_US';
-        userTest.ID_User__c = 'dsk-int-' + Integer.valueOf((Math.random() * 100000000));
+        return generateDesktopIntegrationUser(null);
+    }
 
-        insert userTest;
-        return userTest;
+    public static User generateDesktopIntegrationUser(
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        // Targeting the profile that bypasses the Validation Rule in Opportunity 'NotBackFromApproval'
+        Id profileId = [
+            SELECT Id
+            FROM Profile
+            WHERE Name = 'Desktop Integration'
+            LIMIT 1
+        ].Id;
+        Long timestamp = DateTime.now().getTime();
+
+        Map<Schema.SObjectField, Object> userOverrides =
+            new Map<Schema.SObjectField, Object>{
+                User.FirstName => 'Integration',
+                User.LastName => 'User',
+                User.Alias => 'DskInt',
+                User.Email => 'desktop-int@test.bbva.com',
+                User.Username =>
+                    'desktop-int' + timestamp + '@test.bbva.com',
+                User.CommunityNickname =>
+                    'desktopint' + timestamp,
+                User.ID_User__c =>
+                    'dsk-int-' +
+                    Integer.valueOf((Math.random() * 100000000))
+            };
+
+        if (overrides != null) {
+            userOverrides.putAll(overrides);
+        }
+
+        User user = DMT_Test_DataFactoryBuild.buildUser(
+            String.valueOf(profileId),
+            userOverrides
+        );
+        insert user;
+        return user;
     }
 
     public static List<DMT_Taxonomy_Values__c> generateTaxonomies() {
@@ -1329,37 +1358,37 @@ public with sharing class  DMT_Test_DataFactory {
         Pricebook2 pb2 = generatePricebook2();
 
         List<DMT_Taxonomy_Values__c> taxonomies = new List<DMT_Taxonomy_Values__c>{
-            new DMT_Taxonomy_Values__c(
-                DMT_Name__c = 'Project Finance Advisory',
-                DMT_Name_EN__c = 'Project Finance Advisory',
-                DMT_External_Id__c = '2880',
-                DMT_Key__c = '2880',
-                CurrencyIsoCode = 'EUR',
-                DMT_Catalog__c = 'C375'
+            DMT_Test_DataFactoryBuild.buildTaxonomyValue(
+                'Project Finance Advisory',
+                '2880',
+                'C375',
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Taxonomy_Values__c.DMT_Key__c => '2880'
+                }
             ),
-            new DMT_Taxonomy_Values__c(
-                DMT_Name__c = 'Project Finance Advisory2',
-                DMT_Name_EN__c = 'Project Finance Advisory2',
-                DMT_External_Id__c = '28802',
-                DMT_Key__c = '28802',
-                CurrencyIsoCode = 'EUR',
-                DMT_Catalog__c = 'C375'
+            DMT_Test_DataFactoryBuild.buildTaxonomyValue(
+                'Project Finance Advisory2',
+                '28802',
+                'C375',
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Taxonomy_Values__c.DMT_Key__c => '28802'
+                }
             ),
-            new DMT_Taxonomy_Values__c(
-                DMT_Name__c = 'Project Finance Advisory3',
-                DMT_Name_EN__c = 'Project Finance Advisory3',
-                DMT_External_Id__c = '28803',
-                DMT_Key__c = '28803',
-                CurrencyIsoCode = 'EUR',
-                DMT_Catalog__c = 'C375'
+            DMT_Test_DataFactoryBuild.buildTaxonomyValue(
+                'Project Finance Advisory3',
+                '28803',
+                'C375',
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Taxonomy_Values__c.DMT_Key__c => '28803'
+                }
             ),
-            new DMT_Taxonomy_Values__c(
-                DMT_Name__c = 'Others > Surety guarantee',
-                DMT_Name_EN__c = 'Others > Surety guarantee',
-                DMT_External_Id__c = '3810',
-                CurrencyIsoCode = 'EUR',
-                DMT_Catalog__c = 'E895',
-                DMT_Value__c = '01'
+            DMT_Test_DataFactoryBuild.buildTaxonomyValue(
+                'Others > Surety guarantee',
+                '3810',
+                'E895',
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Taxonomy_Values__c.DMT_Value__c => '01'
+                }
             )
         };
 
@@ -1369,95 +1398,93 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static DMT_Task_Approver_Relationship__c generateTaskApproverRelationship(DMT_Approver__c approver, DMT_Task_Type__c taskType) {
-        DMT_Task_Approver_Relationship__c relationship = new DMT_Task_Approver_Relationship__c(
-            DMT_Approver__c=approver.Id,
-            DMT_Task_Type__c=taskType.Id
-        );
+        DMT_Task_Approver_Relationship__c relationship = DMT_Test_DataFactoryBuild.buildTaskApproverRelationship(approver.Id, taskType.Id);
         insert relationship;
         return relationship;
     }
 
     public static DMT_Task_Relationship__c generateTaskRelationship(DMT_Task_Type__c fromTaskType, DMT_Task_Type__c toTaskType) {
-        DMT_Task_Relationship__c relationship = new DMT_Task_Relationship__c(
-            DMT_From_Task_Type__c=fromTaskType.Id,
-            DMT_To_Task_Type__c=toTaskType.Id
-        );
+        DMT_Task_Relationship__c relationship = DMT_Test_DataFactoryBuild.buildTaskRelationship(fromTaskType.Id, toTaskType.Id);
         insert relationship;
         return relationship;
     }
 
     public static DMT_Taxonomy_Relationship__c generateTaxonomyRelationship(DMT_Taxonomy_Values__c initialValue, DMT_Taxonomy_Values__c finalValue) {
-        DMT_Taxonomy_Relationship__c relationship = new DMT_Taxonomy_Relationship__c(
-            DMT_Initial_Taxonomy_Value__c=initialValue.Id,
-            DMT_Final_Taxonomy_Value__c=finalValue.Id,
-            DMT_Value_Catalog_Initial__c = 'TestInitial',
-            DMT_Value_Catalog_Final__c = 'TestFinal'
-        );
+        DMT_Taxonomy_Relationship__c relationship = DMT_Test_DataFactoryBuild.buildTaxonomyRelationship(initialValue.Id, finalValue.Id);
         insert relationship;
         return relationship;
     }
 
 
     public static DMT_Taxonomy_Hierarchy__c generateTaxonomyHierarchy() {
-        DMT_Taxonomy_Hierarchy__c hierarchy = new DMT_Taxonomy_Hierarchy__c(
-            gf_cutoff_date__c=System.today(),
-            g_hierarchy_id__c='TestId',
-            gf_lvl_1_hier_catalog_val_id__c	 = 'TestValueLevel1'
-        );
+        DMT_Taxonomy_Hierarchy__c hierarchy = DMT_Test_DataFactoryBuild.buildTaxonomyHierarchy();
         insert hierarchy;
         return hierarchy;
     }
 
     public static DMT_Consolidated_Line__c generateConsolidatedLine(String LineId) {
-        DMT_Consolidated_Line__c cl = new DMT_Consolidated_Line__c();
-        cl.Line_Id__c = LineId;
-        cl.gf_group_line_id__c = 'ESCD25LIN00003597ES';
-        cl.gf_group_priority_line_id__c = '00';
-        cl.g_entific_id__c = 'ES';
-        cl.g_line_template_type__c = 'TL';
+        DMT_Consolidated_Line__c cl = DMT_Test_DataFactoryBuild.buildConsolidatedLine(
+            LineId,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Consolidated_Line__c.gf_group_line_id__c => 'ESCD25LIN00003597ES',
+                DMT_Consolidated_Line__c.g_line_template_type__c => 'TL'
+            }
+        );
         insert cl;
 
         return cl;
     }
 
     public static DMT_Consolidated_Line__c generateConsolidatedLineOther(String LineId) {
-        DMT_Consolidated_Line__c cl = new DMT_Consolidated_Line__c();
-        cl.Line_Id__c = LineId;
-        cl.gf_group_line_id__c = 'ESCD25LIN00003598ES';
-        cl.gf_group_priority_line_id__c = '00';
-        cl.g_entific_id__c = 'ES';
-        cl.g_line_template_type__c = 'OL';
+        DMT_Consolidated_Line__c cl = DMT_Test_DataFactoryBuild.buildConsolidatedLine(
+            LineId,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Consolidated_Line__c.gf_group_line_id__c => 'ESCD25LIN00003598ES',
+                DMT_Consolidated_Line__c.g_line_template_type__c => 'OL'
+            }
+        );
         insert cl;
 
         return cl;
     }
 
     public static DMT_Currency_Provision__c generateCurrencyProvision(Id riskLineTermId) {
-        DMT_Currency_Provision__c cp = new DMT_Currency_Provision__c();
-        cp.dmt_risk_line_term__c = riskLineTermId;
-        cp.Name = 'EUR';
-        cp.CurrencyIsoCode = 'EUR';
+        DMT_Currency_Provision__c cp = DMT_Test_DataFactoryBuild.buildCurrencyProvision(riskLineTermId);
         insert cp;
 
         return cp;
     }
 
     public static DMT_Warranty__c generateWarranty(Id riskLineTermId) {
-        DMT_Warranty__c wa = new DMT_Warranty__c();
-        wa.dmt_risk_line_term__c = riskLineTermId;
-        wa.Name = 'Others > Confort letter';
-        wa.CurrencyIsoCode = 'EUR';
+        DMT_Warranty__c wa = DMT_Test_DataFactoryBuild.buildWarranty(riskLineTermId);
         insert wa;
 
         return wa;
     }
 
     public static Product2 generateProduct2() {
+        return generateProduct2(null);
+    }
+
+    public static Product2 generateProduct2(
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        // Preserve the existing side effect: ensure the Standard Pricebook is active.
         Pricebook2 pb2 = generatePricebook2();
-        Product2 product = new Product2();
-        product.Family = 'DMT';
-        product.Name = 'DMT-TEST';
-        product.ProductCode = 'DMT-TEST';
+
+        Map<Schema.SObjectField, Object> productOverrides =
+            new Map<Schema.SObjectField, Object>{
+                Product2.Family => 'DMT',
+                Product2.Name => 'DMT-TEST',
+                Product2.ProductCode => 'DMT-TEST'
+            };
+
+        if (overrides != null) {
+            productOverrides.putAll(overrides);
+        }
+
+        Product2 product =
+            DMT_Test_DataFactoryBuild.buildProduct(productOverrides);
         insert product;
         return product;
     }
@@ -1473,9 +1500,11 @@ public with sharing class  DMT_Test_DataFactory {
         Pricebook2 pbStandard;
 
         if (pricebooks.isEmpty()) {
-            pbStandard = new Pricebook2(
-                Name = 'Standard Price Book',
-                IsActive = true
+            pbStandard = DMT_Test_DataFactoryBuild.buildPricebook(
+                new Map<Schema.SObjectField, Object>{
+                    Pricebook2.Name => 'Standard Price Book',
+                    Pricebook2.IsActive => true
+                }
             );
             insert pbStandard;
         } else {
@@ -1488,104 +1517,168 @@ public with sharing class  DMT_Test_DataFactory {
         return pbStandard;
     }
 
-    public static PricebookEntry generatePricebookEntry(Product2 product) {
-        PricebookEntry pricebookEntry = new PricebookEntry(
-            Pricebook2Id = Test.getStandardPricebookId(),
-            Product2Id = product.Id,
-            UnitPrice = 100.00,
-            IsActive = true
-        );
+    public static PricebookEntry generatePricebookEntry(
+        Product2 product
+    ) {
+        return generatePricebookEntry(product, null);
+    }
+
+    public static PricebookEntry generatePricebookEntry(
+        Product2 product,
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        PricebookEntry pricebookEntry =
+            DMT_Test_DataFactoryBuild.buildPricebookEntry(
+                product.Id,
+                overrides
+            );
         insert pricebookEntry;
         return pricebookEntry;
     }
 
-    public static OpportunityLineItem generateOpportunityLineItem(Product2 product,PricebookEntry pricebookEntry, Opportunity opp) {
-
-        OpportunityLineItem opportunityLineItem = new OpportunityLineItem(
-            Product2Id = product.Id,
-            OpportunityId = opp.Id,
-            PricebookEntryId = pricebookEntry.Id,
-            Quantity = 1,
-            TotalPrice = 100.00,
-            g_currency_id__c='EUR',
-            gf_group_priority_opportunity_id__c = '01',
-            g_branch_id__c='ES0182-US',
-            DMT_Risk_Type__c= '3000000',
-            gf_initial_date__c= System.today(),
-            gf_maturity_date__c= System.today().addDays(365),
-            gf_amortization_type__c='Bullet' ,
-            gf_payment_frequency__c= 'Quarterly',
-            DMT_Deal_Amount_Tenors__c= 200000,
-            gf_accrual_fees_bp__c= 1,
-            DMT_Extension_Duration_Fees__c= 1,
-            Life_Funding_Type__c= 'Term',
-            g_line_commitment_level_type__c= 'COMMITED'
+    public static OpportunityLineItem generateOpportunityLineItem(
+        Product2 product,
+        PricebookEntry pricebookEntry,
+        Opportunity opp
+    ) {
+        return generateOpportunityLineItem(
+            product,
+            pricebookEntry,
+            opp,
+            null
         );
+    }
+
+    public static OpportunityLineItem generateOpportunityLineItem(
+        Product2 product,
+        PricebookEntry pricebookEntry,
+        Opportunity opp,
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        Map<Schema.SObjectField, Object> opportunityLineItemOverrides =
+            new Map<Schema.SObjectField, Object>{
+                OpportunityLineItem.gf_group_priority_opportunity_id__c => '01',
+                OpportunityLineItem.g_branch_id__c => 'ES0182-US',
+                OpportunityLineItem.DMT_Risk_Type__c => '3000000',
+                OpportunityLineItem.gf_initial_date__c => System.today(),
+                OpportunityLineItem.gf_maturity_date__c =>
+                    System.today().addDays(365),
+                OpportunityLineItem.gf_amortization_type__c => 'Bullet',
+                OpportunityLineItem.gf_payment_frequency__c => 'Quarterly',
+                OpportunityLineItem.DMT_Deal_Amount_Tenors__c => 200000,
+                OpportunityLineItem.gf_accrual_fees_bp__c => 1,
+                OpportunityLineItem.DMT_Extension_Duration_Fees__c => 1,
+                OpportunityLineItem.Life_Funding_Type__c => 'Term',
+                OpportunityLineItem.g_line_commitment_level_type__c =>
+                    'COMMITED'
+            };
+
+        if (overrides != null) {
+            opportunityLineItemOverrides.putAll(overrides);
+        }
+
+        OpportunityLineItem opportunityLineItem =
+            DMT_Test_DataFactoryBuild.buildOpportunityLineItem(
+                opp.Id,
+                product.Id,
+                pricebookEntry.Id,
+                opportunityLineItemOverrides
+            );
         insert opportunityLineItem;
         return opportunityLineItem;
     }
 
-    public static OpportunityLineItem generateOpportunityLineItem(Opportunity opp) {
+    public static OpportunityLineItem generateOpportunityLineItem(
+        Opportunity opp
+    ) {
+        return generateOpportunityLineItem(opp, null);
+    }
+
+    public static OpportunityLineItem generateOpportunityLineItem(
+        Opportunity opp,
+        Map<Schema.SObjectField, Object> overrides
+    ) {
         Product2 product = generateProduct2();
         PricebookEntry pricebookEntry = generatePricebookEntry(product);
-        OpportunityLineItem opportunityLineItem = new OpportunityLineItem(
-            Product2Id = product.Id,
-            OpportunityId = opp.Id,
-            PricebookEntryId = pricebookEntry.Id,
-            Quantity = 1,
-            g_currency_Id__c = 'EUR',
-            TotalPrice = 100.00
-        );
+
+        OpportunityLineItem opportunityLineItem =
+            DMT_Test_DataFactoryBuild.buildOpportunityLineItem(
+                opp.Id,
+                product.Id,
+                pricebookEntry.Id,
+                overrides
+            );
         insert opportunityLineItem;
         return opportunityLineItem;
     }
 
     public static DMT_Opportunity_Tenor__c generateOpportunityTenor(OpportunityLineItem opportunityLineItem) {
-        DMT_Opportunity_Tenor__c oppTenor = new DMT_Opportunity_Tenor__c(
-            DMT_Opportunity_Product__c = opportunityLineItem.Id
-        );
+        DMT_Opportunity_Tenor__c oppTenor = DMT_Test_DataFactoryBuild.buildOpportunityTenor(opportunityLineItem.Id);
         insert oppTenor;
         return oppTenor;
     }
 
-    public static DMT_Opportunity_Mitigant__c generateOpportunityMitigant(OpportunityLineItem opportunityLineItem) {
-        DMT_Opportunity_Mitigant__c oppMitigant = new DMT_Opportunity_Mitigant__c(
-            DMT_Opportunity_Product__c = opportunityLineItem.Id,
-            Political_Percentage__c = 1,
-            Commercial_Percentage__c = 1
-        );
+    public static DMT_Opportunity_Mitigant__c generateOpportunityMitigant(
+        OpportunityLineItem opportunityLineItem
+    ) {
+        return generateOpportunityMitigant(opportunityLineItem, null);
+    }
+
+    public static DMT_Opportunity_Mitigant__c generateOpportunityMitigant(
+        OpportunityLineItem opportunityLineItem,
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        Map<Schema.SObjectField, Object> mitigantOverrides =
+            new Map<Schema.SObjectField, Object>{
+                DMT_Opportunity_Mitigant__c.Political_Percentage__c => 1,
+                DMT_Opportunity_Mitigant__c.Commercial_Percentage__c => 1
+            };
+
+        if (overrides != null) {
+            mitigantOverrides.putAll(overrides);
+        }
+
+        DMT_Opportunity_Mitigant__c oppMitigant =
+            DMT_Test_DataFactoryBuild.buildOpportunityMitigant(
+                opportunityLineItem.Id,
+                mitigantOverrides
+            );
         insert oppMitigant;
         return oppMitigant;
     }
 
     public static DMT_Selected_Features__c generateSelectedFeaturesOpp(Opportunity opp) {
         List<DMT_Feature__c> featureList = new List<DMT_Feature__c>{
-            new DMT_Feature__c(
-                gf_capability_engine_id_number__c = '789',
-                gf_feature_name_desc__c = 'Feature Test Opp',
-                gf_feature_deal_type__c = 'TypeOPP',
-                gf_global_feature_id_number__c = 'GF007',
-                gf_approver_apply_ind_type__c = 'TestOPP',
-                gf_user_audit_id__c = 'UserTest3',
-                gf_audit_date__c = Date.today(),
-                gf_code_value_id__c = '201'
+            DMT_Test_DataFactoryBuild.buildFeature(
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Feature__c.gf_capability_engine_id_number__c => '789',
+                    DMT_Feature__c.gf_feature_name_desc__c => 'Feature Test Opp',
+                    DMT_Feature__c.gf_feature_deal_type__c => 'TypeOPP',
+                    DMT_Feature__c.gf_global_feature_id_number__c => 'GF007',
+                    DMT_Feature__c.gf_approver_apply_ind_type__c => 'TestOPP',
+                    DMT_Feature__c.gf_user_audit_id__c => 'UserTest3',
+                    DMT_Feature__c.gf_code_value_id__c => '201'
+                }
             ),
-            new DMT_Feature__c(
-                gf_capability_engine_id_number__c = '987',
-                gf_feature_name_desc__c = 'Feature Test OPPB',
-                gf_feature_deal_type__c = 'TypeOPP2',
-                gf_global_feature_id_number__c = 'GF008',
-                gf_approver_apply_ind_type__c = 'TestOPP2',
-                gf_user_audit_id__c = 'UserTest4',
-                gf_audit_date__c = Date.today(),
-                gf_code_value_id__c = '210'
+            DMT_Test_DataFactoryBuild.buildFeature(
+                new Map<Schema.SObjectField, Object>{
+                    DMT_Feature__c.gf_capability_engine_id_number__c => '987',
+                    DMT_Feature__c.gf_feature_name_desc__c => 'Feature Test OPPB',
+                    DMT_Feature__c.gf_feature_deal_type__c => 'TypeOPP2',
+                    DMT_Feature__c.gf_global_feature_id_number__c => 'GF008',
+                    DMT_Feature__c.gf_approver_apply_ind_type__c => 'TestOPP2',
+                    DMT_Feature__c.gf_user_audit_id__c => 'UserTest4',
+                    DMT_Feature__c.gf_code_value_id__c => '210'
+                }
             )
         };
         insert featureList;
 
-        DMT_Selected_Features__c selectedFeature = new DMT_Selected_Features__c(
-            Opportunity__c = opp.Id,
-            Feature__c = featureList[0].Id
+        DMT_Selected_Features__c selectedFeature = DMT_Test_DataFactoryBuild.buildSelectedFeature(
+            featureList[0].Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Selected_Features__c.Opportunity__c => opp.Id
+            }
         );
 
         insert selectedFeature;
@@ -1593,10 +1686,7 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
      public static DMT_X_Sell__c generatexSell(Opportunity opp) {
-        DMT_X_Sell__c xsell = new DMT_X_Sell__c(
-            Opportunity__c = opp.Id,
-            Year__c = '2035'
-        );
+        DMT_X_Sell__c xsell = DMT_Test_DataFactoryBuild.buildXSell(opp.Id);
         insert xsell;
         return xsell;
     }
@@ -1632,33 +1722,178 @@ public with sharing class  DMT_Test_DataFactory {
         insert exRateList;
     }
     public static DMT_Underlying__c generateUnderlyingRestriction(OpportunityLineItem opportunityLineItem) {
-        DMT_Underlying__c underlying = new DMT_Underlying__c(
-            DMT_Opportunity_Product__c = opportunityLineItem.Id,
-            Name = 'Test Underlying Restriction',
-            DMT_Underlying_Type__c = 'Restriction',
-            DMT_Max_Amount__c = 50000,
-            DMT_Currency__c = 'EUR',
-            DMT_Max_Term__c = '366'
-        );
+        DMT_Underlying__c underlying = DMT_Test_DataFactoryBuild.buildUnderlying(opportunityLineItem.Id);
         insert underlying;
         return underlying;
     }
 
-    public static DMT_Opportunity_Mitigant__c generateOpportunityGuarantor(OpportunityLineItem opportunityLineItem) {
-        DMT_Opportunity_Mitigant__c oppMitigant = new DMT_Opportunity_Mitigant__c(
-            DMT_Opportunity_Product__c = opportunityLineItem.Id,
-            Mitigant_Type__c = 'Guarantee',
-            Garantor_European_ECA__c = true,
-            Commercial_Percentage__c = 80,
-            Political_Percentage__c = 20,
-            End_Date__c = Date.today().addYears(1),
-            Internal_Rating__c = 'A1',
-            External_Rating__c = 'AA',
-            DMT_Scoring__c = 95,
-            SCRA__c = 'A+',
-            AVC_Check__c = true
-        );
+    public static DMT_Opportunity_Mitigant__c generateOpportunityGuarantor(
+        OpportunityLineItem opportunityLineItem
+    ) {
+        return generateOpportunityGuarantor(opportunityLineItem, null);
+    }
+
+    public static DMT_Opportunity_Mitigant__c generateOpportunityGuarantor(
+        OpportunityLineItem opportunityLineItem,
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        Map<Schema.SObjectField, Object> guarantorOverrides =
+            new Map<Schema.SObjectField, Object>{
+                DMT_Opportunity_Mitigant__c.Mitigant_Type__c => 'Guarantee',
+                DMT_Opportunity_Mitigant__c.Garantor_European_ECA__c => true,
+                DMT_Opportunity_Mitigant__c.Commercial_Percentage__c => 80,
+                DMT_Opportunity_Mitigant__c.Political_Percentage__c => 20,
+                DMT_Opportunity_Mitigant__c.End_Date__c =>
+                    Date.today().addYears(1),
+                DMT_Opportunity_Mitigant__c.Internal_Rating__c => 'A1',
+                DMT_Opportunity_Mitigant__c.External_Rating__c => 'AA',
+                DMT_Opportunity_Mitigant__c.DMT_Scoring__c => 95,
+                DMT_Opportunity_Mitigant__c.SCRA__c => 'A+',
+                DMT_Opportunity_Mitigant__c.AVC_Check__c => true
+            };
+
+        if (overrides != null) {
+            guarantorOverrides.putAll(overrides);
+        }
+
+        DMT_Opportunity_Mitigant__c oppMitigant =
+            DMT_Test_DataFactoryBuild.buildOpportunityMitigant(
+                opportunityLineItem.Id,
+                guarantorOverrides
+            );
         insert oppMitigant;
         return oppMitigant;
+    }
+
+    // CIBGLOBALD-4374 - approver member of an existing approver (generateApproverMember creates its own approver).
+    public static DMT_Approver_Member__c generateApproverMemberForApprover(Id approverId, Id userId) {
+        DMT_Approver_Member__c member = DMT_Test_DataFactoryBuild.buildApproverMember(approverId, userId);
+        insert member;
+        return member;
+    }
+
+    // CIBGLOBALD-4374 - single task type with the flags the approval step triggers read.
+    public static DMT_Task_Type__c generateTaskType(String name, String externalId, Boolean approvalEdit) {
+        DMT_Task_Type__c taskType = DMT_Test_DataFactoryBuild.buildTaskType(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Task_Type__c.Name => name,
+                DMT_Task_Type__c.DMT_External_Id__c => externalId,
+                DMT_Task_Type__c.DMT_ApprovalEdit__c => approvalEdit,
+                DMT_Task_Type__c.DMT_Closing_Capacity__c => false,
+                DMT_Task_Type__c.DMT_Yes_Flag__c => 'YES_YES_' + name,
+                DMT_Task_Type__c.DMT_No_Flag__c => 'NO_NO_' + name,
+                DMT_Task_Type__c.DMT_NA_Flag__c => 'NA_NA_' + name
+            }
+        );
+        insert taskType;
+        return taskType;
+    }
+
+    // CIBGLOBALD-4374 - one approval step Task of the given type and status on a Case.
+    public static Task generateApprovalTask(Id ownerId, Id caseId, Id taskTypeId, String status) {
+        Task task = DMT_Test_DataFactoryBuild.buildTask(
+            ownerId,
+            taskStepRecordTypeID,
+            caseId,
+            new Map<Schema.SObjectField, Object>{
+                Task.Status => status,
+                Task.Subject => 'Approval step',
+                Task.DMT_Task_Type__c => taskTypeId
+            }
+        );
+        insert task;
+        return task;
+    }
+
+    // CIBGLOBALD-4374 - Sanction Line of an Opportunity (what DMT_SanctionLine_Service looks for first).
+    public static DMT_Line__c generateSanctionLine(Id accountId, Id opportunityId, String lineId) {
+        DMT_Line__c line = DMT_Test_DataFactoryBuild.buildLine(
+            accountId,
+            riskApprovalLineRecordTypeID,
+            lineId,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Name => 'Sanction line ' + lineId,
+                DMT_Line__c.Status__c => 'Draft',
+                DMT_Line__c.Allowed__c => true,
+                DMT_Line__c.DMT_Origin__c => 'Salesforce',
+                DMT_Line__c.Booking_Geography__c => 'ES',
+                DMT_Line__c.DMT_Client_Entific__c => 'ES',
+                DMT_Line__c.DMT_Opportunity__c => opportunityId
+            }
+        );
+        insert line;
+        return line;
+    }
+
+    // ─── CIBGLOBALD-4374 - DMT_TeamMember__c ───────────────────────────────────
+
+    public static DMT_TeamMember__c generateTeamMemberForLine(Id userId, Id lineId, String accessLevel) {
+        DMT_TeamMember__c member = DMT_Test_DataFactoryBuild.buildTeamMember(
+            userId,
+            lineId,
+            null,
+            new Map<Schema.SObjectField, Object>{
+                DMT_TeamMember__c.AccessLevel__c => accessLevel
+            }
+        );
+        insert member;
+        return member;
+    }
+
+    public static DMT_TeamMember__c generateTeamMemberForOpportunity(Id userId, Id opportunityId, String accessLevel) {
+        DMT_TeamMember__c member = DMT_Test_DataFactoryBuild.buildTeamMember(
+            userId,
+            null,
+            opportunityId,
+            new Map<Schema.SObjectField, Object>{
+                DMT_TeamMember__c.AccessLevel__c => accessLevel
+            }
+        );
+        insert member;
+        return member;
+    }
+
+    // Bulk variant: one team member per user, all on the same Line or Opportunity, inserted in one DML.
+    public static List<DMT_TeamMember__c> generateTeamMembers(
+        List<Id> userIds,
+        Id lineId,
+        Id opportunityId,
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        List<DMT_TeamMember__c> members = new List<DMT_TeamMember__c>();
+        for (Id userId : userIds) {
+            members.add(DMT_Test_DataFactoryBuild.buildTeamMember(userId, lineId, opportunityId, overrides));
+        }
+        insert members;
+        return members;
+    }
+
+    // Active Standard User, so tests that need several distinct users do not insert them by hand.
+    public static List<User> generateUsers(Integer numUsers) {
+        Id profileId = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1].Id;
+        String unique = String.valueOf(Datetime.now().getTime());
+        List<User> users = new List<User>();
+        for (Integer i = 0; i < numUsers; i++) {
+            users.add(DMT_Test_DataFactoryBuild.buildUser(
+                String.valueOf(profileId),
+                new Map<Schema.SObjectField, Object>{
+                    User.LastName => 'Dmt4374User' + i,
+                    User.Username => 'dmt4374user' + i + unique + '@test.com',
+                    User.Email => 'dmt4374user' + i + unique + '@test.com',
+                    User.Alias => 'd74u' + i,
+                    User.ProfileId => profileId,
+                    User.ID_User__c => (unique + i).right(20)
+                }
+            ));
+        }
+        insert users;
+        return users;
+    }
+
+    // CIBGLOBALD-4374 - classic Attachment on any parent (the Case attachment move reads them).
+    public static Attachment generateAttachment(Id parentId, String name) {
+        Attachment attachment = DMT_Test_DataFactoryBuild.buildAttachment(parentId, name);
+        insert attachment;
+        return attachment;
     }
 }

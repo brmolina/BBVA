@@ -1117,6 +1117,14 @@ export default class Dmt_passport extends LightningElement {
         return;
       }
 
+      // CIBGLOBALD-4374 - the Request was queued and could not be completed: the traffic light did not
+      // change, so tell the user and stop the spinner.
+      if (operation === 'REQUEST_FAILED') {
+        this._showSpinner = false;
+        this.handleError('The workflow request could not be completed. Please try again or contact support.');
+        return;
+      }
+
       refreshApex(this.wiredInformationPassportResult).then(() => {
         if (this.rawPayload) {
           // Safely rebuilds the buffer, checks the server and renders the traffic lights

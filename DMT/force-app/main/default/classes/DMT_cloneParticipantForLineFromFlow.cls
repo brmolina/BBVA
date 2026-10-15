@@ -125,19 +125,13 @@ public with sharing class DMT_cloneParticipantForLineFromFlow {
                 List<DMT_TeamMember__c> newTeamMembers = new List<DMT_TeamMember__c>();
 
                 // Crear nuevos TeamMembers relacionados con newLineId
+                // CIBGLOBALD-4374 - members are built and saved through DMT_TeamMember_Service
                 for(DMT_TeamMember__c member : uniqueManagementTeam) {
-                    DMT_TeamMember__c newMember = new DMT_TeamMember__c();
-                    newMember.User__c = member.User__c;
-                    newMember.Line__c = newLineId; 
-                    newMember.AccessLevel__c = member.AccessLevel__c;
-                    newMember.DMT_ApprovalEdit__c = member.DMT_ApprovalEdit__c;
-                    newMember.Team_Role__c = member.Team_Role__c;
-                    newTeamMembers.add(newMember);
+                    newTeamMembers.add(DMT_TeamMember_Service.buildLineMember(
+                        member.User__c, newLineId, null, member.AccessLevel__c, member.Team_Role__c, member.DMT_ApprovalEdit__c
+                    ));
                 }
-                // Insertar todos los nuevos TeamMembers
-                if (!newTeamMembers.isEmpty()) {
-                    insert newTeamMembers;
-                }
+                DMT_TeamMember_Service.insertMembers(newTeamMembers);
             }
         } catch (Exception e) {
             System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(),e.getStackTraceString(),e.getLineNumber(),e.getTypeName(),'DMT_cloneParticipantForLineFromFlow','createTeamMbembers','DMT',''));
@@ -162,17 +156,13 @@ public with sharing class DMT_cloneParticipantForLineFromFlow {
 
             if(!uniqueManagementTeam.isEmpty()){   
                 List<DMT_TeamMember__c> newTeamMembers = new List<DMT_TeamMember__c>();
+                // CIBGLOBALD-4374 - members are built and saved through DMT_TeamMember_Service
                 for(DES_BBVA_Management_team__c teamMember : uniqueManagementTeam){
-                    DMT_TeamMember__c newMember = new DMT_TeamMember__c();
-                    newMember.User__c = teamMember.DES_User__c; 
-                    newMember.Line__c = newLineId; 
-                    newMember.AccessLevel__c = 'Read';
-                    newMember.DMT_ApprovalEdit__c = false;
-                    newTeamMembers.add(newMember);
-                }                 
-                if (!newTeamMembers.isEmpty()) {
-                    insert newTeamMembers;
+                    newTeamMembers.add(DMT_TeamMember_Service.buildLineMember(
+                        teamMember.DES_User__c, newLineId, null, DMT_TeamMember_Service.READ_ACCESS, null, false
+                    ));
                 }
+                DMT_TeamMember_Service.insertMembers(newTeamMembers);
             }
         } catch (Exception e) {
             System.enqueueJob(new DMT_LogExceptionQueueable(e.getMessage(),e.getStackTraceString(),e.getLineNumber(),e.getTypeName(),'DMT_cloneParticipantForLineFromFlow','createCoverageTeamToTeamMbembers','DMT',''));

@@ -10,6 +10,8 @@ public with sharing class DTM_Task_Helper {
     @TestVisible private static final String OP_MODIFY_MULTI = 'MODIFY_MULTI';
     // The Passport__c record itself changed (JSON recalculated or Obsolete flag flipped).
     @TestVisible private static final String OP_PASSPORT = 'PASSPORT';
+    // CIBGLOBALD-4374 - an asynchronous Risk request could not be completed (records__c = Opportunity Ids).
+    @TestVisible private static final String OP_REQUEST_FAILED = 'REQUEST_FAILED';
 
     // CIBGLOBALD-4617 - Task fields that feed the Passport traffic lights / step info
     // (DMT_Case_Steps_Controller.getCurrentStepsFromCases). A change on any other field does not
@@ -138,6 +140,20 @@ public with sharing class DTM_Task_Helper {
             events.add(new DMT_Task__e(Operation__c = OP_PASSPORT, records__c = String.join(new List<Id>(recordIds), ',')));
         }
         return events;
+    }
+
+    /**
+     * CIBGLOBALD-4374 - Tells the open Passports that the asynchronous request started from them failed.
+     * Same DMT_Task__e event as every other notification: no additional platform event.
+     */
+    public static void publishRequestFailed(Set<Id> recordIds) {
+        CIB_Bypass__c byPass = CIB_Bypass__c.getInstance();
+        if (byPass.CIB_skip_platform_event__c || recordIds == null || recordIds.isEmpty()) {
+            return;
+        }
+        publish(new List<DMT_Task__e>{
+            new DMT_Task__e(Operation__c = OP_REQUEST_FAILED, records__c = String.join(new List<Id>(recordIds), ','))
+        });
     }
 
     private static void publish(List<DMT_Task__e> events) {

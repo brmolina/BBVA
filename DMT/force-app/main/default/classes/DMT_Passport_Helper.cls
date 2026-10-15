@@ -753,7 +753,7 @@ public with sharing class DMT_Passport_Helper {
                 mitigant.mitigantCurrency = mt.DMT_Currency__c;
                 mitigant.commercialRisk = mt.Commercial_Percentage__c;
                 mitigant.politicalRisk = mt.Political_Percentage__c;
-                //mitigant.eca = mt.Garantor_European_ECA__c; //CIBGLOBALD-3497
+                mitigant.eca = mt.Garantor_European_ECA__c; //CIBGLOBALD-3497
                 mitigant.mitigantCountry = mt.DMT_Country_Guarantor__c;
                 mitigant.customerId = mitigantClientCode; //CIBGLOBALD-2027
                 mitigant.scoring = mt.DMT_Scoring__c;
@@ -1044,6 +1044,10 @@ public with sharing class DMT_Passport_Helper {
     }
 
     public static Task  createTask(Id caseId,Id aproverId, DMT_Task_Type__c taskType) {
+        return createTask(caseId, aproverId, taskType, false);
+    }
+
+    public static Task createTask(Id caseId, Id aproverId, DMT_Task_Type__c taskType, Boolean deferTaskStatus) {
 
         Task newTask = new Task();
         newTask.RecordTypeId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get(DMT_Constants.TASK_RT_APPROVAL_STEP).getRecordTypeId();
@@ -1056,7 +1060,11 @@ public with sharing class DMT_Passport_Helper {
 
         DMT_WithoutSharingDAO.insertRecord(newTask);
 
-        DMT_ApprovalChangeStep_Handler.updateTaskWithStatus(newTask.Id,false);
+        if (deferTaskStatus == true) {
+            DMT_AsyncOrchestrator.enqueue(new DMT_TaskStatusSnapshotPayload(newTask.Id));
+        } else {
+            DMT_ApprovalChangeStep_Handler.updateTaskWithStatus(newTask.Id, false);
+        }
 
         return newTask;
     }
@@ -1073,7 +1081,7 @@ public with sharing class DMT_Passport_Helper {
             serviceName='DMTO_EvaluationLine';
         }
         response = DMT_HPG_Utils.callService(serviceName, requestMap);
-
+		System.debug('*** response passport callout '+response);
         if( (response.getStatusCode() == 200 || response.getStatusCode() == 201) ) {
             if(objectName == Opportunity.getSObjectType().getDescribe().getName() ){
                 Opportunity oppToUpdate = new Opportunity();
@@ -1503,12 +1511,9 @@ public with sharing class DMT_Passport_Helper {
         DMT_Approver__c approver = DMT_Passport_Selector.getApprover(approverId);
 
         if(approver != null && approver.DMT_ApproverType__r.Name == APPROVERTYPE){
-            Map<String,Object> params = new Map<String,Object>();
-            params.put('recordId',oppId);
-            Flow.Interview.DMT_CreateLineFROMOppFeature createSantionFlow = new Flow.Interview.DMT_CreateLineFROMOppFeature(params);
-            createSantionFlow.start();
-            String lineId = (String) createSantionFlow.getVariableValue('lineId');
-            return lineId;
+            // CIBGLOBALD-4374 - the flow DMT_CreateLineFROMOppFeature was migrated to Apex
+            Id lineId = DMT_SanctionLine_Service.createFromOpportunity((Id) oppId);
+            return lineId == null ? null : String.valueOf(lineId);
         }
         return null;
     }

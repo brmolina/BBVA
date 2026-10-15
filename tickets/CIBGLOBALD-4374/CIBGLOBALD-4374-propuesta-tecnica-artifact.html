@@ -1,0 +1,865 @@
+<title>CIBGLOBALD-4374 Propuesta técnica</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --text: #1b2330; --muted: #5b6678; --line: #dde2ea;
+    --brand: #072146; --accent: #1464a5; --ok: #1a7f4b; --warn: #b26a00; --bad: #b3261e;
+    --okbg: #e6f4ec; --warnbg: #fff3df; --badbg: #fde8e6; --infobg: #e7f0fa; --code: #eef1f5;
+    --hero-bg: #072146; --hero-fg: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #11151c; --panel: #1a202b; --text: #e6e9ef; --muted: #9aa5b8; --line: #2b3342;
+      --brand: #9cc4f0; --accent: #62a8e8; --ok: #5fcf93; --warn: #f0b24a; --bad: #ff8a80;
+      --okbg: #14281f; --warnbg: #2d2410; --badbg: #301816; --infobg: #14233a; --code: #232b38;
+      --hero-bg: #0e2a4f; --hero-fg: #e6e9ef;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #11151c; --panel: #1a202b; --text: #e6e9ef; --muted: #9aa5b8; --line: #2b3342;
+    --brand: #9cc4f0; --accent: #62a8e8; --ok: #5fcf93; --warn: #f0b24a; --bad: #ff8a80;
+    --okbg: #14281f; --warnbg: #2d2410; --badbg: #301816; --infobg: #14233a; --code: #232b38;
+    --hero-bg: #0e2a4f; --hero-fg: #e6e9ef;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px 80px; }
+  header.hero { background: var(--hero-bg); color: var(--hero-fg); padding: 36px 16px 28px; }
+  header.hero .in { max-width: 1120px; margin: 0 auto; }
+  header.hero h1 { margin: 0 0 6px; font-size: 1.75rem; line-height: 1.25; }
+  header.hero p { margin: 4px 0; opacity: .9; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip { background: color-mix(in srgb, var(--hero-fg) 14%, transparent); border: 1px solid color-mix(in srgb, var(--hero-fg) 30%, transparent); border-radius: 999px; padding: 2px 12px; font-size: .85rem; }
+  nav.toc { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; margin: 22px 0; }
+  nav.toc strong { display: block; margin-bottom: 6px; }
+  nav.toc ol { margin: 0; padding-left: 20px; columns: 2; column-gap: 28px; }
+  nav.toc a { color: var(--accent); text-decoration: none; }
+  nav.toc a:hover { text-decoration: underline; }
+  @media (max-width: 700px) { nav.toc ol { columns: 1; } }
+  section { margin: 34px 0; }
+  h2 { font-size: 1.4rem; margin: 0 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--line); color: var(--brand); }
+  h3 { font-size: 1.1rem; margin: 22px 0 8px; }
+  h4 { margin: 14px 0 4px; font-size: 1rem; }
+  p { margin: 8px 0; }
+  ul, ol { margin: 8px 0; padding-left: 22px; }
+  li { margin: 4px 0; }
+  code, .mono { background: var(--code); border-radius: 4px; padding: 1px 5px; font-family: Consolas, "SFMono-Regular", Menlo, monospace; font-size: .88em; word-break: break-word; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; margin: 12px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 820px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+  .callout { border-left: 5px solid var(--accent); background: var(--infobg); padding: 12px 16px; border-radius: 6px; margin: 14px 0; }
+  .callout.ok { border-color: var(--ok); background: var(--okbg); }
+  .callout.warn { border-color: var(--warn); background: var(--warnbg); }
+  .callout.bad { border-color: var(--bad); background: var(--badbg); }
+  .callout > strong:first-child { display: block; margin-bottom: 2px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .93rem; background: var(--panel); }
+  th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--code); }
+  .tablewrap { overflow-x: auto; }
+  .tag { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: .78rem; font-weight: 600; white-space: nowrap; }
+  .tag.ok { background: var(--okbg); color: var(--ok); }
+  .tag.warn { background: var(--warnbg); color: var(--warn); }
+  .tag.bad { background: var(--badbg); color: var(--bad); }
+  .tag.info { background: var(--infobg); color: var(--accent); }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 14px 0; }
+  @media (max-width: 820px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+  .kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .kpi b { display: block; font-size: 1.5rem; color: var(--brand); }
+  .kpi span { color: var(--muted); font-size: .85rem; }
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 12px 0; }
+  .step { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: .86rem; flex: 1 1 150px; min-width: 140px; }
+  .step.hot { border-color: var(--bad); background: var(--badbg); }
+  .step.new { border-color: var(--ok); background: var(--okbg); }
+  .step.async { border-color: var(--accent); background: var(--infobg); }
+  .arrow { align-self: center; color: var(--muted); font-weight: 700; }
+  .small { font-size: .85rem; color: var(--muted); }
+  footer { color: var(--muted); font-size: .85rem; border-top: 1px solid var(--line); padding-top: 14px; margin-top: 40px; }
+
+  .grid2 > *, .grid3 > *, .kpis > *, .flow > * { min-width: 0; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+<header class="hero">
+  <div class="in">
+    <h1>CIBGLOBALD-4374 · Optimización de SOQL: Request manual de Risk y Draft → Proposal</h1>
+    <p>Propuesta técnica con dos alternativas de implementación, impacto de no tocar los flows y plan de entrega.</p>
+    <div class="chips">
+      <span class="chip">Estado: implementación local validada (check-only), sin desplegar</span>
+      <span class="chip">Actualizado: 15/10/2026</span>
+      <span class="chip">Audiencia: Tech Lead</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+  <strong>Contenido</strong>
+  <ol>
+    <li><a href="#resumen">Resumen ejecutivo y decisión que se pide</a></li>
+    <li><a href="#problema">El problema y qué hemos verificado</a></li>
+    <li><a href="#flujos">Cómo se ejecuta hoy: dónde se gasta el presupuesto</a></li>
+    <li><a href="#comunes">Cambios comunes a ambas alternativas</a></li>
+    <li><a href="#altA">Alternativa A: migrar los tres flows a Apex</a></li>
+    <li><a href="#altB">Alternativa B: no tocar los tres flows</a></li>
+    <li><a href="#comparativa">Comparativa lado a lado</a></li>
+    <li><a href="#impactos">Qué pasa si NO tocamos los flows</a></li>
+    <li><a href="#riesgosA">Riesgos de migrarlos (y cómo se mitigan)</a></li>
+    <li><a href="#cutover">Puesta en producción, orden y rollback</a></li>
+    <li><a href="#medicion">Medición y criterios de aceptación</a></li>
+    <li><a href="#estado">Estado actual de la implementación y pruebas</a></li>
+    <li><a href="#hallazgos">Hallazgos laterales y puntos a revisar</a></li>
+    <li><a href="#recomendacion">Recomendación</a></li>
+    <li><a href="#anexos">Anexos: inventario y mapa flow → Apex</a></li>
+  </ol>
+</nav>
+
+<!-- ======================================================= -->
+<section id="resumen">
+  <h2>1. Resumen ejecutivo y decisión que se pide</h2>
+  <p>
+    El ticket pide que el error <code>Too many SOQL queries: 101</code> deje de depender del número de Cases, Tasks y
+    clientes Multiholder en dos escenarios: el <strong>Request manual de Risk</strong> y el paso
+    <strong>Draft → Proposal</strong> con muchos Cases abiertos. Tras leer todo el camino de ejecución (LWC, Apex,
+    triggers y flows) la conclusión es que el coste se genera en <strong>tres sitios que se repiten</strong>:
+  </p>
+  <ol>
+    <li>Lógica de <em>team members</em> (participantes) duplicada en 8 flows y 5 clases Apex, que se ejecuta
+      <strong>una vez por Case/Task</strong> y no está bulkificada.</li>
+    <li>El arranque del <em>siguiente Case de aprobación</em> (<code>startNextCaseApproval</code>), que lanza una
+      query por cada guardado de Case aunque no haya nada que hacer.</li>
+    <li>El flow <code>DMT_CreateLineFROMOppFeature</code>, que en el Request de Risk hace una llamada externa y una
+      cascada de DML (Line, Passport, participantes, Opportunity) dentro de la transacción del usuario.</li>
+  </ol>
+
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">Alternativa A · Migrar los 3 flows</h3>
+      <p>Los flows <code>Case_After_Trigger_Flow</code>, <code>DMT_After_Task_Trigger</code> y
+        <code>DMT_CreateLineFROMOppFeature</code> pasan a Apex bulkificado, con un servicio único de team members.</p>
+      <p><span class="tag ok">Mayor ahorro y trazabilidad</span> <span class="tag warn">Toca 2 triggers compartidos</span>
+        <span class="tag warn">Requiere cutover coordinado</span></p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Alternativa B · No tocar los 3 flows</h3>
+      <p>Los flows siguen activos y tal cual. Se bulkifican las <strong>clases Apex que esos flows invocan</strong>,
+        se mueve el Request de Risk a asíncrono y se añade la protección de un callout por transacción.</p>
+      <p><span class="tag ok">Menor riesgo y esfuerzo</span> <span class="tag ok">No toca triggers compartidos</span>
+        <span class="tag warn">El coste propio de los flows permanece</span></p>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <strong>Dato clave para decidir</strong>
+    Todo lo de la alternativa B está <em>incluido</em> en la alternativa A. B es un subconjunto: se puede entregar
+    primero, medir con logs reales y decidir después si compensa migrar los flows (A). Esta propuesta recomienda ese
+    orden (ver sección 14), pero la decisión es tuya.
+  </div>
+
+  <h3>Decisiones que se piden</h3>
+  <ol>
+    <li>¿Alcance en este ticket: <strong>A</strong> (migrar flows), <strong>B</strong> (sin tocar flows) o
+      <strong>B ahora y A como fase 2</strong>?</li>
+    <li>¿Todos los creadores de team members en este ticket o solo los flows de Case y Task? (en el código local ya
+      están todos centralizados; se puede reducir).</li>
+    <li>¿Se acepta que el Request de Risk en Approval sea <strong>asíncrono</strong> (mensaje «la solicitud se está
+      procesando» y refresco por evento)?</li>
+    <li>Si se elige A: confirmación de que añadir <strong>una única llamada</strong> en los triggers compartidos
+      <code>SER_Case_TRIGGER</code> y <code>Task</code> es aceptable (y si requiere notificación a ANS).</li>
+  </ol>
+</section>
+
+<!-- ======================================================= -->
+<section id="problema">
+  <h2>2. El problema y qué hemos verificado</h2>
+
+  <h3>2.1 Síntoma</h3>
+  <p>
+    <code>System.LimitException: Too many SOQL queries: 101</code>. El límite síncrono por transacción es 100 queries
+    (200 en contexto asíncrono) y 150 sentencias DML. En una transacción de usuario compiten entre sí el LWC, el
+    trigger de Opportunity, los flows y todas las clases que estos disparan: cualquier trabajo que escale con el nº de
+    Cases/Tasks acaba agotando el presupuesto.
+  </p>
+
+  <h3>2.2 Qué se ha verificado leyendo el código (no hipótesis)</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Pieza</th><th>Hecho verificado</th><th>Por qué escala</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>DMT_CreateTeamMemberCase.processCase</code></td>
+        <td>5–6 SOQL (Case, Group, Approver, Approver Member, Team Members) y hasta 3 DML <strong>por Case</strong>.
+          Si ya estaba en contexto asíncrono se ejecutaba inline; si no, <strong>un Queueable por Case</strong>.</td>
+        <td>N Cases ⇒ 5N–6N SOQL inline, o N Queueables (límite de 50 encolados por transacción).</td>
+      </tr>
+      <tr>
+        <td><code>Case_After_Trigger_Flow</code></td>
+        <td>Se ejecuta en <strong>cada alta y cada actualización</strong> de un Case de aprobación: llama a
+          <code>DMT_CreateTeamMemberCase</code> y a <code>startNextCaseApproval</code> siempre.</td>
+        <td>Un reinicio de tareas (Draft → Proposal) resetea N Cases ⇒ N ejecuciones del flow.</td>
+      </tr>
+      <tr>
+        <td><code>startNextCaseApproval</code></td>
+        <td>Hace 1 SOQL (<code>getTasksByCase</code>) por Case guardado <strong>antes</strong> de comprobar si el Case
+          se está cerrando. Itera request a request y arranca el siguiente Case con
+          <code>System.enqueueJob</code>.</td>
+        <td>1 SOQL por Case guardado aunque no haya nada que hacer.</td>
+      </tr>
+      <tr>
+        <td><code>DMT_After_Task_Trigger</code></td>
+        <td>Por cada Task de aprobación: lookups de Case/Line/Opportunity; al cerrar, 3 actualizaciones filtradas de
+          team members y un <strong>update del propio Task</strong> (sello de usuario y fecha) que vuelve a disparar
+          el trigger y los flows de Task.</td>
+        <td>Cada cierre de Task ejecuta la cadena dos veces y deja 3 DML + queries fijas por evento.</td>
+      </tr>
+      <tr>
+        <td><code>DMT_CreateLineFROMOppFeature</code></td>
+        <td>~13 lookups, 2 invocables Apex (uno con <strong>callout síncrono</strong> a IASO y otro con queries dentro
+          de un loop) y creación de Line, Custom Association, clientes, Passport, participantes y update de
+          Opportunity. Los DML disparan en la misma transacción las cadenas after-update de Line y de Opportunity.</td>
+        <td>Se ejecuta en la transacción del clic del usuario; el coste crece con holders, productos y participantes,
+          y arrastra las cascadas.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="callout warn">
+    <strong>Rigor: qué NO sabemos todavía</strong>
+    No hay un debug log del escenario que falló, así que las cifras de esta propuesta son <em>conteos estáticos</em>
+    del código. Salesforce bulkifica parte de los elementos de un flow de registro (queries y DML de distintas
+    interviews del mismo lote); eso significa que el coste real <em>propio del flow</em> es menor que la suma
+    ingenua. Lo que no se bulkifica nunca es la lógica Apex que el flow invoca en bucle, que es donde hemos
+    encontrado el grueso del coste. La sección 11 define cómo medir antes/después.
+  </div>
+
+  <h3>2.3 Ya optimizado en tickets anteriores (no se repite)</h3>
+  <ul>
+    <li><strong>CIBGLOBALD-4117</strong>: reinicio de tareas obsoletas con queries agrupadas y paso a asíncrono
+      cuando hay 10 o más registros.</li>
+    <li><strong>CIBGLOBALD-4477</strong>: arranque automático de Cases a través del orquestador (un payload por
+      feature, una transacción cada uno).</li>
+    <li><strong>CIBGLOBALD-4617</strong>: reducción de platform events y suscripción filtrada en los LWC.</li>
+  </ul>
+</section>
+
+<!-- ======================================================= -->
+<section id="flujos">
+  <h2>3. Cómo se ejecuta hoy: dónde se gasta el presupuesto</h2>
+
+  <h3>3.1 Request manual de Risk (feature Risk con la Opportunity en Approval)</h3>
+  <div class="flow">
+    <div class="step">Clic en <strong>Request</strong> (LWC <code>dmt_feature_with_workflow</code>)</div><div class="arrow">→</div>
+    <div class="step"><code>DMT_Passport_Handler.startCase</code><br>~6 queries de selectores</div><div class="arrow">→</div>
+    <div class="step hot"><code>createSanctionFromOpp</code> lanza el flow <code>DMT_CreateLineFROMOppFeature</code></div><div class="arrow">→</div>
+    <div class="step hot">Callout IASO + Line + Passport + riesgos + participantes + update Opportunity</div><div class="arrow">→</div>
+    <div class="step"><code>createCase</code> + <code>createTask</code></div><div class="arrow">→</div>
+    <div class="step hot">Triggers y flows de Case/Task (<code>Case_After_Trigger_Flow</code>, <code>DMT_After_Task_Trigger</code>)</div>
+  </div>
+  <p class="small">Todo en una única transacción síncrona del usuario. En rojo, los puntos que concentran el consumo.</p>
+
+  <h3>3.2 Draft → Proposal con muchos Cases</h3>
+  <div class="flow">
+    <div class="step">Opportunity pasa de Draft a Proposal (trigger after update)</div><div class="arrow">→</div>
+    <div class="step"><code>restartApprovalTasksOnOpportunityResubmission</code> (4117)</div><div class="arrow">→</div>
+    <div class="step">Cancela Tasks, crea sustitutas, <strong>resetea N Cases</strong></div><div class="arrow">→</div>
+    <div class="step hot">Cada Case actualizado dispara <code>Case_After_Trigger_Flow</code></div><div class="arrow">→</div>
+    <div class="step hot">Team members (5–6 SOQL/Case) + <code>startNextCaseApproval</code> (≥1 SOQL/Case)</div>
+  </div>
+  <p>
+    Este es el origen de «al eliminar las Tasks la Opportunity avanzó»: sin Tasks no hay Cases que resetear y la
+    cadena por Case no se ejecuta. El refactor de 4117 agrupó sus propias queries, pero <strong>no puede evitar</strong>
+    que cada Case reseteado dispare el flow y sus invocables.
+  </p>
+
+  <h3>3.3 Presupuesto por evento (conteo estático, antes del cambio)</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Evento</th><th>SOQL</th><th>DML</th><th>Otros</th></tr></thead>
+    <tbody>
+      <tr><td>Alta/actualización de 1 Case de aprobación</td><td>5–6 (team members) + ≥1 (siguiente Case)</td><td>≤3</td><td>1 Queueable por Case si no es asíncrono</td></tr>
+      <tr><td>Cierre de 1 Task de aprobación</td><td>1 lookup + 3 updates filtrados + cadena doble (self-update)</td><td>≥4</td><td>Re-disparo de triggers y flows de Task</td></tr>
+      <tr><td>Alta de 1 Task con tipo «approval edit»</td><td>2–3 lookups + 5–6 (team members)</td><td>≤4</td><td>1 Queueable</td></tr>
+      <tr><td>Request de Risk (creación de Line)</td><td>~13 lookups + ~2 invocables + cascadas</td><td>~10 sentencias + cascadas</td><td>1 callout síncrono</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ======================================================= -->
+<section id="comunes">
+  <h2>4. Cambios comunes a ambas alternativas</h2>
+  <p>Estos cambios son Apex de nuestro dominio (<code>DMT_</code>), no tocan flows ni triggers y forman la base de A y de B.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-top:0">4.1 Servicio único de team members</h3>
+      <p><code>DMT_TeamMember_Service</code> es el único sitio que construye y guarda <code>DMT_TeamMember__c</code>:</p>
+      <ul>
+        <li><code>addApproversForCases</code>: 5 queries fijas y como mucho 1 update + 1 insert para <em>N</em> Cases.</li>
+        <li><code>syncApprovalEditAccess</code>: 1 query y 1 update para N Lines/Opportunities.</li>
+        <li><code>assignParticipantsByOwnerUO</code>: cuerpo movido desde <code>DMT_AssignParticipantsByUO</code>.</li>
+        <li>Constructores y DML (<code>buildLineMember</code>, <code>insertMembers</code>…) usados por
+          <code>DMT_CreateTeamMemberApprover</code>, <code>DMT_cloneParticipantForLineFromFlow</code> y
+          <code>DMT_RenewLineService</code>.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">4.2 <code>DMT_CreateTeamMemberCase</code> deja de ser Queueable</h3>
+      <p>Pasa a ser un invocable fino que entrega <strong>una colección</strong> al servicio. Fuera de contexto
+        asíncrono se encola <em>un</em> <code>DMT_TeamMemberCasePayload</code> en el orquestador (no uno por Case).
+        En contexto asíncrono ya existente se ejecuta inline, como antes.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">4.3 Request de Risk asíncrono</h3>
+      <ol>
+        <li>Validación <strong>síncrona</strong> (aprobador, tipo de tarea, feature ya iniciada, bloqueo de edición):
+          el usuario sigue viendo estos errores al instante.</li>
+        <li>Solo el caso «Risk con la Opportunity en Approval» se encola como un
+          <code>DMT_StartApprovalCasePayload</code> y se ejecuta en su propia transacción.</li>
+        <li>Éxito: el insert de la Task ya publica <code>DMT_Task__e</code> (CREATE) y el Passport se refresca.
+          Fallo: se publica en <strong>el mismo evento</strong> la operación <code>REQUEST_FAILED</code> y los LWC
+          muestran el error. <strong>No se crea un platform event nuevo.</strong></li>
+        <li>El feature «Portfolio Alignment Simulation» necesita el Id de la Task en la respuesta y sigue siendo
+          síncrono.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">4.4 Un callout por transacción</h3>
+      <p>Interfaz marcadora <code>DMT_CalloutPayload</code> sobre los <em>payloads</em> (clases pequeñas), no sobre
+        las clases de servicio grandes. <code>DMT_AsyncQueueJob</code> y <code>DMT_AsyncBatchJob</code> despachan como
+        mucho uno por transacción y devuelven el resto al orquestador. Generaliza la regla de 4117 y evita
+        <em>uncommitted work pending</em> cuando IASO escribe su log tras el callout.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">4.5 Siguiente Case por el orquestador</h3>
+      <p><code>startNextCaseApproval</code> evalúa en memoria si el Case se cierra <em>antes</em> de consultar nada, y
+        el siguiente Case se entrega como <code>DMT_StartApprovalCasePayload</code> en vez de
+        <code>System.enqueueJob</code>. Se añade un punto de entrada bulk (<code>startNextCaseApprovals</code>).</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">4.6 Datos de prueba</h3>
+      <p>Generadores nuevos en <code>DMT_Test_DataFactory</code> (y <code>DMT_Test_DataFactoryBuild</code>): team
+        members, usuarios, tipos de tarea, tareas de aprobación, línea Sanction, adjuntos y miembros de aprobador.
+        Ningún test nuevo hace DML directo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= -->
+<section id="altA">
+  <h2>5. Alternativa A · Migrar los tres flows a Apex</h2>
+
+  <h3>5.1 Qué se hace</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Flow</th><th>Sustituto en Apex</th><th>Dónde se engancha</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>Case_After_Trigger_Flow</code></td>
+        <td><code>DMT_Case_TriggerHandler</code> (afterInsert / afterUpdate): team members, sello de
+          <code>DMT_Approval_Date__c</code> en la Line, traspaso de adjuntos a la Task actual y arranque del siguiente
+          Case.</td>
+        <td><code>SER_Case_TRIGGER</code>, fuera del bloque del bypass <code>CIB_skip_trigger__c</code> (el flow
+          lo ignoraba) y protegido por <code>TriggerBypass.bypassTrigger</code>.</td>
+      </tr>
+      <tr>
+        <td><code>DMT_After_Task_Trigger</code></td>
+        <td><code>DMT_Task_TriggerHandler</code> (beforeUpdate / afterInsert / afterUpdate): flag de Asset Allocation,
+          grants de edición, retirada de grants al cerrar y <strong>sello de usuario/fecha en before update</strong>
+          (sin segundo pase de triggers).</td>
+        <td><code>Task.trigger</code>, junto a las llamadas existentes de <code>DTM_Task_Helper</code>.</td>
+      </tr>
+      <tr>
+        <td><code>DMT_CreateLineFROMOppFeature</code></td>
+        <td><code>DMT_SanctionLine_Service.createFromOpportunity</code>: una query por conjunto de datos, callout
+          <strong>primero</strong> (antes de cualquier DML), un DML por objeto.</td>
+        <td><code>DMT_Passport_Helper.createSanctionFromOpp</code> (sustituye a <code>Flow.Interview</code>).</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>5.2 Por qué hacerlo así</h3>
+  <ul>
+    <li><strong>Un solo lugar por responsabilidad.</strong> La regla «qué participantes tiene un Case» pasa de estar
+      repartida en flows y clases a una clase con tests. Quien llegue después encuentra la lógica con un grep.</li>
+    <li><strong>Coste fijo y demostrable.</strong> Un handler recibe <code>Trigger.new</code> completo: el nº de
+      queries no depende de cuántos registros haya, y se puede escribir un test que lo asegure (existe:
+      <em>addApproversForCases_queryCountDoesNotDependOnNumberOfCases</em>).</li>
+    <li><strong>Se elimina el re-disparo del Task.</strong> El sello de usuario/fecha deja de ser un update tras el
+      guardado y pasa a asignarse antes: una cadena de triggers y flows menos por cada cierre.</li>
+    <li><strong>El callout queda ordenado.</strong> En el servicio el callout es la primera operación y la única de la
+      transacción; en el flow solo dependía del orden de elementos.</li>
+    <li><strong>Errores legibles.</strong> Un fallo dentro de un flow llega como «process failed / CANNOT_EXECUTE_FLOW_TRIGGER»
+      sin pila; en Apex llega con clase, método y línea y se registra por el orquestador.</li>
+    <li><strong>Pruebas unitarias de verdad.</strong> Los flows solo se cubren indirectamente; el handler tiene sus
+      propios tests con el factory.</li>
+  </ul>
+
+  <h3>5.3 Qué toca</h3>
+  <ul>
+    <li>6 clases nuevas + 4 de test, ~14 clases existentes (todas <code>DMT_</code> o framework propio),
+      2 triggers compartidos (<strong>una llamada cada uno</strong>) y 2 LWC (manejo de <code>REQUEST_FAILED</code>).</li>
+    <li>3 FlowDefinition con <code>activeVersionNumber = 0</code> (el flow queda desactivado; las versiones no se
+      borran, el rollback es reactivarlas).</li>
+  </ul>
+
+  <h3>5.4 Cambio de comportamiento a validar</h3>
+  <ul>
+    <li><strong>Orden de ejecución.</strong> Un flow de registro corre después de los triggers Apex after; el handler
+      corre dentro del trigger. Es parte del riesgo (sección 9) y se cubre con tests de paridad por rama.</li>
+    <li><strong>Mensajes de error al usuario.</strong> Los <em>fault paths</em> del flow mostraban errores
+      personalizados; en Apex pasan a excepción registrada. Para el Request de Risk el error llega ahora por el
+      evento <code>REQUEST_FAILED</code>.</li>
+  </ul>
+</section>
+
+<!-- ======================================================= -->
+<section id="altB">
+  <h2>6. Alternativa B · No tocar los tres flows</h2>
+
+  <p>
+    Los tres flows siguen activos, sin una sola modificación. Lo que se cambia es lo que <em>los flows invocan</em> y
+    el punto desde el que se dispara el Request.
+  </p>
+
+  <h3>6.1 Qué se hace</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Cambio</th><th>Efecto sobre el flow que lo invoca</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Los cambios comunes de la sección 4: servicio de team members, invocable
+          <code>DMT_CreateTeamMemberCase</code> bulk, Request asíncrono, marcador de callout y siguiente Case por
+          orquestador.</td>
+        <td>El flow de Case y el de Task llaman al mismo invocable, que ahora recibe <em>la lista completa</em> de
+          inputs del lote y hace 5 queries fijas en lugar de 5–6 por Case.</td>
+      </tr>
+      <tr>
+        <td><code>startNextCaseApproval</code> usa el punto de entrada bulk (cambio pequeño; hoy itera request a
+          request aunque ya sin query para los Cases que no se cierran).</td>
+        <td>La query de Tasks pasa a ser <strong>una</strong> para todos los Cases que se cierran en el lote.</td>
+      </tr>
+      <tr>
+        <td>El Request de Risk en Approval se encola completo (<code>startCaseNow</code> dentro del payload).</td>
+        <td><code>DMT_CreateLineFROMOppFeature</code> se ejecuta en una transacción asíncrona propia: 200 SOQL en vez
+          de 100, sin competir con el resto del trigger de la Opportunity ni con el LWC, y el callout es lo primero
+          que ocurre.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>6.2 Por qué es una opción sólida</h3>
+  <ul>
+    <li><strong>Ataca donde está el coste que hemos podido demostrar:</strong> los dos invocables Apex que se llaman
+      una vez por Case y el consumo del Request en la transacción síncrona.</li>
+    <li><strong>No toca ningún componente compartido.</strong> Ni <code>SER_Case_TRIGGER</code> ni
+      <code>Task.trigger</code> ni los flows: todo el cambio vive en clases <code>DMT_</code>. No hay cutover entre
+      flow y Apex (nada se ejecuta dos veces) y el rollback es revertir clases.</li>
+    <li><strong>Es reversible y medible por separado.</strong> Si tras B el consumo ya está lejos del límite, la
+      migración de flows (A) pasa de «necesaria» a «mejora de mantenibilidad».</li>
+    <li><strong>Menor superficie de pruebas.</strong> No hay que reproducir ramas de flow en Apex.</li>
+  </ul>
+
+  <h3>6.3 Qué se queda como está</h3>
+  <ul>
+    <li>El flow de Task sigue haciendo su lookup de Case/Line/Opportunity por evento y sus tres updates filtrados.</li>
+    <li>El flow de Task sigue actualizando el propio Task al cerrarlo (re-disparo de triggers y flows).</li>
+    <li>El flow de Case sigue evaluándose en cada guardado de Case de aprobación, con sus elementos y su rama muerta.</li>
+    <li>El flow de creación de Line mantiene la lógica de negocio dentro del XML, incluido el callout como invocable.</li>
+  </ul>
+</section>
+
+<!-- ======================================================= -->
+<section id="comparativa">
+  <h2>7. Comparativa lado a lado</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Criterio</th><th>A · Migrar flows</th><th>B · Sin tocar flows</th></tr></thead>
+    <tbody>
+      <tr><td>Coste de team members con N Cases</td><td><span class="tag ok">Fijo (5 SOQL)</span></td><td><span class="tag ok">Fijo (5 SOQL)</span> el invocable recibe el lote</td></tr>
+      <tr><td>Query por Case guardado (siguiente Case)</td><td><span class="tag ok">0 si no cierra; 1 por lote si cierra</span></td><td><span class="tag ok">Igual</span> con el cambio pequeño del invocable</td></tr>
+      <tr><td>Request de Risk</td><td><span class="tag ok">Asíncrono + servicio con callout primero</span></td><td><span class="tag ok">Asíncrono</span> con el flow dentro</td></tr>
+      <tr><td>Re-disparo del Task (self-update)</td><td><span class="tag ok">Eliminado</span></td><td><span class="tag bad">Permanece</span></td></tr>
+      <tr><td>Coste propio de los flows (lookups, 3 updates filtrados)</td><td><span class="tag ok">Sustituido por 1 query + 1 update</span></td><td><span class="tag warn">Permanece (parcialmente bulkificado por la plataforma)</span></td></tr>
+      <tr><td>Observabilidad de errores</td><td><span class="tag ok">Pila y registro por orquestador</span></td><td><span class="tag warn">Error genérico del flow</span></td></tr>
+      <tr><td>Tests unitarios de la lógica</td><td><span class="tag ok">Sí, por rama</span></td><td><span class="tag warn">Solo del Apex invocado</span></td></tr>
+      <tr><td>Triggers compartidos modificados</td><td><span class="tag warn">2 (una llamada cada uno)</span></td><td><span class="tag ok">Ninguno</span></td></tr>
+      <tr><td>Notificación ANS potencial</td><td><span class="tag warn">Valorar (triggers no <code>DMT_</code>)</span></td><td><span class="tag ok">No aplica</span></td></tr>
+      <tr><td>Riesgo de doble ejecución flow + Apex</td><td><span class="tag warn">Existe: hay que desactivar y desplegar a la vez</span></td><td><span class="tag ok">No existe</span></td></tr>
+      <tr><td>Cambio del orden de ejecución</td><td><span class="tag warn">Sí (flow after-save vs trigger)</span></td><td><span class="tag ok">No</span></td></tr>
+      <tr><td>Rollback</td><td><span class="tag warn">Reactivar 3 versiones + revertir triggers y clases</span></td><td><span class="tag ok">Revertir clases</span></td></tr>
+      <tr><td>Nomenclatura (Spanglish, typos)</td><td><span class="tag ok">Corregible en el código nuevo</span></td><td><span class="tag warn">Permanece en los flows</span></td></tr>
+      <tr><td>Esfuerzo / superficie de cambio</td><td><span class="tag warn">Alta</span></td><td><span class="tag ok">Media-baja</span></td></tr>
+      <tr><td>Deuda técnica restante</td><td><span class="tag ok">Lógica en un solo sitio</span></td><td><span class="tag warn">Lógica repartida flow + Apex</span></td></tr>
+      <tr><td>Comportamientos heredados (callejón sin salida sin Multiholder, rama muerta)</td><td><span class="tag ok">Visibles y decididos</span></td><td><span class="tag warn">Siguen ocultos en el XML</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ======================================================= -->
+<section id="impactos">
+  <h2>8. Qué pasa si NO tocamos los flows</h2>
+  <p>
+    Esta sección responde literalmente a la pregunta «¿qué riesgo asumimos si dejamos los flows como están?». Algunos
+    impactos son consecuencia directa de la alternativa B; otros aparecen en cualquier caso.
+  </p>
+
+  <h3>8.1 Impacto técnico</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>#</th><th>Impacto</th><th>Gravedad</th><th>Qué lo agrava</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><strong>El presupuesto sigue compartido.</strong> Los flows corren en la misma transacción que el
+          trigger de Opportunity, los LWC y las cadenas de Line. Aunque nuestros invocables sean fijos, los elementos
+          del flow suman a la misma cuenta de 100 SOQL / 150 DML.</td>
+        <td><span class="tag warn">Media</span></td>
+        <td>Cualquier ticket futuro que añada trabajo al mismo evento.</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><strong>Doble pase por cada cierre de Task.</strong> El flow actualiza el propio Task; eso re-dispara
+          <code>Task.trigger</code>, <code>DTM_Task_Helper</code> (platform event) y el flow otra vez.</td>
+        <td><span class="tag warn">Media</span></td>
+        <td>Cierres masivos de tareas (<code>DMT_Massive_Task_Closure</code>).</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><strong>Errores opacos.</strong> En el test de validación de esta propuesta el fallo apareció como
+          «<em>Case After Trigger Flow process failed … CANNOT_EXECUTE_FLOW_TRIGGER</em>» sin indicar qué elemento
+          consumió las queries. En producción es lo que verá el soporte.</td>
+        <td><span class="tag warn">Media</span></td>
+        <td>Fallos intermitentes dependientes del volumen.</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><strong>Lógica de negocio fuera de control de versiones legible.</strong> El comportamiento vive en XML de
+          flow: no hay diff revisable ni tests por rama. Hemos encontrado <em>dos comportamientos cuestionables</em>
+          al leerlos (sección 12) que nadie había visto.</td>
+        <td><span class="tag info">Baja-media</span></td>
+        <td>Rotación de equipo.</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><strong>El callout sigue siendo un invocable dentro de un flow.</strong> Con el Request asíncrono queda
+          aislado, pero cualquier otro llamante futuro del flow volvería a hacer el callout en una transacción de
+          usuario, y un DML anterior en ella provocaría <em>uncommitted work pending</em>.</td>
+        <td><span class="tag info">Baja</span> hoy, <span class="tag warn">Media</span> si aparecen más llamantes</td>
+        <td>Reutilización del flow desde otro punto.</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><strong>Cada nueva funcionalidad de aprobación se engancha a un flow más</strong> (más lookups por
+          guardado de Case) en lugar de a un único handler con coste fijo.</td>
+        <td><span class="tag info">Baja</span></td>
+        <td>Evolución del proceso de aprobación.</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><strong>La nomenclatura incorrecta permanece</strong> (<code>StartNextCaseAutomatization</code>,
+          <code>getSancion</code>, <code>assigmentinputws</code>, <code>Custom_error_crerate_new_Task</code>…).
+          Es cosmético pero dificulta la búsqueda.</td>
+        <td><span class="tag info">Baja</span></td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>8.2 Impacto sobre los objetivos del ticket</h3>
+  <ul>
+    <li><strong>Request manual de Risk:</strong> con B el consumo cae porque corre en una transacción propia con
+      200 SOQL y los invocables ya no escalan. El riesgo residual es el coste del propio flow de creación de Line,
+      que no podemos medir sin log: si el flow por sí solo y sus cascadas superaran 200 SOQL (improbable pero no
+      descartable con muchos holders y productos), B no lo arreglaría.</li>
+    <li><strong>Draft → Proposal:</strong> con B el coste por Case reseteado baja a casi cero en nuestros invocables,
+      pero cada Case reseteado sigue ejecutando una interview del flow de Case y, por cada Task sustituta creada,
+      una del flow de Task. Con cientos de Cases el consumo de CPU y de DML del propio flow puede ser el siguiente
+      cuello de botella.</li>
+    <li><strong>Criterio de aceptación («no depende del nº de Cases»):</strong> B lo cumple para queries en nuestro
+      Apex; para el conjunto de la transacción solo lo podemos afirmar tras medir.</li>
+  </ul>
+
+  <div class="callout warn">
+    <strong>Lectura honesta</strong>
+    No tocar los flows no deja el problema «sin resolver»: resuelve la parte demostrable y reduce mucho el riesgo.
+    Lo que se acepta es no poder garantizar el criterio de aceptación de forma <em>estructural</em>; solo de forma
+    <em>empírica</em> (medida con los logs de alto volumen).
+  </div>
+</section>
+
+<!-- ======================================================= -->
+<section id="riesgosA">
+  <h2>9. Riesgos de migrar los flows (alternativa A) y mitigaciones</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Riesgo</th><th>Probabilidad / impacto</th><th>Mitigación</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Doble ejecución (flow activo + handler)</td>
+        <td>Alta si se despliega sin desactivar / grave</td>
+        <td>Desactivar los 3 flows (FlowDefinition) <strong>en el mismo despliegue</strong> que los hooks. En la
+          validación hemos visto exactamente este efecto: con el flow aún activo un test superó 100 SOQL.</td>
+      </tr>
+      <tr>
+        <td>Cambio de orden de ejecución</td>
+        <td>Media / media</td>
+        <td>Tests de paridad por rama; el handler ejecuta los mismos pasos en el mismo orden relativo.</td>
+      </tr>
+      <tr>
+        <td>Paridad de comportamiento (adjuntos, fault paths)</td>
+        <td>Media / media</td>
+        <td>El traspaso de adjuntos usa copias en lugar de reinsertar el registro con Id (mismo propósito, mecánica más
+          segura). Los errores pasan a registro + evento.</td>
+      </tr>
+      <tr>
+        <td>Modificar triggers compartidos</td>
+        <td>Baja / media</td>
+        <td>Una sola llamada por trigger, fuera del bloque del bypass (el flow lo ignoraba) y respetando
+          <code>TriggerBypass.bypassTrigger</code>. Moverlo dentro del bloque es un cambio de una línea si se desea.</td>
+      </tr>
+      <tr>
+        <td>Rama <code>Finished_to_Pending</code> del flow de Case</td>
+        <td>Baja / baja</td>
+        <td>No se porta: exige <code>IsDeleted = true</code> en un contexto after-save, imposible. Confirmar que nadie
+          depende de ella.</td>
+      </tr>
+      <tr>
+        <td>Primera ejecución de tests en pipeline</td>
+        <td>Media / baja</td>
+        <td>Ya hay una validación check-only con 215 tests (sección 12). Quedan 2 fallos que ya fallan sin
+          nuestros cambios.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ======================================================= -->
+<section id="cutover">
+  <h2>10. Puesta en producción, orden y rollback</h2>
+
+  <h3>10.1 Alternativa B</h3>
+  <ol>
+    <li>Desplegar las clases (servicio, payloads, invocables, orquestador y LWC) y tests.</li>
+    <li>No hay activaciones ni desactivaciones. Los flows siguen llamando a los mismos invocables.</li>
+    <li><strong>Rollback:</strong> redesplegar la versión anterior de las clases. Sin pasos manuales.</li>
+  </ol>
+
+  <h3>10.2 Alternativa A</h3>
+  <ol>
+    <li>Desplegar clases, handlers, servicio de Line, triggers y los tres <code>FlowDefinition</code> en <strong>un
+      único despliegue</strong>.</li>
+    <li>Verificar en la primera ejecución: un Case nuevo crea sus team members, el cierre de un Task retira los
+      grants y un Request de Risk crea Case + Task y refresca el Passport.</li>
+    <li><strong>Rollback:</strong> volver a poner <code>activeVersionNumber</code> a 7, 8 y 18 respectivamente y
+      desplegar los triggers anteriores. Las versiones de flow no se han eliminado.</li>
+  </ol>
+
+  <h3>10.3 Nota sobre los payloads asíncronos en ambos casos</h3>
+  <p>
+    Cada payload se ejecuta de uno en uno (batch de tamaño 1). El presupuesto diario de ejecuciones asíncronas es de
+    852.400 y la concurrencia de batch es de 5 trabajos activos más la Flex Queue: no es una restricción práctica, pero
+    sí implica que bajo mucha carga el Case puede tardar segundos en aparecer.
+  </p>
+</section>
+
+<!-- ======================================================= -->
+<section id="medicion">
+  <h2>11. Medición y criterios de aceptación</h2>
+  <p>El ticket exige medir antes/después con casos de alto volumen. Propuesta:</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Escenario</th><th>Datos</th><th>Qué se mide</th><th>Criterio</th></tr></thead>
+    <tbody>
+      <tr><td>Request manual de Risk</td><td>Opportunity Multiholder con 1, 5 y 20 holders; productos y participantes proporcionales</td><td>SOQL, DML y CPU en la transacción síncrona (validación + encolado) y en la asíncrona (ejecución)</td><td>Mismo nº de SOQL con 1 y 20 holders; síncrono muy por debajo de 100</td></tr>
+      <tr><td>Draft → Proposal</td><td>Opportunity con 1, 20 y 60 Cases abiertos y su Task</td><td>SOQL y DML totales de la transacción del cambio de stage</td><td>No crece de forma proporcional al nº de Cases</td></tr>
+      <tr><td>Cierre masivo de tareas</td><td>50 Tasks de aprobación cerradas a la vez</td><td>Pasadas de trigger/flow, SOQL, DML</td><td>Sin errores de límite; (solo A) un único pase por Task</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="small">
+    Método: debug log nivel FINE en <code>Apex Code</code> y <code>Workflow</code>, un log por escenario antes y
+    después, y volcado de <code>Limits.getQueries()</code> / <code>getDmlStatements()</code> al final. Las cifras de
+    esta propuesta son estáticas; las medidas se añadirán al comentario final del ticket.
+  </p>
+</section>
+
+<!-- ======================================================= -->
+<section id="estado">
+  <h2>12. Estado actual de la implementación y pruebas</h2>
+
+  <div class="kpis">
+    <div class="kpi"><b>215</b><span>tests ejecutados en la validación check-only</span></div>
+    <div class="kpi"><b>213</b><span>pasan</span></div>
+    <div class="kpi"><b>2</b><span>fallan también sin nuestros cambios</span></div>
+    <div class="kpi"><b>0</b><span>componentes desplegados (nada guardado)</span></div>
+  </div>
+
+  <h3>12.1 Qué hemos hecho</h3>
+  <ul>
+    <li>Implementación completa de la <strong>alternativa A</strong> en local (rama del ticket). Todo compila en
+      validación y los tests nuevos pasan.</li>
+    <li>La <strong>alternativa B</strong> es el mismo código sin los handlers, sin los hooks de trigger, sin el
+      servicio de creación de Line y sin la desactivación de flows: no requiere trabajo de diseño adicional, solo
+      recortar y (opcionalmente) el cambio pequeño del invocable <code>startNextCaseApproval</code>.</li>
+    <li>Se corrigieron durante la validación: un campo no escribible (<code>Alpha_Code__c</code>), datos de prueba
+      sobre una fórmula (<code>DES_Client_Type__c</code>) y la forma de desactivar flows (ver 12.3).</li>
+  </ul>
+
+  <h3>12.2 Los 2 tests que fallan no son nuestros</h3>
+  <p>
+    Se ejecutaron contra el código base sin nuestros cambios: <code>…startsMatchingFeature</code> falló 3 de 3
+    ejecuciones y <code>…opportunityMatchesStageSanctionWithFixedQueries</code> 2 de 3. Parece depender de que el
+    arranque automático toma el Passport más reciente aunque tenga el JSON vacío cuando coincide en
+    <code>CreatedDate</code> con el Passport que crea <code>AfterCreateOpportunity</code>. Recomendamos que lo revise
+    quien posee ese cambio. Además fallan 6 tests de <code>DMT_OppToSanctionUtilsTest</code> por un campo no
+    consultado en el propio test.
+  </p>
+
+  <h3>12.3 Aprendizaje: desactivar un flow por despliegue</h3>
+  <div class="callout">
+    <strong>Poner el flow en estado «Obsolete» no lo desactiva.</strong>
+    Con el XML del flow en <code>Obsolete</code> la versión activa siguió ejecutándose (y reprodujo el error de
+    100 SOQL). La forma correcta es <code>FlowDefinition</code> con <code>activeVersionNumber = 0</code>. Esto solo
+    afecta a la alternativa A.
+  </div>
+</section>
+
+<!-- ======================================================= -->
+<section id="hallazgos">
+  <h2>13. Hallazgos laterales y puntos a revisar</h2>
+  <ol>
+    <li><strong>Callejón sin salida en <code>DMT_CreateLineFROMOppFeature</code>.</strong> Si el cliente no es
+      Subsidiary y no tiene Multiholder, el flow crea la Line y termina sin riesgos, Passport, participantes ni
+      vínculo con la Opportunity, y no devuelve el Id. Se ha portado igual (devuelve null). Conviene decidir si es
+      intencional.</li>
+    <li><strong>Rama muerta en <code>Case_After_Trigger_Flow</code>.</strong> <code>Finished_to_Pending</code>
+      requiere <code>IsDeleted = true</code> en un contexto after-save: no se puede cumplir.</li>
+    <li><strong>Participantes asignados dos veces por UO.</strong> <code>DMT_AssignParticipantsByUO</code> se invoca
+      desde <code>AfterCreateLine</code> y desde <code>DMT_Assign_Line_Participants_By_UO</code> (y su equivalente de
+      Opportunity). Es idempotente pero duplica queries y DML. No se ha eliminado porque no hemos verificado todas
+      las rutas de cada flow.</li>
+    <li><strong>Arranque automático reimplementado.</strong> La versión actual encola <em>todas</em> las features
+      elegibles de una Opportunity en lugar de solo la de menor orden; es una decisión funcional de quien la cambió.
+      Se mantiene tal cual (la sandbox es la fuente de verdad).</li>
+    <li><strong>Payloads con posible callout sin marcar:</strong> <code>DMT_PassportPayload</code>,
+      <code>DMT_DynamicMapperPayload</code>, <code>DMT_SnapshotPayload</code>,
+      <code>DMT_CoreDocumentsUploadPayload</code>, <code>DMT_ConsumptionReassignPayload</code>,
+      <code>DMT_IntegrationRetryPayload</code>, <code>DMT_CalloutTrackableFreezePayload</code>. Candidatos a llevar el
+      marcador en una segunda fase.</li>
+    <li><strong>Nomenclatura.</strong> «Automatization» es un calco de «automatización»; en inglés es «automation».
+      El invocable al que llamaba se llama en realidad <em>Start Next Case Approval</em>.</li>
+  </ol>
+</section>
+
+<!-- ======================================================= -->
+<section id="recomendacion">
+  <h2>14. Recomendación</h2>
+  <div class="callout ok">
+    <strong>B ahora, A después si la medición lo justifica.</strong>
+    <ol>
+      <li><strong>Fase 1 (este ticket):</strong> alternativa B. Entrega la parte demostrable del ahorro, no toca
+        componentes compartidos, no tiene cutover y se revierte con un redespliegue de clases.</li>
+      <li><strong>Medir</strong> los dos escenarios con logs de alto volumen (sección 11).</li>
+      <li><strong>Fase 2 (ticket aparte o continuación):</strong> migrar los flows (A) si tras B el flow de Task
+        o el de Case siguen siendo relevantes en el consumo, o si se quiere cerrar la deuda de mantenibilidad.</li>
+    </ol>
+  </div>
+  <p>
+    Razón: A y B comparten la mayor parte del código y la mayor parte del riesgo operativo de A (doble ejecución, orden de
+    ejecución, triggers compartidos, ANS) no aporta ahorro adicional medible en queries que no podamos obtener ya con
+    B. A aporta sobre todo trazabilidad, errores legibles y eliminación del re-disparo del Task: valioso, pero
+    separable.
+  </p>
+  <p class="small">
+    Excepción razonable: si el equipo ya tiene previsto tocar esos tres flows por otro motivo, o si preferís cerrar la
+    deuda en una sola entrega, A está implementada, validada y lista para revisión.
+  </p>
+</section>
+
+<!-- ======================================================= -->
+<section id="anexos">
+  <h2>15. Anexos</h2>
+
+  <h3>A. Mapa flow → Apex (alternativa A)</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Elemento del flow</th><th>Sustituto</th></tr></thead>
+    <tbody>
+      <tr><td>Case flow · Create_Team_Member / Create_Team_Member_Case_Update</td><td><code>DMT_TeamMember_Service.scheduleCaseRequests</code> → <code>addApproversForCases</code></td></tr>
+      <tr><td>Case flow · StartNextCaseAutomatization</td><td><code>DMT_Case_Steps_Controller.startNextCaseApprovals</code></td></tr>
+      <tr><td>Case flow · Update_Approval_Date_Line</td><td><code>DMT_Case_TriggerHandler.stampApprovalDateOnLines</code></td></tr>
+      <tr><td>Case flow · traspaso de adjuntos</td><td><code>DMT_Case_TriggerHandler.moveAttachmentsToCurrentTask</code></td></tr>
+      <tr><td>Case flow · Finished_to_Pending</td><td>No se porta (inalcanzable)</td></tr>
+      <tr><td>Task flow · Is_Asset_Allocation_Task / Update_Opportunity_Asset_Allocation</td><td><code>DMT_Task_TriggerHandler.afterInsert</code></td></tr>
+      <tr><td>Task flow · Condition_Edit_Approval / Create_Team_Member_Action_1</td><td><code>DMT_Task_TriggerHandler.afterInsert</code> → servicio (sanctionEdit = true)</td></tr>
+      <tr><td>Task flow · Update_user_who_complete_task</td><td><code>DMT_Task_TriggerHandler.beforeUpdate</code></td></tr>
+      <tr><td>Task flow · tres updates de team members</td><td><code>DMT_TeamMember_Service.syncApprovalEditAccess</code></td></tr>
+      <tr><td>Line flow · creación de Line, asociación, clientes, riesgos, Passport, participantes, update de Opportunity</td><td><code>DMT_SanctionLine_Service.createFromOpportunity</code></td></tr>
+      <tr><td>Line flow · GetLineId (callout)</td><td>Primera operación del servicio (<code>requestLineCode</code>)</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>B. Inventario de componentes</h3>
+  <div class="grid2">
+    <div class="card">
+      <h4>Nuevos</h4>
+      <ul>
+        <li><code>DMT_TeamMember_Service</code></li>
+        <li><code>DMT_TeamMemberCasePayload</code></li>
+        <li><code>DMT_CalloutPayload</code></li>
+        <li><code>DMT_Case_TriggerHandler</code> <span class="tag info">solo A</span></li>
+        <li><code>DMT_Task_TriggerHandler</code> <span class="tag info">solo A</span></li>
+        <li><code>DMT_SanctionLine_Service</code> <span class="tag info">solo A</span></li>
+        <li>Tests: <code>DMT_TeamMember_ServiceTest</code>, <code>DMT_Case_TriggerHandlerTest</code>,
+          <code>DMT_Task_TriggerHandlerTest</code>, <code>DMT_SanctionLine_ServiceTest</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Modificados</h4>
+      <ul>
+        <li><code>DMT_CreateTeamMemberCase</code> (invocable fino)</li>
+        <li><code>DMT_AssignParticipantsByUO</code>, <code>DMT_CreateTeamMemberApprover</code>,
+          <code>DMT_cloneParticipantForLineFromFlow</code>, <code>DMT_RenewLineService</code></li>
+        <li><code>DMT_Case_Steps_Controller</code>, <code>DMT_Passport_Handler</code></li>
+        <li><code>DMT_Passport_Helper</code> <span class="tag info">solo A</span></li>
+        <li><code>DMT_AsyncDispatcher</code>, <code>DMT_AsyncQueueJob</code>, <code>DMT_AsyncBatchJob</code></li>
+        <li><code>DTM_Task_Helper</code> (operación <code>REQUEST_FAILED</code>)</li>
+        <li><code>DMT_StartApprovalCasePayload</code>, <code>DMT_CalloutTrackableCheckPayload</code> (marcador)</li>
+        <li><code>DMT_Test_DataFactory</code>, <code>DMT_Test_DataFactoryBuild</code></li>
+        <li>LWC <code>dmt_passport</code>, <code>dmt_passport_opportunity</code></li>
+        <li><code>SER_Case_TRIGGER</code>, <code>Task</code> <span class="tag info">solo A</span></li>
+        <li>3 FlowDefinition <span class="tag info">solo A</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>C. Glosario de la propuesta</h3>
+  <ul>
+    <li><strong>Bulkificar:</strong> escribir el código para que el nº de queries y DML sea constante con
+      independencia del nº de registros del lote.</li>
+    <li><strong>Payload:</strong> pieza de trabajo asíncrono que se entrega a <code>DMT_AsyncOrchestrator</code>, que
+      la ejecuta en una transacción propia (Queueable o Batch de tamaño 1).</li>
+    <li><strong>Invocable:</strong> método Apex que un flow llama; la plataforma le entrega una lista con los inputs
+      de todas las interviews del lote.</li>
+    <li><strong>Uncommitted work pending:</strong> error al hacer un callout tras un DML en la misma transacción
+      (IASO escribe su log tras la llamada).</li>
+  </ul>
+</section>
+
+<footer>
+  Documento generado a partir de la lectura del código y de una validación check-only del 14–15/10/2026. Las
+  cifras de consumo son conteos estáticos hasta que existan los logs de medición descritos en la sección 11.
+</footer>
+
+</div>

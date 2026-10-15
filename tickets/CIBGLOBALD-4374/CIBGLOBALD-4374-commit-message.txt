@@ -1,0 +1,23 @@
+CIBGLOBALD-4374 - bulkify the Risk request and the approval Case/Task automation
+
+The Risk request and the Draft to Proposal restart consumed SOQL in proportion to the number of Cases,
+Tasks and holders because the same participant and next-case logic ran once per record in three
+flows and several Apex classes.
+
+- Migrate the flows Case_After_Trigger_Flow, DMT_After_Task_Trigger and DMT_CreateLineFROMOppFeature to
+  Apex: DMT_Case_TriggerHandler (hooked in SER_Case_TRIGGER outside the custom setting bypass),
+  DMT_Task_TriggerHandler (hooked in Task.trigger) and DMT_SanctionLine_Service. The flows are deactivated
+  in the same change (FlowDefinition) so nothing is processed twice.
+- Centralize DMT_TeamMember__c logic in DMT_TeamMember_Service (bulk, fixed query cost). The Queueable
+  DMT_CreateTeamMemberCase becomes a thin invocable and the work goes through DMT_AsyncOrchestrator as
+  DMT_TeamMemberCasePayload. DMT_AssignParticipantsByUO, DMT_CreateTeamMemberApprover,
+  DMT_cloneParticipantForLineFromFlow and DMT_RenewLineService delegate to the service.
+- startNextCaseApproval evaluates its in-memory criteria before querying and has a bulk entry point;
+  the next Case is started through DMT_StartApprovalCasePayload instead of System.enqueueJob.
+- Manual Risk request in Approval is validated synchronously and queued as one payload; failures are
+  reported on the existing DMT_Task__e event (REQUEST_FAILED) and shown by the Passport LWCs.
+- Add the DMT_CalloutPayload marker so the queue and batch jobs run one callout payload per transaction.
+- Add team member, user, task type, approval task, sanction line and attachment generators to
+  DMT_Test_DataFactory and cover the new classes.
+
+Touches common element: Case trigger (SER_Case_TRIGGER) and Task trigger - single DMT hook each.

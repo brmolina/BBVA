@@ -11,7 +11,18 @@ public without sharing class DMT_AsyncBatchJob implements Database.Batchable<DMT
     public void execute(Database.BatchableContext bc, List<DMT_AsyncPayload> scope) {
         List<DMT_LogExceptionPayload> existingLogsToPublish = new List<DMT_LogExceptionPayload>();
 
+        // CIBGLOBALD-4374 - same rule as DMT_AsyncQueueJob: one DMT_CalloutPayload per transaction. The
+        // orchestrator normally sends one payload per chunk, so this only matters for larger scopes.
+        Boolean calloutPayloadAlreadyClaimed = false;
+
         for (DMT_AsyncPayload p : scope) {
+            if (p instanceof DMT_CalloutPayload) {
+                if (calloutPayloadAlreadyClaimed) {
+                    DMT_AsyncOrchestrator.enqueue(p);
+                    continue;
+                }
+                calloutPayloadAlreadyClaimed = true;
+            }
             if (p instanceof DMT_LogExceptionPayload) {
                 // If it's already a log, add to list for bulk handling
                 existingLogsToPublish.add((DMT_LogExceptionPayload)p);

@@ -208,7 +208,6 @@ export default class Dmt_passport_opportunity extends LightningElement {
     responseValidationOpp;
     userPermission = false;
     previousOpportunityStage;
-    approvalTransitionPending = false;
     statusRefreshInProgress = false;
     readytoclosePassportTriggered = new Set();
 
@@ -314,11 +313,6 @@ export default class Dmt_passport_opportunity extends LightningElement {
                 const newStage = getFieldValue(data, OPPORTUNITY_STAGE_NAME_FIELD);
 
                 if (this.previousOpportunityStage != undefined && this.previousOpportunityStage != newStage) {
-                    const isEnteringApproval = newStage === APPROVAL_OPPORTUNITY_STATE;
-                    this.approvalTransitionPending = isEnteringApproval && this.hasResolvableApprovalApprover();
-                    if (this.approvalTransitionPending) {
-                        this.showSpinner = true;
-                    }
                     if (newStage !== APPROVAL_OPPORTUNITY_STATE && this.isBigVersion !== 'true') {
                         this.handleStatusChange();
                     }
@@ -526,9 +520,12 @@ export default class Dmt_passport_opportunity extends LightningElement {
                 return;
             }
 
-            if (operation === 'CREATE' && this.checkStatusApproval && this.approvalTransitionPending) {
-                this.approvalTransitionPending = false;
+            // CIBGLOBALD-4374 - the Request was queued and could not be completed: the traffic light did
+            // not change, so tell the user and stop the spinner.
+            if (operation === 'REQUEST_FAILED') {
                 this.showSpinner = false;
+                this.handleError('The workflow request could not be completed. Please try again or contact support.');
+                return;
             }
 
             this.refreshAllWires();
@@ -887,13 +884,6 @@ export default class Dmt_passport_opportunity extends LightningElement {
         return list?.filter(item => item[field] == value) || [];
     }
 
-    hasResolvableApprovalApprover() {
-        return (this.features || []).some(feature =>
-            feature.passportSanction === APPROVAL_SECTION_FEATURE &&
-            feature.tasks?.[0]?.approvers?.[0]?.id != undefined
-        );
-    }
-
     processFeaturesRules(featuresRulesList) {
         featuresRulesList.forEach((featureRule) => {
             this.featureRules[featureRule.DMT_Field__c] = featureRule.dmt_message__c;
@@ -964,68 +954,78 @@ export default class Dmt_passport_opportunity extends LightningElement {
         this.messageError = '';
         this.showSpinner = true;
 
-        await this.validateOppBeforePassportService();
-        if (!this.responseValidationOpp?.success) {
-            this.handleError(this.responseValidationOpp?.message?.[0]);
-            return;
-        }
+        try {
+            await this.validateOppBeforePassportService();
+            if (!this.responseValidationOpp?.success) {
+                this.handleError(this.responseValidationOpp?.message?.[0]);
+                return;
+            }
 
-        this.refreshAllWires();
+            this.refreshAllWires();
 
-        
-        getMainHolderAccountId({ oppId: this.opportunityId }).then(result => {
+            const result = await getMainHolderAccountId({ oppId: this.opportunityId });
             this.clientId = result.AccountId;
             this.clientType = result.ClientType;
 
-        const params = {
-            selectedTab: 'passport',
-            clientId: null,
-            lCountries: ["ALL"],
-            searchDate: this.lastDate,
-            clientPositionsType: 'N',
-            page: 1,
-            pageSize: '100',
-            customerId: this.clientId,
-        };
-
-
-        fetchData(params).then(data => {
-            if (data.success) {
-                    this.buttonCallPassport(data.data);
-                
-            } else {
-                this.handleError(data.errorMessage);
+            if (!this.lastDate) {
+                this.lastDate = await getLastDay();
             }
-        }).catch((error) => {
-            this.handleError(error.message);
-        });
+            if (!this.lastDate) {
+                this.handleError('Unable to calculate Passport: HPG date is unavailable.');
+                return;
+            }
+            if (!this.clientId) {
+                this.handleError('Unable to calculate Passport: no client account was found for the Opportunity.');
+                return;
+            }
 
-        }).catch((error) => {
-            this.handleError(error.message);
-        });
+            const params = {
+                selectedTab: 'passport',
+                clientId: null,
+                lCountries: ["ALL"],
+                searchDate: this.lastDate,
+                clientPositionsType: 'N',
+                page: 1,
+                pageSize: '100',
+                customerId: this.clientId,
+            };
+
+            const data = await fetchData(params);
+            if (data.success) {
+                await this.buttonCallPassport(data.data);
+            } else {
+                this.handleError(data.errorMessage || 'Unable to retrieve HPG customer data.');
+            }
+        } catch (error) {
+            this.handleError(error);
+        } finally {
+            this.showSpinner = false;
+        }
     }
 
     async buttonCallPassport(data) {
-        if (data) {
-            buttonCallPassport({
+        if (!data) {
+            this.handleError(this.csLabels.clientsValidationMsg1);
+            return;
+        }
+
+        try {
+            const response = await buttonCallPassport({
                 recordId: this.recordId,
                 clientesGroup: JSON.stringify(data)
-            }).then(response => {
-                let result = JSON.parse(response);
-                if (!result.result) {
-                    this.handleError(result.message);
-                } else {
-                    this.messageError = '';
-                    if (this.passportId) {
-                        notifyRecordUpdateAvailable([{ recordId: this.passportId }]);
-                    }
-                }
-            }).catch((error) => {
-                this.handleError(error.message);
-            })
-        }
-        else {
-            this.handleError(this.csLabels.clientsValidationMsg1);
+            });
+            const result = JSON.parse(response);
+            if (!result.result) {
+                this.handleError(result.message || 'Passport calculation failed.');
+                return;
+            }
+
+            this.messageError = '';
+            if (this.passportId) {
+                await notifyRecordUpdateAvailable([{ recordId: this.passportId }]);
+            }
+        } catch (error) {
+            this.handleError(error);
         }
     }
 

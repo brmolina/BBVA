@@ -2,6 +2,7 @@ global with sharing class DMT_Passport_Handler implements Callable {
     FINAL PRIVATE STATIC STRING STATUSOPPAPPROVAL = 'Approval';
     FINAL PRIVATE STATIC STRING START_CASE_QUEUED_MSG = 'The workflow request is being processed';
     FINAL PRIVATE STATIC STRING START_CASE_QUEUE_ERROR_MSG = 'Unable to enqueue workflow request: ';
+    FINAL PRIVATE STATIC STRING PAWIF_FEATURE_NAME = 'Portfolio Alignment Simulation';
 
     public Object call(String action, Map<String, Object> args) {
 
@@ -207,8 +208,129 @@ global with sharing class DMT_Passport_Handler implements Callable {
         return response;
     }
 
+    /**
+     * @description CIBGLOBALD-4374 - Entry point of the Request button (Passport LWCs).
+     * The request is validated synchronously (approver, task type, feature already started,
+     * approval edit block), so the user still gets those errors straight away. A Risk request in
+     * Approval has to create the Sanction Line (external service callout, Line, Passport, risk lines,
+     * participants...): that part is handed to DMT_AsyncOrchestrator as one payload, so it runs in its
+     * own transaction with its own limits, and the open Passport is refreshed by the DMT_Task__e event
+     * the Task insert already publishes (or told it failed, see DTM_Task_Helper.publishRequestFailed).
+     * Any other request keeps running synchronously and returns the Case and Task ids as before.
+     */
     @AuraEnabled()
     public static Map<String, Object> startCase(String externalLineid, String approverId,String taskId, List<Map<String, Object>> taskList, String featureId, String featureName, String comment, String passportSanction) {
+        Map<String, Object> validation = validateStartCase(externalLineid, approverId, taskId, featureId);
+        if (validation.get('success') == false) {
+            return validation;
+        }
+
+        // The PAWIF feature needs the Task id in the response (dmt_feature_with_workflow sends its own
+        // request with it), so it always answers synchronously.
+        if (validation.get('requiresSanctionLine') == true && featureName != PAWIF_FEATURE_NAME) {
+            DMT_AsyncOrchestrator.enqueue(new DMT_StartApprovalCasePayload(
+                externalLineid, approverId, taskId, JSON.serialize(prependPlaceholder(taskList)),
+                featureId, featureName, comment, passportSanction
+            ));
+            DMT_AsyncOrchestrator.flush();
+            return new Map<String, Object>{
+                'success' => true,
+                'message' => START_CASE_QUEUED_MSG,
+                'queued' => true
+            };
+        }
+
+        return startCaseNow(externalLineid, approverId, taskId, taskList, featureId, featureName, comment, passportSanction);
+    }
+
+    /**
+     * @description CIBGLOBALD-4374 - Synchronous start: what startCase did before this ticket. Used by
+     * the asynchronous callers (DMT_AsyncDispatcher payloads, StartCaseQueueable) that are already in
+     * their own transaction, and by startCase for the requests that do not need the Sanction Line.
+     */
+    public static Map<String, Object> startCaseNow(String externalLineid, String approverId,String taskId, List<Map<String, Object>> taskList, String featureId, String featureName, String comment, String passportSanction) {
+        Map<String, Object> result = startCaseInternal(externalLineid, approverId, taskId, taskList, featureId, featureName, comment, passportSanction, true);
+        DMT_AsyncOrchestrator.flush();
+        return result;
+    }
+
+    // startApprovalCaseFromPayload drops the first task of the list it receives (it is the one startCase
+    // creates itself); the list handed to startCase already had it removed by the LWC, so a placeholder
+    // is put back in front to keep the payload convention.
+    private static List<Map<String, Object>> prependPlaceholder(List<Map<String, Object>> taskList) {
+        List<Map<String, Object>> withPlaceholder = new List<Map<String, Object>>();
+        withPlaceholder.add(new Map<String, Object>());
+        if (taskList != null) {
+            withPlaceholder.addAll(taskList);
+        }
+        return withPlaceholder;
+    }
+
+    /**
+     * @description CIBGLOBALD-4374 - The checks of startCaseInternal that do not write anything, so they
+     * can run before the request is queued. Returns success=false with the same messages startCase
+     * returned, or success=true plus requiresSanctionLine when the Opportunity is in Approval and the
+     * approver is a Risk approver (the case that creates the Sanction Line).
+     */
+    @TestVisible
+    private static Map<String, Object> validateStartCase(String externalLineid, String approverId, String taskId, String featureId) {
+        Map<String, Object> result = new Map<String, Object>{ 'success' => true, 'message' => '', 'requiresSanctionLine' => false };
+
+        try {
+            Id approverQueueId = DMT_Passport_Selector.getAppproverId(approverId);
+            List<DMT_Task_Type__c> taskType = DMT_Passport_Selector.getTaskType(taskId);
+            List<DMT_Line__c> lineFromQuery = DMT_Passport_Selector.getLineByExternalId(externalLineid);
+
+            Id lineOppId;
+            DMT_Line__c line;
+            Opportunity opp;
+            if (!lineFromQuery.isEmpty()) {
+                line = lineFromQuery[0];
+                lineOppId = line.Id;
+            } else {
+                List<Opportunity> oppFromQuery = DMT_Passport_Selector.getOpportunity(externalLineid);
+                if (!oppFromQuery.isEmpty()) {
+                    opp = oppFromQuery[0];
+                    lineOppId = opp.Id;
+                }
+            }
+
+            if (lineOppId == null) {
+                return failure('No record (Line or Opportunity) was found for the ID:' + externalLineid);
+            }
+            if (approverQueueId == null) {
+                return failure('We can\'t find the approver to assign step ');
+            }
+            if (taskType == null || taskType.isEmpty()) {
+                return failure('We can\'t find the task type ');
+            }
+
+            List<Task> approvalEditTasks = DMT_Passport_Selector.getApprovalEditTasks(lineOppId);
+            if (taskType[0].DMT_ApprovalEdit__c && !approvalEditTasks.isEmpty() && line != null && line.DMT_Status_Completed__c == DMT_Constants.APPROVAL) {
+                return failure('The approver ' + approvalEditTasks[0].Owner.Name + ' with the task ' + approvalEditTasks[0].DMT_Task_Type__r.Name + ' is blocking the approval editing of the line');
+            }
+
+            List<Case> featureCase = DMT_Passport_Selector.getCaseByLineFeature(lineOppId, featureId);
+            if (!featureCase.isEmpty()) {
+                return failure('The request for this feature is already started, please update the passport ');
+            }
+
+            if (opp != null && opp.StageName == STATUSOPPAPPROVAL) {
+                DMT_Approver__c approver = DMT_Passport_Selector.getApprover(approverId);
+                result.put('requiresSanctionLine', approver != null && approver.DMT_ApproverType__r.Name == DMT_Constants.APPROVER_TYPE_RISK);
+            }
+        } catch (Exception e) {
+            // Anything unexpected is left to the real start, which already reports it the way it always did.
+            System.debug(LoggingLevel.WARN, 'DMT_Passport_Handler.validateStartCase: ' + e.getMessage());
+        }
+        return result;
+    }
+
+    private static Map<String, Object> failure(String message) {
+        return new Map<String, Object>{ 'success' => false, 'message' => message };
+    }
+
+        public static Map<String, Object> startCaseInternal(String externalLineid, String approverId,String taskId, List<Map<String, Object>> taskList, String featureId, String featureName, String comment, String passportSanction, Boolean deferTaskStatus) {
             String errorMessage = '';
             final String SUCCESS = 'success';
             final String MESSAGE = 'message';
@@ -230,7 +352,8 @@ global with sharing class DMT_Passport_Handler implements Callable {
             
             DMT_Line__c line;
             Opportunity opp;
-            Id aproverId = DMT_Passport_Selector.getAppproverId(approverId);
+            String externalApproverId = approverId;
+            Id approverQueueId = DMT_Passport_Selector.getAppproverId(externalApproverId);
             List<DMT_Task_Type__c> taskType = DMT_Passport_Selector.getTaskType(taskId);
             List<DMT_Line__c> lineFromQuery = DMT_Passport_Selector.getLineByExternalId(externalLineid);
             
@@ -244,7 +367,7 @@ global with sharing class DMT_Passport_Handler implements Callable {
                     opp = oppFromQuery[0];
                     lineOppId = opp.Id;
                     if(opp.StageName == STATUSOPPAPPROVAL){
-                        String lineid = DMT_Passport_Helper.createSanctionFromOpp(opp.Id,approverId);
+                        String lineid = DMT_Passport_Helper.createSanctionFromOpp(opp.Id, externalApproverId);
                         if(lineid != null){
                             line = new DMT_Line__c(Id = lineid, Client__c = opp.AccountId);
                         }
@@ -263,14 +386,14 @@ global with sharing class DMT_Passport_Handler implements Callable {
             List<Task> approvalEditTasks = DMT_Passport_Selector.getApprovalEditTasks(lineOppId);
             List<Case> featureCase = DMT_Passport_Selector.getCaseByLineFeature(lineOppId, featureId);
 
-            if( aproverId==null ){
+            if (approverQueueId == null) {
                 errorMessage=TXT_ERROR_MSG_NO_APPROVER;
                 result.put(SUCCESS, false);
                 result.put(MESSAGE, errorMessage);
                 return result;
             }
 
-            if(taskType.isEmpty()){
+            if (taskType == null || taskType.isEmpty()) {
                 errorMessage=TXT_ERROR_MSG_NO_TASK_TYPE;
                 result.put(SUCCESS, false);
                 result.put(MESSAGE, errorMessage);
@@ -292,10 +415,10 @@ global with sharing class DMT_Passport_Handler implements Callable {
                 return result;
 
             }else{
-                Case newCase = DMT_Passport_Helper.createCase(line, opp, aproverId, featureId,featureName, taskList, comment, passportSanction);
-                System.debug('DMT_Passport_Handler.startCase newCase: ' + newCase.id + 'aproverId  ' + aproverId + 'taskType  '+  taskType[0]);
+                Case newCase = DMT_Passport_Helper.createCase(line, opp, approverQueueId, featureId,featureName, taskList, comment, passportSanction);
+                System.debug('DMT_Passport_Handler.startCase newCase: ' + newCase.id + 'approverQueueId  ' + approverQueueId + 'taskType  '+  taskType[0]);
                 caseId = newCase.Id;
-                Task newTask = DMT_Passport_Helper.createTask(newCase.Id, aproverId, taskType[0]);
+                Task newTask = DMT_Passport_Helper.createTask(newCase.Id, approverQueueId, taskType[0], deferTaskStatus);
                 taskIdSf = newTask.Id;
             }
 
@@ -317,6 +440,7 @@ global with sharing class DMT_Passport_Handler implements Callable {
 
             result.put(SUCCESS, false);
             result.put(MESSAGE, String.isBlank(errorMessage) ? e.getMessage() : errorMessage);
+            result.put('exceptionLogged', true);
             return result;
 
 

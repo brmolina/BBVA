@@ -28,15 +28,26 @@ public with sharing class DMT_AsyncDispatcher {
         } else if (payload instanceof DMT_RestartApprovalTasksPayload) {
             DMT_RestartApprovalTasksPayload p = (DMT_RestartApprovalTasksPayload) payload;
             DMT_ApprovalChangeStep_Helper.restartTasksForRecord(p.recordId, p.tasksToRestart);
+        } else if (payload instanceof DMT_StartApprovalCasePayload) {
+            DMT_Case_Steps_Controller.startApprovalCaseFromPayload((DMT_StartApprovalCasePayload) payload);
+        } else if (payload instanceof DMT_TaskStatusSnapshotPayload) {
+            DMT_TaskStatusSnapshotPayload p = (DMT_TaskStatusSnapshotPayload) payload;
+            DMT_ApprovalChangeStep_Handler.updateTaskWithStatus(String.valueOf(p.taskId), false);
         } else if (payload instanceof DMT_DocumentTransferPayload) {
             DMT_DocumentTransferPayload p = (DMT_DocumentTransferPayload) payload;
             DMT_DocumentTransferService.transferDocuments(p.taskIdByCaseId);
         } else if (payload instanceof DMT_WutSurveyPayload) {
             handleWutSurveyPublish((DMT_WutSurveyPayload) payload);
+        } else if (payload instanceof DMT_TeamMemberCasePayload) {
+            // CIBGLOBALD-4374 - one payload covers every Case of a trigger context
+            DMT_TeamMemberCasePayload p = (DMT_TeamMemberCasePayload) payload;
+            List<DMT_TeamMember_Service.CaseRequest> requests = new List<DMT_TeamMember_Service.CaseRequest>();
+            for (Id caseId : p.caseIds) {
+                requests.add(new DMT_TeamMember_Service.CaseRequest(caseId, p.sanctionEdit));
+            }
+            DMT_TeamMember_Service.addApproversForCases(requests);
         } else if (payload instanceof DMT_CalloutTrackableCheckPayload) {
             DMT_ApprovalChangeStep_Helper.checkCalloutTrackableComponent((DMT_CalloutTrackableCheckPayload) payload);
-        } else if (payload instanceof DMT_StartApprovalCasePayload) {
-            DMT_Case_Steps_Controller.startApprovalCaseFromPayload((DMT_StartApprovalCasePayload) payload);
         } else if (payload instanceof DMT_CalloutTrackableFreezePayload) {
             DMT_ApprovalChangeStep_Helper.freezeCalloutTrackableBaseline((DMT_CalloutTrackableFreezePayload) payload);
         } else {
