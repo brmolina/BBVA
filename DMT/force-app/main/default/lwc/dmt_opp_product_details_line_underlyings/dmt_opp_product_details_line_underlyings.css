@@ -172,7 +172,9 @@
 .profitability-table td.col-amount-currency {
     width: 240px;
 }
-
+.profitability-table th.col-upfront-fees {
+    width: 220px;
+}
 .profitability-table td.col-upfront-amount {
     width: 240px;
     min-width: 240px;
@@ -200,7 +202,7 @@
 
 .amount-with-currency-wide lightning-input {
     flex: 1 1 0;
-    min-width: 0;
+    min-width: 5rem;
     max-width: calc(100% - 5rem);
 }
 
@@ -226,8 +228,8 @@
    (and suffix start position) stays consistent across rows regardless of
    label length ("Units EUR" vs "Millions COP"). */
 .amount-with-currency:not(.cell-text) .currency-suffix {
-    flex: 0 0 5rem;
-    min-width: 5rem;
+    flex: 0 0 4rem;
+    min-width: 4rem;
     text-align: left;
 }
 

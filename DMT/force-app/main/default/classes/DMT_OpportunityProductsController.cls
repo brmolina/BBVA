@@ -1,5 +1,9 @@
 public with sharing class DMT_OpportunityProductsController {
 
+    // CIBGLOBALD-4630 - Rating catalogs used to validate the values preloaded from HPG for a Guarantor
+    private static final String GUARANTOR_INTERNAL_RATING_CATALOG = 'C204';
+    private static final String GUARANTOR_EXTERNAL_RATING_CATALOG = 'C009';
+
     // Session-level cache to avoid re-querying the same product catalog
     private static Map<String, List<Map<String, String>>> cacheMap = new Map<String, List<Map<String, String>>>();
 
@@ -123,6 +127,136 @@ public with sharing class DMT_OpportunityProductsController {
             DES_Exception_Utils.logException(e,'DMT_OpportunityProductsController', 'getMitigantsData', 'DMT', '');
             throw new AuraHandledException('Error fetching Mitigants data: ' + e.getMessage());
         }
+    }
+
+    /**
+     * CIBGLOBALD-4630 - Retrieves the rating data of a Guarantor from the HPG Global Position service so
+     * the Guarantor modal can preload Scoring, Internal Rating and External Rating when a Guarantor is
+     * selected. One single-customer call (customerId only, no group), so Guarantors outside the group of
+     * the Opportunity client are found too.
+     *
+     * Callout: service DMT_HPG_GlobalPosition (POST /global-position), custom metadata record
+     * DMT_HPG_GlobalPosition of iaso__GBL_integration_service__mdt, base URL in custom setting record
+     * DMT_HPG_GlobalPosition_INT. Needs a date from service DMT_HPG_GetUsedTables
+     * (DMT_HPG_Utils.lastDate()); if it answers 'Not found' this returns success=false.
+     * Called from LWC dmt_opp_product_modal_guarantor.
+     * Never throws and never defaults values: when HPG fails or returns nothing, success/found tell the
+     * caller why and every value stays null so the user fills the fields manually.
+     * @param guarantorAccountId Account Id of the selected Guarantor
+     * @return Map with success, found, scoring, internalRating, externalRating and message
+     */
+    @AuraEnabled
+    public static Map<String, Object> getGuarantorHpgData(Id guarantorAccountId) {
+        Map<String, Object> result = new Map<String, Object>{
+            'success'        => false,
+            'found'          => false,
+            'scoring'        => null,
+            'internalRating' => null,
+            'externalRating' => null,
+            'message'        => null
+        };
+        if (guarantorAccountId == null) {
+            result.put('message', 'No Guarantor selected.');
+            return result;
+        }
+        try {
+            List<Account> accounts = [
+                SELECT Id, g_customer_id__c
+                FROM Account
+                WHERE Id = :guarantorAccountId
+                WITH SYSTEM_MODE
+                LIMIT 1
+            ];
+            if (accounts.isEmpty() || String.isBlank(accounts[0].g_customer_id__c)) {
+                result.put('message', 'The Guarantor has no customer code to query HPG.');
+                return result;
+            }
+            String customerCode = accounts[0].g_customer_id__c;
+
+            String lastDate = DMT_HPG_Utils.lastDate();
+            if (String.isBlank(lastDate)) {
+                result.put('message', 'HPG date is unavailable.');
+                return result;
+            }
+
+            DMT_HPG_GlobalPosition.Wrapper hpg = (DMT_HPG_GlobalPosition.Wrapper)
+                DMT_HPG_MainTableCustomController.fetchClientInitialData(
+                    'guarantor', null, new List<String>(), lastDate, 'N', '1', '100', String.valueOf(guarantorAccountId)
+                );
+            if (hpg == null || hpg.success != true) {
+                result.put('message', hpg == null ? 'HPG did not respond.' : hpg.errorMessage);
+                return result;
+            }
+            result.put('success', true);
+
+            DMT_HPG_GlobalPosition.Data customer = null;
+            if (hpg.data != null) {
+                for (DMT_HPG_GlobalPosition.Data row : hpg.data) {
+                    if (String.isNotBlank(row.customerId) && row.customerId.equalsIgnoreCase(customerCode)) {
+                        customer = row;
+                        break;
+                    }
+                }
+            }
+            if (customer == null) {
+                result.put('message', 'The Guarantor was not found in HPG.');
+                return result;
+            }
+            result.put('found', true);
+
+            if (customer.totalRatingScoreNumber != null) {
+                result.put('scoring', Decimal.valueOf(customer.totalRatingScoreNumber).setScale(2, System.RoundingMode.HALF_UP));
+            }
+            result.put(
+                'internalRating',
+                resolveActiveCatalogValue(GUARANTOR_INTERNAL_RATING_CATALOG, customer.updLmsclInternalRatgType)
+            );
+            // CIBGLOBALD-4630 - External Rating is mapped against unifiedExtRatgLtFcType, the same HPG
+            // property already mapped to External_Rating__c for the Opportunity client in
+            // DMT_CreateOpportunityService (createOpportunity) and DMT_OpportunityClientController,
+            // which feeds the Client tab (LWC dmt_opp_client). Alternatives in the HPG response if this
+            // ever needs to change: spLtRatingFcType (S&P), moodysLtRatingFcType (Moodys),
+            // fitchLtRatingFcType (Fitch).
+            //
+            // Political Risk (Political_Percentage__c) and Commercial Risk
+            // (Commercial_Percentage__c) are intentionally NOT mapped: HPG does not return them, or the
+            // property that represents them is unknown. Checked on 2026-10-15 in the raw Global Position
+            // response and in DMT_HPG_GlobalPosition.Data. They stay blank for the user to fill.
+            // If a property is confirmed in the future, declare it in DMT_HPG_GlobalPosition.Data (an
+            // HPG property not declared there is dropped on deserialization), return it in this result
+            // map and use it in hpgValues of _preloadFromHpg (LWC dmt_opp_product_modal_guarantor).
+            result.put(
+                'externalRating',
+                resolveActiveCatalogValue(GUARANTOR_EXTERNAL_RATING_CATALOG, customer.unifiedExtRatgLtFcType)
+            );
+        } catch (Exception e) {
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
+                e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
+                'DMT_OpportunityProductsController', 'getGuarantorHpgData', 'DMT', 'Account'
+            ));
+            DMT_AsyncOrchestrator.flush();
+            result.put('success', false);
+            result.put('found', false);
+            result.put('message', e.getMessage());
+        }
+        return result;
+    }
+
+    // CIBGLOBALD-4630 - Returns the value only when it exists as an active taxonomy value of the catalog,
+    // so the modal picklists never receive a value they cannot display. Null when blank or unknown.
+    // Read in system mode like the other catalog reads of this class: reference data used only to validate
+    // a value, so a user without field access must not lose the preload. The selector filters by LIKE,
+    // hence the exact match.
+    private static String resolveActiveCatalogValue(String catalog, String value) {
+        if (String.isBlank(value)) {
+            return null;
+        }
+        for (DMT_Taxonomy_Values__c taxonomy : DMT_Passport_Selector.getTaxonomyValuesByValueAndCatalog(value, catalog, AccessLevel.SYSTEM_MODE)) {
+            if (taxonomy.DMT_Value__c == value) {
+                return taxonomy.DMT_Value__c;
+            }
+        }
+        return null;
     }
 
     @AuraEnabled(cacheable=true)

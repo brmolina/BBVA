@@ -1,0 +1,28 @@
+CIBGLOBALD-4630 - Nota técnica
+
+Qué se ha hecho
+Al seleccionar un Guarantor en el modal New/Edit Guarantor de los productos de la Opportunity (One-Off Deal y Line usan el mismo modal), se consulta el servicio HPG Global Position para ese cliente y se precargan Scoring, Internal Rating y External Rating. Al cambiar de Guarantor se vacían esos tres campos antes de cargar los nuevos, y si HPG no devuelve datos o falla se muestra un toast de aviso y el modal sigue funcionando con los campos en blanco.
+
+Dónde está
+- LWC dmt_opp_product_modal_guarantor: llama al Apex al cambiar el Guarantor (no al abrir el modal) y descarta respuestas obsoletas si el usuario cambia rápido de Guarantor.
+- Apex class DMT_OpportunityProductsController, método getGuarantorHpgData: llamada de un solo cliente (solo customerId) a través de DMT_HPG_MainTableCustomController.fetchClientInitialData. Por eso encuentra Guarantors fuera del grupo del cliente de la Opportunity. La llamada por grupo (getCustomerHPGS) no sirve porque solo devuelve clientes del grupo.
+- Servicio: DMT_HPG_GlobalPosition (POST /global-position), custom metadata record DMT_HPG_GlobalPosition del tipo iaso__GBL_integration_service__mdt, URL base en el custom setting DMT_HPG_GlobalPosition_INT. Necesita antes la fecha que devuelve DMT_HPG_GetUsedTables (DMT_HPG_Utils.lastDate()).
+- DMT_Passport_Selector: overload de getTaxonomyValuesByValueAndCatalog con AccessLevel (el método original no cambia; lo usa DMT_GetCreationParameters).
+
+Mapeo
+- Scoring: totalRatingScoreNumber, redondeado a 2 decimales.
+- Internal Rating: updLmsclInternalRatgType, solo si existe como valor activo del catálogo C204.
+- External Rating: unifiedExtRatgLtFcType, la misma propiedad que ya se mapea a External_Rating__c para el cliente de la Opportunity (DMT_CreateOpportunityService y DMT_OpportunityClientController, pestaña Client). Solo si existe como valor activo del catálogo C009.
+- Political Risk y Commercial Risk: no se mapean. La respuesta cruda de HPG no incluye ninguna propiedad equivalente (comprobado el 2026-10-15), o la propiedad es desconocida. Se han quitado los valores por defecto 0: ahora empiezan en blanco y el usuario debe rellenarlos (siguen siendo obligatorios). Si alguien confirma la propiedad, hay que declararla en DMT_HPG_GlobalPosition.Data, devolverla en el Apex y usarla en _preloadFromHpg del LWC.
+
+Decisiones
+- No se inventan ni se defaultean valores: si HPG no devuelve algo, el campo queda en blanco y, si es obligatorio, lo rellena el usuario.
+- Las lecturas de validación (Account y taxonomy values) van en SYSTEM_MODE, como el resto de lecturas de catálogo de este controller, para que un usuario sin FLS en esos campos no pierda la precarga.
+- Los errores se registran con DMT_LogExceptionPayload + DMT_AsyncOrchestrator (flush), no con DES_Exception_Utils, para evitar uncommitted work pending alrededor de los callouts.
+
+Cómo probar
+1. Opportunity con un One-Off Deal: Products > Mitigants > Guarantors > + y seleccionar un Guarantor (por ejemplo GRIFOLS VIAJES S.A.): Scoring e Internal Rating se rellenan.
+2. Limpiar el Guarantor: los tres campos se vacían. Seleccionar otro: se cargan sus valores.
+3. Repetir en un producto Line.
+4. Guarantor sin datos en HPG o servicio caído: toast de aviso, modal operativo, campos en blanco.
+5. Create y reabrir en modo edición: los valores persisten.

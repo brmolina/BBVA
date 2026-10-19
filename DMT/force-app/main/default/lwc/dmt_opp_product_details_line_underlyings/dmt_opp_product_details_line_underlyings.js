@@ -131,12 +131,22 @@ const TEMP_ID_PREFIX = 'NEW_';
 const UNDERLYING_TYPE_RESTRICTION = 'Restriction';
 const UNDERLYING_TYPE_PROFITABILITY = 'Profitability';
 const LOOKUP_INITIAL_VISIBLE_OPTIONS = 5;
-const ALLOWED_PRODUCT_CODES = ['1010100000', '1010101100', '1012100000'];
+const ALLOWED_PRODUCT_CODES = new Set([
+    '1010100000',
+    '1010101000',
+    '1010101100',
+    '1011120000',
+    '1011121000',
+    '1011121100',
+    '1012100000'
+]);
 const AUTO_MANUAL_CURRENCIES = new Set(['EUR', 'USD', 'GBP']);
 const UPFRONT_FEES_FIELD = '_upfrontFeesValue';
 const UPFRONT_FEES_UNIT_FIELD = '_upfrontFeesUnitDisplay';
 const UPFRONT_UNIT_AMOUNT = 'Amount';
 const UPFRONT_UNIT_BPS = 'BPS';
+const AMORTIZATION_TYPE_BULLET = 'Bullet';
+const NOT_INFORMED_DISPLAY = '---';
 const UPFRONT_UNIT_OPTIONS = [
     { label: UPFRONT_UNIT_AMOUNT, value: UPFRONT_UNIT_AMOUNT },
     { label: UPFRONT_UNIT_BPS, value: UPFRONT_UNIT_BPS }
@@ -186,7 +196,7 @@ const COLUMN_WIDTHS = {
     DMT_Term__c             : 140,
     DMT_Drawn_Speed__c      : 160,
     DMT_Undrawn_Spread__c   : 175,
-    [UPFRONT_FEES_FIELD]    : 200,
+    [UPFRONT_FEES_FIELD]    : 280,
     [UPFRONT_FEES_UNIT_FIELD]: 140,
     DMT_Amortization_Type__c: 180,
     DMT_Interest_Payment_Frequency__c: 220,
@@ -199,7 +209,18 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
 
     @api oppProduct;
     @api referenceUpfrontFees;
-    @api productCode;
+    _productCode = null;
+
+    @api get productCode() { return this._productCode; }
+    set productCode(value) {
+        const normalized = value === null || value === undefined || value === ''
+            ? null
+            : String(value).trim();
+        if (normalized === this._productCode) return;
+        this._productCode = normalized;
+        this._rebuildColumns();
+        this._refreshDerivedState(false);
+    }
 
     _isEditMode = false;
     _canEdit    = true;
@@ -212,9 +233,9 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
     @api get opportunityCurrency() { return this._opportunityCurrency; }
     set opportunityCurrency(value) {
         const normalized = value || '';
-        const changed = normalized !== this._opportunityCurrency;
         this._opportunityCurrency = normalized;
         this._ensureCurrencyLabel(this._opportunityCurrency);
+        this._refreshDerivedState(false);
     }
 
     get opportunityCurrencyLabel() {
@@ -257,6 +278,9 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
     _dropdownCtx            = null;
     _underlyingOptions      = [];
     _modeByLabel            = new Map();
+    _underlyingValueByLabel = new Map();
+    _underlyingProductCodeByLabel = new Map();
+    _pendingCurrencyLabels  = new Set();
     _underlyingOptionsLoadedFor = null;
     _isUnderlyingLookup = false;
     _onDocClick             = (event) => {
@@ -450,14 +474,6 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
         return !this._canEdit || !this._isEditMode;
     }
 
-    get isRestrictedProduct() {
-        return !ALLOWED_PRODUCT_CODES.includes(this.productCode);
-    }
-
-    get profitabilityFieldsReadOnly() {
-        return this.profitabilityReadOnly || this.isRestrictedProduct;
-    }
-
     get rowActionsDisabled() {
         return !this._canEdit;
     }
@@ -478,12 +494,19 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
         const rowType = SUPPORTED_UNDERLYING_TYPES.has(row.DMT_Underlying_Type__c)
             ? row.DMT_Underlying_Type__c
             : UNDERLYING_TYPE_RESTRICTION;
-        const normalizedRow = this._normalizeUpfrontFeeFields(row);
+        const normalizedRow = this._normalizeInterestPaymentFrequency(this._normalizeAmortizationType(this._normalizeUpfrontFeeFields(row)));
+        const resolvedUnderlyingProductCode = row._underlyingProductCode || this._getUnderlyingProductCode(normalizedRow);
+        console.log('[dmt_opp_product_details_line_underlyings] decorate row', {
+            rowName: normalizedRow?.Name,
+            rowType,
+            resolvedUnderlyingProductCode
+        });
         return {
             ...normalizedRow,
             Id                        : isNew ? this._newTempId() : row.Id,
             DMT_Underlying_Type__c    : rowType,
             DMT_Opportunity_Product__c: normalizedRow.DMT_Opportunity_Product__c || this.oppProduct || null,
+            _underlyingProductCode    : resolvedUnderlyingProductCode,
             _deleted                  : false,
             _isNew                    : isNew
         };
@@ -555,7 +578,6 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
     _buildDefaultRowByType(type) {
         if (type === UNDERLYING_TYPE_PROFITABILITY) {
             const defaultUpfrontFees = this._getDefaultUpfrontFeesBps();
-            const useRestrictedDefaults = this.isRestrictedProduct;
             return {
                 Id                               : null,
                 Name                             : '',
@@ -567,9 +589,9 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
                 DMT_Undrawn_Spread__c            : null,
                 DMT_Upfront_Fees__c              : defaultUpfrontFees,
                 DMT_Upfront_Fees_amount__c       : null,
-                DMT_Amortization_Type__c         : useRestrictedDefaults ? 'Bullet' : null,
-                DMT_Interest_Payment_Frequency__c: useRestrictedDefaults ? 'Monthly' : null,
-                DMT_Currency__c                  : useRestrictedDefaults ? (this.opportunityCurrency || '') : '',
+                DMT_Amortization_Type__c         : null,
+                DMT_Interest_Payment_Frequency__c: null,
+                DMT_Currency__c                  : this._opportunityCurrency || '',
                 DMT_Opportunity_Product__c       : this.oppProduct || null
             };
         }
@@ -808,6 +830,53 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
         return this._modeByLabel.get(underlyingName) || '';
     }
 
+    _getUnderlyingProductCode(underlying) {
+        if (!underlying) return null;
+
+        if (typeof underlying === 'object') {
+            const explicitCode = String(underlying._underlyingProductCode || '').trim();
+            if (explicitCode) {
+                return explicitCode;
+            }
+            const rowName = String(underlying.Name || '').trim();
+            return rowName ? (this._underlyingProductCodeByLabel.get(rowName) || null) : null;
+        }
+
+        const normalizedName = String(underlying).trim();
+        return normalizedName ? (this._underlyingProductCodeByLabel.get(normalizedName) || null) : null;
+    }
+
+    _hasResolvedUnderlyingProductCode(underlying) {
+        return !!this._getUnderlyingProductCode(underlying);
+    }
+
+    _isAllowedUnderlying(underlying) {
+        const underlyingProductCode = this._getUnderlyingProductCode(underlying);
+        const isAllowed = !!underlyingProductCode && ALLOWED_PRODUCT_CODES.has(underlyingProductCode);
+        const debugPayload = typeof underlying === 'object' && underlying !== null
+            ? {
+                rowName: underlying.Name ?? null,
+                rowType: underlying.DMT_Underlying_Type__c ?? null,
+                explicitUnderlyingProductCode: underlying._underlyingProductCode ?? null,
+                resolvedUnderlyingProductCode: underlyingProductCode,
+                allowedProductCodes: Array.from(ALLOWED_PRODUCT_CODES),
+                isAllowed
+            }
+            : {
+                rowName: underlying ?? null,
+                resolvedUnderlyingProductCode: underlyingProductCode,
+                allowedProductCodes: Array.from(ALLOWED_PRODUCT_CODES),
+                isAllowed
+            };
+        console.log(`[dmt_opp_product_details_line_underlyings] allowed underlying check ${JSON.stringify(debugPayload)}`);
+        return isAllowed;
+    }
+
+    _areProfitabilityFieldsReadOnly(row) {
+        return this.profitabilityReadOnly
+            || !this._isAllowedUnderlying(row);
+    }
+
     handleDropdownScroll(event) {
         if (!this._dropdownOpen || !this._isUnderlyingLookup) return;
         if (this._dropdownSearchTerm) return;
@@ -827,15 +896,27 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
 
         try {
             const records = await getUnderlyingOptions({ opportunityLineItemId: this.oppProduct });
+            console.log('[dmt_opp_product_details_line_underlyings] raw underlying options', records);
             this._underlyingOptions = Array.isArray(records)
-                ? records.map(r => ({ label: r.label, value: r.value, mode: r.drawnUndrawnMode || '' }))
+                ? records.map(r => ({
+                    label: r.label,
+                    value: r.value,
+                    productCode: String(r.productCode || r.value || '').trim(),
+                    mode: r.drawnUndrawnMode || ''
+                }))
                 : [];
+            console.log('[dmt_opp_product_details_line_underlyings] mapped underlying options', this._underlyingOptions);
             this._modeByLabel = new Map(this._underlyingOptions.map(o => [o.label, o.mode]));
+            this._underlyingValueByLabel = new Map(this._underlyingOptions.map(o => [o.label, o.value]));
+            this._underlyingProductCodeByLabel = new Map(this._underlyingOptions.map(o => [o.label, o.productCode]));
+            console.log('[dmt_opp_product_details_line_underlyings] underlying product code map', Array.from(this._underlyingProductCodeByLabel.entries()));
             this._underlyingOptionsLoadedFor = this.oppProduct;
-            this._refreshDerivedState();
+            this._refreshDerivedState(false);
         } catch (error) {
             this._underlyingOptions = [];
             this._modeByLabel = new Map();
+            this._underlyingValueByLabel = new Map();
+            this._underlyingProductCodeByLabel = new Map();
             this._underlyingOptionsLoadedFor = this.oppProduct;
             this._toast('Error loading Underlying options', error?.body?.message || error?.message || 'Could not load Underlying options.', 'error');
         }
@@ -864,7 +945,7 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
         const optMap = {
             DMT_Max_Term__c                  : this._maxTermOptions,
             DMT_Term__c                      : this._termOptions,
-            DMT_Amortization_Type__c         : this._amortizationTypeOptions,
+            DMT_Amortization_Type__c         : this._getAvailableAmortizationTypeOptions(),
             DMT_Interest_Payment_Frequency__c: this._interestPaymentFrequencyOptions,
             DMT_Currency__c                  : this._currencyOptions,
             [UPFRONT_FEES_UNIT_FIELD]        : UPFRONT_UNIT_OPTIONS
@@ -910,15 +991,19 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
         } else {
             updated = { ...row, [field]: value };
         }
-        if (field === 'DMT_Amortization_Type__c' && value === 'Bullet') {
-            updated.DMT_Interest_Payment_Frequency__c = null;
+        if (field === 'DMT_Amortization_Type__c') {
+            updated = this._normalizeInterestPaymentFrequency(updated);
         }
 
         if (field === 'Name' && updated.DMT_Underlying_Type__c === UNDERLYING_TYPE_PROFITABILITY) {
+            updated._underlyingProductCode = this._getUnderlyingProductCode(value);
             if (this._getDrawnUndrawnMode(value) === MODE_UNDRAWN) {
                 updated.DMT_Drawn_Reference_Amount__c = null;
                 updated.DMT_Drawn_Speed__c = null;
             }
+            // Si el underlying cambió, normalizar amortization_type y frequency según el nuevo underlying
+            updated = this._normalizeAmortizationType(updated);
+            updated = this._normalizeInterestPaymentFrequency(updated);
         }
         newArr[idx] = updated;
         this.rows = newArr;
@@ -949,23 +1034,25 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
         return opt ? opt.label : String(value);
     }
 
-    _refreshDerivedState() {
+    _refreshDerivedState(notifyParent = true) {
         const visibleRows = this.rows
             .filter(r => !r._deleted)
             .map(r => {
                 if (r.DMT_Underlying_Type__c === UNDERLYING_TYPE_PROFITABILITY) {
-                    const upfrontUnit = this._getUpfrontFeeUnit(r);
-                    const drawnUndrawnMode = this._getDrawnUndrawnMode(r.Name);
-                    this._ensureCurrencyLabel(r.DMT_Currency__c);
+                    const normalized = this._normalizeAmortizationType(r);
+                    const upfrontUnit = this._getUpfrontFeeUnit(normalized);
+                    const drawnUndrawnMode = this._getDrawnUndrawnMode(normalized.Name);
+                    const profitabilityFieldsReadOnly = this._areProfitabilityFieldsReadOnly(normalized);
+                    this._ensureCurrencyLabel(normalized.DMT_Currency__c);
                     return {
-                        ...r,
+                        ...normalized,
                         deleteDisabled        : !this._canEdit,
                         editDisabled          : !this._canEdit,
                         buttonDisabled        : !this._canEdit,
-                        DMT_Term__c_label     : this._getOptionLabel(TERM_OPTIONS, r.DMT_Term__c),
-                        DMT_Max_Term__c_label : this._getOptionLabel(TERM_OPTIONS, r.DMT_Max_Term__c),
-                        DMT_Currency__c_label : this._currencyLabels[r.DMT_Currency__c] || r.DMT_Currency__c,
-                        [UPFRONT_FEES_FIELD]  : this._getUpfrontFeeValueForRow(r, upfrontUnit),
+                        DMT_Term__c_label     : this._getOptionLabel(TERM_OPTIONS, normalized.DMT_Term__c),
+                        DMT_Max_Term__c_label : this._getOptionLabel(TERM_OPTIONS, normalized.DMT_Max_Term__c),
+                        DMT_Currency__c_label : this._currencyLabels[normalized.DMT_Currency__c] || normalized.DMT_Currency__c,
+                        [UPFRONT_FEES_FIELD]  : this._getUpfrontFeeValueForRow(normalized, upfrontUnit),
                         [UPFRONT_FEES_UNIT_FIELD]: upfrontUnit,
                         _showUpfrontCurrency  : upfrontUnit === UPFRONT_UNIT_AMOUNT,
                         _upfrontFeesCellClass : upfrontUnit === UPFRONT_UNIT_AMOUNT ? 'col-amount-currency col-upfront-amount' : '',
@@ -975,7 +1062,11 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
                         _upfrontFeesEditClass: upfrontUnit === UPFRONT_UNIT_AMOUNT
                             ? 'amount-with-currency amount-with-currency-wide'
                             : 'amount-with-currency',
-                        _drawnDisabled  : this.profitabilityReadOnly || drawnUndrawnMode === MODE_UNDRAWN
+                        _drawnDisabled  : this.profitabilityReadOnly || drawnUndrawnMode === MODE_UNDRAWN,
+                        _profitabilityFieldsReadOnly: profitabilityFieldsReadOnly,
+                        _showInterestPaymentFrequencyCell: this._isAllowedUnderlying(normalized),
+                        _showInterestPaymentFrequencyInput: this._isAllowedUnderlying(normalized) || !this._isBulletAmortization(normalized.DMT_Amortization_Type__c),
+                        _interestPaymentFrequencyDisplay: this._getInterestPaymentFrequencyDisplay(normalized)
                     };
                 }
                 return {
@@ -996,6 +1087,10 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
         this.displayRestrictionRows = [...this.displayRestrictionRows];
         this.displayProfitabilityRows = [...this.displayProfitabilityRows];
 
+        if (!notifyParent) {
+            return;
+        }
+
         this.dispatchEvent(new CustomEvent('underlyingschange', {
             bubbles : true,
             composed: true,
@@ -1009,9 +1104,9 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
     get hasRestrictionRows() { return this.displayRestrictionRows.length > 0; }
     get hasProfitabilityRows() { return this.displayProfitabilityRows.length > 0; }
     get globalAddDisabled() { return !this._canEdit; }
-    // show column only when at least one profitability row is non-Bullet
+    // show column only when at least one profitability row belongs to an allowed underlying product
     get showInterestPaymentFrequency() {
-        return this.displayProfitabilityRows.some(r => r.DMT_Amortization_Type__c !== 'Bullet');
+        return this.displayProfitabilityRows.some(r => this._isAllowedUnderlying(r));
     }
 
     _hasNonStandardCurrency() {
@@ -1060,7 +1155,7 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
             this._numericColumn('Undrawn Spread (BPS)',          'DMT_Undrawn_Spread__c',               COLUMN_WIDTHS.DMT_Undrawn_Spread__c, e),
             this._numericColumn('Upfront Fees',                  UPFRONT_FEES_FIELD,                    COLUMN_WIDTHS[UPFRONT_FEES_FIELD], e),
             this._picklistColumn('Amount / BPS',                 UPFRONT_FEES_UNIT_FIELD,               UPFRONT_UNIT_OPTIONS, e),
-            this._picklistColumn('Amortization Type',            'DMT_Amortization_Type__c',            this._amortizationTypeOptions, e),
+            this._picklistColumn('Amortization Type',            'DMT_Amortization_Type__c',            this._getAvailableAmortizationTypeOptions(), e),
             this._picklistColumn('Interest Payment Frequency',   'DMT_Interest_Payment_Frequency__c',   this._interestPaymentFrequencyOptions, e),
             this._picklistColumn('Currency',                     'DMT_Currency__c',                     this._currencyOptions, e),
             this._buttonColumn('utility:delete', 'deleteRecord', 'deleteDisabled'),
@@ -1161,8 +1256,78 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
             [UPFRONT_FEES_FIELD]: normalizedValue
         }, normalizedUnit);
     }
+    _canEvaluateAllowedUnderlying(row) {
+        return this._hasResolvedUnderlyingProductCode(row)
+            || this._underlyingOptionsLoadedFor !== null;
+    }
+    _normalizeAmortizationType(row) {
+        if (row?.DMT_Underlying_Type__c !== UNDERLYING_TYPE_PROFITABILITY) {
+            return row;
+        }
+        if (!this._canEvaluateAllowedUnderlying(row)) {
+            return row;
+        }
+        if (!this._isAllowedUnderlying(row)) {
+            return {
+                ...row,
+                DMT_Amortization_Type__c: AMORTIZATION_TYPE_BULLET
+            };
+        }
+        return row;
+    }
+
+    _normalizeInterestPaymentFrequency(row) {
+        if (row?.DMT_Underlying_Type__c !== UNDERLYING_TYPE_PROFITABILITY) {
+            return row;
+        }
+        if (!this._canEvaluateAllowedUnderlying(row)) {
+            return row;
+        }
+        if (!this._isAllowedUnderlying(row)) {
+            return {
+                ...row,
+                DMT_Interest_Payment_Frequency__c: NOT_INFORMED_DISPLAY
+            };
+        }
+        return row;
+    }
+
+    _isBulletAmortization(value) {
+        return String(value || '').trim().toLowerCase() === AMORTIZATION_TYPE_BULLET.toLowerCase();
+    }
+
+    _getInterestPaymentFrequencyDisplay(row) {
+        const value = row?.DMT_Interest_Payment_Frequency__c;
+        if (value) {
+            return value;
+        }
+        return !this._isAllowedUnderlying(row) ? NOT_INFORMED_DISPLAY : '';
+    }
+
+    _getAvailableAmortizationTypeOptions() {
+        const options = Array.isArray(this._amortizationTypeOptions)
+            ? this._amortizationTypeOptions.map(option => ({ ...option }))
+            : [];
+        if (!this.displayProfitabilityRows.some(row => this._isAllowedUnderlying(row))) {
+            return options;
+        }
+        return options.filter(option => !this._isDisallowedAllowedUnderlyingAmortizationOption(option));
+    }
+
+    _isDisallowedAllowedUnderlyingAmortizationOption(option) {
+        const normalizedValue = String(option?.value || '').trim().toLowerCase();
+        const normalizedLabel = String(option?.label || '').trim().toLowerCase();
+        return normalizedValue === 'custom'
+            || normalizedLabel === 'custom'
+            || normalizedLabel === 'defined by user'
+            || normalizedLabel === 'user defined';
+    }
 
     _getUpfrontFeeUnit(row) {
+        const explicitUnit = String(row?.[UPFRONT_FEES_UNIT_FIELD] || '').trim();
+        if (explicitUnit === UPFRONT_UNIT_AMOUNT || explicitUnit === UPFRONT_UNIT_BPS) {
+            return explicitUnit;
+        }
         const amountValue = this._parseNumeric(row?.DMT_Upfront_Fees_amount__c);
         const bpsValue = this._parseNumeric(row?.DMT_Upfront_Fees__c);
         if (bpsValue !== 0 && amountValue === 0) return UPFRONT_UNIT_BPS;
@@ -1213,6 +1378,10 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
         for (const f of BUSINESS_FIELDS) {
             cleaned[f] = row[f] !== undefined ? row[f] : null;
         }
+        if (!this._isAllowedUnderlying(row)) {
+            cleaned.DMT_Amortization_Type__c = AMORTIZATION_TYPE_BULLET;
+            cleaned.DMT_Interest_Payment_Frequency__c = NOT_INFORMED_DISPLAY;
+        }
         return cleaned;
     }
 
@@ -1226,15 +1395,24 @@ export default class DmtOppProductDetailsLineUnderlyings extends LightningElemen
     }
 
     _ensureCurrencyLabel(currencyIsoCode) {
-        if (!currencyIsoCode || this._currencyLabels[currencyIsoCode]) return;
+        if (!currencyIsoCode || this._currencyLabels[currencyIsoCode] || this._pendingCurrencyLabels.has(currencyIsoCode)) return;
+        this._pendingCurrencyLabels.add(currencyIsoCode);
         getCurrencyLabel({ currencyIsoCode })
             .then(result => {
-                this._currencyLabels = { ...this._currencyLabels, [currencyIsoCode]: result || currencyIsoCode };
-                this._refreshDerivedState();
+                const nextLabel = result || currencyIsoCode;
+                if (this._currencyLabels[currencyIsoCode] !== nextLabel) {
+                    this._currencyLabels = { ...this._currencyLabels, [currencyIsoCode]: nextLabel };
+                    this._refreshDerivedState(false);
+                }
             })
             .catch(() => {
-                this._currencyLabels = { ...this._currencyLabels, [currencyIsoCode]: currencyIsoCode };
-                this._refreshDerivedState();
+                if (this._currencyLabels[currencyIsoCode] !== currencyIsoCode) {
+                    this._currencyLabels = { ...this._currencyLabels, [currencyIsoCode]: currencyIsoCode };
+                    this._refreshDerivedState(false);
+                }
+            })
+            .finally(() => {
+                this._pendingCurrencyLabels.delete(currencyIsoCode);
             });
     }
 

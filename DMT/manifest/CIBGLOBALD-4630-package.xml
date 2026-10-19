@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>DMT_Passport_Selector</members>
+        <members>DMT_Test_DataFactory</members>
+        <members>DMT_OpportunityProductsController</members>
+        <members>DMT_OpportunityProductsControllerTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>dmt_opp_product_modal_guarantor</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <version>68.0</version>
+</Package>

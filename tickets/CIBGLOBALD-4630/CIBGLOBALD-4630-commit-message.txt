@@ -1,0 +1,11 @@
+CIBGLOBALD-4630 - preload Guarantor Scoring and ratings from HPG when a Guarantor is selected
+
+When a Guarantor is selected in the New/Edit Guarantor modal (One-Off Deal and Line share the same modal), the modal now calls the HPG Global Position service for that single customer and preloads Scoring, Internal Rating and External Rating.
+
+- DMT_OpportunityProductsController: new getGuarantorHpgData (AuraEnabled). Single-customer call through DMT_HPG_MainTableCustomController.fetchClientInitialData, so Guarantors outside the Opportunity client group are found. Values are validated against the active taxonomy values of catalogs C204 and C009 and nothing is defaulted. Never throws; failures are logged with DMT_LogExceptionPayload through DMT_AsyncOrchestrator.
+- DMT_Passport_Selector: overload of getTaxonomyValuesByValueAndCatalog that receives the AccessLevel, so the validation reads reference data in system mode. The existing method is untouched.
+- dmt_opp_product_modal_guarantor: clears Scoring, Internal Rating and External Rating when the Guarantor changes, preloads from HPG, ignores stale responses and shows a warning toast when HPG has no data. Political Risk and Commercial Risk no longer default to 0; HPG does not return them.
+- DMT_Test_DataFactory: generateTaxonomyValue.
+- DMT_OpportunityProductsControllerTest: 5 tests for the preload and System.assert* replaced by Assert.* in the whole file.
+
+External Rating uses unifiedExtRatgLtFcType, the same HPG property already mapped for the Opportunity client.

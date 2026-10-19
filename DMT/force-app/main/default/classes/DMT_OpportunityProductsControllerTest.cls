@@ -238,9 +238,9 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.getOpportunityLineItemsByOpportunityId(opp.Id);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(1, result.size(), 'Should return 1 OpportunityLineItem');
-        System.assertEquals(oli.Id, result[0].Id, 'OLI Id should match');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.areEqual(1, result.size(), 'Should return 1 OpportunityLineItem');
+        Assert.areEqual(oli.Id, result[0].Id, 'OLI Id should match');
     }
 
     @isTest
@@ -250,8 +250,8 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.getOpportunityLineItemsByOpportunityId(null);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(0, result.size(), 'Should return empty list for null Id');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.areEqual(0, result.size(), 'Should return empty list for null Id');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -267,9 +267,9 @@ static Map<String, Object> createFullTestSetup() {
         Boolean result = DMT_OpportunityProductsController.deleteOpportunityLineItem(oli.Id);
         Test.stopTest();
 
-        System.assertEquals(true, result, 'Delete should return true');
+        Assert.areEqual(true, result, 'Delete should return true');
         List<OpportunityLineItem> check = [SELECT Id FROM OpportunityLineItem WHERE Id = :oli.Id];
-        System.assertEquals(0, check.size(), 'OLI should have been deleted');
+        Assert.areEqual(0, check.size(), 'OLI should have been deleted');
     }
 
     @isTest
@@ -288,7 +288,7 @@ static Map<String, Object> createFullTestSetup() {
             WHERE Opportunity__c = :opp.Id
             LIMIT 1
         ];
-        System.assertEquals(true, passport.DMT_Is_Obsoleted_Passport_Save__c,
+        Assert.areEqual(true, passport.DMT_Is_Obsoleted_Passport_Save__c,
             'Passport should be marked obsolete after OLI deletion');
     }
 
@@ -297,9 +297,9 @@ static Map<String, Object> createFullTestSetup() {
         Test.startTest();
         try {
             DMT_OpportunityProductsController.deleteOpportunityLineItem(null);
-            System.assert(false, 'Should have thrown an exception for null Id');
+            Assert.isTrue(false, 'Should have thrown an exception for null Id');
         } catch (Exception e) {
-            System.assert(e.getMessage().contains('required'),
+            Assert.isTrue(e.getMessage().contains('required'),
                 'Error message should reference the required field');
         }
         Test.stopTest();
@@ -318,14 +318,14 @@ static Map<String, Object> createFullTestSetup() {
         Map<String, Object> result = DMT_OpportunityProductsController.cloneOpportunityLineItem(oli.Id);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assert(result.containsKey('clonedOpportunityLineItemId'),
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.isTrue(result.containsKey('clonedOpportunityLineItemId'),
             'Result should contain clonedOpportunityLineItemId key');
         Id clonedId = (Id) result.get('clonedOpportunityLineItemId');
-        System.assertNotEquals(oli.Id, clonedId, 'Cloned OLI should have a different Id');
+        Assert.areNotEqual(oli.Id, clonedId, 'Cloned OLI should have a different Id');
         List<OpportunityLineItem> check =
             [SELECT Id FROM OpportunityLineItem WHERE Id = :clonedId];
-        System.assertEquals(1, check.size(), 'Cloned OLI should exist in the database');
+        Assert.areEqual(1, check.size(), 'Cloned OLI should exist in the database');
     }
 
     @isTest
@@ -364,15 +364,15 @@ static Map<String, Object> createFullTestSetup() {
         Id clonedId = (Id) result.get('clonedOpportunityLineItemId');
         List<DMT_Opportunity_Tenor__c> clonedTenors =
             [SELECT Id FROM DMT_Opportunity_Tenor__c WHERE DMT_Opportunity_Product__c = :clonedId];
-        System.assertEquals(sourceTenors.size(), clonedTenors.size(), 'All tenors should be cloned');
+        Assert.areEqual(sourceTenors.size(), clonedTenors.size(), 'All tenors should be cloned');
 
         List<DMT_Opportunity_Mitigant__c> clonedMitigants =
             [SELECT Id FROM DMT_Opportunity_Mitigant__c WHERE DMT_Opportunity_Product__c = :clonedId];
-        System.assertEquals(sourceMitigants.size(), clonedMitigants.size(), 'All mitigants should be cloned');
+        Assert.areEqual(sourceMitigants.size(), clonedMitigants.size(), 'All mitigants should be cloned');
 
         List<DMT_Underlying__c> clonedUnderlyings =
             [SELECT Id FROM DMT_Underlying__c WHERE DMT_Opportunity_Product__c = :clonedId];
-        System.assertEquals(sourceUnderlyings.size(), clonedUnderlyings.size(), 'All underlyings should be cloned');
+        Assert.areEqual(sourceUnderlyings.size(), clonedUnderlyings.size(), 'All underlyings should be cloned');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -385,8 +385,8 @@ static Map<String, Object> createFullTestSetup() {
         List<Map<String, String>> result = DMT_OpportunityProductsController.getRiskTypeOptions();
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assert(result.size() >= 0, 'Result should be a valid list');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.isTrue(result.size() >= 0, 'Result should be a valid list');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -400,8 +400,8 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.getProductLineTypeOptions('', '');
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(0, result.size(), 'Blank inputs should return empty list');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.areEqual(0, result.size(), 'Blank inputs should return empty list');
     }
 
     @isTest
@@ -411,8 +411,8 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.getProductLineTypeOptions(null, null);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(0, result.size(), 'Null inputs should return empty list');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.areEqual(0, result.size(), 'Null inputs should return empty list');
     }
 
     @isTest
@@ -424,8 +424,8 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.getProductLineTypeOptions('Test Product', 'LOAN001');
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assert(result.size() >= 0, 'Result should be a valid list');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.isTrue(result.size() >= 0, 'Result should be a valid list');
     }
 
     @isTest
@@ -464,14 +464,14 @@ static Map<String, Object> createFullTestSetup() {
         List<Map<String, String>> options = DMT_OpportunityProductsController.getUnderlyingOptions(oli.Id);
         Test.stopTest();
 
-        System.assertNotEquals(null, options, 'Options list should never be null.');
+        Assert.areNotEqual(null, options, 'Options list should never be null.');
         Set<String> optionValues = new Set<String>();
         for (Map<String, String> option : options) {
-            System.assert(option.containsKey('label'), 'Each option should contain label key.');
-            System.assert(option.containsKey('value'), 'Each option should contain value key.');
+            Assert.isTrue(option.containsKey('label'), 'Each option should contain label key.');
+            Assert.isTrue(option.containsKey('value'), 'Each option should contain value key.');
             optionValues.add(option.get('value'));
         }
-        System.assert(optionValues.contains(uCode), 'When attr9 is ALL, should include values with U in attr7.');
+        Assert.isTrue(optionValues.contains(uCode), 'When attr9 is ALL, should include values with U in attr7.');
     }
 
     @isTest
@@ -479,9 +479,9 @@ static Map<String, Object> createFullTestSetup() {
         Test.startTest();
         try {
             DMT_OpportunityProductsController.getUnderlyingOptions(null);
-            System.assert(false, 'Should have thrown an exception for null Id');
+            Assert.isTrue(false, 'Should have thrown an exception for null Id');
         } catch (Exception e) {
-            System.assert(e.getMessage().contains('required'),
+            Assert.isTrue(e.getMessage().contains('required'),
                 'Error message should reference the required field');
         }
         Test.stopTest();
@@ -518,8 +518,8 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.getProductLineTypeOptions(productName, productCode);
         Test.stopTest();
 
-        System.assertEquals(3, firstCall.size(), 'Should map LC, LNC and OPP into 3 options');
-        System.assertEquals(3, secondCall.size(), 'Second call should return same options from cache');
+        Assert.areEqual(3, firstCall.size(), 'Should map LC, LNC and OPP into 3 options');
+        Assert.areEqual(3, secondCall.size(), 'Second call should return same options from cache');
     }
 
     @isTest
@@ -555,8 +555,8 @@ static Map<String, Object> createFullTestSetup() {
         Test.stopTest();
 
         List<Map<String, String>> c204 = result.get('C204');
-        System.assertNotEquals(null, c204, 'C204 catalog should be present.');
-        System.assert(c204.size() >= 2, 'C204 should include the inserted test rows.');
+        Assert.areNotEqual(null, c204, 'C204 catalog should be present.');
+        Assert.isTrue(c204.size() >= 2, 'C204 should include the inserted test rows.');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -570,8 +570,8 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.getTaxonomyCatalogValues();
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assert(result.size() >= 0, 'Result should be a valid map');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.isTrue(result.size() >= 0, 'Result should be a valid map');
     }
 
     @isTest
@@ -599,7 +599,7 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.getTaxonomyCatalogValues();
         Test.stopTest();
 
-        System.assert(result.containsKey('E895'), 'E895 catalog should be present');
+        Assert.isTrue(result.containsKey('E895'), 'E895 catalog should be present');
 
         Map<String, Map<String, String>> optionsByValue =
             new Map<String, Map<String, String>>();
@@ -607,22 +607,22 @@ static Map<String, Object> createFullTestSetup() {
             optionsByValue.put(option.get('value'), option);
         }
 
-        System.assert(optionsByValue.containsKey(records[0].DMT_Value__c),
+        Assert.isTrue(optionsByValue.containsKey(records[0].DMT_Value__c),
             'Active REAL mitigant should be returned');
-        System.assert(optionsByValue.containsKey(records[1].DMT_Value__c),
+        Assert.isTrue(optionsByValue.containsKey(records[1].DMT_Value__c),
             'Active PERSONAL mitigant should be returned');
-        System.assert(!optionsByValue.containsKey(records[2].DMT_Value__c),
+        Assert.isTrue(!optionsByValue.containsKey(records[2].DMT_Value__c),
             'Inactive mitigant should not be returned');
 
-        System.assertEquals('REAL',
+        Assert.areEqual('REAL',
             optionsByValue.get(records[0].DMT_Value__c).get('attr1'),
             'REAL Attribute 1 should be exposed');
-        System.assertEquals('PERSONAL',
+        Assert.areEqual('PERSONAL',
             optionsByValue.get(records[1].DMT_Value__c).get('attr1'),
             'PERSONAL Attribute 1 should be exposed');
 
         for (Integer i = 0; i < 2; i++) {
-            System.assertEquals(records[i].DMT_Name_EN__c,
+            Assert.areEqual(records[i].DMT_Name_EN__c,
                 optionsByValue.get(records[i].DMT_Value__c).get('label'),
                 'Label should preserve the English taxonomy name');
         }
@@ -639,8 +639,8 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.getGuarantorFieldConfiguration();
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assert(result.containsKey('catalogValues'),
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.isTrue(result.containsKey('catalogValues'),
             'Result should contain catalogValues key');
     }
 
@@ -658,8 +658,8 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.getOpportunityLineItemData(oli.Id);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(oli.Id, result.Id, 'Should return the correct OLI');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.areEqual(oli.Id, result.Id, 'Should return the correct OLI');
     }
 
     @isTest
@@ -673,11 +673,11 @@ static Map<String, Object> createFullTestSetup() {
         OpportunityLineItem result = DMT_OpportunityProductsController.getOpportunityLineItemData(oli.Id);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(oli.Id, result.Id, 'Should return the correct OLI');
-        System.assertNotEquals(null, result.g_currency_id__c, 
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.areEqual(oli.Id, result.Id, 'Should return the correct OLI');
+        Assert.areNotEqual(null, result.g_currency_id__c, 
             'g_currency_id__c should not be null (enforced by validation rule)');
-        System.assertEquals('EUR', result.g_currency_id__c, 
+        Assert.areEqual('EUR', result.g_currency_id__c, 
             'Currency should be EUR');
     }
 
@@ -686,9 +686,9 @@ static Map<String, Object> createFullTestSetup() {
         Test.startTest();
         try {
             DMT_OpportunityProductsController.getOpportunityLineItemData(null);
-            System.assert(false, 'Should have thrown an exception for null Id');
+            Assert.isTrue(false, 'Should have thrown an exception for null Id');
         } catch (Exception e) {
-            System.assert(e.getMessage().contains('required'),
+            Assert.isTrue(e.getMessage().contains('required'),
                 'Error message should reference the required field');
         }
         Test.stopTest();
@@ -708,8 +708,8 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.getMitigantsData(oli.Id);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(2, result.size(), 'Should return 2 mitigants');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.areEqual(2, result.size(), 'Should return 2 mitigants');
     }
 
 
@@ -718,9 +718,9 @@ static Map<String, Object> createFullTestSetup() {
         Test.startTest();
         try {
             DMT_OpportunityProductsController.getMitigantsData(null);
-            System.assert(false, 'Should have thrown an exception for null Id');
+            Assert.isTrue(false, 'Should have thrown an exception for null Id');
         } catch (Exception e) {
-            System.assert(e.getMessage().contains('required'),
+            Assert.isTrue(e.getMessage().contains('required'),
                 'Error message should reference the required field');
         }
         Test.stopTest();
@@ -745,9 +745,9 @@ static Map<String, Object> createFullTestSetup() {
         List<DMT_Underlying__c> result = DMT_OpportunityProductsController.getUnderlyingsData(oli.Id);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(1, result.size(), 'Should return one underlying');
-        System.assertEquals('Underlying Test', result[0].Name, 'Underlying name should match');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.areEqual(1, result.size(), 'Should return one underlying');
+        Assert.areEqual('Underlying Test', result[0].Name, 'Underlying name should match');
     }
 
     @isTest
@@ -755,9 +755,9 @@ static Map<String, Object> createFullTestSetup() {
         Test.startTest();
         try {
             DMT_OpportunityProductsController.getUnderlyingsData(null);
-            System.assert(false, 'Should have thrown an exception for null Id');
+            Assert.isTrue(false, 'Should have thrown an exception for null Id');
         } catch (Exception e) {
-            System.assert(e.getMessage().contains('required'),
+            Assert.isTrue(e.getMessage().contains('required'),
                 'Error message should reference the required field');
         }
         Test.stopTest();
@@ -799,8 +799,8 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(true, result.get('validationPassed'),
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.areEqual(true, result.get('validationPassed'),
             'Validation should pass for valid tenor data');
     }
 
@@ -822,8 +822,8 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(false, result.get('validationPassed'),
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.areEqual(false, result.get('validationPassed'),
             'Validation should fail when all amounts are zero');
     }
 
@@ -834,9 +834,9 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.validateTenors(
                 null, System.today(), System.today().addDays(365)
             );
-            System.assert(false, 'Should have thrown an exception for null rawTenors');
+            Assert.isTrue(false, 'Should have thrown an exception for null rawTenors');
         } catch (Exception e) {
-            System.assert(e.getMessage().contains('required'),
+            Assert.isTrue(e.getMessage().contains('required'),
                 'Error message should reference the required field');
         }
         Test.stopTest();
@@ -849,9 +849,9 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.validateTenors(
                 new List<Object>(), System.today(), System.today().addDays(365)
             );
-            System.assert(false, 'Should have thrown an exception for empty rawTenors');
+            Assert.isTrue(false, 'Should have thrown an exception for empty rawTenors');
         } catch (Exception e) {
-            System.assert(e.getMessage().contains('required'),
+            Assert.isTrue(e.getMessage().contains('required'),
                 'Error message should reference the required field');
         }
         Test.stopTest();
@@ -879,11 +879,11 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(true, result.get('success'), 'Save should succeed');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.areEqual(true, result.get('success'), 'Save should succeed');
         OpportunityLineItem updated =
             [SELECT DMT_Risk_Type__c FROM OpportunityLineItem WHERE Id = :oli.Id];
-        System.assertEquals('4000000', updated.DMT_Risk_Type__c, 'Risk type should be updated');
+        Assert.areEqual('4000000', updated.DMT_Risk_Type__c, 'Risk type should be updated');
     }
 
     @isTest
@@ -902,7 +902,7 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(true, result.get('success'),
+        Assert.areEqual(true, result.get('success'),
             'Should succeed even when there are no fields to update');
     }
 
@@ -943,7 +943,7 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(true, result.get('success'), 'Tenor upsert should succeed');
+        Assert.areEqual(true, result.get('success'), 'Tenor upsert should succeed');
     }
 
     @isTest
@@ -970,9 +970,9 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(false, result.get('success'),
+        Assert.areEqual(false, result.get('success'),
             'Validation should fail for zero-amount tenors');
-        System.assertEquals('tenorValidation', result.get('stage'),
+        Assert.areEqual('tenorValidation', result.get('stage'),
             'Stage should indicate tenor validation failure');
     }
 
@@ -1002,9 +1002,9 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(false, result.get('success'),
+        Assert.areEqual(false, result.get('success'),
             'Validation should fail for invalid mitigant percentages');
-        System.assertEquals('mitigantValidation', result.get('stage'),
+        Assert.areEqual('mitigantValidation', result.get('stage'),
             'Stage should indicate mitigant validation failure');
     }
 
@@ -1032,10 +1032,10 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(true, result.get('success'), 'Tenor delete should succeed');
+        Assert.areEqual(true, result.get('success'), 'Tenor delete should succeed');
         List<DMT_Opportunity_Tenor__c> remaining =
             [SELECT Id FROM DMT_Opportunity_Tenor__c WHERE Id IN :tenorIdsToDelete];
-        System.assertEquals(0, remaining.size(), 'All specified tenors should be deleted');
+        Assert.areEqual(0, remaining.size(), 'All specified tenors should be deleted');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -1069,7 +1069,7 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(true, result.get('success'), 'Mitigant upsert should succeed');
+        Assert.areEqual(true, result.get('success'), 'Mitigant upsert should succeed');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -1096,10 +1096,10 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(true, result.get('success'), 'Mitigant delete should succeed');
+        Assert.areEqual(true, result.get('success'), 'Mitigant delete should succeed');
         List<DMT_Opportunity_Mitigant__c> remaining =
             [SELECT Id FROM DMT_Opportunity_Mitigant__c WHERE Id IN :mitigantIdsToDelete];
-        System.assertEquals(0, remaining.size(), 'All specified mitigants should be deleted');
+        Assert.areEqual(0, remaining.size(), 'All specified mitigants should be deleted');
 
     }
 
@@ -1128,14 +1128,14 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(true, result.get('success'), 'Underlying upsert should succeed');
+        Assert.areEqual(true, result.get('success'), 'Underlying upsert should succeed');
         List<DMT_Underlying__c> created = [
             SELECT Id, Name
             FROM DMT_Underlying__c
             WHERE DMT_Opportunity_Product__c = :oli.Id
         ];
-        System.assertEquals(1, created.size(), 'One underlying should be inserted');
-        System.assertEquals('Underlying A', created[0].Name, 'Underlying name should match');
+        Assert.areEqual(1, created.size(), 'One underlying should be inserted');
+        Assert.areEqual('Underlying A', created[0].Name, 'Underlying name should match');
     }
 
     @isTest
@@ -1160,8 +1160,8 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(true, result.get('success'), 'Underlying delete should succeed');
-        System.assertEquals(
+        Assert.areEqual(true, result.get('success'), 'Underlying delete should succeed');
+        Assert.areEqual(
             0,
             [SELECT COUNT() FROM DMT_Underlying__c WHERE Id = :underlying.Id],
             'Underlying should be deleted'
@@ -1198,14 +1198,14 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(true, result.get('success'), 'Underlying update should succeed');
+        Assert.areEqual(true, result.get('success'), 'Underlying update should succeed');
         DMT_Underlying__c updated = [
             SELECT Name, DMT_Max_Term__c
             FROM DMT_Underlying__c
             WHERE Id = :underlying.Id
         ];
-        System.assertEquals('Underlying Updated', updated.Name, 'Underlying name should be updated');
-        System.assertEquals('726', updated.DMT_Max_Term__c, 'Max term should be updated');
+        Assert.areEqual('Underlying Updated', updated.Name, 'Underlying name should be updated');
+        Assert.areEqual('726', updated.DMT_Max_Term__c, 'Max term should be updated');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -1226,8 +1226,8 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.createProductsOpportunity(products, opp.Id);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assert(result.containsKey('created'), 'Result should contain created key');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.isTrue(result.containsKey('created'), 'Result should contain created key');
     }
 
     @isTest
@@ -1244,7 +1244,7 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.createProductsOpportunity(products, opp.Id);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
+        Assert.areNotEqual(null, result, 'Result should not be null');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -1262,17 +1262,17 @@ static Map<String, Object> createFullTestSetup() {
         // 1. List OLIs for the opportunity
         List<OpportunityLineItem> oliList =
             DMT_OpportunityProductsController.getOpportunityLineItemsByOpportunityId(opp.Id);
-        System.assertEquals(1, oliList.size(), 'Should return 1 OLI');
+        Assert.areEqual(1, oliList.size(), 'Should return 1 OLI');
 
         // 2. Fetch full OLI detail
         OpportunityLineItem detail =
             DMT_OpportunityProductsController.getOpportunityLineItemData(oli.Id);
-        System.assertNotEquals(null, detail, 'Should return OLI detail');
+        Assert.areNotEqual(null, detail, 'Should return OLI detail');
 
         // 3. Get mitigants
         List<DMT_Opportunity_Mitigant__c> mitigants =
             DMT_OpportunityProductsController.getMitigantsData(oli.Id);
-        System.assertEquals(2, mitigants.size(), 'Should return 2 mitigants');
+        Assert.areEqual(2, mitigants.size(), 'Should return 2 mitigants');
 
         // 4. Update a field on the OLI
         Map<String, Object> recordFields = new Map<String, Object>{
@@ -1284,13 +1284,13 @@ static Map<String, Object> createFullTestSetup() {
             null, null,
             System.today(), System.today().addDays(365), null
         );
-        System.assertEquals(true, updateResult.get('success'), 'Update should succeed');
+        Assert.areEqual(true, updateResult.get('success'), 'Update should succeed');
 
         Test.stopTest();
 
         OpportunityLineItem afterUpdate =
             [SELECT gf_accrual_fees_bp__c FROM OpportunityLineItem WHERE Id = :oli.Id];
-        System.assertEquals(25, afterUpdate.gf_accrual_fees_bp__c, 'Fee should be updated to 25');
+        Assert.areEqual(25, afterUpdate.gf_accrual_fees_bp__c, 'Fee should be updated to 25');
     }
 
     @isTest
@@ -1308,17 +1308,17 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.cloneOpportunityLineItem(oli.Id);
         Test.stopTest();
 
-        System.assert(cloneResult.containsKey('clonedOpportunityLineItemId'),
+        Assert.isTrue(cloneResult.containsKey('clonedOpportunityLineItemId'),
             'Should return clonedOpportunityLineItemId');
         Id clonedId = (Id) cloneResult.get('clonedOpportunityLineItemId');
 
         List<DMT_Opportunity_Tenor__c> clonedTenors =
             [SELECT Id FROM DMT_Opportunity_Tenor__c WHERE DMT_Opportunity_Product__c = :clonedId];
-        System.assertEquals(initialTenors.size(), clonedTenors.size(), 'Should clone all tenors');
+        Assert.areEqual(initialTenors.size(), clonedTenors.size(), 'Should clone all tenors');
 
         List<DMT_Opportunity_Mitigant__c> clonedMitigants =
             [SELECT Id FROM DMT_Opportunity_Mitigant__c WHERE DMT_Opportunity_Product__c = :clonedId];
-        System.assertEquals(initialMitigants.size(), clonedMitigants.size(),
+        Assert.areEqual(initialMitigants.size(), clonedMitigants.size(),
             'Should clone all mitigants');
     }
 
@@ -1331,19 +1331,19 @@ static Map<String, Object> createFullTestSetup() {
         Map<String, Object> cloneResult =
             DMT_OpportunityProductsController.cloneOpportunityLineItem(oli.Id);
         Id clonedId = (Id) cloneResult.get('clonedOpportunityLineItemId');
-        System.assertNotEquals(null, clonedId, 'Cloned OLI Id should not be null');
+        Assert.areNotEqual(null, clonedId, 'Cloned OLI Id should not be null');
 
         Boolean deleteResult =
             DMT_OpportunityProductsController.deleteOpportunityLineItem(oli.Id);
-        System.assertEquals(true, deleteResult, 'Delete should return true');
+        Assert.areEqual(true, deleteResult, 'Delete should return true');
         Test.stopTest();
 
         List<OpportunityLineItem> origCheck =
             [SELECT Id FROM OpportunityLineItem WHERE Id = :oli.Id];
         List<OpportunityLineItem> cloneCheck =
             [SELECT Id FROM OpportunityLineItem WHERE Id = :clonedId];
-        System.assertEquals(0, origCheck.size(), 'Original OLI should be deleted');
-        System.assertEquals(1, cloneCheck.size(), 'Cloned OLI should still exist');
+        Assert.areEqual(0, origCheck.size(), 'Original OLI should be deleted');
+        Assert.areEqual(1, cloneCheck.size(), 'Cloned OLI should still exist');
     }
 
 
@@ -1360,14 +1360,14 @@ static Map<String, Object> createFullTestSetup() {
         Boolean result = DMT_OpportunityProductsController.deleteOpportunityLineItem(oli.Id);
         Test.stopTest();
 
-        System.assertEquals(true, result, 'Delete should succeed');
+        Assert.areEqual(true, result, 'Delete should succeed');
         Passport__c newPassport = [
             SELECT DMT_Is_Obsoleted_Passport_Save__c
             FROM Passport__c
             WHERE Opportunity__c = :opp.Id
             LIMIT 1
         ];
-        System.assertEquals(true, newPassport.DMT_Is_Obsoleted_Passport_Save__c,
+        Assert.areEqual(true, newPassport.DMT_Is_Obsoleted_Passport_Save__c,
             'Newly created passport should be marked obsolete');
     }
 
@@ -1392,7 +1392,7 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.getMitigantsData(oli.Id);
         Test.stopTest();
 
-        System.assertEquals(102, result.size(),
+        Assert.areEqual(102, result.size(),
             'Should return all mitigants: 2 from setup + 100 bulk');
     }
 
@@ -1413,9 +1413,9 @@ static Map<String, Object> createFullTestSetup() {
                 null, null,
                 System.today(), System.today().addDays(365), null
             );
-            System.assert(false, 'Should have thrown AuraHandledException');
+            Assert.isTrue(false, 'Should have thrown AuraHandledException');
         } catch (AuraHandledException e) {
-            System.assert(e.getMessage() != null, 'Exception message should not be null');
+            Assert.isTrue(e.getMessage() != null, 'Exception message should not be null');
         }
         Test.stopTest();
     }
@@ -1442,14 +1442,14 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(true, result.get('success'), 'Save should succeed');
+        Assert.areEqual(true, result.get('success'), 'Save should succeed');
         Passport__c passport = [
             SELECT DMT_Is_Obsoleted_Passport_Save__c
             FROM Passport__c
             WHERE Opportunity__c = :opp.Id
             LIMIT 1
         ];
-        System.assertEquals(true, passport.DMT_Is_Obsoleted_Passport_Save__c,
+        Assert.areEqual(true, passport.DMT_Is_Obsoleted_Passport_Save__c,
             'Passport should be marked obsolete when oppId is provided');
     }
 
@@ -1471,7 +1471,7 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(true, result.get('success'),
+        Assert.areEqual(true, result.get('success'),
             'Save should succeed even without existing passport');
     }
 
@@ -1508,10 +1508,10 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(true, result.get('success'), 'Tenor update should succeed');
+        Assert.areEqual(true, result.get('success'), 'Tenor update should succeed');
         DMT_Opportunity_Tenor__c updated =
             [SELECT gf_spread_db__c FROM DMT_Opportunity_Tenor__c WHERE Id = :existingTenor.Id];
-        System.assertEquals(55, updated.gf_spread_db__c, 'Spread should be updated');
+        Assert.areEqual(55, updated.gf_spread_db__c, 'Spread should be updated');
     }
 
     @isTest
@@ -1544,10 +1544,10 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(true, result.get('success'), 'Mitigant update should succeed');
+        Assert.areEqual(true, result.get('success'), 'Mitigant update should succeed');
         DMT_Opportunity_Mitigant__c updated =
             [SELECT Political_Percentage__c FROM DMT_Opportunity_Mitigant__c WHERE Id = :existingMitigant.Id];
-        System.assertEquals(70, updated.Political_Percentage__c, 'Political percentage should be updated');
+        Assert.areEqual(70, updated.Political_Percentage__c, 'Political percentage should be updated');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -1559,9 +1559,9 @@ static Map<String, Object> createFullTestSetup() {
         Test.startTest();
         try {
             DMT_OpportunityProductsController.saveMitigants(null, null, null);
-            System.assert(false, 'Should have thrown IllegalArgumentException');
+            Assert.isTrue(false, 'Should have thrown IllegalArgumentException');
         } catch (IllegalArgumentException e) {
-            System.assert(e.getMessage().contains('required'),
+            Assert.isTrue(e.getMessage().contains('required'),
                 'Error message should reference the required field');
         }
         Test.stopTest();
@@ -1587,8 +1587,8 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(3, result.size(),
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.areEqual(3, result.size(),
             'Should return all mitigants for the OLI: 2 from setup + 1 newly inserted');
     }
 
@@ -1618,8 +1618,8 @@ static Map<String, Object> createFullTestSetup() {
 
         DMT_Opportunity_Mitigant__c updated =
             [SELECT Political_Percentage__c FROM DMT_Opportunity_Mitigant__c WHERE Id = :existingMitigant.Id];
-        System.assertEquals(80, updated.Political_Percentage__c, 'Political percentage should be updated');
-        System.assertEquals(2, result.size(), 'Total mitigants count should remain unchanged after update');
+        Assert.areEqual(80, updated.Political_Percentage__c, 'Political percentage should be updated');
+        Assert.areEqual(2, result.size(), 'Total mitigants count should remain unchanged after update');
     }
 
     @isTest
@@ -1637,10 +1637,10 @@ static Map<String, Object> createFullTestSetup() {
         );
         Test.stopTest();
 
-        System.assertEquals(0, result.size(), 'All mitigants for the OLI should have been deleted');
+        Assert.areEqual(0, result.size(), 'All mitigants for the OLI should have been deleted');
         List<DMT_Opportunity_Mitigant__c> remaining =
             [SELECT Id FROM DMT_Opportunity_Mitigant__c WHERE Id IN :mitigantIdsToDelete];
-        System.assertEquals(0, remaining.size(), 'All specified mitigants should be deleted');
+        Assert.areEqual(0, remaining.size(), 'All specified mitigants should be deleted');
     }
 
     @isTest
@@ -1667,10 +1667,10 @@ static Map<String, Object> createFullTestSetup() {
         Test.stopTest();
 
         // 2 from setup - 1 deleted + 1 inserted = 2
-        System.assertEquals(2, result.size(), 'Result should reflect both the upsert and the delete');
+        Assert.areEqual(2, result.size(), 'Result should reflect both the upsert and the delete');
         List<DMT_Opportunity_Mitigant__c> deletedCheck =
             [SELECT Id FROM DMT_Opportunity_Mitigant__c WHERE Id = :mitigantToDelete.Id];
-        System.assertEquals(0, deletedCheck.size(), 'Deleted mitigant should no longer exist');
+        Assert.areEqual(0, deletedCheck.size(), 'Deleted mitigant should no longer exist');
     }
 
     @isTest
@@ -1692,9 +1692,9 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.saveMitigants(
                 oli.Id, new List<Object>{ invalidMitigant }, null
             );
-            System.assert(false, 'Should have thrown AuraHandledException for invalid mitigant percentages');
+            Assert.isTrue(false, 'Should have thrown AuraHandledException for invalid mitigant percentages');
         } catch (AuraHandledException e) {
-            System.assert(e.getMessage() != null, 'Exception message should not be null');
+            Assert.isTrue(e.getMessage() != null, 'Exception message should not be null');
         }
         Test.stopTest();
     }
@@ -1715,13 +1715,103 @@ static Map<String, Object> createFullTestSetup() {
             DMT_OpportunityProductsController.saveMitigants(
                 oli.Id, new List<Object>{ badMitigant }, null
             );
-            System.assert(false, 'Should have thrown AuraHandledException');
+            Assert.isTrue(false, 'Should have thrown AuraHandledException');
         } catch (AuraHandledException e) {
-            System.assert(e.getMessage() != null, 'Exception message should not be null');
+            Assert.isTrue(e.getMessage() != null, 'Exception message should not be null');
         }
         Test.stopTest();
 
         Integer countAfter = [SELECT COUNT() FROM DMT_Opportunity_Mitigant__c WHERE DMT_Opportunity_Product__c = :oli.Id];
-        System.assertEquals(countBefore, countAfter, 'No mitigant should be inserted after rollback');
+        Assert.areEqual(countBefore, countAfter, 'No mitigant should be inserted after rollback');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CIBGLOBALD-4630 - Guarantor data preload from HPG
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    @isTest
+    static void testGetGuarantorHpgData_FoundMapsInternalRating() {
+        // The HPG mock returns customer ES0000000000001 with internal rating BBB2
+        Account guarantor = DMT_Test_DataFactory.generateAccount(
+            new Map<Schema.SObjectField, Object>{
+                Account.DES_Group_Code__c => 'G20260101000001',
+                Account.g_customer_id__c => 'ES0000000000001'
+            }
+        );
+        DMT_Test_DataFactory.generateTaxonomyValue('C204', 'BBB2');
+
+        Test.startTest();
+        Map<String, Object> result = DMT_OpportunityProductsController.getGuarantorHpgData(guarantor.Id);
+        Test.stopTest();
+
+        Assert.isTrue((Boolean) result.get('success'), 'The HPG call should succeed: ' + result.get('message'));
+        Assert.isTrue((Boolean) result.get('found'), 'The Guarantor should be found in the HPG response');
+        Assert.areEqual('BBB2', result.get('internalRating'), 'Internal rating should come from HPG');
+        Assert.isNull(result.get('externalRating'), 'External rating is not informed by the mock and must stay empty');
+    }
+
+    @isTest
+    static void testGetGuarantorHpgData_InternalRatingNotInCatalogStaysEmpty() {
+        Account guarantor = DMT_Test_DataFactory.generateAccount(
+            new Map<Schema.SObjectField, Object>{
+                Account.DES_Group_Code__c => 'G20260101000001',
+                Account.g_customer_id__c => 'ES0000000000001'
+            }
+        );
+
+        Test.startTest();
+        Map<String, Object> result = DMT_OpportunityProductsController.getGuarantorHpgData(guarantor.Id);
+        Test.stopTest();
+
+        Assert.isTrue((Boolean) result.get('found'), 'The Guarantor should be found in the HPG response');
+        Assert.isNull(result.get('internalRating'), 'A rating missing from catalog C204 must not be preloaded');
+    }
+
+    @isTest
+    static void testGetGuarantorHpgData_CustomerNotInResponse() {
+        Account guarantor = DMT_Test_DataFactory.generateAccount(
+            new Map<Schema.SObjectField, Object>{
+                Account.DES_Group_Code__c => 'G20260101000001',
+                Account.g_customer_id__c => 'ES9999999999999'
+            }
+        );
+
+        Test.startTest();
+        Map<String, Object> result = DMT_OpportunityProductsController.getGuarantorHpgData(guarantor.Id);
+        Test.stopTest();
+
+        Assert.isTrue((Boolean) result.get('success'), 'The service answered');
+        Assert.isFalse((Boolean) result.get('found'), 'A customer missing from the HPG response is not found');
+        Assert.isNull(result.get('scoring'), 'No value must be invented');
+        Assert.isNull(result.get('internalRating'), 'No value must be invented');
+        Assert.isNull(result.get('externalRating'), 'No value must be invented');
+        Assert.isNotNull(result.get('message'), 'The reason should be informed');
+    }
+
+    @isTest
+    static void testGetGuarantorHpgData_WithoutCustomerCode() {
+        Account guarantor = DMT_Test_DataFactory.generateAccount(
+            new Map<Schema.SObjectField, Object>{
+                Account.DES_Group_Code__c => 'G20260101000001',
+                Account.g_customer_id__c => null
+            }
+        );
+
+        Test.startTest();
+        Map<String, Object> result = DMT_OpportunityProductsController.getGuarantorHpgData(guarantor.Id);
+        Test.stopTest();
+
+        Assert.isFalse((Boolean) result.get('success'), 'No customer code means no HPG call');
+        Assert.isFalse((Boolean) result.get('found'), 'Nothing can be found without a customer code');
+    }
+
+    @isTest
+    static void testGetGuarantorHpgData_NullId() {
+        Test.startTest();
+        Map<String, Object> result = DMT_OpportunityProductsController.getGuarantorHpgData(null);
+        Test.stopTest();
+
+        Assert.isFalse((Boolean) result.get('success'), 'A null Guarantor must not call HPG');
+        Assert.isFalse((Boolean) result.get('found'), 'A null Guarantor is never found');
     }
 }

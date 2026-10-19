@@ -322,6 +322,18 @@ public with sharing class DMT_Passport_Selector {
         return [SELECT DMT_Key__c, DMT_Value__c, gf_catalog_atrb_val1_name_c__c, DMT_Name_EN__c from DMT_Taxonomy_Values__c WHERE DMT_Value__c LIKE :value AND DMT_Catalog__c =: catalog AND DMT_Active__c = :true WITH USER_MODE];
     }
 
+    // CIBGLOBALD-4630 - Same query as above with the access level chosen by the caller, for reference
+    // data reads that must not fail on field-level security (callers pass AccessLevel.SYSTEM_MODE).
+    public static List<DMT_Taxonomy_Values__c> getTaxonomyValuesByValueAndCatalog(String value, String catalog, System.AccessLevel accessLevel){
+        return Database.queryWithBinds(
+            'SELECT DMT_Key__c, DMT_Value__c, gf_catalog_atrb_val1_name_c__c, DMT_Name_EN__c ' +
+            'FROM DMT_Taxonomy_Values__c ' +
+            'WHERE DMT_Value__c LIKE :value AND DMT_Catalog__c = :catalog AND DMT_Active__c = true',
+            new Map<String, Object>{ 'value' => value, 'catalog' => catalog },
+            accessLevel
+        );
+    }
+
     public static List<DMT_Taxonomy_Values__c> getTaxonomyValuesByCatalogsAndNames(List<String> catalogsList, List<String> namesList_en){
         return [SELECT Name, DMT_Value__c, DMT_Name_EN__c, DMT_Catalog__c FROM DMT_Taxonomy_Values__c
             WHERE DMT_Catalog__c IN :catalogsList AND DMT_Name_EN__c IN :namesList_en
