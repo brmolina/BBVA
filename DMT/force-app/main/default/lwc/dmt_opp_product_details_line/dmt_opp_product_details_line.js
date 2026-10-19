@@ -262,7 +262,7 @@ export default class DmtOppProductDetailsLine extends LightningElement {
             ref.restoreSnapshot?.();
         }
         this.draftRecordData = null;
-        this._exitEditMode();
+        this._exitEditMode(false);
     }
 
     @api notifyEditMode(value) {
@@ -273,10 +273,12 @@ export default class DmtOppProductDetailsLine extends LightningElement {
         }));
     }
 
-    _exitEditMode() {
+    _exitEditMode(commitSections = true) {
         this.isEditMode = false;
-        for (const ref of this._sectionRefs()) {
-            ref.commitEdit?.();
+        if (commitSections) {
+            for (const ref of this._sectionRefs()) {
+                ref.commitEdit?.();
+            }
         }
         this.draftRecordData = null;
         this.hasError = false;

@@ -190,7 +190,7 @@
                             <th scope="col"><div class="slds-truncate" title="Term">Term</div></th>
                             <th scope="col"><div class="slds-truncate" title="Drawn Spread (BPS)">Drawn Spread (BPS)</div></th>
                             <th scope="col"><div class="slds-truncate" title="Undrawn Spread (BPS)">Undrawn Spread (BPS)</div></th>
-                            <th scope="col"><div class="slds-truncate" title="Upfront Fees">Upfront Fees</div></th>
+                            <th scope="col" class="col-upfront-fees"><div class="slds-truncate" title="Upfront Fees">Upfront Fees</div></th>
                             <th scope="col" class="col-upfront-unit"><div class="slds-truncate" title="Amount / BPS">Amount / BPS</div></th>
                             <th scope="col"><div class="slds-truncate" title="Amortization Type">Amortization Type</div></th>
                             <template if:true={showInterestPaymentFrequency}><th scope="col"><div class="slds-truncate" title="Interest Payment Frequency">Interest Payment Frequency</div></th></template>
@@ -375,10 +375,10 @@
                                     </template>
                                 </td>
                                 <td>
-                                    <template if:true={profitabilityFieldsReadOnly}>
+                                    <template if:true={row._profitabilityFieldsReadOnly}>
                                         <div class="cell-text">{row.DMT_Amortization_Type__c}</div>
                                     </template>
-                                    <template if:false={profitabilityFieldsReadOnly}>
+                                    <template if:false={row._profitabilityFieldsReadOnly}>
                                         <div class="underlying-picklist"
                                              data-id={row.Id}
                                              data-field="DMT_Amortization_Type__c"
@@ -393,20 +393,24 @@
                                 </td>
                                 <template if:true={showInterestPaymentFrequency}>
                                 <td>
-                                    <template if:true={profitabilityFieldsReadOnly}>
-                                        <div class="cell-text">{row.DMT_Interest_Payment_Frequency__c}</div>
-                                    </template>
-                                    <template if:false={profitabilityFieldsReadOnly}>
-                                        <div class="underlying-picklist"
-                                             data-id={row.Id}
-                                             data-field="DMT_Interest_Payment_Frequency__c"
-                                             onclick={handlePicklistOpen}>
-                                            <input type="text" readonly
-                                                   class="underlying-picklist-input"
-                                                   value={row.DMT_Interest_Payment_Frequency__c}
-                                                   placeholder="Select.."/>
-                                            <span class="underlying-picklist-arrow">&#9660;</span>
-                                        </div>
+                                    <template if:true={row._showInterestPaymentFrequencyCell}>
+                                        <template if:true={row._showInterestPaymentFrequencyInput}>
+                                            <template if:true={row._profitabilityFieldsReadOnly}>
+                                                <div class="cell-text">{row._interestPaymentFrequencyDisplay}</div>
+                                            </template>
+                                            <template if:false={row._profitabilityFieldsReadOnly}>
+                                                <div class="underlying-picklist"
+                                                     data-id={row.Id}
+                                                     data-field="DMT_Interest_Payment_Frequency__c"
+                                                     onclick={handlePicklistOpen}>
+                                                    <input type="text" readonly
+                                                           class="underlying-picklist-input"
+                                                           value={row.DMT_Interest_Payment_Frequency__c}
+                                                           placeholder="Select.."/>
+                                                    <span class="underlying-picklist-arrow">&#9660;</span>
+                                                </div>
+                                            </template>
+                                        </template>
                                     </template>
                                 </td>
                                 </template>

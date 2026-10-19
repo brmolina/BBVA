@@ -4,15 +4,12 @@ import { ShowToastEvent }  from 'lightning/platformShowToastEvent';
 import LightningConfirm    from 'lightning/confirm';
 import GuarantorModal      from 'c/dmt_opp_product_modal_guarantor';
 import TITLETABLE          from '@salesforce/label/c.dmt_cl_Guarantors_Text';
-
-const VALID_MITIGANT_TYPES = [
-    'Others > Guarantee in favour of Public Administration',
-    'Others > ECA Guarantor (Exporte Credit agency)',
-    'Others > Shared maintenance clause',
-    'Personal > Parent guarantee',
-    'Personal > Corporate',
-    'Personal > Bank'
-];
+import {
+    MITIGANT_CLASS,
+    buildMitigantClassMap,
+    getMitigantClass,
+    getMitigantTypeOptions
+} from 'c/dmt_mitigant_utils';
 
 const COLUMN_WIDTHS = {
     Mitigant_Type__c  : 270,
@@ -36,6 +33,7 @@ export default class DmtOppProductTableUnfundedMitigants extends LightningElemen
     _canEdit      = true;
     _data         = [];
     _catalogValues= {};
+    _mitigantClassMap = new Map();
 
     // ─── Public API ───────────────────────────────────────────────────────────
 
@@ -55,13 +53,19 @@ export default class DmtOppProductTableUnfundedMitigants extends LightningElemen
     @api get catalogValues() { return this._catalogValues; }
     set catalogValues(value) {
         if (!value || typeof value !== 'object') return;
+        this._mitigantClassMap = buildMitigantClassMap(value);
         const seen = new Set();
         const d971 = (value['D971'] || []).filter(o => {
             if (seen.has(o.label)) return false;
             seen.add(o.label);
             return true;
         });
-        this._catalogValues = { ...value, D971: d971 };
+        this._catalogValues = {
+            ...value,
+            D971: d971,
+            E895: getMitigantTypeOptions(value, MITIGANT_CLASS.GUARANTOR)
+        };
+        this._loadFromData();
     }
 
 
@@ -132,7 +136,9 @@ export default class DmtOppProductTableUnfundedMitigants extends LightningElemen
 
     _loadFromData() {
         this.isLoading = true;
-        this.rows      = this._data.filter(item => VALID_MITIGANT_TYPES.includes(item.Mitigant_Type__c));
+        this.rows      = this._data.filter(item =>
+            getMitigantClass(item.Mitigant_Type__c, this._mitigantClassMap) === MITIGANT_CLASS.GUARANTOR
+        );
         // Rebuild columns so the current _canEdit is reflected
         // regardless of the order in which parent props arrive
         this.columns   = this._buildColumns();

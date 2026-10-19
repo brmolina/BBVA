@@ -3,8 +3,14 @@ import LightningModal              from 'lightning/modal';
 import { createRecord, updateRecord } from 'lightning/uiRecordApi';
 import { guarantorFields }         from './dmt_opp_product_modal_guarantor_fields';
 import getMitigantsData            from '@salesforce/apex/DMT_OpportunityProductsController.getMitigantsData';
+import { mergeSavedTypes }         from 'c/dmt_mitigant_utils';
+import { ShowToastEvent }          from 'lightning/platformShowToastEvent';
+import getGuarantorHpgData         from '@salesforce/apex/DMT_OpportunityProductsController.getGuarantorHpgData';
 
 const F_COUNTERPART    = 'Counterpart__c';
+const F_GUARANTOR      = 'DMT_Guarantor_Account__c';
+// CIBGLOBALD-4630 - fields preloaded from the HPG service when a Guarantor is selected
+const HPG_FIELDS       = new Set(['DMT_Scoring__c', 'Internal_Rating__c', 'External_Rating__c']);
 const FIN_INST_VALUES  = new Set(['Fin Inst-I', 'Fin Inst', 'Fin Inst-B']);
 const FIN_INST_FIELDS  = new Set(['AVC_Check__c', 'European_Bank_Check__c', 'SCRA__c']);
 // SCRA__c and External_Rating__c are mutually exclusive: at least one must be filled for Fin Inst
@@ -13,6 +19,7 @@ const SOV_VALUE        = 'Sov';
 const SOV_FIELDS       = new Set(['DMT_Country_Guarantor__c']);
 
 const CATALOG_MAP = {
+    Mitigant_Type__c        : 'E895',
     Counterpart__c          : 'D971',
     External_Rating__c      : 'C009',
     Internal_Rating__c      : 'C204',
@@ -37,6 +44,7 @@ export default class DmtOppProductModalGuarantor extends LightningModal {
     @track errorMessage     = '';
 
     isLoading = false;
+    _hpgRequestId = 0;
 
     // ─── Computed ─────────────────────────────────────────────────────────────
 
@@ -68,12 +76,12 @@ export default class DmtOppProductModalGuarantor extends LightningModal {
                 filters: { AND: [{ field: 'g_customer_id__c', operator: 'LIKE', value: entityPrefix }] }
             };
         });
-        this._assignPicklistOptions();
         if (this.record) {
             this._loadRecord(this.record);
         } else {
             this.fields = this._applyCounterpartRules(this.fields, '');
         }
+        this._assignPicklistOptions();
     }
 
     // ─── Event handlers ───────────────────────────────────────────────────────
@@ -88,7 +96,15 @@ export default class DmtOppProductModalGuarantor extends LightningModal {
         if (field.apiName === F_COUNTERPART) {
             newArr = this._applyCounterpartRules(newArr, value);
         }
+        const guarantorChanged = field.apiName === F_GUARANTOR && field.value !== value;
+        if (guarantorChanged) {
+            // CIBGLOBALD-4630 - never keep the HPG values of the previously selected Guarantor
+            newArr = this._clearHpgFields(newArr);
+        }
         this.fields = newArr;
+        if (guarantorChanged) {
+            this._preloadFromHpg(value);
+        }
     }
 
     handleCancel() {
@@ -126,6 +142,64 @@ export default class DmtOppProductModalGuarantor extends LightningModal {
             this.showErrorPopover = true;
         }
         this.isLoading = false;
+    }
+
+    // ─── HPG preload (CIBGLOBALD-4630) ────────────────────────────────────────
+
+    _clearHpgFields(fieldsArray) {
+        return fieldsArray.map(f => (HPG_FIELDS.has(f.apiName) ? { ...f, value: '' } : f));
+    }
+
+    // CIBGLOBALD-4630 - Called when a Guarantor is selected (not when the modal opens). Fills Scoring,
+    // Internal Rating and External Rating from HPG. Values HPG does not return stay blank, so required
+    // fields remain required for the user. Political and Commercial Risk are not preloaded: HPG does not
+    // return them, or the properties that represent them are unknown (see getGuarantorHpgData).
+    async _preloadFromHpg(guarantorValue) {
+        const requestId = ++this._hpgRequestId;
+        const accountId = guarantorValue && typeof guarantorValue === 'object'
+            ? guarantorValue.id
+            : guarantorValue;
+        if (!accountId) {
+            this.isLoading = false;
+            return;
+        }
+
+        this.isLoading = true;
+        try {
+            const result = await getGuarantorHpgData({ guarantorAccountId: accountId });
+            // A newer Guarantor selection supersedes this response
+            if (requestId !== this._hpgRequestId) return;
+
+            if (result?.found) {
+                const hpgValues = {
+                    DMT_Scoring__c    : result.scoring,
+                    Internal_Rating__c: result.internalRating,
+                    External_Rating__c: result.externalRating
+                };
+                this.fields = this.fields.map(f => {
+                    const hpgValue = hpgValues[f.apiName];
+                    return hpgValue !== undefined && hpgValue !== null ? { ...f, value: hpgValue } : f;
+                });
+            } else {
+                this._notifyHpgUnavailable();
+            }
+        } catch (error) {
+            if (requestId !== this._hpgRequestId) return;
+            console.error('HPG preload error:', error?.body?.message || error?.message);
+            this._notifyHpgUnavailable();
+        } finally {
+            if (requestId === this._hpgRequestId) {
+                this.isLoading = false;
+            }
+        }
+    }
+
+    _notifyHpgUnavailable() {
+        this.dispatchEvent(new ShowToastEvent({
+            title  : 'HPG data not available',
+            message: 'Scoring and ratings could not be retrieved from HPG for this Guarantor. Please fill them in manually.',
+            variant: 'warning'
+        }));
     }
 
     // ─── Counterpart rules ────────────────────────────────────────────────────
@@ -188,6 +262,15 @@ export default class DmtOppProductModalGuarantor extends LightningModal {
             const catalogKey = CATALOG_MAP[f.apiName];
             if (!catalogKey) return f;
             const options = this._catalogValues[catalogKey];
+            if (f.apiName === 'Mitigant_Type__c') {
+                return {
+                    ...f,
+                    options: mergeSavedTypes(
+                        Array.isArray(options) ? options : [],
+                        [f.value]
+                    )
+                };
+            }
             return {
                 ...f,
                 options: Array.isArray(options) && options.length > 0 ? options : f.options || []

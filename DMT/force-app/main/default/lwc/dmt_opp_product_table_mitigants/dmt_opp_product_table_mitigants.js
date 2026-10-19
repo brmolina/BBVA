@@ -4,19 +4,15 @@ import deleteRecordApex   from '@salesforce/apex/DMT_WithoutSharingDAO.deleteRec
 import LightningConfirm from 'lightning/confirm';
 import TITLETABLE from '@salesforce/label/c.dmt_cl_Collateral_Guarantees_Text';
 import saveMitigants          from '@salesforce/apex/DMT_OpportunityProductsController.saveMitigants';
+import {
+    MITIGANT_CLASS,
+    buildMitigantClassMap,
+    getMitigantClass,
+    getMitigantTypeOptions,
+    mergeSavedTypes
+} from 'c/dmt_mitigant_utils';
 
 const TEMP_ID_PREFIX = 'NEW_';
-const VALID_MITIGANT_TYPES_REAL = new Set([
-    'Real > Mortgage guarantee',
-    'Real > Cash',
-    'Real > Gold Bullion',
-    'Real > Debt securities',
-    'Real > Debt securities issued by central governments or central Banks',
-    'Real > Receivables',
-    'Real > Index equities and Index convertible bonds',
-    'Real > Securitisation',
-    'Real > Others real'
-]);
 const LIQUIDATION_ENABLED_TYPES = new Set([
     'Real > Cash',
     'Real > Gold Bullion',
@@ -76,6 +72,7 @@ export default class DmtOppProductTableMitigants extends LightningElement {
     _isEditMode = false;
     _canEdit    = true;
     _data       = [];
+    _mitigantClassMap       = new Map();
     _termOptions           = [];
     _currencyOptions       = [];
     _countryOptions        = [];
@@ -94,20 +91,14 @@ export default class DmtOppProductTableMitigants extends LightningElement {
     @api get catalogValues() { return {}; }
     set catalogValues(value) {
         if (!value || typeof value !== 'object') return;
-        const seen = new Set();
-        this._termOptions = (value['E895'] || [])
-            .filter(o => VALID_MITIGANT_TYPES_REAL.has(o.label))
-            .map(o => ({ label: o.label, value: o.label }))
-            .filter(o => {
-                if (seen.has(o.label)) return false;
-                seen.add(o.label);
-                return true;
-            });
+        this._mitigantClassMap = buildMitigantClassMap(value);
+        this._termOptions = getMitigantTypeOptions(value, MITIGANT_CLASS.COLLATERAL);
         this._internalRatingOptions = value['C204'] || [];
         this._externalRatingOptions = value['C009'] || [];
         this._countryOptions        = value['C245'] || [];
         this._currencyOptions       = value['C264'] || [];
         if (!this._isEditMode) {
+            if (!this._snapshot) this._loadFromData();
             this.columns = this._buildColumns();
         }
     }
@@ -177,9 +168,14 @@ export default class DmtOppProductTableMitigants extends LightningElement {
         return this.rows.filter(r => !r._deleted).length;
     }
 
+    _isCollateralRow(item) {
+        return !item.Mitigant_Type__c ||
+            getMitigantClass(item.Mitigant_Type__c, this._mitigantClassMap) === MITIGANT_CLASS.COLLATERAL;
+    }
+
     _loadFromData() {
         this.rows = this._data
-            .filter(item => VALID_MITIGANT_TYPES_REAL.has(item.Mitigant_Type__c) || !item.Mitigant_Type__c)
+            .filter(item => this._isCollateralRow(item))
             .map(r => this._decorateNewRow(r));
         this._refreshDerivedState();
     }
@@ -270,7 +266,7 @@ export default class DmtOppProductTableMitigants extends LightningElement {
         if (!Array.isArray(pasted) || pasted.length === 0) return;
 
         const incomingRows = pasted
-            .filter(item => VALID_MITIGANT_TYPES_REAL.has(item.Mitigant_Type__c) || !item.Mitigant_Type__c)
+            .filter(item => this._isCollateralRow(item))
             .map(r => this._decorateNewRow(r));
 
         // Already editing: stage rows in memory only, the Save button will persist them
@@ -410,8 +406,12 @@ export default class DmtOppProductTableMitigants extends LightningElement {
 
     _buildColumns() {
         const e = this._isEditMode;
+        const termOptions = mergeSavedTypes(
+            this._termOptions,
+            this.rows.map(r => r.Mitigant_Type__c)
+        );
         return [
-            this._searchComboColumn('Collateral Type',     'Mitigant_Type__c',         this._termOptions,           e, COLUMN_WIDTHS.Mitigant_Type__c),
+            this._searchComboColumn('Collateral Type',     'Mitigant_Type__c',         termOptions,                e, COLUMN_WIDTHS.Mitigant_Type__c),
             this._numericColumn    ('Commercial Risk (%)', 'Commercial_Percentage__c',                               e),
             this._numericColumn    ('Political Risk (%)',  'Political_Percentage__c',                                e),
             this._dateColumn       ('End Date',            'End_Date__c',                                            e),

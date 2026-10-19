@@ -10,13 +10,7 @@ export const guarantorFields = [
         isReadOnly: false,
         isHidden: false,
         isRequired: true,
-        options: [
-            { label: 'Others > Guarantee in favour of Public Administration', value: 'Others > Guarantee in favour of Public Administration' },
-            { label: 'Others > Shared maintenance clause', value: 'Others > Shared maintenance clause' },
-            { label: 'Personal > Parent guarantee', value: 'Personal > Parent guarantee' },
-            { label: 'Personal > Corporate', value: 'Personal > Corporate' },
-            { label: 'Personal > Bank', value: 'Personal > Bank' }
-        ]
+        options: []
     }, {
         id: "DMT_Guarantor_Account__c",
         apiName: "DMT_Guarantor_Account__c",
@@ -53,7 +47,7 @@ export const guarantorFields = [
         id: "Commercial_Percentage__c",
         label: "Commercial Risk (%)",
         apiName: "Commercial_Percentage__c",
-        value: 0,
+        value: "",
         size: "1-of-2",
         type: "number",
         min: 0,
@@ -66,7 +60,7 @@ export const guarantorFields = [
         id: "Political_Percentage__c",
         label: "Political Risk (%)",
         apiName: "Political_Percentage__c",
-        value: 0,
+        value: "",
         size: "1-of-2",
         type: "number",
         min: 0,
@@ -117,7 +111,7 @@ export const guarantorFields = [
         options: []
     }, {
         id: "DMT_Currency__c",
-        label: "Curency",
+        label: "Currency",
         apiName: "DMT_Currency__c",
         value: "",
         size: "1-of-2",

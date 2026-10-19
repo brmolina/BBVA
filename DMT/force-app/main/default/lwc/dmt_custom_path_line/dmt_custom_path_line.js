@@ -417,7 +417,6 @@ export default class Dmt_custom_path_line extends LightningElement {
     const fields = {}
     fields[ID_FIELD.fieldApiName] = this.recordId
     fields[STATUS_FIELD.fieldApiName] = newStatus
-    fields[WON_LOST_FIELD.fieldApiName] = this.wonLostValue
 
     const recordInput = { fields }
     const childComponent = this.template.querySelector('.childCustomPath')
