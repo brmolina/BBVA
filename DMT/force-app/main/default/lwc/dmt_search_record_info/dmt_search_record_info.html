@@ -67,7 +67,13 @@
                                                 <lightning-icon icon-name="standard:account" size="small"></lightning-icon>
                                             </span>
                                             <span class="slds-media__body">
-                                                <span class="slds-listbox__option-text slds-listbox__optiontext_entity">{client.Name}</span>
+                                                <span class="slds-listbox__option-text slds-listbox__optiontext_entity">
+                                                    {client.Name}
+                                                    <!-- CIBGLOBALD-4667 - Group / Subsidiary tag -->
+                                                    <template lwc:if={client.clientTypeLabel}>
+                                                        <lightning-badge label={client.clientTypeLabel} class="slds-m-left_x-small"></lightning-badge>
+                                                    </template>
+                                                </span>
                                                 <span class="slds-listbox__option-meta slds-listbox__optionmeta_entity">{client.secondaryField}</span>
                                             </span>
                                         </div>

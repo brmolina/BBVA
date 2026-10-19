@@ -1,0 +1,7 @@
+CIBGLOBALD-4667 - add Group and Subsidiary tags to the client search of the Line and Opportunity clone modals
+
+The client search in the Clone modal of Lines and Opportunities now shows a tag next to each result name: Group or Subsidiary. Display only, the selected value and the clone logic are unchanged.
+
+- DMT_Client_Selector.searchClient: also returns DES_Structure_Type__c and runs the search explicitly in system mode, so missing field-level access never blocks it. Record visibility still follows the class sharing.
+- dmt_search_record_info (Line clone) and dmt_localClient_picker (Opportunity clone): lightning-badge next to the name. Structure Type Subsidiary shows Subsidiary; Supragroup, Group, Subgroup and Shared Management Group show Group; other values show no tag.
+- Tag text reuses the existing custom labels DES_STR_TYPE_Group and DES_STR_TYPE_Subsidiary.

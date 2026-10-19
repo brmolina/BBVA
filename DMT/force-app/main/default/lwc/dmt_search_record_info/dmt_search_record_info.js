@@ -6,6 +6,19 @@ import pillStyle from '@salesforce/resourceUrl/DMT_PillStyle';
 const DEBOUNCE_DELAY = 300; // 300ms de espera antes de buscar
 // LABELS
 import DMT_HELPTEXT_GROUPCODE from '@salesforce/label/c.DMT_Groupcode_Searchtooltip';
+import DES_STR_TYPE_GROUP from '@salesforce/label/c.DES_STR_TYPE_Group';
+import DES_STR_TYPE_SUBSIDIARY from '@salesforce/label/c.DES_STR_TYPE_Subsidiary';
+
+// CIBGLOBALD-4667 - Account.DES_Structure_Type__c values tagged as Group (same group levels as DMT_LaunchDealManagementService.resolveGroupAccountId)
+const GROUP_STRUCTURE_TYPES = ['Supragroup', 'Group', 'Subgroup', 'Shared Management Group'];
+
+// CIBGLOBALD-4667 - Tag shown next to each search result: Group, Subsidiary, or none for other structure types
+function getClientTypeLabel(structureType) {
+    if (structureType === 'Subsidiary') {
+        return DES_STR_TYPE_SUBSIDIARY;
+    }
+    return GROUP_STRUCTURE_TYPES.includes(structureType) ? DES_STR_TYPE_GROUP : null;
+}
 
 export default class Dmt_search_record_info extends LightningElement
 {
@@ -81,7 +94,8 @@ export default class Dmt_search_record_info extends LightningElement
                         .filter(client => client.DES_Group_Code__c || client.g_customer_id__c)
                         .map(client => {
                             const secondaryField = client.DES_Group_Code__c || client.g_customer_id__c || 'Ubicación no disponible';
-                            return { ...client, secondaryField };
+                            const clientTypeLabel = getClientTypeLabel(client.DES_Structure_Type__c);
+                            return { ...client, secondaryField, clientTypeLabel };
                         });
                     console.log('this.searchResults', JSON.stringify(this.searchResults));
                 })

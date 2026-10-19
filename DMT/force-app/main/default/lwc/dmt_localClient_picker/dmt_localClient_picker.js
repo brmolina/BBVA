@@ -7,6 +7,23 @@ import searchClient
 import getAccountById
     from '@salesforce/apex/DMT_Client_Selector.getAccountById';
 
+import DES_STR_TYPE_GROUP
+    from '@salesforce/label/c.DES_STR_TYPE_Group';
+
+import DES_STR_TYPE_SUBSIDIARY
+    from '@salesforce/label/c.DES_STR_TYPE_Subsidiary';
+
+// CIBGLOBALD-4667 - Account.DES_Structure_Type__c values tagged as Group (same group levels as DMT_LaunchDealManagementService.resolveGroupAccountId)
+const GROUP_STRUCTURE_TYPES = ['Supragroup', 'Group', 'Subgroup', 'Shared Management Group'];
+
+// CIBGLOBALD-4667 - Tag shown next to each search result: Group, Subsidiary, or none for other structure types
+function getClientTypeLabel(structureType) {
+    if (structureType === 'Subsidiary') {
+        return DES_STR_TYPE_SUBSIDIARY;
+    }
+    return GROUP_STRUCTURE_TYPES.includes(structureType) ? DES_STR_TYPE_GROUP : null;
+}
+
 export default class LocalClientPicker extends LightningElement {
 
     @api clientId;
@@ -112,7 +129,8 @@ export default class LocalClientPicker extends LightningElement {
                 subtitle:
                     account.DES_Group_Code__c ||
                     account.g_customer_id__c  ||
-                    ''
+                    '',
+                clientTypeLabel: getClientTypeLabel(account.DES_Structure_Type__c)
             }));
 
             this.prospectOpen =
