@@ -8,7 +8,7 @@
         <actionName>DMT_OpportunityCloneUtil</actionName>
         <actionType>apex</actionType>
         <connector>
-            <targetReference>dmt_navigateflow_aura_Action_1</targetReference>
+            <targetReference>Service_failed</targetReference>
         </connector>
         <faultConnector>
             <targetReference>ScreenErrorMessage</targetReference>
@@ -189,6 +189,31 @@
                 <targetReference>GetLocalClient</targetReference>
             </connector>
             <label>Client Selected</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Service_failed</name>
+        <label>Service failed?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>dmt_navigateflow_aura_Action_1</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Clone_Opp_Data.success</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>serviceError</targetReference>
+            </connector>
+            <label>Yes</label>
         </rules>
     </decisions>
     <decisions>
@@ -564,6 +589,33 @@
             </styleProperties>
         </fields>
         <nextOrFinishButtonLabel>Close</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>serviceError</name>
+        <label>ScreenServiceError</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <connector>
+            <targetReference>dmt_navigateflow_aura_Action_1</targetReference>
+        </connector>
+        <fields>
+            <name>ErrorServiceText</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;font-size: 14px; color: rgb(40, 40, 40);&quot;&gt;Ha habido un error con el Servicio: &lt;/strong&gt;&lt;span style=&quot;font-size: 14px; color: rgb(40, 40, 40);&quot;&gt;{!Clone_Opp_Data.ErrorMessage}&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
     </screens>

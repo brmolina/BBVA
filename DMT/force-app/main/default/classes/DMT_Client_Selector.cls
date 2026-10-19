@@ -11,14 +11,19 @@ public with sharing class DMT_Client_Selector {
         return [SELECT  Id, Name, DES_Structure_Type__c, RecordType.Id, DES_Group_Code__c, g_customer_id__c FROM Account WHERE Id =: accountId WITH SYSTEM_MODE LIMIT 1 ];
     }
 
+    /**
+     * CIBGLOBALD-4667 - Also returns DES_Structure_Type__c so the clone modals (LWC dmt_search_record_info,
+     * dmt_localClient_picker) can tag each result as Group or Subsidiary. Runs in system mode on purpose: missing
+     * field-level access must never block the search; record visibility still follows the class sharing (with sharing).
+     */
     @AuraEnabled
     public static List<Account> searchClient(String searchTerm) {
         if(String.isBlank(searchTerm)) {
             return new List<Account>();
         }
         String searchClientClone = searchTerm + '*';
-        String searchQuery = 'FIND :searchClientClone IN ALL FIELDS RETURNING Account(Id, Name, DES_Group_Code__c, g_customer_id__c)';
-        List<List<SObject>> searchResults = search.query(searchQuery);
+        String searchQuery = 'FIND :searchClientClone IN ALL FIELDS RETURNING Account(Id, Name, DES_Group_Code__c, g_customer_id__c, DES_Structure_Type__c)';
+        List<List<SObject>> searchResults = search.query(searchQuery, AccessLevel.SYSTEM_MODE);
         List<Account> accounts = (List<Account>) searchResults[0];
         return accounts;      
     }

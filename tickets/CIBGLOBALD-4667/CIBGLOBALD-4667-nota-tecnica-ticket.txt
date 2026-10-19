@@ -1,0 +1,10 @@
+Cambio implementado: etiqueta visual Group / Subsidiary en el buscador de clientes del modal de clonación de Lines y Opportunities.
+
+- El botón Clone de Line (quick action Clone_Line, Flow DMT_Clone_Line) usa la LWC dmt_search_record_info; el de Opportunity (quick action CloneOppAction, Flow Clone_Opportunity) usa la LWC dmt_localClient_picker. Ambas llaman a DMT_Client_Selector.searchClient.
+- searchClient devuelve además el campo DES_Structure_Type__c de Account.
+- searchClient se ejecuta explícitamente en system mode (AccessLevel.SYSTEM_MODE): la falta de acceso al campo nunca bloquea la búsqueda; la visibilidad de registros sigue el with sharing de la clase.
+- Cada resultado muestra un lightning-badge junto al nombre: Subsidiary cuando el Structure Type es Subsidiary; Group cuando es Supragroup, Group, Subgroup o Shared Management Group (mismos niveles de grupo que usa Deal Management en DMT_LaunchDealManagementService). Otros valores (NIF Client, vacío) no muestran etiqueta.
+- Textos desde las custom labels existentes DES_STR_TYPE_Group y DES_STR_TYPE_Subsidiary.
+- Solo visual: no se modifican los Flows ni la lógica de clonación; el valor seleccionado que se devuelve al Flow es el mismo que antes.
+
+Cómo probar: abrir Clone en una Line, buscar un cliente (por ejemplo Iberdrola) y comprobar la etiqueta en grupos, subgrupos y subsidiarias; repetir desde Clone en una Opportunity; seleccionar un cliente y guardar para confirmar que la clonación funciona igual.

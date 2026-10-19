@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CIBGLOBALD-4667 - Group / Subsidiary tag in the Line and Opportunity clone modals. Order: Apex first (LWCs read the new field). -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>DMT_Client_Selector</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>dmt_search_record_info</members>
+        <members>dmt_localClient_picker</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <version>65.0</version>
+</Package>
