@@ -32,8 +32,6 @@ const SCREEN_STYLE = `
     .${CONTENT_CLASS} [data-dmt-action="external-rwa"] { float: right; margin-top: 0.75rem; }
     .${CONTENT_CLASS} img[alt="profitability"] { width: 100% !important; height: auto !important; }
 `;
-// The modal PDF is landscape: the Summary table has about 20 columns.
-const PDF_PAGE_STYLE = '<style type="text/css">@page { size: A4 landscape; }</style>';
 
 export default class Dmt_profitability_view extends NavigationMixin(LightningElement) {
     @api opportunityId;
@@ -152,7 +150,7 @@ export default class Dmt_profitability_view extends NavigationMixin(LightningEle
      */
     @api
     async downloadPdf() {
-        const html = PDF_PAGE_STYLE + this.renderedHtml.replace(RWA_MARKER_PATTERN, '');
+        const html = this.renderedHtml.replace(RWA_MARKER_PATTERN, '');
         const isMobile = FORM_FACTOR === 'Small' || FORM_FACTOR === 'Medium';
         const prep = await preparePdfAssets({ originalHtml: html });
         if (isMobile) {
