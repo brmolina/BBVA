@@ -10,7 +10,7 @@
             </div>
         </template> 
         <template lwc:elseif={showProfitabilityChart}>
-            <c-dmt_profitability_chart profitability={profitability} opportunity-id={opportunityId}></c-dmt_profitability_chart>
+            <c-dmt_profitability_view profitability={profitability} opportunity-id={opportunityId} onstatuschange={handleProfitabilityStatus}></c-dmt_profitability_view>
         </template>
         <template lwc:elseif={graphicModal}>
             <c-dmt_subfeature_chart wrapper-data={limits} feature-name={featureName} feature-light={featureLight} show-condition-desc={showConditionDesc} currency-id={currencyId}></c-dmt_subfeature_chart>
@@ -51,12 +51,26 @@
         </template>
     </lightning-modal-body>
     <lightning-modal-footer>
+        <template lwc:if={downloadError}>
+            <div class="slds-text-color_error slds-m-bottom_x-small" style="text-align: right;">{downloadError}</div>
+        </template>
         <template lwc:if={noShowInfoMessage}>
             <div class="slds-m-bottom_small" style="text-align: center; font-weight: bold;">
                 <c-dmt_helpericon icon-name="utility:warning" icon-size="small" icon-variant="warning"></c-dmt_helpericon>
                 <span class="slds-m-left_x-small">{noShowInfoMessage}</span>
             </div>
         </template>
-        <lightning-button label="Close" onclick={handleOkay}></lightning-button>
+        <template for:each={footerActions} for:item="action">
+            <lightning-button
+                key={action.name}
+                label={action.label}
+                icon-name={action.iconName}
+                variant={action.variant}
+                disabled={action.disabled}
+                data-name={action.name}
+                onclick={handleFooterAction}
+                class="slds-m-left_x-small">
+            </lightning-button>
+        </template>
     </lightning-modal-footer>
 </template>

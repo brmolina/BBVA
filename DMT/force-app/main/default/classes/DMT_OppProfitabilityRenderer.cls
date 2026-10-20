@@ -132,6 +132,9 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
             }
 
             List<Object> orderedResults = orderProfitabilityResults(results);
+            // CIBGLOBALD-4713 - 'External RWA 1Y' column only when the Profitability modal requested the
+            // External RWA service and it returned values (same rule as the former modal code).
+            Boolean showExternalRwa = data.profitabilityAprsByProductId != null && !data.profitabilityAprsByProductId.isEmpty();
 
             String rorcDisplay = formatProfitabilityMetric(summary.get('rorc'), rorcThreshold);
             String raroecDisplay = formatProfitabilityMetric(summary.get('raroec'), raroecThreshold);
@@ -162,7 +165,7 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
 
             html += '<div>'
             + '<h3 style="font-size: 16px; color: #004481; margin-bottom: 10px;">Summary</h3>'
-            + '<div style="width:100%;">'
+            + '<div data-dmt-table-block="summary" style="width:100%;">'
             + '<table class="style-table" style="width:100%; border-collapse: collapse; table-layout:fixed; word-break:break-word;">'
                         + '<tr>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>ID</strong></td>'
@@ -218,8 +221,9 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                         }
                 html += '</table></div>'
                 + '&nbsp;</br>'
+                + getExternalRwaActionMarker(data)
                 + '<h3 style="font-size: 16px; color: #004481; margin-bottom: 10px;">Regulatory Capital</h3>'
-                + '<div style="width:100%;">'
+                + '<div data-dmt-table-block="regulatory" style="width:100%;">'
                 + '<table class="style-table" style="width:100%; border-collapse: collapse; table-layout:fixed; word-break:break-word;">'
                         + '<tr>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>ID</strong></td>'
@@ -230,6 +234,7 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>LGD reg</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>NetIncome Reg</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>RWA reg</strong></td>'
+                            + (showExternalRwa ? '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>External RWA 1Y</strong></td>' : '')
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Regulatory Capital</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>RORC CDD</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>RORC</strong></td>'
@@ -262,8 +267,9 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                                     + formatCurrencyAmountLikeModal(row.get('bdiReg'), rowCurrency) 
                                     + '</td>'
                                     + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + formatCurrencyAmountLikeModal(row.get('regulatoryApr'), rowCurrency) 
+                                    + formatCurrencyAmountLikeModal(row.get('regulatoryApr'), rowCurrency)
                                     + '</td>'
+                                    + (showExternalRwa ? '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + getExternalRwaCell(row, data, rowCurrency) + '</td>' : '')
                                     + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
                                     +  formatCurrencyAmountLikeModal(row.get('regulatoryCapital'), rowCurrency) 
                                     + '</td>'
@@ -278,7 +284,7 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                 html += '</table></div>'
                 + '&nbsp;</br>'
                 + '<h3 style="font-size: 16px; color: #004481; margin-bottom: 10px;">Economic Capital</h3>'
-                + '<div style="width:100%;">'
+                + '<div data-dmt-table-block="economic" style="width:100%;">'
                 + '<table class="style-table" style="width:100%; border-collapse: collapse; table-layout:fixed; word-break:break-word;">'
                         + '<tr>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>ID</strong></td>'
@@ -341,7 +347,7 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                     + '</div>';
 
             Boolean hasProfitabilityVisual = false;
-            if (data.isImg64 && !data.itemImgBase64.isEmpty() && data.itemImgBase64.size() > 7) {
+            if (data.isImg64 == true && !data.itemImgBase64.isEmpty() && data.itemImgBase64.size() > 0) {
                 Integer j = data.itemImgBase64.size() <= 3 ? 0 : -1;
                 if (j >= 0 && j < data.itemImgBase64.size()) {
                     String raw = normalizeImageBase64(data.itemImgBase64[j]?.imgB64);
@@ -662,6 +668,45 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
             : valueDecimal < thresholdDecimal ? '&lt;'
             : '=';
         return formattedValue + ' ' + comparisonSign + ' ' + DMT_FormattingUtils.formatPercent(thresholdDecimal);
+    }
+
+    /**
+     * CIBGLOBALD-4713 - Empty marker where the Profitability modal (LWC dmt_profitability_view) inserts
+     * its 'External RWA calculate' button. Only emitted when the modal asks for it
+     * (data.profitabilityShowRwaAction, set by DMT_Profitability_utils.renderProfitabilityHtml); the NBC
+     * views, the case task modal and the snapshots never get it. The modal removes it before the PDF.
+     * data-enabled follows the Opportunity branch (DMT_Profitability_utils.getRwaRegLinkInfo).
+     */
+    private static String getExternalRwaActionMarker(DMT_ViewController.LineDataWrapper data) {
+        if (data.profitabilityShowRwaAction != true) {
+            return '';
+        }
+        Boolean enabled = data.profitabilityRwaLinkInfo != null && data.profitabilityRwaLinkInfo.get('enabled') == true;
+        return '<div data-dmt-action="external-rwa" data-enabled="' + enabled + '"></div>';
+    }
+
+    /**
+     * CIBGLOBALD-4713 - 'External RWA 1Y' cell of the Regulatory Capital table: the value returned by the
+     * External RWA service for the row's productId (data.profitabilityAprsByProductId), linked to the RWA
+     * calculator when the Opportunity branch has the link enabled (data.profitabilityRwaLinkInfo).
+     * Same value and link as the former modal code (dmt_profitability_chart).
+     */
+    private static String getExternalRwaCell(Map<String, Object> row, DMT_ViewController.LineDataWrapper data, String rowCurrency) {
+        if (isSummaryRow(row)) {
+            return '';
+        }
+        String productId = String.valueOf(row.get('productId'));
+        String formattedValue = formatCurrencyAmountLikeModal(data.profitabilityAprsByProductId.get(productId), rowCurrency);
+        Map<String, Object> linkInfo = data.profitabilityRwaLinkInfo;
+        if (String.isBlank(formattedValue) || linkInfo == null || linkInfo.get('enabled') != true) {
+            return formattedValue;
+        }
+        String explanationId = String.valueOf(linkInfo.get('explanationId')) + '_' + productId;
+        String country = linkInfo.get('entific') != null ? String.valueOf(linkInfo.get('entific')) : '';
+        String url = String.valueOf(linkInfo.get('baseUrl'))
+            + '?explanationId=' + EncodingUtil.urlEncode(explanationId, 'UTF-8')
+            + '&amp;applicationId=2&amp;country=' + EncodingUtil.urlEncode(country, 'UTF-8');
+        return '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + formattedValue + '</a>';
     }
 
     // Helper to extract the profitability feature from featuresList

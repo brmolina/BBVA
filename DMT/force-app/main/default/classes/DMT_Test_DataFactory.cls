@@ -576,7 +576,9 @@ public with sharing class  DMT_Test_DataFactory {
             Account.DES_Group_Code__c => 'G20180109100427'
         };
 
-        accountOverrides.put(Account.Past2_FY_Corp_Synd_Lending_amount__c, 13);
+        // CIBGLOBALD-4713 - kept disabled (see the preservation rule above): the field is not createable for
+        // the test running user, so every test that calls generateAccount() failed in setup. To review.
+        // accountOverrides.put(Account.Past2_FY_Corp_Synd_Lending_amount__c, 13);
 
         if (overrides != null) {
             accountOverrides.putAll(overrides);
@@ -1627,6 +1629,23 @@ public with sharing class  DMT_Test_DataFactory {
         PricebookEntry pricebookEntry = generatePricebookEntry(product);
 
         return DMT_UTIL.createOppLineItemRecord(opp.Id, product.Id, pricebookEntry.Id, overrides);
+    }
+
+    /**
+     * CIBGLOBALD-4713 - Sets the saved Passport JSON (DMT_Passport_Save__c) of an Opportunity, as read by
+     * DMT_ViewController.getFeatures. Reuses the Passport the Opportunity automation may already have
+     * created (getFeatures reads only one), and creates it otherwise.
+     */
+    public static Passport__c generatePassport(Id opportunityId, String passportJson) {
+        List<Passport__c> passports = [SELECT Id FROM Passport__c WHERE Opportunity__c = :opportunityId];
+        if (passports.isEmpty()) {
+            passports.add(new Passport__c(Opportunity__c = opportunityId));
+        }
+        for (Passport__c passport : passports) {
+            passport.DMT_Passport_Save__c = passportJson;
+        }
+        upsert passports;
+        return passports[0];
     }
 
     public static DMT_Opportunity_Tenor__c generateOpportunityTenor(OpportunityLineItem opportunityLineItem) {
