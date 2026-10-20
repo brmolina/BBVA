@@ -183,7 +183,7 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Expected Loss</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Tax Rate</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>FD</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Net Income</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Incomes 12 months</strong></td>'
                         + '</tr>';
                         for(Object result : orderedResults){
                             Map<String, Object> row = (Map<String, Object>) result;
@@ -213,7 +213,7 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('expectedLossPbs')) + '</td>'
                                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatPercentFromWhole(row.get('taxRate')) + '</td>'
                                 + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatCurrencyAmountLikeModal(row.containsKey('franchiseDeal') ? row.get('franchiseDeal') : 0, rowCurrency) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatCurrencyAmountLikeModal(row.get('bdi'), rowCurrency) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatCurrencyAmountLikeModal(row.get('incomes12Months'), rowCurrency) + '</td>'
                             + '</tr>';
                         }
                 html += '</table></div>'
@@ -228,6 +228,7 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>EAD reg</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>CCF reg</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>LGD reg</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>NetIncome Reg</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>RWA reg</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Regulatory Capital</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>RORC CDD</strong></td>'
@@ -258,6 +259,9 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                                     + formatPercentFromWhole(row.get('regulatoryLgd')) 
                                     + '</td>'
                                     + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
+                                    + formatCurrencyAmountLikeModal(row.get('bdiReg'), rowCurrency) 
+                                    + '</td>'
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
                                     + formatCurrencyAmountLikeModal(row.get('regulatoryApr'), rowCurrency) 
                                     + '</td>'
                                     + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
@@ -283,6 +287,7 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>EAD eco</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>CCF eco</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>LGD eco</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>NetIncome Eco</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>RWA eco</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>Economic Capital</strong></td>'
                             + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>RAROEC CDD</strong></td>'
@@ -312,6 +317,9 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                                     + '</td>'
                                     + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
                                     + formatPercentFromWhole(row.get('economicLgd')) 
+                                    + '</td>'
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
+                                    + formatCurrencyAmountLikeModal(row.get('bdiEco'), rowCurrency) 
                                     + '</td>'
                                     + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
                                     + formatCurrencyAmountLikeModal(row.get('economicApr'), rowCurrency) 

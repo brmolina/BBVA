@@ -641,6 +641,13 @@ public without sharing class DMT_ViewController {
                     if (data.opportunity != null && !data.opportunity.DMT_MDE_Opportunities_Clients__r.isEmpty()) {
                         data.oppClient = data.opportunity.DMT_MDE_Opportunities_Clients__r[0];
                     }
+                    System.debug(LoggingLevel.DEBUG,
+                        'DMT_ViewController child Opportunity loaded | childOppId=' + childOpp.Id +
+                        ' | loadedOppId=' + (data.opportunity != null ? data.opportunity.Id : null) +
+                        ' | oppLineItems=' + (data.opportunity != null && data.opportunity.OpportunityLineItems != null ? data.opportunity.OpportunityLineItems.size() : 0) +
+                        ' | oppMoneyChildren=' + (data.opportunity != null && data.opportunity.OpportunityLineItems != null && !data.opportunity.OpportunityLineItems.isEmpty() ? data.opportunity.OpportunityLineItems[0].Opportunity_Money__r.size() : 0) +
+                        ' | oppClientId=' + (data.oppClient != null ? data.oppClient.Id : null)
+                    );
                     if (data.opportunity != null && data.opportunity.AccountId != null) {
                         try {
                             Map<String, Object> groupData = DMT_HPG_Utils.getGroupFromClientAccount(data.opportunity.AccountId);
@@ -674,6 +681,11 @@ public without sharing class DMT_ViewController {
                             oppProduct.sustainabilityBonusEligible = oppItem.DMT_Sustainability_bonus_eligible__c;
                             data.oppProducts.add(oppProduct);
                         }
+                        System.debug(LoggingLevel.DEBUG,
+                            'DMT_ViewController child Opportunity oppProducts loaded | oppProductsSize=' + data.oppProducts.size() +
+                            ' | firstProductId=' + (data.oppProducts.isEmpty() ? null : data.oppProducts[0].productId) +
+                            ' | firstProductName=' + (data.oppProducts.isEmpty() ? null : data.oppProducts[0].name)
+                        );
                     }
                 } catch (Exception e) {
                     System.debug('Error loading child Opportunity data for Sanction Client component: ' + e.getMessage());
