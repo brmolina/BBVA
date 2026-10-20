@@ -95,6 +95,27 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                     opportunityCurrency = String.valueOf(productDetail.get('OppCurrency'));
                 }
             }
+            
+            // Underlyings share the productId of their parent Line, so their names are registered by underlyingId
+            // (same source as the Profitability modal: DMT_Profitability_utils.getUnderlyingDetailsByIds)
+            List<String> underlyingIds = new List<String>();
+            for (Object rec : results) {
+                Map<String, Object> resultRow = (Map<String, Object>) rec;
+                if (resultRow.get('underlyingId') != null) {
+                    underlyingIds.add(String.valueOf(resultRow.get('underlyingId')));
+                }
+            }
+            if (!underlyingIds.isEmpty()) {
+                try {
+                    Map<String, Map<String, Object>> underlyingDetails = DMT_Profitability_utils.getUnderlyingDetailsByIds(underlyingIds);
+                    for (String underlyingId : underlyingDetails.keySet()) {
+                        prodDetailsMap.put(underlyingId, new Map<String, Object>{ 'Name' => underlyingDetails.get(underlyingId).get('Name') });
+                    }
+                } catch (Exception e) {
+                    // Do not break the whole section: underlying rows fall back to the raw underlyingId
+                    System.debug(LoggingLevel.WARN, 'Error resolving underlying names: ' + e.getMessage());
+                }
+            }
 
             String html = '';
             html += '<div>' + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">Profitability Engine</h2>' + '<div class="slds-scope">';
@@ -144,25 +165,25 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
             + '<div style="width:100%;">'
             + '<table class="style-table" style="width:100%; border-collapse: collapse; table-layout:fixed; word-break:break-word;">'
                         + '<tr>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>ID</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Initial Date</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Maturity Date</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Average Life</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Tenor</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Allin Drawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Allin Undrawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Spread Drawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Spread Undrawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Fees Drawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Fees Undrawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>FC Drawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>FC Undrawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Country Risk Drawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Country Risk Undrawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Expected Loss</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Tax Rate</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>FD</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Net Income</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>ID</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Initial Date</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Maturity Date</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Average Life</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Tenor</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Allin Drawn</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Allin Undrawn</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Spread Drawn</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Spread Undrawn</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Fees Drawn</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Fees Undrawn</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>FC Drawn</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>FC Undrawn</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Country Risk Drawn</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Country Risk Undrawn</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Expected Loss</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Tax Rate</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>FD</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Net Income</strong></td>'
                         + '</tr>';
                         for(Object result : orderedResults){
                             Map<String, Object> row = (Map<String, Object>) result;
@@ -175,24 +196,24 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                             String rowCurrency = getRowCurrency(row, prodDetailsMap, currencyIsoCode);
 
                             html += '<tr style="' + rowStyle + '">'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' + DMT_FormattingUtils.checkNull(oppId) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + DMT_FormattingUtils.checkNull(initialDate) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + DMT_FormattingUtils.checkNull(maturityDate) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatDecimalLikeModal(row.get('averageLife')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatDecimalLikeModal(row.get('tenor')) + '</td>'                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatBpsLikeModal(row.get('allInDb')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatBpsLikeModal(row.get('allInFb')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatBpsLikeModal(row.get('spreadDbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatBpsLikeModal(row.get('spreadFbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatBpsLikeModal(row.get('feesDbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatBpsLikeModal(row.get('feesFbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatBpsLikeModal(row.get('fundingDbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatBpsLikeModal(row.get('fundingFbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatBpsLikeModal(row.get('countryRiskProvisionDbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatBpsLikeModal(row.get('countryRiskProvisionFbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatBpsLikeModal(row.get('expectedLossPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatPercentFromWhole(row.get('taxRate')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatCurrencyAmountLikeModal(row.containsKey('franchiseDeal') ? row.get('franchiseDeal') : 0, rowCurrency) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 10px">' + formatCurrencyAmountLikeModal(row.get('bdi'), rowCurrency) + '</td>'
+                                + '<td style="padding: 8px; ' + getIdCellIndent(row) + 'border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + DMT_FormattingUtils.checkNull(oppId) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + DMT_FormattingUtils.checkNull(initialDate) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + DMT_FormattingUtils.checkNull(maturityDate) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatDecimalLikeModal(row.get('averageLife')) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatDecimalLikeModal(row.get('tenor')) + '</td>'                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('allInDb')) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('allInFb')) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('spreadDbPbs')) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('spreadFbPbs')) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('feesDbPbs')) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('feesFbPbs')) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('fundingDbPbs')) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('fundingFbPbs')) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('countryRiskProvisionDbPbs')) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('countryRiskProvisionFbPbs')) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('expectedLossPbs')) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatPercentFromWhole(row.get('taxRate')) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatCurrencyAmountLikeModal(row.containsKey('franchiseDeal') ? row.get('franchiseDeal') : 0, rowCurrency) + '</td>'
+                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatCurrencyAmountLikeModal(row.get('bdi'), rowCurrency) + '</td>'
                             + '</tr>';
                         }
                 html += '</table></div>'
@@ -201,16 +222,16 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                 + '<div style="width:100%;">'
                 + '<table class="style-table" style="width:100%; border-collapse: collapse; table-layout:fixed; word-break:break-word;">'
                         + '<tr>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>ID</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Notional Drawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Notional Undrawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>EAD reg</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>CCF reg</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>LGD reg</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>RWA reg</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>Regulatory Capital</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>RORC CDD</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 10px"><strong>RORC</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>ID</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Notional Drawn</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Notional Undrawn</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>EAD reg</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>CCF reg</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>LGD reg</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>RWA reg</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Regulatory Capital</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>RORC CDD</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>RORC</strong></td>'
                         + '</tr>';
                         for(Object result : orderedResults){
                             Map<String, Object> row = (Map<String, Object>) result;
@@ -224,28 +245,28 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                             Decimal rowNominalFb = getRowNominalFb(row, prodDetailsMap, opportunityNominalFb);
 
                             html += '<tr style="' + rowStyle + '">'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' + DMT_FormattingUtils.checkNull(oppId) + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' + formatCurrencyAmountLikeModal(rowNominalDb, rowCurrency) + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' + formatCurrencyAmountLikeModal(rowNominalFb, rowCurrency) + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' 
+                                    + '<td style="padding: 8px; ' + getIdCellIndent(row) + 'border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + DMT_FormattingUtils.checkNull(oppId) + '</td>'
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + formatCurrencyAmountLikeModal(rowNominalDb, rowCurrency) + '</td>'
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + formatCurrencyAmountLikeModal(rowNominalFb, rowCurrency) + '</td>'
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
                                     + formatCurrencyAmountLikeModal(row.get('regulatoryEad'), rowCurrency) 
                                     + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' 
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
                                     + formatPercentFromWhole(row.get('regulatoryCcf')) 
                                     + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' 
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
                                     + formatPercentFromWhole(row.get('regulatoryLgd')) 
                                     + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' 
-                                    + formatPercentFromWhole(row.get('regulatoryApr')) 
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
+                                    + formatCurrencyAmountLikeModal(row.get('regulatoryApr'), rowCurrency) 
                                     + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' 
-                                    + formatDecimalLikeModal(row.get('regulatoryCapital')) 
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
+                                    +  formatCurrencyAmountLikeModal(row.get('regulatoryCapital'), rowCurrency) 
                                     + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' 
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
                                     + DMT_FormattingUtils.formatPercent(row.get('rorcProspected')) 
                                     + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' 
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
                                     + DMT_FormattingUtils.formatPercent(row.get('rorc')) 
                                     + '</td>'
                                 + '</tr>';
@@ -256,16 +277,16 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                 + '<div style="width:100%;">'
                 + '<table class="style-table" style="width:100%; border-collapse: collapse; table-layout:fixed; word-break:break-word;">'
                         + '<tr>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 10px"><strong>ID</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 10px"><strong>Notional Drawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 10px"><strong>Notional Undrawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 10px"><strong>EAD eco</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 10px"><strong>CCF eco</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 10px"><strong>LGD eco</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 10px"><strong>RWA eco</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 10px"><strong>Economic Capital</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 10px"><strong>RAROEC CDD</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 10px"><strong>RAROEC</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>ID</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>Notional Drawn</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>Notional Undrawn</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>EAD eco</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>CCF eco</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>LGD eco</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>RWA eco</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>Economic Capital</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>RAROEC CDD</strong></td>'
+                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>RAROEC</strong></td>'
                         + '</tr>';
                         for(Object result : orderedResults){
 
@@ -280,28 +301,28 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                             Decimal rowNominalFb = getRowNominalFb(row, prodDetailsMap, opportunityNominalFb);
 
                             html += '<tr style="' + rowStyle + '">'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' + DMT_FormattingUtils.checkNull(oppId) + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' + formatCurrencyAmountLikeModal(rowNominalDb, rowCurrency) + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' + formatCurrencyAmountLikeModal(rowNominalFb, rowCurrency) + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' 
+                                    + '<td style="padding: 8px; ' + getIdCellIndent(row) + 'border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + DMT_FormattingUtils.checkNull(oppId) + '</td>'
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + formatCurrencyAmountLikeModal(rowNominalDb, rowCurrency) + '</td>'
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + formatCurrencyAmountLikeModal(rowNominalFb, rowCurrency) + '</td>'
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
                                     + formatCurrencyAmountLikeModal(row.get('economicEad'), rowCurrency)
                                     + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' 
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
                                     + formatPercentFromWhole(row.get('economicCcf')) 
                                     + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' 
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
                                     + formatPercentFromWhole(row.get('economicLgd')) 
                                     + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' 
-                                    + formatPercentFromWhole(row.get('economicApr')) 
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
+                                    + formatCurrencyAmountLikeModal(row.get('economicApr'), rowCurrency) 
                                     + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' 
-                                    + formatDecimalLikeModal(row.get('economicCapital')) 
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
+                                    + formatCurrencyAmountLikeModal(row.get('economicCapital'), rowCurrency) 
                                     + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' 
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
                                     + DMT_FormattingUtils.formatPercent(row.get('raroecProspected')) 
                                     + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 10px">' 
+                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
                                     + DMT_FormattingUtils.formatPercent(row.get('raroec')) 
                                     + '</td>'
                                 + '</tr>';
@@ -473,7 +494,10 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
             return DMT_FormattingUtils.checkNull(opp.Name);
         }
 
-        String prodIdStr = String.valueOf(row.get('productId'));
+           
+        String prodIdStr = row.get('underlyingId') != null
+            ? String.valueOf(row.get('underlyingId'))
+            : String.valueOf(row.get('productId'));
 
         if (prodDetailsMap.containsKey(prodIdStr)) {
             Map<String, Object> details = prodDetailsMap.get(prodIdStr);
@@ -483,6 +507,11 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
         }
 
         return DMT_FormattingUtils.checkNull(prodIdStr);
+    }
+
+        
+    private static String getIdCellIndent(Map<String, Object> row) {
+        return row.get('underlyingId') != null ? 'padding-left: 28px; ' : '';
     }
 
     private static String getRowCurrency(

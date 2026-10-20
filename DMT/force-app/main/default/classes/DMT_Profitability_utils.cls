@@ -265,17 +265,21 @@ public with sharing class DMT_Profitability_utils {
             return result;
         }
 
+        Integer orderIndex = 0;
         for (DMT_Underlying__c ul : [
             SELECT Id, Name, DMT_Drawn_Reference_Amount__c, DMT_Undrawn_Reference_Amount__c
             FROM DMT_Underlying__c
             WHERE Id IN :underlyingIds
+            ORDER BY CreatedDate ASC, Id ASC
         ]) {
             result.put(ul.Id, new Map<String, Object>{
-                'Id'        => ul.Id,
-                'Name'      => ul.Name,
-                'nominalDb' => ul.DMT_Drawn_Reference_Amount__c,
-                'nominalFb' => ul.DMT_Undrawn_Reference_Amount__c
+                'Id'         => ul.Id,
+                'Name'       => ul.Name,
+                'nominalDb'  => ul.DMT_Drawn_Reference_Amount__c,
+                'nominalFb'  => ul.DMT_Undrawn_Reference_Amount__c,
+                'orderIndex' => orderIndex
             });
+            orderIndex++;
         }
 
         return result;

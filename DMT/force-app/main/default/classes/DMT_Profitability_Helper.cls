@@ -1,35 +1,33 @@
 public with sharing class DMT_Profitability_Helper {
+    @TestVisible
+    private static HttpResponse profitabilityMatrixTestResponse;
 
     public static void callProfitabilityMatrixService(Map<String, Object> request, Map<String, Object> outMap) {
         HttpResponse response;
         String serviceName='DMT_ProfitabilityMatrix';
       
         iaso__GBL_integration_service__mdt serviceDetails = [SELECT iaso__Mock_LTA__c , iaso__Http_Method__c, iaso__Retrieve_Mock_LTA__c FROM iaso__GBL_integration_service__mdt WHERE DeveloperName =:serviceName WITH SECURITY_ENFORCED LIMIT 1];
-        if (Test.isRunningTest() || serviceDetails.iaso__Retrieve_Mock_LTA__c == true) {
+            
+        if (Test.isRunningTest() && profitabilityMatrixTestResponse != null) {
+            response = profitabilityMatrixTestResponse;
+        } else if (Test.isRunningTest() || serviceDetails.iaso__Retrieve_Mock_LTA__c == true) {
             response = DMT_HPG_Utils.getMock(serviceName);
         } else {
-            if (Test.isRunningTest() || serviceDetails.iaso__Retrieve_Mock_LTA__c == true) {
-                response = DMT_HPG_Utils.getMock(serviceName);
-            } else {
                 response=DMT_Utils.callService(serviceName, request);
                 //response = iaso.GBL_Integration_GenericService.invoke('DMT_ProfitabilityMatrix', requestStr);
-            }
-            
         }
+            
+        
 
         if( (response.getStatusCode() == 200 || response.getStatusCode() == 201) ){
-            System.debug('*** Response OK');
             String bodyResponse = response.getBody();
             outMap.put('result', true);
             outMap.put('bodyResponse', bodyResponse );
-            System.debug(response);
         } else {
             
             String bodyResponse = response.getBody();
             Map<String,Object> errorResponse = ( Map<String,Object>)JSON.deserializeUntyped(bodyResponse);
             String errorMsg = errorResponse.get('message')!= null ? (String) errorResponse.get('message') : 'Unknown';
-            System.debug('*** Response KO: '+bodyResponse);
-            System.debug('*** Response: '+errorResponse);
 
             outMap.put('result', false);
             outMap.put('messageTitle', 'External service call failed');
@@ -75,8 +73,6 @@ public with sharing class DMT_Profitability_Helper {
             if(inputMap.get(catalogKey) instanceof List<Object>){
 
                 List<Object> catalogValues = (List<Object>)inputMap.get(catalogKey);
-                System.debug('Mi lista de '+catalogKey+' con valores: '+catalogValues);
-
                 // Convertir a lista de envoltorios ordenables
                 List<OrderWrapper> wrappers = new List<OrderWrapper>();
                 for (Object obj : catalogValues) {
@@ -90,7 +86,6 @@ public with sharing class DMT_Profitability_Helper {
                     sortedCatalogValues.add(w.original);
                 }
                 outMap.put(catalogKey, sortedCatalogValues);
-                System.debug('Mi lista de '+catalogKey+' ordenada: '+sortedCatalogValues);
             }
         }
     }
@@ -149,9 +144,35 @@ public with sharing class DMT_Profitability_Helper {
     **/
     @AuraEnabled
     public static Passport__c getPassportByOpp(String oppId) {
-        System.debug('getPassportByOpp oppId => '+oppId);
-        if (String.isBlank(oppId)) return null;
+        if (String.isBlank(oppId)){
+            return null;
+        }
         return DMT_Passport_Selector.passportByIdOpportunity(oppId);
+    }
+
+    /**
+    * @description Returns the current Passport eligibility for a Profitability Scenario calculation.
+    * @param oppId Salesforce Opportunity Id
+    * @return Profitability Engine feature eligibility parsed from DMT_Passport_Save__c
+    **/
+    @AuraEnabled(cacheable=false)
+    public static DMT_PassportProfitabilityProcessor.ProfitabilityFeatureEligibility validateProfitabilityPassport(Id oppId) {
+        if (oppId == null) {
+            return DMT_PassportProfitabilityProcessor.evaluateProfitabilityFeature(null);
+        }
+
+        List<Passport__c> passports = [
+            SELECT DMT_Passport_Save__c
+            FROM Passport__c
+            WHERE Opportunity__c = :oppId WITH USER_MODE
+            ORDER BY LastModifiedDate DESC
+            LIMIT 1
+           
+        ];
+
+        return DMT_PassportProfitabilityProcessor.evaluateProfitabilityFeature(
+            passports.isEmpty() ? null : passports[0].DMT_Passport_Save__c
+        );
     }
 
     /**
@@ -309,22 +330,39 @@ public with sharing class DMT_Profitability_Helper {
     }
 
     /**
+    * @description Returns the active Payment Frequency values configured on OpportunityLineItem.
+    * @return List of picklist options with label and value keys
+    **/
+    @AuraEnabled(cacheable=true)
+    public static List<Map<String, String>> getPaymentFrequencyPicklistValues() {
+        return DMT_SustainableDealController.getPicklistValues('gf_payment_frequency__c');
+    }
+
+    /**
     * @description Returns the Opportunities to list on the Profitability "Scenarios" selector,
     * depending on which toggle button is active (Current opportunities vs Basic opportunities).
-    * - Current opportunities (isDraft = false): Opportunities with a Passport already requested,
-    *   belonging either directly to the client (AccountId) or to any account in the same
-    *   commercial group (Account.DES_Main_Parent__r.DES_Group_Code__c).
+    * - Current opportunities (isDraft = false): Opportunities in the selected client/group
+    *   Account scope, including multi-holder Opportunities associated with scoped customer codes.
     * - Basic opportunities (isDraft = true): non-disclosed placeholder Opportunities with a
     *   Passport already requested.
     * @author BBVA DMT
-    * @param clientId Salesforce Account Id of the selected client
-    * @param groupCode Commercial group code (DES_Group_Code__c) of the selected client's group
+    * @param clientId HPG customer alpha code (used as a fallback when originId is unavailable)
+    * @param groupCode Commercial group code (DES_Group_Code__c) for group selection
     * @param isDraft false = Current opportunities, true = Basic opportunities
+    * @param clientType Explicit Deal Management context: 'client' or 'group'
+    * @param originId Salesforce Account Id selected in Deal Management
     * @return List<Opportunity>
     **/
     @AuraEnabled(cacheable=false)
-    public static List<Opportunity> getOpportunitiesByType(String clientId, String groupCode, Boolean isDraft) {
-        System.debug('getOpportunitiesByType isDraft => '+isDraft);
+    public static List<Opportunity> getOpportunitiesByType(
+        String clientId,
+        String groupCode,
+        Boolean isDraft,
+        String clientType,
+        Id originId
+    ) {
+
+        System.debug('DMT_Profitability_Helper.getOpportunitiesByType: clientId=' + clientId + ', groupCode=' + groupCode + ', isDraft=' + isDraft + ', clientType=' + clientType + ', originId=' + originId);
         List<Opportunity> opportunities = new List<Opportunity>();
         if (isDraft) {
             opportunities = [
@@ -336,26 +374,146 @@ public with sharing class DMT_Profitability_Helper {
                   AND StageName NOT IN ('Closed Won', 'Closed Lost')
                   AND Account.Name = 'non - disclosed'
                   AND Id IN (SELECT OpportunityId FROM OpportunityLineItem)
-                WITH SECURITY_ENFORCED
+                WITH USER_MODE
             ];
-            System.debug('getOpportunitiesByType opportunities => '+opportunities);
+            return filterOpportunitiesByProfitabilityPassport(opportunities);
+        }
+
+        Set<Id> accountIds = resolveProfitabilityAccountIds(clientId, groupCode, clientType, originId);
+        if (accountIds.isEmpty()) {
+            System.debug('No hay cuentas');
             return opportunities;
         }
 
-            opportunities = [
-                SELECT Id, Name, DMT_Opp_Id__c
-                FROM Opportunity
-                WHERE RecordType.DeveloperName = 'DMT_Opportunity'
-                  AND DMT_Opp_Id__c != null
-                  AND DMT_Requested_Passport__c = true
-                  AND dmt_isDraft_opp__c = false
-                  AND StageName NOT IN ('Closed Won', 'Closed Lost')
-                  AND (Account.g_customer_id__c = :clientId OR Account.DES_Main_Parent__r.DES_Group_Code__c = :groupCode)
-                  AND Id IN (SELECT OpportunityId FROM OpportunityLineItem)
-                WITH SECURITY_ENFORCED
-            ];
-            System.debug('getOpportunitiesByType opportunities => '+opportunities);
+        Set<String> customerCodes = new Set<String>();
+        for (Account scopedAccount : [
+            SELECT g_customer_id__c
+            FROM Account
+            WHERE Id IN :accountIds
+              AND g_customer_id__c != null
+            WITH USER_MODE
+        ]) {
+            customerCodes.add(scopedAccount.g_customer_id__c);
+        }
+
+        Set<Id> associatedOpportunityIds = new Set<Id>();
+        System.debug('DMT_Profitability_Helper.getOpportunitiesByType: customerCodes=' + customerCodes);
+        if (!customerCodes.isEmpty()) {
+            for (DMT_Custom_Association_ClientOpportunity__c associationClient : [
+                SELECT DMT_Custom_Association_Opportunity__r.Opportunity__c
+                FROM DMT_Custom_Association_ClientOpportunity__c
+                WHERE DMT_g_customer_id__c IN :customerCodes
+                  AND DMT_Custom_Association_Opportunity__r.Opportunity__c != null
+                WITH USER_MODE
+                LIMIT 2000
+            ]) {
+                associatedOpportunityIds.add(
+                    associationClient.DMT_Custom_Association_Opportunity__r.Opportunity__c
+                );
+            }
+        }
+System.debug('DMT_Profitability_Helper.getOpportunitiesByType: associatedOpportunityIds=' + associatedOpportunityIds);
+        opportunities = [
+            SELECT Id, Name, DMT_Opp_Id__c
+            FROM Opportunity
+            WHERE RecordType.DeveloperName = 'DMT_Opportunity'
+              AND DMT_Opp_Id__c != null
+              AND DMT_Requested_Passport__c = true
+              AND dmt_isDraft_opp__c = false
+              AND StageName NOT IN ('Closed Won', 'Closed Lost')
+              AND (AccountId IN :accountIds OR Id IN :associatedOpportunityIds)
+              AND Id IN (SELECT OpportunityId FROM OpportunityLineItem)
+            WITH USER_MODE
+        ];
+        System.debug('DMT_Profitability_Helper.getOpportunitiesByType: opportunities=' + opportunities);
+        return filterOpportunitiesByProfitabilityPassport(opportunities);
+    }
+
+    private static Set<Id> resolveProfitabilityAccountIds(
+        String clientId,
+        String groupCode,
+        String clientType,
+        Id originId
+    ) {
+        Set<Id> accountIds = new Set<Id>();
+        Boolean isGroupSelection = 'group'.equalsIgnoreCase(clientType);
+        Boolean isClientSelection = 'client'.equalsIgnoreCase(clientType)
+            || 'subsidiary'.equalsIgnoreCase(clientType)
+            || 'customer'.equalsIgnoreCase(clientType);
+
+        if (isGroupSelection) {
+            if (originId != null && originId.getSObjectType() == Account.SObjectType) {
+                accountIds.add(originId);
+                for (Account subsidiary : [
+                    SELECT Id
+                    FROM Account
+                    WHERE DES_Main_Parent__c = :originId
+                      AND DES_Structure_Type__c = 'Subsidiary'
+                    WITH USER_MODE
+                ]) {
+                    accountIds.add(subsidiary.Id);
+                }
+            }
+
+            if (!String.isBlank(groupCode)) {
+                for (Account groupAccount : [
+                    SELECT Id
+                    FROM Account
+                    WHERE DES_Group_Code__c = :groupCode
+                    WITH USER_MODE
+                ]) {
+                    accountIds.add(groupAccount.Id);
+                }
+            }
+        } else if (isClientSelection) {
+            if (originId != null && originId.getSObjectType() == Account.SObjectType) {
+                accountIds.add(originId);
+            } else if (!String.isBlank(clientId)) {
+                for (Account clientAccount : [
+                    SELECT Id
+                    FROM Account
+                    WHERE g_customer_id__c = :clientId
+                    WITH USER_MODE
+                    LIMIT 1
+                ]) {
+                    accountIds.add(clientAccount.Id);
+                }
+            }
+        }
+
+        return accountIds;
+    }
+
+    private static List<Opportunity> filterOpportunitiesByProfitabilityPassport(List<Opportunity> opportunities) {
+        if (opportunities.isEmpty()) {
             return opportunities;
+        }
+
+        Set<Id> opportunityIds = new Map<Id, Opportunity>(opportunities).keySet();
+        Map<Id, Passport__c> passportByOpportunityId = new Map<Id, Passport__c>();
+        for (Passport__c passport : [
+            SELECT Opportunity__c, DMT_Passport_Save__c
+            FROM Passport__c
+            WHERE Opportunity__c IN :opportunityIds WITH USER_MODE
+            ORDER BY Opportunity__c, LastModifiedDate DESC 
+        ]) {
+            if (!passportByOpportunityId.containsKey(passport.Opportunity__c)) {
+                passportByOpportunityId.put(passport.Opportunity__c, passport);
+            }
+        }
+        List<Opportunity> eligibleOpportunities = new List<Opportunity>();
+        for (Opportunity opportunity : opportunities) {
+            Passport__c passport = passportByOpportunityId.get(opportunity.Id);
+            DMT_PassportProfitabilityProcessor.ProfitabilityFeatureEligibility eligibility =
+                DMT_PassportProfitabilityProcessor.evaluateProfitabilityFeature(
+                    passport == null ? null : passport.DMT_Passport_Save__c
+                );
+            if (eligibility.canSelect) {
+                eligibleOpportunities.add(opportunity);
+            }
+        }
+        System.debug('DMT_Profitability_Helper.getOpportunitiesByType: eligibleOpportunities=' + eligibleOpportunities);
+        return eligibleOpportunities;
     }
 
     /**
