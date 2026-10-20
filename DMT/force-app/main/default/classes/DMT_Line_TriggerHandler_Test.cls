@@ -61,10 +61,18 @@ public with sharing class DMT_Line_TriggerHandler_Test {
     // frozen - i.e. right after the setup update that puts the Line into its pre-resubmission
     // state, before the test's own change under Test.startTest().
     private static Task setupApprovalTaskWithSnapshot(DMT_Line__c frozenLine) {
+        return setupApprovalTaskWithSnapshot(frozenLine, 'passport');
+    }
+
+    // CIBGLOBALD-4117 - the restart checkpoints are scoped by Case.DMT_Passport_Sanction__c
+    // ('passport' on Draft -> Proposal, 'approval' on Proposal -> Approval, 'readytoclose' while
+    // parked in Ready to close), so each test says which sanction its Case carries.
+    private static Task setupApprovalTaskWithSnapshot(DMT_Line__c frozenLine, String passportSanction) {
         Group groupApprover = [SELECT Id FROM Group WHERE DeveloperName = 'DMT_Approvers1' LIMIT 1];
         TriggerBypass.setBypass();
         Case approvalCase = new Case(
             DMT_Line__c = frozenLine.Id,
+            DMT_Passport_Sanction__c = passportSanction,
             Status = 'Pending',
             RecordTypeId = CASE_RT_APPROVAL_ID,
             OwnerId = groupApprover.Id,
@@ -164,6 +172,84 @@ public with sharing class DMT_Line_TriggerHandler_Test {
 
         Task unchangedTask = [SELECT Status FROM Task WHERE Id = :openTask.Id];
         Assert.areEqual('Not Started', unchangedTask.Status, 'A first-ever submission (no prior DMT_DateToProposal__c) should not restart tasks');
+    }
+
+    // CIBGLOBALD-4117 - checkpoint split, same as DMT_OpportunityTriggerHandler_Test: Draft -> Proposal
+    // only restarts 'passport' Cases, Proposal -> Approval only 'approval' Cases.
+    @isTest
+    public static void testRestartApprovalTasksOnLineResubmission_DraftExit_SkipsApprovalSanctionCase() {
+        DMT_Line__c line = queryLineWithTrackedFields();
+        line.Status__c = DMT_Constants.DRAFT;
+        line.DMT_DateToProposal__c = Datetime.now().addDays(-1);
+        update line;
+        DMT_Line__c frozenLine = queryLineWithTrackedFields();
+
+        Task openTask = setupApprovalTaskWithSnapshot(frozenLine, 'approval');
+
+        Test.startTest();
+        line.Status__c = DMT_Constants.PROPOSAL;
+        line.Name = 'Changed Name';
+        update line;
+        Test.stopTest();
+
+        Task unchangedTask = [SELECT Status FROM Task WHERE Id = :openTask.Id];
+        Assert.areEqual('Not Started', unchangedTask.Status, 'An approval-sanction Case must not restart when the Line only moves Draft -> Proposal');
+    }
+
+    @isTest
+    public static void testRestartApprovalTasksOnLineResubmission_ApprovalEntry_RestartsApprovalSanctionCase() {
+        DMT_Line__c line = queryLineWithTrackedFields();
+        line.Status__c = DMT_Constants.PROPOSAL;
+        update line;
+        DMT_Line__c frozenLine = queryLineWithTrackedFields();
+
+        Task openTask = setupApprovalTaskWithSnapshot(frozenLine, 'approval');
+
+        Test.startTest();
+        line.Status__c = DMT_Constants.APPROVAL;
+        line.Name = 'Changed Name';
+        update line;
+        Test.stopTest();
+
+        Task staleTask = [SELECT Status FROM Task WHERE Id = :openTask.Id];
+        Assert.areEqual(DMT_Constants.CANCELLED, staleTask.Status, 'Stale task should be cancelled when a tracked field changed on Proposal -> Approval entry');
+    }
+
+    @isTest
+    public static void testRestartApprovalTasksOnLineResubmission_ApprovalEntry_SkipsPassportSanctionCase() {
+        DMT_Line__c line = queryLineWithTrackedFields();
+        line.Status__c = DMT_Constants.PROPOSAL;
+        update line;
+        DMT_Line__c frozenLine = queryLineWithTrackedFields();
+
+        Task openTask = setupApprovalTaskWithSnapshot(frozenLine, 'passport');
+
+        Test.startTest();
+        line.Status__c = DMT_Constants.APPROVAL;
+        line.Name = 'Changed Name';
+        update line;
+        Test.stopTest();
+
+        Task unchangedTask = [SELECT Status FROM Task WHERE Id = :openTask.Id];
+        Assert.areEqual('Not Started', unchangedTask.Status, 'A passport-sanction Case must not restart when the Line moves Proposal -> Approval');
+    }
+
+    @isTest
+    public static void testRestartApprovalTasksOnLineResubmission_ReadyToCloseEdit_RestartsWhenTrackedFieldChanged() {
+        DMT_Line__c line = queryLineWithTrackedFields();
+        line.Status__c = DMT_Constants.READYTOCLOSE;
+        update line;
+        DMT_Line__c frozenLine = queryLineWithTrackedFields();
+
+        Task openTask = setupApprovalTaskWithSnapshot(frozenLine, 'readytoclose');
+
+        Test.startTest();
+        line.Name = 'Changed Name';
+        update line;
+        Test.stopTest();
+
+        Task staleTask = [SELECT Status FROM Task WHERE Id = :openTask.Id];
+        Assert.areEqual(DMT_Constants.CANCELLED, staleTask.Status, 'Stale task should be cancelled when a tracked field changes while parked in Ready to close');
     }
 
     // CIBGLOBALD-4117: there is deliberately NO test here for a Client change on a DMT_Line__c-level

@@ -125,14 +125,18 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
         ));
     }
 
-    // Records restarted synchronously per transaction. Each one costs ~4 DML statements in
-    // restartTasksForRecord against the shared 150 ceiling - at 35 that was already ~140,
-    // dangerously close before counting whatever else the same trigger transaction does (other
-    // Opportunity/Line trigger logic, future additions to restartTasksForRecord itself). Lowered
-    // to 10 (2026-09-22) for a real safety margin as this framework keeps growing - correctness is
-    // unaffected either way, since 10+ just means the exact same restartTasksForRecord call
-    // happens a few seconds later via the async path instead of inline.
-    private static final Integer SYNC_RESTART_RECORD_LIMIT = 10;
+    // CIBGLOBALD-4117 - records are restarted synchronously only when FEWER than this many are
+    // stale in one dispatchRestarts() call (one call per checkpoint of the Opportunity and Line
+    // handlers); that many or more go through DMT_RestartApprovalTasksPayload, one payload per
+    // record, each in its own transaction. With 2 only a single-record save (the UI case) runs inline.
+    // Measured on DMT_TCM_DEV (2026-10-19): one restarted record costs about 10 SOQL, 9 DML and
+    // 0.6 s CPU in restartTasksForRecord, mostly from the Task and Case triggers and flows it fires.
+    // On top of that, one Opportunity checkpoint costs about 18 SOQL and a Line save about 29 SOQL
+    // of its own trigger logic, against the 100 SOQL / 150 DML / 10 s CPU limits of the transaction.
+    // At the previous value of 10, up to 9 inline restarts reached about 140 SOQL for an
+    // Opportunity. Correctness is unaffected either way: the async path runs the exact same
+    // restartTasksForRecord a few seconds later.
+    private static final Integer SYNC_RESTART_RECORD_LIMIT = 2;
 
     // Implemented by DMT_SnapshotChildComparator. Returns true when a record's child rows no
     // longer match the frozen snapshot.

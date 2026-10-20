@@ -316,7 +316,7 @@ public with sharing class DMT_Line_Helper{
                                     idRiskLineDepos += riskType == 'Depos' ? 1 : 0;
                                     idRiskLineEquities += riskType == 'Equities' ? 1 : 0;
                                     idRiskLineDerivatives += riskType == 'Derivatives' ? 1 : 0;
-                                    idRiskLineRepos += riskType == 'Repo' ? 1 : 0;
+                                    idRiskLineRepos += riskType == 'Repos' ? 1 : 0;
                                     initcLineRsk.g_limit_last_level_type__c = DMT_Constants.RSK_LVL_TREASURY;
                                     initcLineRsk.gf_inscol_months_grace_number__c = rsk.gf_inscol_months_grace_number__c;
                                     initcLineRsk.gf_loan_value_per__c = rsk.gf_loan_value_per__c;
@@ -1282,23 +1282,75 @@ public with sharing class DMT_Line_Helper{
 
     /**
      * CIBGLOBALD-4117: AFTER UPDATE. Restarts a Line's open approval Tasks when a watched field changed since the
-     * Task was last frozen, so the approver reviews the new value.
+     * Task was last frozen, so the approver reviews the new value. Same three checkpoints as
+     * DMT_OpportunityTriggerHandler.restartApprovalTasksOnOpportunityResubmission, each scoped to the
+     * Cases with that passport sanction (Case.DMT_Passport_Sanction__c):
+     *
+     *   1. Draft -> Proposal on a RESUBMISSION (old DMT_DateToProposal__c already set) -> 'passport'
+     *   2. Proposal -> Approval                                                        -> 'approval'
+     *   3. Edited while already parked in Ready to close                               -> 'readytoclose'
+     *
+     * Checkpoint 3 detects the change by comparing watched fields, not by any flag on the Line.
+     * Only TreasurySettlement and OtherProducts Lines take part: Sanction has never been part of this
+     * mechanism, matching enqueueRecalculateApprovals.
+     *
+     * Reads the previous Status__c and DMT_DateToProposal__c from oldLinesMap on purpose: Trigger.old
+     * always holds the pre-save value, so this stays correct regardless of anything else stamping
+     * those fields in the same transaction.
      *
      * Keeps only what is specific to DMT_Line__c - which Lines qualify and which Cases are theirs -
      * and hands the rest to DMT_ApprovalChangeStep_Helper.restartStaleApprovalTasks(), shared with
      * DMT_OpportunityTriggerHandler.
-     *
-     * Runs from the trigger rather than the path component, so it fires on any qualifying save.
-     * Queries: 1 Case + 2 in the shared gate + 1 per child section.
      */
     public void restartApprovalTasksOnLineResubmission(List<DMT_Line__c> newLines, Map<Id, DMT_Line__c> oldLinesMap) {
         try {
-            Set<Id> qualifyingLineIds = getLinesQualifyingForResubmissionCheck(newLines, oldLinesMap);
-            if (qualifyingLineIds.isEmpty()) {
+            Id treasurySettlementRTId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('TreasurySettlement')?.getRecordTypeId();
+            Id otherProductsRTId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('OtherProducts')?.getRecordTypeId();
+
+            Set<Id> draftExitLineIds = new Set<Id>();
+            Set<Id> approvalEntryLineIds = new Set<Id>();
+            Set<Id> readyToCloseEditLineIds = new Set<Id>();
+
+            for (DMT_Line__c line : newLines) {
+                if (line.RecordTypeId != treasurySettlementRTId && line.RecordTypeId != otherProductsRTId) {
+                    continue;
+                }
+                DMT_Line__c oldLine = oldLinesMap.get(line.Id);
+
+                if (oldLine.Status__c == DMT_Constants.DRAFT && line.Status__c == DMT_Constants.PROPOSAL && oldLine.DMT_DateToProposal__c != null) {
+                    draftExitLineIds.add(line.Id);
+                }
+                if (oldLine.Status__c == DMT_Constants.PROPOSAL && line.Status__c == DMT_Constants.APPROVAL) {
+                    approvalEntryLineIds.add(line.Id);
+                }
+                if (oldLine.Status__c == DMT_Constants.READYTOCLOSE && line.Status__c == DMT_Constants.READYTOCLOSE) {
+                    readyToCloseEditLineIds.add(line.Id);
+                }
+            }
+
+            if (draftExitLineIds.isEmpty() && approvalEntryLineIds.isEmpty() && readyToCloseEditLineIds.isEmpty()) {
                 return;
             }
 
-            Map<Id, Id> caseIdToLineId = getCaseIdToLineId(qualifyingLineIds);
+            restartApprovalTasksForLines(draftExitLineIds, 'passport', newLines);
+            restartApprovalTasksForLines(approvalEntryLineIds, 'approval', newLines);
+            restartApprovalTasksForLines(readyToCloseEditLineIds, 'readytoclose', newLines);
+        } catch (Exception e) {
+            logRestartFailure(e, 'DMT_Line__c', 'restartApprovalTasksOnLineResubmission');
+        }
+    }
+
+    /**
+     * CIBGLOBALD-4117: Shared by all three checkpoints - only the Line Ids and the sanction filter differ.
+     * Called once per checkpoint, so each gets its own sync/async threshold.
+     * Queries per call: 1 Case + 2 in the shared gate + 1 per child section.
+     */
+    private void restartApprovalTasksForLines(Set<Id> qualifyingLineIds, String passportSanctionFilter, List<DMT_Line__c> newLines) {
+        if (qualifyingLineIds.isEmpty()) {
+            return;
+        }
+        try {
+            Map<Id, Id> caseIdToLineId = getCaseIdToLineId(qualifyingLineIds, passportSanctionFilter);
             if (caseIdToLineId.isEmpty()) {
                 return;
             }
@@ -1320,42 +1372,19 @@ public with sharing class DMT_Line_Helper{
                 'DMT_Line_Helper'
             );
         } catch (Exception e) {
-            logRestartFailure(e, 'DMT_Line__c', 'restartApprovalTasksOnLineResubmission');
+            logRestartFailure(e, 'DMT_Line__c', 'restartApprovalTasksForLines');
         }
     }
 
-    /**
-     * CIBGLOBALD-4117: A Line qualifies when it leaves Draft in this save AND was already in Draft with
-     * DMT_DateToProposal__c set - i.e. a genuine resubmission after Return to Draft, not a
-     * first-time submission.
-     *
-     * Reads DMT_DateToProposal__c from oldLinesMap on purpose: Trigger.old always holds the
-     * pre-save value, so this stays correct regardless of anything else stamping that field in the
-     * same transaction.
-     *
-     * Sanction is excluded, matching enqueueRecalculateApprovals - it has never been part of this
-     * mechanism.
-     */
-    private static Set<Id> getLinesQualifyingForResubmissionCheck(List<DMT_Line__c> newLines, Map<Id, DMT_Line__c> oldLinesMap) {
-        Id treasurySettlementRTId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('TreasurySettlement')?.getRecordTypeId();
-        Id otherProductsRTId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('OtherProducts')?.getRecordTypeId();
-
-        Set<Id> qualifyingLineIds = new Set<Id>();
-        for (DMT_Line__c line : newLines) {
-            if (line.RecordTypeId != treasurySettlementRTId && line.RecordTypeId != otherProductsRTId) {
-                continue;
-            }
-            DMT_Line__c oldLine = oldLinesMap.get(line.Id);
-            if (oldLine.Status__c == DMT_Constants.DRAFT && line.Status__c != DMT_Constants.DRAFT && oldLine.DMT_DateToProposal__c != null) {
-                qualifyingLineIds.add(line.Id);
-            }
-        }
-        return qualifyingLineIds;
-    }
-
-    private static Map<Id, Id> getCaseIdToLineId(Set<Id> lineIds) {
+    private static Map<Id, Id> getCaseIdToLineId(Set<Id> lineIds, String passportSanctionFilter) {
         Map<Id, Id> caseIdToLineId = new Map<Id, Id>();
-        for (Case c : [SELECT Id, DMT_Line__c FROM Case WHERE DMT_Line__c IN :lineIds AND IsDeleted = false]) {
+        for (Case c : [
+            SELECT Id, DMT_Line__c
+            FROM Case
+            WHERE DMT_Line__c IN :lineIds
+            AND IsDeleted = false
+            AND DMT_Passport_Sanction__c = :passportSanctionFilter
+        ]) {
             caseIdToLineId.put(c.Id, c.DMT_Line__c);
         }
         return caseIdToLineId;
