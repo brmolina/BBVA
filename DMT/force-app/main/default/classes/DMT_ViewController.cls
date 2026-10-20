@@ -233,6 +233,15 @@ public without sharing class DMT_ViewController {
         public List<Map<String, Object>> profitabilityProductDetailsList = new List<Map<String, Object>>();
         public Map<String, Map<String, Object>> profitabilityNominalAmountsMap = new Map<String, Map<String, Object>>();
         public Map<String, Map<String, Object>> profitabilityNominalAmountsConvertedMap = new Map<String, Map<String, Object>>();
+        // CIBGLOBALD-4713 - External RWA 1Y values by productId. Callout-sourced (service
+        // DMTO_ExternalOrchestrators via DMT_Profitability_utils.renderProfitabilityHtml), never written
+        // to any Salesforce field; null unless the Profitability modal (dmt_profitability_view) asked for it.
+        // The RWA calculator link data comes from DMT_Profitability_utils.getRwaRegLinkInfo, and
+        // profitabilityShowRwaAction makes DMT_OppProfitabilityRenderer emit the empty marker where the
+        // modal places its 'External RWA calculate' button. Other views leave both unset.
+        public Map<String, Object> profitabilityAprsByProductId;
+        public Map<String, Object> profitabilityRwaLinkInfo;
+        public Boolean profitabilityShowRwaAction = false;
         // Callout-sourced (DMT_HPG_Utils.getGroupFromClientAccount) - never written to any Salesforce field.
         public String clientGroupName = null;
         // Sourced from ComponentNBC_Controller.preloadToolkitInfo() -> cstk.Toolkit_Service.getNbcInfo()
@@ -641,6 +650,13 @@ public without sharing class DMT_ViewController {
                     if (data.opportunity != null && !data.opportunity.DMT_MDE_Opportunities_Clients__r.isEmpty()) {
                         data.oppClient = data.opportunity.DMT_MDE_Opportunities_Clients__r[0];
                     }
+                    System.debug(LoggingLevel.DEBUG,
+                        'DMT_ViewController child Opportunity loaded | childOppId=' + childOpp.Id +
+                        ' | loadedOppId=' + (data.opportunity != null ? data.opportunity.Id : null) +
+                        ' | oppLineItems=' + (data.opportunity != null && data.opportunity.OpportunityLineItems != null ? data.opportunity.OpportunityLineItems.size() : 0) +
+                        ' | oppMoneyChildren=' + (data.opportunity != null && data.opportunity.OpportunityLineItems != null && !data.opportunity.OpportunityLineItems.isEmpty() ? data.opportunity.OpportunityLineItems[0].Opportunity_Money__r.size() : 0) +
+                        ' | oppClientId=' + (data.oppClient != null ? data.oppClient.Id : null)
+                    );
                     if (data.opportunity != null && data.opportunity.AccountId != null) {
                         try {
                             Map<String, Object> groupData = DMT_HPG_Utils.getGroupFromClientAccount(data.opportunity.AccountId);
@@ -674,6 +690,11 @@ public without sharing class DMT_ViewController {
                             oppProduct.sustainabilityBonusEligible = oppItem.DMT_Sustainability_bonus_eligible__c;
                             data.oppProducts.add(oppProduct);
                         }
+                        System.debug(LoggingLevel.DEBUG,
+                            'DMT_ViewController child Opportunity oppProducts loaded | oppProductsSize=' + data.oppProducts.size() +
+                            ' | firstProductId=' + (data.oppProducts.isEmpty() ? null : data.oppProducts[0].productId) +
+                            ' | firstProductName=' + (data.oppProducts.isEmpty() ? null : data.oppProducts[0].name)
+                        );
                     }
                 } catch (Exception e) {
                     System.debug('Error loading child Opportunity data for Sanction Client component: ' + e.getMessage());
@@ -1032,26 +1053,7 @@ public without sharing class DMT_ViewController {
                     data.steps = DMT_Case_Steps_Controller.getCurrentStepFromFeaturesOpp(featureIds, data.opportunity.DMT_Opp_Id__c);
 
                     // Pre-load profitability data so renderers can read from the wrapper without issuing queries
-                    Set<String> profitabilityProductIdsSet = new Set<String>();
-                    for (Map<String, Object> feat : data.featuresList) {
-                        if (feat.containsKey('profitability')) {
-                            Map<String, Object> profitability = (Map<String, Object>) feat.get('profitability');
-                            if (profitability != null && profitability.containsKey('results')) {
-                                for (Object resultObj : (List<Object>) profitability.get('results')) {
-                                    Map<String, Object> row = (Map<String, Object>) resultObj;
-                                    if (row.containsKey('productId') && row.get('productId') != null) {
-                                        profitabilityProductIdsSet.add(String.valueOf(row.get('productId')));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (!profitabilityProductIdsSet.isEmpty()) {
-                        List<String> profitabilityProductIdList = new List<String>(profitabilityProductIdsSet);
-                        data.profitabilityProductDetailsList = DMT_Profitability_utils.getProductDetailsByIds(profitabilityProductIdList, data.opportunity.Id);
-                        data.profitabilityNominalAmountsMap = DMT_Profitability_utils.getNominalAmountsByOpportunityLineItemIds(profitabilityProductIdList, data.opportunity.Id);
-                        data.profitabilityNominalAmountsConvertedMap = DMT_Profitability_utils.convertNominalsToOppCurrency(data.profitabilityProductDetailsList, data.profitabilityNominalAmountsMap);
-                    }
+                    DMT_Profitability_utils.preloadProfitabilityData(data);
                 }
             }
             // Verificar si tiene Prospect

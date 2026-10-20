@@ -129,19 +129,32 @@ public with sharing class DMT_ProfitabilityChartGenerator {
         Decimal eadMax = 0;
         Decimal pctMax = 0;
         Decimal pctMin = 0;
+        Decimal pctRawAbsMax = 0;
 
         for (Integer i = 0; i < req.years.size(); i++) {
-            Decimal eadEcoM = (req.eadEcoData[i] / 1000000.0).setScale(2, RoundingMode.HALF_UP);
-            Decimal eadRegM = (req.eadRegData[i] / 1000000.0).setScale(2, RoundingMode.HALF_UP);
+            Decimal rorcRaw = req.rorcData[i];
+            Decimal raroecRaw = req.raroecData[i];
+            if (Math.abs(rorcRaw) > pctRawAbsMax) {
+                pctRawAbsMax = Math.abs(rorcRaw);
+            }
+            if (Math.abs(raroecRaw) > pctRawAbsMax) {
+                pctRawAbsMax = Math.abs(raroecRaw);
+            }
+        }
+
+        Decimal eadDivisor = 10000000.0;
+        Decimal pctDivisor = getAdaptiveMagnitudeDivisor(pctRawAbsMax);
+
+        for (Integer i = 0; i < req.years.size(); i++) {
+            Decimal eadEcoM = (req.eadEcoData[i] / eadDivisor).setScale(2, RoundingMode.HALF_UP);
+            Decimal eadRegM = (req.eadRegData[i] / eadDivisor).setScale(2, RoundingMode.HALF_UP);
             if (eadEcoM > eadMax) eadMax = eadEcoM;
             if (eadRegM > eadMax) eadMax = eadRegM;
 
-            Decimal rorcPct = (req.rorcData[i] * 100.0).setScale(2, RoundingMode.HALF_UP);
-            Decimal raroecPct = (req.raroecData[i] * 100.0).setScale(2, RoundingMode.HALF_UP);
+            Decimal rorcPct = normalizePercentForChart(req.rorcData[i], pctDivisor);
+            Decimal raroecPct = normalizePercentForChart(req.raroecData[i], pctDivisor);
             if (rorcPct > pctMax) pctMax = rorcPct;
-            if (rorcPct < pctMin) pctMin = rorcPct;
             if (raroecPct > pctMax) pctMax = raroecPct;
-            if (raroecPct < pctMin) pctMin = raroecPct;
         }
 
         // Definimos un objetivo base para que el algoritmo busque la proporción ideal
@@ -291,8 +304,8 @@ public with sharing class DMT_ProfitabilityChartGenerator {
             if (i < numYears) {
                 Integer y = req.years[i];
 
-                Decimal eadEcoM = (req.eadEcoData[i] / 1000000.0).setScale(2, RoundingMode.HALF_UP);
-                Decimal eadRegM = (req.eadRegData[i] / 1000000.0).setScale(2, RoundingMode.HALF_UP);
+                Decimal eadEcoM = (req.eadEcoData[i] / eadDivisor).setScale(2, RoundingMode.HALF_UP);
+                Decimal eadRegM = (req.eadRegData[i] / eadDivisor).setScale(2, RoundingMode.HALF_UP);
 
                 Decimal heightEcoPx = (eadEcoM / leftScaleMax) * plotHeightPx;
                 if (eadEcoM > 0 && heightEcoPx < minVisibleBarHeightPx) {
@@ -314,8 +327,8 @@ public with sharing class DMT_ProfitabilityChartGenerator {
                 barsHtml += '<div style="position:absolute; left:' + formatSafe(xEcoPx, 0) + 'px; top:' + formatSafe(yEcoPx, 0) + 'px; width:' + formatSafe(barWidthPx, 0) + 'px; height:' + formatSafe(heightEcoPx, 0) + 'px; background-color:' + colorEadEco + '; border:1px solid #66829a; border-bottom:none; z-index:2;"></div>';
                 barsHtml += '<div style="position:absolute; left:' + formatSafe(xRegPx, 0) + 'px; top:' + formatSafe(yRegPx, 0) + 'px; width:' + formatSafe(barWidthPx, 0) + 'px; height:' + formatSafe(heightRegPx, 0) + 'px; background-color:' + colorEadReg + '; border:1px solid #7bc6ff; border-bottom:none; z-index:2;"></div>';
 
-                Decimal rorcPct = (req.rorcData[i] * 100.0).setScale(2, RoundingMode.HALF_UP);
-                Decimal raroecPct = (req.raroecData[i] * 100.0).setScale(2, RoundingMode.HALF_UP);
+                Decimal rorcPct = normalizePercentForChart(req.rorcData[i], pctDivisor);
+                Decimal raroecPct = normalizePercentForChart(req.raroecData[i], pctDivisor);
 
                 Decimal yRorcPx = plotHeightPx - (((rorcPct - rightScaleMin) / pctRange) * plotHeightPx);
                 Decimal yRaroecPx = plotHeightPx - (((raroecPct - rightScaleMin) / pctRange) * plotHeightPx);
@@ -408,6 +421,67 @@ public with sharing class DMT_ProfitabilityChartGenerator {
     private static String formatSafe(Decimal val, Integer scale) {
         if (val == null) return '0';
         return String.valueOf(val.setScale(scale, RoundingMode.HALF_UP)).replace(',', '.');
+    }
+
+    /**
+     * Calcula un divisor por magnitud para escalar valores grandes de forma robusta.
+     * Ejemplo: si el maximo es 250000000000000000, devuelve 1000000000000000.
+     * @param maxRawValue valor maximo crudo detectado
+     * @return divisor recomendado segun magnitud
+     */
+    private static Decimal getAdaptiveMagnitudeDivisor(Decimal maxRawValue) {
+        if (maxRawValue == null) {
+            return 1.0;
+        }
+
+        Decimal absMax = Math.abs(maxRawValue);
+        if (absMax < 1000.0) {
+            return 1.0;
+        }
+
+        // Ajusta por potencia de 10 para conservar aprox. 3 cifras significativas.
+        Integer exponent = 0;
+        Decimal scaled = absMax;
+        while (scaled >= 1000.0) {
+            scaled /= 10.0;
+            exponent++;
+        }
+
+        Decimal divisor = 1.0;
+        for (Integer i = 0; i < exponent; i++) {
+            divisor *= 10.0;
+        }
+
+        return divisor;
+    }
+
+    /**
+     * Normaliza porcentajes para el grafico:
+     * - Si el valor esta en ratio (<= 10), lo convierte a porcentaje (*100).
+     * - Si llega sobredimensionado, lo reescala por magnitud.
+     * - Evita mostrar negativos extremos en el eje derecho.
+     */
+    private static Decimal normalizePercentForChart(Decimal rawValue, Decimal pctDivisor) {
+        if (rawValue == null) {
+            return 0;
+        }
+
+        Decimal absRaw = Math.abs(rawValue);
+        Decimal normalized;
+        if (absRaw <= 10.0) {
+            normalized = rawValue * 100.0;
+        } else {
+            if (pctDivisor == null || pctDivisor == 0) {
+                pctDivisor = 1.0;
+            }
+            normalized = rawValue / pctDivisor;
+        }
+
+        if (normalized < 0) {
+            normalized = 0;
+        }
+
+        return normalized.setScale(2, RoundingMode.HALF_UP);
     }
 
     /**

@@ -1,4 +1,4 @@
-public with sharing class DMT_Profitability_utils {
+public without sharing class DMT_Profitability_utils {
 
     private static final String RWA_ENABLED_KEY = 'enabled';
     private static final String RWA_EXPLANATION_ID_KEY = 'explanationId';
@@ -257,6 +257,140 @@ public with sharing class DMT_Profitability_utils {
         return result;
     }
 
+    /**
+     * CIBGLOBALD-4713 - Renders the Profitability section of an Opportunity with the same renderer as
+     * the NBC views (DMT_RendererFactory 'Profitability' -> DMT_ProfitabilityRenderer ->
+     * DMT_OppProfitabilityRenderer), building only the LineDataWrapper fields that renderer reads.
+     * Used by the Profitability modal of the Passport (LWC dmt_profitability_view inside dmt_passport_modal).
+     *
+     * Data: Opportunity from DMT_View_Selector.getOpportunityWithRelatedData (same query as
+     * DMT_ViewController.loadRelatedData), features from the saved Passport JSON
+     * (DMT_ViewController.getFeatures, Passport__c.DMT_Passport_Save__c), product data from
+     * preloadProfitabilityData. Nothing is recalculated.
+     *
+     * Callout (only when withExternalRwa is true, the modal's 'External RWA calculate' button):
+     * service DMTO_ExternalOrchestrators, custom metadata iaso__GBL_integration_service__mdt record
+     * DMTO_ExternalOrchestrators, call path renderProfitabilityHtml -> callExternalOrchestrators ->
+     * DMT_Utils.callService -> DMT_HPG_Utils.callService. The result is only rendered, never stored.
+     * RWA calculator link: getRwaRegLinkInfo (DMT_Taxonomy_Value_link__mdt by Opportunity branch).
+     *
+     * @param oppId           Opportunity Id.
+     * @param itemsImg        JSON list of DMT_ViewController.ItemImgB64 with the chart image generated in
+     *                        the browser (dmt_profitability_chart.getChartImage); blank uses the server chart.
+     * @param withExternalRwa true to call the External RWA service and add the 'External RWA 1Y' column.
+     * @return Map with 'html', 'hasData' (profitability results exist), 'fileName' (PDF name) and
+     *         'message' (error text or null).
+     */
+    @AuraEnabled
+    public static Map<String, Object> renderProfitabilityHtml(String oppId, String itemsImg, Boolean withExternalRwa) {
+        Map<String, Object> response = new Map<String, Object>{
+            'html' => '',
+            'hasData' => false,
+            'message' => null
+        };
+        try {
+            DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
+
+            // The callout goes first: no DML or async enqueue may precede it in this transaction.
+            if (withExternalRwa == true) {
+                Map<String, Object> rwaResult = callExternalOrchestrators(oppId);
+                if (rwaResult.get('success') == true) {
+                    data.profitabilityAprsByProductId = parseAprsCalculation((String) rwaResult.get('responseBody'));
+                } else {
+                    response.put('message', String.valueOf(rwaResult.get('message')));
+                }
+            }
+
+            data.objectApiName = 'Opportunity';
+            data.opportunity = DMT_View_Selector.getOpportunityWithRelatedData(oppId, 'DMT_Opportunity');
+            data.recordTypeId = data.opportunity.RecordTypeId;
+            data.currencyIsoCode = data.opportunity.CurrencyIsoCode;
+            data.featuresList = DMT_ViewController.getFeatures(oppId);
+            preloadProfitabilityData(data);
+
+            data.isImg64 = String.isNotBlank(itemsImg);
+            if (data.isImg64) {
+                data.itemImgBase64 = (List<DMT_ViewController.ItemImgB64>) JSON.deserialize(itemsImg, List<DMT_ViewController.ItemImgB64>.class);
+            }
+            data.profitabilityRwaLinkInfo = getRwaRegLinkInfo(oppId);
+            data.profitabilityShowRwaAction = true;
+
+            response.put('hasData', !getProfitabilityProductIds(data.featuresList).isEmpty());
+            response.put('fileName', 'Profitability_' + (String.isBlank(data.opportunity.DMT_Opp_Id__c) ? String.valueOf(data.opportunity.Id) : data.opportunity.DMT_Opp_Id__c) + '.pdf');
+            response.put('html', DMT_RendererFactory.getRenderer('Profitability').renderHtml(data));
+        } catch (Exception e) {
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(), 'DMT_Profitability_utils', 'renderProfitabilityHtml', 'DMT', 'Opportunity'));
+            response.put('message', 'Unable to load the profitability view.');
+        }
+        DMT_AsyncOrchestrator.flush();
+        return response;
+    }
+
+    /**
+     * CIBGLOBALD-4713 - Loads the product details, nominal amounts and converted nominals of the
+     * profitability results into the wrapper, so the profitability renderers read them without
+     * issuing queries. Shared by DMT_ViewController.loadRelatedData and renderProfitabilityHtml.
+     * @param data Wrapper with opportunity and featuresList already set.
+     */
+    public static void preloadProfitabilityData(DMT_ViewController.LineDataWrapper data) {
+        List<String> profitabilityProductIdList = getProfitabilityProductIds(data.featuresList);
+        if (profitabilityProductIdList.isEmpty()) {
+            return;
+        }
+        data.profitabilityProductDetailsList = getProductDetailsByIds(profitabilityProductIdList, data.opportunity.Id);
+        data.profitabilityNominalAmountsMap = getNominalAmountsByOpportunityLineItemIds(profitabilityProductIdList, data.opportunity.Id);
+        data.profitabilityNominalAmountsConvertedMap = convertNominalsToOppCurrency(data.profitabilityProductDetailsList, data.profitabilityNominalAmountsMap);
+    }
+
+    // CIBGLOBALD-4713 - productIds of every profitability result row in the Passport features.
+    private static List<String> getProfitabilityProductIds(List<Map<String, Object>> featuresList) {
+        Set<String> productIds = new Set<String>();
+        for (Map<String, Object> feat : featuresList) {
+            if (!feat.containsKey('profitability')) {
+                continue;
+            }
+            Map<String, Object> profitability = (Map<String, Object>) feat.get('profitability');
+            if (profitability == null || !profitability.containsKey('results')) {
+                continue;
+            }
+            for (Object resultObj : (List<Object>) profitability.get('results')) {
+                Map<String, Object> row = (Map<String, Object>) resultObj;
+                if (row.containsKey('productId') && row.get('productId') != null) {
+                    productIds.add(String.valueOf(row.get('productId')));
+                }
+            }
+        }
+        return new List<String>(productIds);
+    }
+
+    // CIBGLOBALD-4713 - Reads data.aprsCalculator[].aprCalculator {productId, aprCalculation} from the
+    // DMTO_ExternalOrchestrators response (same mapping as the former modal code in dmt_profitability_chart).
+    @TestVisible
+    private static Map<String, Object> parseAprsCalculation(String responseBody) {
+        Map<String, Object> aprsByProductId = new Map<String, Object>();
+        if (String.isBlank(responseBody)) {
+            return aprsByProductId;
+        }
+        try {
+            Map<String, Object> body = (Map<String, Object>) JSON.deserializeUntyped(responseBody);
+            Map<String, Object> bodyData = (Map<String, Object>) body.get('data');
+            List<Object> aprsCalculatorList = bodyData != null ? (List<Object>) bodyData.get('aprsCalculator') : null;
+            if (aprsCalculatorList == null) {
+                return aprsByProductId;
+            }
+            for (Object item : aprsCalculatorList) {
+                Map<String, Object> aprCalculator = (Map<String, Object>) ((Map<String, Object>) item).get('aprCalculator');
+                if (aprCalculator != null && aprCalculator.get('productId') != null) {
+                    aprsByProductId.put(String.valueOf(aprCalculator.get('productId')), aprCalculator.get('aprCalculation'));
+                }
+            }
+        } catch (Exception e) {
+            // Unexpected response shape: render without the column, like the former modal code.
+            System.debug(LoggingLevel.WARN, 'Unexpected DMTO_ExternalOrchestrators response: ' + e.getMessage());
+        }
+        return aprsByProductId;
+    }
+
     @AuraEnabled(cacheable=true)
     public static Map<String, Map<String, Object>> getUnderlyingDetailsByIds(List<String> underlyingIds) {
         Map<String, Map<String, Object>> result = new Map<String, Map<String, Object>>();
@@ -265,17 +399,21 @@ public with sharing class DMT_Profitability_utils {
             return result;
         }
 
+        Integer orderIndex = 0;
         for (DMT_Underlying__c ul : [
             SELECT Id, Name, DMT_Drawn_Reference_Amount__c, DMT_Undrawn_Reference_Amount__c
             FROM DMT_Underlying__c
             WHERE Id IN :underlyingIds
+            ORDER BY CreatedDate ASC, Id ASC
         ]) {
             result.put(ul.Id, new Map<String, Object>{
-                'Id'        => ul.Id,
-                'Name'      => ul.Name,
-                'nominalDb' => ul.DMT_Drawn_Reference_Amount__c,
-                'nominalFb' => ul.DMT_Undrawn_Reference_Amount__c
+                'Id'         => ul.Id,
+                'Name'       => ul.Name,
+                'nominalDb'  => ul.DMT_Drawn_Reference_Amount__c,
+                'nominalFb'  => ul.DMT_Undrawn_Reference_Amount__c,
+                'orderIndex' => orderIndex
             });
+            orderIndex++;
         }
 
         return result;

@@ -1,7 +1,6 @@
 @IsTest
 public with sharing class DMT_Line_TriggerHandler_Test {
-    private static final Id CASE_RT_APPROVAL_ID = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
-    private static final Id TASK_RT_APPROVAL_STEP_ID = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
+    private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass();
 
     // CIBGLOBALD-4117: DMT_Line_Helper.restartApprovalTasksOnLineResubmission had no automated
     // test coverage at all before this ticket - this class closes that pre-existing gap while
@@ -66,29 +65,31 @@ public with sharing class DMT_Line_TriggerHandler_Test {
 
     // CIBGLOBALD-4117 - the restart checkpoints are scoped by Case.DMT_Passport_Sanction__c
     // ('passport' on Draft -> Proposal, 'approval' on Proposal -> Approval, 'readytoclose' while
-    // parked in Ready to close), so each test says which sanction its Case carries.
+    // parked in Ready to close), so each test says which sanction its Case carries. The factory's
+    // buildCase sets no sanction by default.
     private static Task setupApprovalTaskWithSnapshot(DMT_Line__c frozenLine, String passportSanction) {
         Group groupApprover = [SELECT Id FROM Group WHERE DeveloperName = 'DMT_Approvers1' LIMIT 1];
         TriggerBypass.setBypass();
-        Case approvalCase = new Case(
-            DMT_Line__c = frozenLine.Id,
-            DMT_Passport_Sanction__c = passportSanction,
-            Status = 'Pending',
-            RecordTypeId = CASE_RT_APPROVAL_ID,
-            OwnerId = groupApprover.Id,
-            Subject = 'Test'
+        Case approvalCase = DMT_UTIL.createCaseRecord(
+            groupApprover.Id,
+            DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
+            new Map<Schema.SObjectField, Object>{
+                Case.DMT_Line__c => frozenLine.Id,
+                Case.DMT_Passport_Sanction__c => passportSanction,
+                Case.Status => 'Pending',
+                Case.Subject => 'Test'
+            }
         );
-        insert approvalCase;
 
-        Task openTask = new Task(
-            WhatId = approvalCase.Id,
-            RecordTypeId = TASK_RT_APPROVAL_STEP_ID,
-            Status = 'Not Started',
-            Subject = 'Test Task',
-            OwnerId = groupApprover.Id
+        Task openTask = DMT_UTIL.createTaskRecord(
+            groupApprover.Id,
+            DMT_UtilTestClassConstants.DEFAULT_TASK_STEP_RECORD_TYPE_ID,
+            approvalCase.Id,
+            new Map<Schema.SObjectField, Object>{
+                Task.Status => 'Not Started',
+                Task.Subject => 'Test Task'
+            }
         );
-        insert openTask;
-        TriggerBypass.removeBypass();
 
         String snapshotJson = '{"line":' + JSON.serialize(frozenLine);
         if (frozenLine.Custom_Association__c != null) {
@@ -99,14 +100,15 @@ public with sharing class DMT_Line_TriggerHandler_Test {
         }
         snapshotJson += '}';
 
-        DMT_TaskStatusWhenCompleted__c snapshot = new DMT_TaskStatusWhenCompleted__c(
-            Case__c = approvalCase.Id,
-            DMT_ViewFieldStatusAtClose__c = snapshotJson
+        DMT_TaskStatusWhenCompleted__c snapshot = DMT_UTIL.buildTaskStatusWhenCompleted(
+            approvalCase.Id,
+            snapshotJson
         );
         insert snapshot;
 
         openTask.DMT_ViewStatusAtClose__c = snapshot.Id;
         update openTask;
+        TriggerBypass.removeBypass();
         return openTask;
     }
 

@@ -150,7 +150,7 @@ public without sharing  class DMT_View_Selector {
 
                         gf_xb_cust_ope_revenue_2ya_per__c, gf_xb_cust_ope_revenue_ly_per__c, gf_xb_cust_ope_revenue_cyr_per__c, gf_xb_cust_ope_revenue_nxy_per__c,
                         gf_kpi_trans_fees_2ya_amount__c, gf_kpi_trans_fees_ly_amount__c, gf_kpi_trans_fees_cyr_amount__c, gf_kpi_trans_fees_nxy_amount__c,
-
+                        DMT_Year_Business_Plan__c,
                         DMT_Opp_Threats_Related_Deal__c, DMT_Purpose__c, DMT_Description_Issues__c, TOLABEL(DMT_Exception_Pool__c), DMT_Target__c, DMT_Current__c, DMT_Tiering_Action__c, DMT_Commitment_Deadline__c,
                         DMT_External_Rating__c, DMT_Sector__c, DMT_Subsector__c, DMT_Activity__c, DMT_History_Deal__c, DMT_Applicable_Jurisdiction__c, DMT_Security_Package__c, DMT_Rating_Scenarios__c,
                         DMT_Other_Relevant_Issues__c, DMT_Competition_Deal__c, DMT_AA_Industry__c, DMT_Asset_Allocation_limit__c, DMT_Financial_Program_limit__c, DMT_Top_3_Active_Facilities__c, DMT_Country_Risk__c, DMT_Economic_LGD__c,
@@ -161,7 +161,8 @@ public without sharing  class DMT_View_Selector {
                         DMT_KPI_Margin_Adjustment__c, DMT_Clients_Global_RORC_CIB_Past_FY__c, DMT_CDD_Clients_Global_Rorc_Last_FY__c,
                         DMT_Client_Net_Incomes__c, DMT_Client_RWA__c, DMT_Currency__c, DMT_Xsell_Cost_to_Income__c, DMT_Client_RORC_YTD__c, DMT_Sector_Head__c, DMT_Guarantor_Name_Fiscal_ID__c,
                         DMT_Equator_Principles_Category__c, DMT_Infrastructure_Supporting_Factor__c, DMT_SourceAndUses__c, DMT_Sustainable_Deal__c
-                    FROM DMT_MDE_Opportunities_Clients__r
+                    
+                        FROM DMT_MDE_Opportunities_Clients__r
                     LIMIT 1
                     ),
                     // chils Global_Structures__r

@@ -1,0 +1,20 @@
+<template>
+    <div class="profitability-view">
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading profitability" size="medium"></lightning-spinner>
+        </template>
+        <template lwc:if={errorMessage}>
+            <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_small" role="alert">
+                <span>{errorMessage}</span>
+            </div>
+        </template>
+        <template lwc:if={showNoData}>
+            <div class="slds-align_absolute-center slds-p-around_large">
+                <b>No profitability data available for this Opportunity.</b>
+            </div>
+        </template>
+        <div class="profitability-html" lwc:dom="manual"></div>
+    </div>
+    <!-- Only generates the chart image sent to the renderer (DMT_OppProfitabilityRenderer) -->
+    <c-dmt_profitability_chart hidden profitability={profitability}></c-dmt_profitability_chart>
+</template>

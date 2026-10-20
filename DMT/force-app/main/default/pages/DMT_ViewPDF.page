@@ -1,0 +1,16 @@
+<apex:page controller="DMT_ViewController" applyBodyTag="false" showHeader="false" renderAs="PDF">
+    <head>
+        <apex:stylesheet value="{!$Resource.DMT_ViewStyle}"/>
+    </head>
+    <body>
+         <!-- HEADER -->
+    <div class="header">
+        <apex:image id="logo" value="{!$Resource.logoViewBBVA}" width="100" height="31"></apex:image> <span style="float:right"> {!formattedDateTime}</span>
+    </div>
+    <!-- FOOTER -->
+    <div class="footer">
+        <span style="float:right">Page <span class="pagenumber"/> of <span class="pagecount"/></span>
+    </div>
+        <apex:outputText value="{!htmlContent}" escape="false"/>
+    </body>     
+</apex:page>

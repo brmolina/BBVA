@@ -1,11 +1,109 @@
-/*
+/*----------------------------------------------------------------------------------------------
+================================================================================
+DMT_Test_DataFactory - DMT Test Scenario Factory
+================================================================================
+
+TYPE:Apex@TestDataFactory(@IsTest)
+DOMAIN:DMT
+PRIORITY:PreserveExistingBehavior>ReuseDES>ReuseDMTUtilities>AvoidDuplication>Style
+
+ARCHITECTURE:
+
+* ROLE: Public scenario-oriented entry point used by DMT tests.
+* DMT_UTIL: Use DMT_UtilTestClass only when DMT owns the object or adds DMT-specific defaults/behavior.
+* DES_UTIL: Use DES_UtilTestClass directly when DES already provides the complete build/create behavior required by DMT.
+* NO_REDUNDANT_DMT_WRAPPERS: Do not add a DMT method that only delegates unchanged to an existing DES method.
+* SCENARIOS: Multi-record setup, relationships, scenario-specific overrides, SOQL and orchestration belong here.
+* DEFAULTS: Reusable DMT defaults belong in DMT_UtilTestClassConstants and are applied by DMT_UtilTestClassBuild.
+* BULK: Preserve single-DML collection inserts whenever the existing scenario is bulkified.
+
+DEPENDENCY_FLOW:
+
+* DES-only behavior:
+  DMT_Test_DataFactory -> DES_UtilTestClass -> DES_UtilTestClassBuild
+
+* DMT-specific behavior/defaults:
+  DMT_Test_DataFactory -> DMT_UtilTestClass -> DMT_UtilTestClassBuild -> DES_UtilTestClass (when applicable)
+
+* FORBIDDEN FLOW:
+  DMT_Test_DataFactory -> DES_UtilTestClassBuild
+  DMT_Test_DataFactory -> DMT_UtilTestClassBuild
+
+DECISION_RULE — BEFORE ADDING OR CALLING A METHOD:
+
+1. Does DES already provide the required object and behavior?
+   * YES, and DMT adds nothing -> call DES_UTIL directly.
+   * YES, but DMT adds minimum/default fields -> call DMT_UTIL; DMT Build layers on top of DES_UTIL.
+   * NO -> call DMT_UTIL for the DMT-owned object.
+
+2. Is the value reusable across DMT tests?
+   * YES, common/default value -> DMT_UtilTestClassConstants.
+   * NO, scenario-specific value -> keep it as an override in this DataFactory.
+
+3. Is this a new reusable scenario involving several records/relations?
+   * YES -> add/extend a generate* method here, reusing existing build/create APIs.
+
+API_CONTRACT:
+
+* PRESERVE_PUBLIC_API: Existing public generateX/setX methods are compatibility points for the DMT test suite.
+* DO_NOT_CHANGE_WITHOUT_EXPLICIT_REQUIREMENT: Method names, signatures, return types, visibility, static modifier or observable behavior.
+* PRESERVE_BEHAVIOR: DML count/pattern, SOQL, FOR UPDATE queries, default values, null handling, side effects and returned records.
+* NO_HIDDEN_SIDE_EFFECTS: Generic generators must not silently create unrelated relationships or records.
+* NO_DUPLICATED_FACTORIES: Do not reproduce DES build/create methods in DMT when DMT does not change them.
+* NO_DIRECT_DES_BUILD: Never call DES_UtilTestClassBuild from this class; DES_UtilTestClass is the supported DES facade.
+* NO_DIRECT_DMT_BUILD: Prefer DMT_UtilTestClass from this class; do not bypass the DMT facade.
+* SCENARIO_OVERRIDES_WIN: Explicit test/scenario overrides must remain the highest-priority values.
+* LEGACY_BEHAVIOR: If a method has historical DML/SOQL or side effects, preserve them unless the change is explicitly requested and validated.
+
+DML / BULK RULES:
+
+* Single-record canonical create operations should normally use DMT_UTIL.createX() or DES_UTIL.createX().
+* Bulk scenarios may use buildX() plus one collection insert when this preserves a single DML operation.
+* Never replace one bulk insert with DML inside a loop.
+* Do not move scenario queries into Build classes.
+
+IMPORTANT PRESERVATION RULE:
+
+* In generateAccount(), Account.Past2_FY_Corp_Synd_Lending_amount__c is intentionally disabled.
+* Keep the existing line commented; do not activate or reintroduce it as live test data.
+
+AI / AUTOMATED EDITING RULES:
+
+* Read DMT_UtilTestClass, DMT_UtilTestClassBuild and DMT_UtilTestClassConstants before adding new factory logic.
+* Review DES_UtilTestClass, DES_UtilTestClassBuild and DES_UtilTestClassConstants before introducing an API for a standard/DES-owned object.
+* Search for an existing DES method before creating any DMT build/create wrapper.
+* Search for an existing DMT canonical build/create method before adding another method for the same SObject.
+* Prefer delegation over copied initialization logic.
+* Do not "clean up" legacy behavior merely for style; compatibility has priority.
+* Do not move scenario-specific literals into global defaults merely because they appear more than once.
+* Do not introduce random test data when deterministic values already exist.
+
+PRE_EDIT_CHECKLIST:
+
+* Identify whether the object is DES-owned, DMT-owned, or DES + DMT-defaulted.
+* Check whether DES already has the required build/create API.
+* Check whether DMT really adds behavior before adding a DMT wrapper.
+* Check existing DMT constants before adding a literal/default.
+* Preserve DML/SOQL count and ordering.
+* Preserve public signatures and return behavior.
+* Preserve bulk inserts and avoid DML in loops.
+* Confirm no direct reference to DES_UtilTestClassBuild or DMT_UtilTestClassBuild is introduced here.
+* Confirm scenario overrides still win over defaults.
+
+History
+-------
+2026-10-19  Added DMT architecture/AI operating contract aligned with DES conventions.
+            Documented DES-direct reuse, DMT ownership rules, compatibility and anti-duplication rules.
+
 Autor: vido
-Fecha: 2024-02-27
-*/
+Fecha original: 2024-02-27
+================================================================================
+----------------------------------------------------------------------------------------------*/
 @isTest
 public with sharing class  DMT_Test_DataFactory {
 
-    private static final DMT_UtilTestClass DMT_UTIL_TEST = new DMT_UtilTestClass();
+    private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass();
+    private static final DES_UtilTestClass DES_UTIL = new DES_UtilTestClass();
 
 
     /**
@@ -13,7 +111,7 @@ public with sharing class  DMT_Test_DataFactory {
      * DML remains with the caller so existing bulk inserts are preserved.
      */
     private static Product2 buildDmtLineProduct(String productName, String productCode, String globalProductId) {
-        return DMT_UTIL_TEST.buildProduct(new Map<Schema.SObjectField, Object>{
+        return DES_UTIL.buildProduct(new Map<Schema.SObjectField, Object>{
             Product2.Name => productName,
             Product2.ProductCode => productCode,
             Product2.DMT_Product_family__c => '01',
@@ -54,7 +152,7 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static DMT_Line__c generateTestTreasuryLines() {
 
-        Account accTest1 = DMT_UTIL_TEST.createAccount(
+        Account accTest1 = DMT_UTIL.createAccount(
             new Map<Schema.SObjectField, Object>{
                 Account.CIB_Commercial_Prospect__c => 'Commercial'
             }
@@ -62,7 +160,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         List<DMT_Line__c> linesInsert = new List<DMT_Line__c>();
 
-        DMT_Line__c lineTest = DMT_UTIL_TEST.buildLine(
+        DMT_Line__c lineTest = DMT_UTIL.buildLine(
             accTest1.Id,
             DMT_UtilTestClassConstants.DEFAULT_TREASURY_LINE_RECORD_TYPE_ID,
             '00001',
@@ -91,7 +189,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         linesInsert.add(lineTest);
 
-        DMT_Line__c lineTest2 = DMT_UTIL_TEST.buildLine(
+        DMT_Line__c lineTest2 = DMT_UTIL.buildLine(
             accTest1.Id,
             DMT_UtilTestClassConstants.DEFAULT_TREASURY_LINE_RECORD_TYPE_ID,
             '00002',
@@ -123,7 +221,7 @@ public with sharing class  DMT_Test_DataFactory {
         insert linesInsert;
 
         List<DMT_Feature__c> featureList = new List<DMT_Feature__c>{
-            DMT_UTIL_TEST.buildFeature(
+            DMT_UTIL.buildFeature(
                 new Map<Schema.SObjectField, Object>{
                     DMT_Feature__c.gf_capability_engine_id_number__c => '123',
                     DMT_Feature__c.gf_feature_name_desc__c => 'Feature Test A',
@@ -134,7 +232,7 @@ public with sharing class  DMT_Test_DataFactory {
                     DMT_Feature__c.gf_code_value_id__c => '20'
                 }
             ),
-            DMT_UTIL_TEST.buildFeature(
+            DMT_UTIL.buildFeature(
                 new Map<Schema.SObjectField, Object>{
                     DMT_Feature__c.gf_capability_engine_id_number__c => '456',
                     DMT_Feature__c.gf_feature_name_desc__c => 'Feature Test B',
@@ -149,13 +247,13 @@ public with sharing class  DMT_Test_DataFactory {
         insert featureList;
 
         insert new List<DMT_Selected_Features__c>{
-            DMT_UTIL_TEST.buildSelectedFeature(
+            DMT_UTIL.buildSelectedFeature(
                 featureList[0].Id,
                 new Map<Schema.SObjectField, Object>{
                     DMT_Selected_Features__c.Line__c => lineTest.Id
                 }
             ),
-            DMT_UTIL_TEST.buildSelectedFeature(
+            DMT_UTIL.buildSelectedFeature(
                 featureList[1].Id,
                 new Map<Schema.SObjectField, Object>{
                     DMT_Selected_Features__c.Line__c => lineTest2.Id
@@ -166,7 +264,7 @@ public with sharing class  DMT_Test_DataFactory {
 
 
         //Risk line terms
-        DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL_TEST.buildRiskLineTerm(
+        DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL.buildRiskLineTerm(
             lineTest2.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
@@ -194,7 +292,7 @@ public with sharing class  DMT_Test_DataFactory {
         List<Product2> listProducts = new List<Product2>{p1, p2, p3, p4};
         insert listProducts;
 
-        DMT_Line_Product_Item__c pli1 = DMT_UTIL_TEST.createLineProductItemRecord(lineTest2.Id, p1.Id);
+        DMT_Line_Product_Item__c pli1 = DMT_UTIL.createLineProductItemRecord(lineTest2.Id, p1.Id);
 
 
         return lineTest2;
@@ -202,7 +300,7 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static DMT_Line__c generateTestOtherLines() {
 
-        Account accTest1 = DMT_UTIL_TEST.createAccount(
+        Account accTest1 = DMT_UTIL.createAccount(
             new Map<Schema.SObjectField, Object>{
                 Account.DES_Activity__c => 'Electric Power Generation'
             }
@@ -210,7 +308,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         Account accTest1Update = [SELECT Id FROM Account LIMIT 1];
 
-        DMT_Line__c lineTest = DMT_UTIL_TEST.createLineRecord(
+        DMT_Line__c lineTest = DMT_UTIL.createLineRecord(
             accTest1Update.Id,
             DMT_UtilTestClassConstants.DEFAULT_OTHER_LINE_RECORD_TYPE_ID,
             '00003',
@@ -240,7 +338,7 @@ public with sharing class  DMT_Test_DataFactory {
         );
 
         List<DMT_Feature__c> featureList = new List<DMT_Feature__c>{
-            DMT_UTIL_TEST.buildFeature(
+            DMT_UTIL.buildFeature(
                 new Map<Schema.SObjectField, Object>{
                     DMT_Feature__c.gf_capability_engine_id_number__c => '999',
                     DMT_Feature__c.gf_feature_name_desc__c => 'Feature Test C',
@@ -255,7 +353,7 @@ public with sharing class  DMT_Test_DataFactory {
         insert featureList;
 
         insert new List<DMT_Selected_Features__c>{
-            DMT_UTIL_TEST.buildSelectedFeature(
+            DMT_UTIL.buildSelectedFeature(
                 featureList[0].Id,
                 new Map<Schema.SObjectField, Object>{
                     DMT_Selected_Features__c.Line__c => lineTest.Id
@@ -272,7 +370,7 @@ public with sharing class  DMT_Test_DataFactory {
         insert listProducts;
 
         //Risk line terms
-        DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL_TEST.buildRiskLineTerm(
+        DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL.buildRiskLineTerm(
             lineTest.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
@@ -292,7 +390,7 @@ public with sharing class  DMT_Test_DataFactory {
 
 
 
-        DMT_Line_Product_Item__c pli1 = DMT_UTIL_TEST.createLineProductItemRecord(lineTest.Id, p1.Id);
+        DMT_Line_Product_Item__c pli1 = DMT_UTIL.createLineProductItemRecord(lineTest.Id, p1.Id);
 
 
         return lineTest;
@@ -300,10 +398,10 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static DMT_Line__c generateTestTreasurySingularLines() {
 
-        Account accTest1 = DMT_UTIL_TEST.createAccount();
+        Account accTest1 = DMT_UTIL.createAccount();
         Account accTest1Update = [SELECT Id FROM Account WHERE Id =: accTest1.Id LIMIT 1 FOR UPDATE];
 
-        DMT_Line__c lineTest = DMT_UTIL_TEST.createLineRecord(
+        DMT_Line__c lineTest = DMT_UTIL.createLineRecord(
             accTest1Update.Id,
             DMT_UtilTestClassConstants.DEFAULT_TREASURY_LINE_RECORD_TYPE_ID,
             '00004',
@@ -334,7 +432,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         DMT_Line__c lineTestUpdate = [SELECT Id FROM DMT_Line__c WHERE Id =: lineTest.Id LIMIT 1 FOR UPDATE];
 
-        DMT_Line__c lineTest2 = DMT_UTIL_TEST.createLineRecord(
+        DMT_Line__c lineTest2 = DMT_UTIL.createLineRecord(
             accTest1Update.Id,
             DMT_UtilTestClassConstants.DEFAULT_TREASURY_LINE_RECORD_TYPE_ID,
             '00005',
@@ -367,7 +465,7 @@ public with sharing class  DMT_Test_DataFactory {
         DMT_Line__c lineTest2Update = [SELECT Id FROM DMT_Line__c WHERE Id =: lineTest2.Id LIMIT 1 FOR UPDATE];
 
         //Risk line terms
-        DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL_TEST.buildRiskLineTerm(
+        DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL.buildRiskLineTerm(
             lineTest2Update.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
@@ -378,7 +476,7 @@ public with sharing class  DMT_Test_DataFactory {
             }
         );
 
-        DMT_Risk_Line_Term__c rsklt2 = DMT_UTIL_TEST.buildRiskLineTerm(
+        DMT_Risk_Line_Term__c rsklt2 = DMT_UTIL.buildRiskLineTerm(
             lineTest2Update.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 2',
@@ -392,7 +490,7 @@ public with sharing class  DMT_Test_DataFactory {
             }
         );
 
-        DMT_Risk_Line_Term__c rsklt3 = DMT_UTIL_TEST.buildRiskLineTerm(
+        DMT_Risk_Line_Term__c rsklt3 = DMT_UTIL.buildRiskLineTerm(
             lineTest2Update.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 3',
@@ -403,7 +501,7 @@ public with sharing class  DMT_Test_DataFactory {
             }
         );
 
-        DMT_Risk_Line_Term__c rsklt4 = DMT_UTIL_TEST.buildRiskLineTerm(
+        DMT_Risk_Line_Term__c rsklt4 = DMT_UTIL.buildRiskLineTerm(
             lineTest2Update.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 4',
@@ -414,7 +512,7 @@ public with sharing class  DMT_Test_DataFactory {
             }
         );
 
-        DMT_Risk_Line_Term__c rsklt5 = DMT_UTIL_TEST.buildRiskLineTerm(
+        DMT_Risk_Line_Term__c rsklt5 = DMT_UTIL.buildRiskLineTerm(
             lineTest2Update.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 5',
@@ -425,7 +523,7 @@ public with sharing class  DMT_Test_DataFactory {
             }
         );
 
-        DMT_Risk_Line_Term__c rsklt6 = DMT_UTIL_TEST.buildRiskLineTerm(
+        DMT_Risk_Line_Term__c rsklt6 = DMT_UTIL.buildRiskLineTerm(
             lineTest2Update.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 6',
@@ -449,7 +547,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         Product2 p4 = buildDmtLineProduct('Repo', '1611190000', '03');
 
-        Product2 p5 = DMT_UTIL_TEST.buildProduct(new Map<Schema.SObjectField, Object>{
+        Product2 p5 = DES_UTIL.buildProduct(new Map<Schema.SObjectField, Object>{
             Product2.Name => 'Repo',
             Product2.ProductCode => '1647895623',
             Product2.DMT_Global_Product_Id__c => '04',
@@ -461,7 +559,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         insert listProducts;
 
-        DMT_Line_Product_Item__c pli1 = DMT_UTIL_TEST.createLineProductItemRecord(lineTest2.Id, p1.Id);
+        DMT_Line_Product_Item__c pli1 = DMT_UTIL.createLineProductItemRecord(lineTest2.Id, p1.Id);
 
 
         return lineTest2Update;
@@ -478,14 +576,15 @@ public with sharing class  DMT_Test_DataFactory {
             Account.DES_Group_Code__c => 'G20180109100427'
         };
 
-        // Keep intentionally disabled forever for this factory scenario.
+        // CIBGLOBALD-4713 - kept disabled (see the preservation rule above): the field is not createable for
+        // the test running user, so every test that calls generateAccount() failed in setup. To review.
         // accountOverrides.put(Account.Past2_FY_Corp_Synd_Lending_amount__c, 13);
 
         if (overrides != null) {
             accountOverrides.putAll(overrides);
         }
 
-        Account accTest1 = DMT_UTIL_TEST.createAccount(accountOverrides);
+        Account accTest1 = DMT_UTIL.createAccount(accountOverrides);
 
         Account accTest1Update = [
             SELECT Id
@@ -503,14 +602,14 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static AMH_GBL_Account_Relationship__c generateAccRelationship(Id accParentId, Id accChildId, Map<Schema.SObjectField, Object> overrides) {
-        return DMT_UTIL_TEST.createAccRelationshipRecord(accParentId, accChildId, overrides);
+        return DES_UTIL.createAccRelationshipRecord(accParentId, accChildId, overrides);
     }
 
     /**
      * Creates a DES Group Account and optionally links subsidiary Accounts
      * and a Global Banker.
      *
-     * DMT_UtilTestClass delegates the DES Group/Subsidiary relationship logic.
+     * DES_UtilTestClass owns the Group/Subsidiary relationship logic; DMT adds no wrapper.
      *
      * @param groupAccountName   Name of the Group Account.
      * @param subsidiaryAccountIds Account Ids to relate as subsidiaries.
@@ -519,7 +618,7 @@ public with sharing class  DMT_Test_DataFactory {
      *                           Pass null when no Global Banker is required.
      */
     public static Account generateGroupAccount(String groupAccountName, Set<Id> subsidiaryAccountIds, Id globalBankerUserId) {
-        return DMT_UTIL_TEST.createGroupClient(groupAccountName, subsidiaryAccountIds, globalBankerUserId);
+        return DES_UTIL.createGroupClient(groupAccountName, subsidiaryAccountIds, globalBankerUserId);
     }
 
     /**
@@ -544,7 +643,7 @@ public with sharing class  DMT_Test_DataFactory {
             subsidiaryOverrides.putAll(accountOverrides);
         }
 
-        Account subsidiary = DMT_UTIL_TEST.createAccount(subsidiaryOverrides);
+        Account subsidiary = DMT_UTIL.createAccount(subsidiaryOverrides);
 
         generateAccRelationship(groupAccountId, subsidiary.Id, relationshipOverrides);
 
@@ -561,7 +660,7 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static Opportunity generateOpportunityForAccount(Id accountId, Map<Schema.SObjectField, Object> overrides) {
-        Opportunity testOpportunity = DMT_UTIL_TEST.createOpportunityForAccount(accountId, overrides);
+        Opportunity testOpportunity = DMT_UTIL.createOpportunityForAccount(accountId, overrides);
 
         Opportunity testOpportunityUpdate = [
             SELECT Id, AccountId, DMT_Opp_Id__c
@@ -625,7 +724,7 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static DMT_Opportunity_Client__c generateOpportunityClient(String oppId, Map<Schema.SObjectField, Object> overrides) {
-        DMT_Opportunity_Client__c oppCl = DMT_UTIL_TEST.createOpportunityClientRecord(oppId, overrides);
+        DMT_Opportunity_Client__c oppCl = DMT_UTIL.createOpportunityClientRecord(oppId, overrides);
 
         DMT_Opportunity_Client__c oppClUpdate = [
             SELECT Id
@@ -642,7 +741,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         // 8 records of Uses
         for(Integer i = 0; i < 8; i++) {
-            DMT_Global_Structure__c gs = DMT_UTIL_TEST.buildGlobalStructure(
+            DMT_Global_Structure__c gs = DMT_UTIL.buildGlobalStructure(
                 oppId,
                 new Map<Schema.SObjectField, Object>{
                     DMT_Global_Structure__c.Name => 'Uses ' + i,
@@ -654,7 +753,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         // 4 records of Funding Debt
         for(Integer i = 0; i < 4; i++) {
-            DMT_Global_Structure__c gs = DMT_UTIL_TEST.buildGlobalStructure(
+            DMT_Global_Structure__c gs = DMT_UTIL.buildGlobalStructure(
                 oppId,
                 new Map<Schema.SObjectField, Object>{
                     DMT_Global_Structure__c.Name => 'Debt Fund ' + i,
@@ -666,7 +765,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         // 4 records of Funding Equity
         for(Integer i = 0; i < 4; i++) {
-            DMT_Global_Structure__c gs = DMT_UTIL_TEST.buildGlobalStructure(
+            DMT_Global_Structure__c gs = DMT_UTIL.buildGlobalStructure(
                 oppId,
                 new Map<Schema.SObjectField, Object>{
                     DMT_Global_Structure__c.Name => 'Equity Fund ' + i,
@@ -682,14 +781,14 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static void generateTestSanctionLines(){
 
-        Account accTest1 = DMT_UTIL_TEST.createAccount(
+        Account accTest1 = DMT_UTIL.createAccount(
             new Map<Schema.SObjectField, Object>{
                 Account.DES_Structure_Type__c => 'Subsidiary'
             }
         );
         Account accTest1Update = [SELECT Id FROM Account WHERE Id =: accTest1.Id LIMIT 1 FOR UPDATE];
 
-        DMT_Line__c testLine = DMT_UTIL_TEST.createLineRecord(
+        DMT_Line__c testLine = DMT_UTIL.createLineRecord(
             accTest1Update.Id,
             DMT_UtilTestClassConstants.DEFAULT_OTHER_LINE_RECORD_TYPE_ID,
             '00009',
@@ -718,7 +817,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         insert listProducts;
 
-        DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL_TEST.buildRiskLineTerm(
+        DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL.buildRiskLineTerm(
             testLineUpdate.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
@@ -730,7 +829,7 @@ public with sharing class  DMT_Test_DataFactory {
             }
         );
 
-        DMT_Risk_Line_Term__c rsklt2 = DMT_UTIL_TEST.buildRiskLineTerm(
+        DMT_Risk_Line_Term__c rsklt2 = DMT_UTIL.buildRiskLineTerm(
             testLineUpdate.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 2',
@@ -742,7 +841,7 @@ public with sharing class  DMT_Test_DataFactory {
             }
         );
 
-        DMT_Risk_Line_Term__c rsklt3 = DMT_UTIL_TEST.buildRiskLineTerm(
+        DMT_Risk_Line_Term__c rsklt3 = DMT_UTIL.buildRiskLineTerm(
             testLineUpdate.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 3',
@@ -760,7 +859,7 @@ public with sharing class  DMT_Test_DataFactory {
     }
     public static void generateTestRiskApprovalLines(Id accountId){
 
-        DMT_Line__c testLine = DMT_UTIL_TEST.createLineRecord(
+        DMT_Line__c testLine = DMT_UTIL.createLineRecord(
             accountId,
             DMT_UtilTestClassConstants.DEFAULT_RISK_APPROVAL_LINE_RECORD_TYPE_ID,
             '00089',
@@ -784,7 +883,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         insert listProducts;
 
-        DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL_TEST.createRiskLineTermRecord(
+        DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL.createRiskLineTermRecord(
             testLine.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
@@ -800,14 +899,14 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static void generateTestRiskApprovalLines(){
 
-        Account accTest1 = DMT_UTIL_TEST.createAccount(
+        Account accTest1 = DMT_UTIL.createAccount(
             new Map<Schema.SObjectField, Object>{
                 Account.DES_Structure_Type__c => 'Subsidiary'
             }
         );
         Account accTest1Update = [SELECT Id FROM Account WHERE Id =: accTest1.Id LIMIT 1 FOR UPDATE];
 
-        DMT_Line__c testLine = DMT_UTIL_TEST.createLineRecord(
+        DMT_Line__c testLine = DMT_UTIL.createLineRecord(
             accTest1Update.Id,
             DMT_UtilTestClassConstants.DEFAULT_RISK_APPROVAL_LINE_RECORD_TYPE_ID,
             '00089',
@@ -837,7 +936,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         insert listProducts;
 
-        DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL_TEST.buildRiskLineTerm(
+        DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL.buildRiskLineTerm(
             testLineUpdate.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
@@ -849,7 +948,7 @@ public with sharing class  DMT_Test_DataFactory {
             }
         );
 
-        DMT_Risk_Line_Term__c rsklt2 = DMT_UTIL_TEST.buildRiskLineTerm(
+        DMT_Risk_Line_Term__c rsklt2 = DMT_UTIL.buildRiskLineTerm(
             testLineUpdate.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 2',
@@ -861,7 +960,7 @@ public with sharing class  DMT_Test_DataFactory {
             }
         );
 
-        DMT_Risk_Line_Term__c rsklt3 = DMT_UTIL_TEST.buildRiskLineTerm(
+        DMT_Risk_Line_Term__c rsklt3 = DMT_UTIL.buildRiskLineTerm(
             testLineUpdate.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 3',
@@ -880,7 +979,7 @@ public with sharing class  DMT_Test_DataFactory {
 
 
     public static DMT_Approver__c generateApprover() {
-        DMT_Approver__c approver = DMT_UTIL_TEST.createApproverRecord(
+        DMT_Approver__c approver = DMT_UTIL.createApproverRecord(
             new Map<Schema.SObjectField, Object>{
                 DMT_Approver__c.Name => 'TestApproverDataFactory',
                 DMT_Approver__c.DMT_External_Id__c => 'TestExternalIdDATAFACTORY' + Integer.valueof((Math.random() * 100000000)),
@@ -892,21 +991,21 @@ public with sharing class  DMT_Test_DataFactory {
         return approverUpdate;
     }
     public static DMT_Approver_Type__c generateApproverTypeRisk() {
-        DMT_Approver_Type__c approverType = DMT_UTIL_TEST.createApproverTypeRecord(DMT_Constants.APPROVER_TYPE_RISK, '1');
+        DMT_Approver_Type__c approverType = DMT_UTIL.createApproverTypeRecord(DMT_Constants.APPROVER_TYPE_RISK, '1');
 
         DMT_Approver_Type__c approverTypeUpdate = [SELECT Id FROM DMT_Approver_Type__c WHERE Id =: approverType.Id LIMIT 1 FOR UPDATE];
         return approverTypeUpdate;
     }
 
     public static DMT_Approver_Type__c generateApproverTypeBusiness() {
-        DMT_Approver_Type__c approverType = DMT_UTIL_TEST.createApproverTypeRecord(DMT_Constants.APPROVER_TYPE_BUSINESS, '32');
+        DMT_Approver_Type__c approverType = DMT_UTIL.createApproverTypeRecord(DMT_Constants.APPROVER_TYPE_BUSINESS, '32');
         System.debug('**** Approver type bsn In Factory: ' + approverType);
         DMT_Approver_Type__c approverTypeUpdate = [SELECT Id FROM DMT_Approver_Type__c WHERE Id =: approverType.Id LIMIT 1 FOR UPDATE];
         return approverTypeUpdate;
     }
 
     public static DMT_Approver__c generateApproverBussines() {
-        DMT_Approver__c approver = DMT_UTIL_TEST.createApproverRecord(
+        DMT_Approver__c approver = DMT_UTIL.createApproverRecord(
             new Map<Schema.SObjectField, Object>{
                 DMT_Approver__c.Name => 'TestApproverDataFactoryBusiness',
                 DMT_Approver__c.DMT_External_Id__c => 'TestExternalIdDATAFACTORY32',
@@ -921,7 +1020,7 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static DMT_Approver__c generateApproverRisk() {
-        DMT_Approver__c approver = DMT_UTIL_TEST.createApproverRecord(
+        DMT_Approver__c approver = DMT_UTIL.createApproverRecord(
             new Map<Schema.SObjectField, Object>{
                 DMT_Approver__c.Name => 'TestApproverDataFactoryRisk',
                 DMT_Approver__c.DMT_External_Id__c => 'TestExternalIdDATAFACTORY1',
@@ -936,7 +1035,7 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static DMT_Approver_Member__c generateApproverMember() {
         DMT_Approver__c approver = generateApprover();
-        DMT_Approver_Member__c member = DMT_UTIL_TEST.createApproverMemberRecord(approver.Id, UserInfo.getUserId());
+        DMT_Approver_Member__c member = DMT_UTIL.createApproverMemberRecord(approver.Id, UserInfo.getUserId());
 
         DMT_Approver_Member__c memberUpdate = [SELECT Id FROM DMT_Approver_Member__c WHERE Id =: member.Id LIMIT 1 FOR UPDATE];
         return memberUpdate;
@@ -944,7 +1043,7 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static DMT_Approver_Member__c generateApproverMemberForUserWithUOS(Id userId, String uosCode) {
         DMT_Approver__c approver = generateApprover();
-        DMT_Approver_Member__c member = DMT_UTIL_TEST.createApproverMemberRecord(
+        DMT_Approver_Member__c member = DMT_UTIL.createApproverMemberRecord(
             approver.Id,
             userId,
             new Map<Schema.SObjectField, Object>{
@@ -968,7 +1067,7 @@ public with sharing class  DMT_Test_DataFactory {
             caseOverrides.put(Case.opportunity_id__c, opportunityId);
         }
 
-        Case c = DMT_UTIL_TEST.createCaseRecord(
+        Case c = DMT_UTIL.createCaseRecord(
             ownerId,
             DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
             caseOverrides
@@ -979,7 +1078,7 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static Case generateCase(Id ownerId, Map<Schema.SObjectField, Object> overrides) {
-        Case caseRecord = DMT_UTIL_TEST.createCaseRecord(
+        Case caseRecord = DMT_UTIL.createCaseRecord(
             ownerId,
             DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
             overrides
@@ -989,7 +1088,7 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static Case generateCaseOppLine(Id lineId, Id opportunityId, Id ownerId) {
-        Case c = DMT_UTIL_TEST.createCaseRecord(
+        Case c = DMT_UTIL.createCaseRecord(
             ownerId,
             DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
             new Map<Schema.SObjectField, Object>{
@@ -1021,12 +1120,12 @@ public with sharing class  DMT_Test_DataFactory {
             caseOverrides.put(Case.opportunity_id__c, opportunityId);
         }
 
-        Case c = DMT_UTIL_TEST.createCaseRecord(
+        Case c = DMT_UTIL.createCaseRecord(
             ownerId,
             DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
             caseOverrides
         );
-        Task t = DMT_UTIL_TEST.buildTask(
+        Task t = DMT_UTIL.buildTask(
             ownerId,
             DMT_UtilTestClassConstants.DEFAULT_TASK_STEP_RECORD_TYPE_ID,
             c.Id,
@@ -1059,12 +1158,12 @@ public with sharing class  DMT_Test_DataFactory {
             caseOverrides.put(Case.opportunity_id__c, opportunityId);
         }
 
-        Case c = DMT_UTIL_TEST.createCaseRecord(
+        Case c = DMT_UTIL.createCaseRecord(
             ownerId,
             DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
             caseOverrides
         );
-        Task t = DMT_UTIL_TEST.buildTask(
+        Task t = DMT_UTIL.buildTask(
             ownerId,
             DMT_UtilTestClassConstants.DEFAULT_TASK_STEP_RECORD_TYPE_ID,
             c.Id,
@@ -1099,7 +1198,7 @@ public with sharing class  DMT_Test_DataFactory {
                 taskOverrides.putAll(overrides);
             }
 
-            tasks.add(DMT_UTIL_TEST.buildTask(ownerId, recordTypeId, whatId, taskOverrides));
+            tasks.add(DMT_UTIL.buildTask(ownerId, recordTypeId, whatId, taskOverrides));
         }
 
         insert tasks;
@@ -1110,7 +1209,7 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static List<DMT_Task_Type__c> generateTaskTypes() {
 
-        DMT_Task_Type__c tskType1 = DMT_UTIL_TEST.buildTaskType(
+        DMT_Task_Type__c tskType1 = DMT_UTIL.buildTaskType(
             new Map<Schema.SObjectField, Object>{
                 DMT_Task_Type__c.Name => 'Global Risk',
                 DMT_Task_Type__c.DMT_External_Id__c => '1',
@@ -1121,7 +1220,7 @@ public with sharing class  DMT_Test_DataFactory {
             }
         );
 
-        DMT_Task_Type__c tskType2 = DMT_UTIL_TEST.buildTaskType(
+        DMT_Task_Type__c tskType2 = DMT_UTIL.buildTaskType(
             new Map<Schema.SObjectField, Object>{
                 DMT_Task_Type__c.Name => 'Local Risk',
                 DMT_Task_Type__c.DMT_External_Id__c => '6',
@@ -1131,7 +1230,7 @@ public with sharing class  DMT_Test_DataFactory {
                 DMT_Task_Type__c.DMT_NA_Flag__c => 'NA_NA_Local Risk'
             }
         );
-        DMT_Task_Type__c tskType3 = DMT_UTIL_TEST.buildTaskType(
+        DMT_Task_Type__c tskType3 = DMT_UTIL.buildTaskType(
             new Map<Schema.SObjectField, Object>{
                 DMT_Task_Type__c.Name => 'Risk review 1',
                 DMT_Task_Type__c.DMT_External_Id__c => '3',
@@ -1152,12 +1251,12 @@ public with sharing class  DMT_Test_DataFactory {
 
     public static Id generateView() {
 
-        DMT_ApproversView__c approverView = DMT_UTIL_TEST.createApproversViewRecord();
+        DMT_ApproversView__c approverView = DMT_UTIL.createApproversViewRecord();
 
         DMT_ApproversView__c approverViewUpdate = [SELECT Id FROM DMT_ApproversView__c WHERE Id =: approverView.Id LIMIT 1 FOR UPDATE];
 
         // If more items are added, remember to update the Assert on DMT_SnapshotEvaluationVersionsTest.testGetFilteredComponentItemOptionByVersionView_Positive
-        DMT_Items__c item = DMT_UTIL_TEST.buildItem(
+        DMT_Items__c item = DMT_UTIL.buildItem(
             approverViewUpdate.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Items__c.Name => 'Basic client',
@@ -1166,7 +1265,7 @@ public with sharing class  DMT_Test_DataFactory {
             }
         );
 
-        DMT_Items__c item2 = DMT_UTIL_TEST.buildItem(
+        DMT_Items__c item2 = DMT_UTIL.buildItem(
             approverViewUpdate.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Items__c.Name => 'Basic client2',
@@ -1175,7 +1274,7 @@ public with sharing class  DMT_Test_DataFactory {
             }
         );
 
-        DMT_Items__c item3 = DMT_UTIL_TEST.buildItem(
+        DMT_Items__c item3 = DMT_UTIL.buildItem(
             approverViewUpdate.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Items__c.Name => 'Basic client3',
@@ -1184,7 +1283,7 @@ public with sharing class  DMT_Test_DataFactory {
             }
         );
 
-        DMT_Items__c item4 = DMT_UTIL_TEST.buildItem(
+        DMT_Items__c item4 = DMT_UTIL.buildItem(
             approverViewUpdate.Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Items__c.Name => 'Basic client4',
@@ -1200,7 +1299,7 @@ public with sharing class  DMT_Test_DataFactory {
 
 
     public static DMT_Approver__c generateApproverWithView(Id approverViewId) {
-        DMT_Approver__c approver = DMT_UTIL_TEST.createApproverRecord(
+        DMT_Approver__c approver = DMT_UTIL.createApproverRecord(
             new Map<Schema.SObjectField, Object>{
                 DMT_Approver__c.Name => 'TestApproverDataFactory',
                 DMT_Approver__c.DMT_External_Id__c => 'TestExternalIdDATAFACTORY' + Integer.valueof((Math.random() * 100000000)),
@@ -1216,20 +1315,20 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static Custom_Association_Opportunity__c generateCustomAssociationOpportunity(Id opportunityId, Map<Schema.SObjectField, Object> overrides) {
-        return DMT_UTIL_TEST.createCustomAssociationOpportunityRecord(opportunityId, overrides);
+        return DMT_UTIL.createCustomAssociationOpportunityRecord(opportunityId, overrides);
     }
 
     public static DMT_Custom_Association_ClientOpportunity__c generateCustomAssociationClientOpportunity(Id customAssociationOpportunityId, Id clientId, Map<Schema.SObjectField, Object> overrides) {
-        return DMT_UTIL_TEST.createCustomAssociationClientOpportunityRecord(customAssociationOpportunityId, clientId, overrides);
+        return DMT_UTIL.createCustomAssociationClientOpportunityRecord(customAssociationOpportunityId, clientId, overrides);
     }
 
     public static Local_Client__c generateLocalClient(Id accountId, String alphaCode) {
-        return DMT_UTIL_TEST.createLocalClientRecord(accountId, alphaCode);
+        return DMT_UTIL.createLocalClientRecord(accountId, alphaCode);
     }
 
     public static Custom_Association__c generateCustomAssociation(Id lineId, Id accountId) {
 
-        Custom_Association__c ca = DMT_UTIL_TEST.createCustomAssociationRecord(
+        Custom_Association__c ca = DMT_UTIL.createCustomAssociationRecord(
             lineId,
             accountId
         );
@@ -1245,7 +1344,7 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static Custom_Association_Client__c generateCustomAssociationClient(Id caId) {
-        Custom_Association_Client__c cac = DMT_UTIL_TEST.createCustomAssociationClientRecord(caId);
+        Custom_Association_Client__c cac = DMT_UTIL.createCustomAssociationClientRecord(caId);
 
         return cac;
     }
@@ -1275,7 +1374,7 @@ public with sharing class  DMT_Test_DataFactory {
             userOverrides.putAll(overrides);
         }
 
-        User user = DMT_UTIL_TEST.createUserRecord(
+        User user = DMT_UTIL.createUserRecord(
             String.valueOf(profileId),
             userOverrides
         );
@@ -1314,7 +1413,7 @@ public with sharing class  DMT_Test_DataFactory {
             userOverrides.putAll(overrides);
         }
 
-        User user = DMT_UTIL_TEST.createUserRecord(
+        User user = DMT_UTIL.createUserRecord(
             String.valueOf(profileId),
             userOverrides
         );
@@ -1326,7 +1425,7 @@ public with sharing class  DMT_Test_DataFactory {
         Pricebook2 pb2 = generatePricebook2();
 
         List<DMT_Taxonomy_Values__c> taxonomies = new List<DMT_Taxonomy_Values__c>{
-            DMT_UTIL_TEST.buildTaxonomyValue(
+            DMT_UTIL.buildTaxonomyValue(
                 'Project Finance Advisory',
                 '2880',
                 'C375',
@@ -1334,7 +1433,7 @@ public with sharing class  DMT_Test_DataFactory {
                     DMT_Taxonomy_Values__c.DMT_Key__c => '2880'
                 }
             ),
-            DMT_UTIL_TEST.buildTaxonomyValue(
+            DMT_UTIL.buildTaxonomyValue(
                 'Project Finance Advisory2',
                 '28802',
                 'C375',
@@ -1342,7 +1441,7 @@ public with sharing class  DMT_Test_DataFactory {
                     DMT_Taxonomy_Values__c.DMT_Key__c => '28802'
                 }
             ),
-            DMT_UTIL_TEST.buildTaxonomyValue(
+            DMT_UTIL.buildTaxonomyValue(
                 'Project Finance Advisory3',
                 '28803',
                 'C375',
@@ -1350,7 +1449,7 @@ public with sharing class  DMT_Test_DataFactory {
                     DMT_Taxonomy_Values__c.DMT_Key__c => '28803'
                 }
             ),
-            DMT_UTIL_TEST.buildTaxonomyValue(
+            DMT_UTIL.buildTaxonomyValue(
                 'Others > Surety guarantee',
                 '3810',
                 'E895',
@@ -1367,7 +1466,7 @@ public with sharing class  DMT_Test_DataFactory {
 
     // CIBGLOBALD-4630 - Single active taxonomy value of a catalog (e.g. a rating of catalog C204)
     public static DMT_Taxonomy_Values__c generateTaxonomyValue(String catalog, String value) {
-        DMT_Taxonomy_Values__c taxonomy = DMT_UTIL_TEST.createTaxonomyValueRecord(
+        DMT_Taxonomy_Values__c taxonomy = DMT_UTIL.createTaxonomyValueRecord(
             value,
             catalog + '_' + value,
             catalog,
@@ -1380,28 +1479,28 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static DMT_Task_Approver_Relationship__c generateTaskApproverRelationship(DMT_Approver__c approver, DMT_Task_Type__c taskType) {
-        DMT_Task_Approver_Relationship__c relationship = DMT_UTIL_TEST.createTaskApproverRelationshipRecord(approver.Id, taskType.Id);
+        DMT_Task_Approver_Relationship__c relationship = DMT_UTIL.createTaskApproverRelationshipRecord(approver.Id, taskType.Id);
         return relationship;
     }
 
     public static DMT_Task_Relationship__c generateTaskRelationship(DMT_Task_Type__c fromTaskType, DMT_Task_Type__c toTaskType) {
-        DMT_Task_Relationship__c relationship = DMT_UTIL_TEST.createTaskRelationshipRecord(fromTaskType.Id, toTaskType.Id);
+        DMT_Task_Relationship__c relationship = DMT_UTIL.createTaskRelationshipRecord(fromTaskType.Id, toTaskType.Id);
         return relationship;
     }
 
     public static DMT_Taxonomy_Relationship__c generateTaxonomyRelationship(DMT_Taxonomy_Values__c initialValue, DMT_Taxonomy_Values__c finalValue) {
-        DMT_Taxonomy_Relationship__c relationship = DMT_UTIL_TEST.createTaxonomyRelationshipRecord(initialValue.Id, finalValue.Id);
+        DMT_Taxonomy_Relationship__c relationship = DMT_UTIL.createTaxonomyRelationshipRecord(initialValue.Id, finalValue.Id);
         return relationship;
     }
 
 
     public static DMT_Taxonomy_Hierarchy__c generateTaxonomyHierarchy() {
-        DMT_Taxonomy_Hierarchy__c hierarchy = DMT_UTIL_TEST.createTaxonomyHierarchyRecord();
+        DMT_Taxonomy_Hierarchy__c hierarchy = DMT_UTIL.createTaxonomyHierarchyRecord();
         return hierarchy;
     }
 
     public static DMT_Consolidated_Line__c generateConsolidatedLine(String LineId) {
-        DMT_Consolidated_Line__c cl = DMT_UTIL_TEST.createConsolidatedLineRecord(
+        DMT_Consolidated_Line__c cl = DMT_UTIL.createConsolidatedLineRecord(
             LineId,
             new Map<Schema.SObjectField, Object>{
                 DMT_Consolidated_Line__c.gf_group_line_id__c => 'ESCD25LIN00003597ES',
@@ -1413,7 +1512,7 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static DMT_Consolidated_Line__c generateConsolidatedLineOther(String LineId) {
-        DMT_Consolidated_Line__c cl = DMT_UTIL_TEST.createConsolidatedLineRecord(
+        DMT_Consolidated_Line__c cl = DMT_UTIL.createConsolidatedLineRecord(
             LineId,
             new Map<Schema.SObjectField, Object>{
                 DMT_Consolidated_Line__c.gf_group_line_id__c => 'ESCD25LIN00003598ES',
@@ -1425,13 +1524,13 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static DMT_Currency_Provision__c generateCurrencyProvision(Id riskLineTermId) {
-        DMT_Currency_Provision__c cp = DMT_UTIL_TEST.createCurrencyProvisionRecord(riskLineTermId);
+        DMT_Currency_Provision__c cp = DMT_UTIL.createCurrencyProvisionRecord(riskLineTermId);
 
         return cp;
     }
 
     public static DMT_Warranty__c generateWarranty(Id riskLineTermId) {
-        DMT_Warranty__c wa = DMT_UTIL_TEST.createWarrantyRecord(riskLineTermId);
+        DMT_Warranty__c wa = DMT_UTIL.createWarrantyRecord(riskLineTermId);
 
         return wa;
     }
@@ -1454,7 +1553,7 @@ public with sharing class  DMT_Test_DataFactory {
             productOverrides.putAll(overrides);
         }
 
-        return DMT_UTIL_TEST.createProductRecord(productOverrides);
+        return DES_UTIL.createProductRecord(productOverrides);
     }
 
     public static Pricebook2 generatePricebook2() {
@@ -1468,7 +1567,7 @@ public with sharing class  DMT_Test_DataFactory {
         Pricebook2 pbStandard;
 
         if (pricebooks.isEmpty()) {
-            pbStandard = DMT_UTIL_TEST.createPricebookRecord(
+            pbStandard = DES_UTIL.createPricebookRecord(
                 new Map<Schema.SObjectField, Object>{
                     Pricebook2.Name => 'Standard Price Book',
                     Pricebook2.IsActive => true
@@ -1489,7 +1588,7 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static PricebookEntry generatePricebookEntry(Product2 product, Map<Schema.SObjectField, Object> overrides) {
-        return DMT_UTIL_TEST.createPricebookEntryRecord(product.Id, overrides);
+        return DES_UTIL.createPricebookEntryRecord(product.Id, overrides);
     }
 
     public static OpportunityLineItem generateOpportunityLineItem(Product2 product, PricebookEntry pricebookEntry, Opportunity opp) {
@@ -1518,7 +1617,7 @@ public with sharing class  DMT_Test_DataFactory {
             opportunityLineItemOverrides.putAll(overrides);
         }
 
-        return DMT_UTIL_TEST.createOppLineItemRecord(opp.Id, product.Id, pricebookEntry.Id, opportunityLineItemOverrides);
+        return DMT_UTIL.createOppLineItemRecord(opp.Id, product.Id, pricebookEntry.Id, opportunityLineItemOverrides);
     }
 
     public static OpportunityLineItem generateOpportunityLineItem(Opportunity opp) {
@@ -1529,11 +1628,28 @@ public with sharing class  DMT_Test_DataFactory {
         Product2 product = generateProduct2();
         PricebookEntry pricebookEntry = generatePricebookEntry(product);
 
-        return DMT_UTIL_TEST.createOppLineItemRecord(opp.Id, product.Id, pricebookEntry.Id, overrides);
+        return DMT_UTIL.createOppLineItemRecord(opp.Id, product.Id, pricebookEntry.Id, overrides);
+    }
+
+    /**
+     * CIBGLOBALD-4713 - Sets the saved Passport JSON (DMT_Passport_Save__c) of an Opportunity, as read by
+     * DMT_ViewController.getFeatures. Reuses the Passport the Opportunity automation may already have
+     * created (getFeatures reads only one), and creates it otherwise.
+     */
+    public static Passport__c generatePassport(Id opportunityId, String passportJson) {
+        List<Passport__c> passports = [SELECT Id FROM Passport__c WHERE Opportunity__c = :opportunityId];
+        if (passports.isEmpty()) {
+            passports.add(new Passport__c(Opportunity__c = opportunityId));
+        }
+        for (Passport__c passport : passports) {
+            passport.DMT_Passport_Save__c = passportJson;
+        }
+        upsert passports;
+        return passports[0];
     }
 
     public static DMT_Opportunity_Tenor__c generateOpportunityTenor(OpportunityLineItem opportunityLineItem) {
-        DMT_Opportunity_Tenor__c oppTenor = DMT_UTIL_TEST.createOpportunityTenorRecord(opportunityLineItem.Id);
+        DMT_Opportunity_Tenor__c oppTenor = DMT_UTIL.createOpportunityTenorRecord(opportunityLineItem.Id);
         return oppTenor;
     }
 
@@ -1551,13 +1667,13 @@ public with sharing class  DMT_Test_DataFactory {
             mitigantOverrides.putAll(overrides);
         }
 
-        DMT_Opportunity_Mitigant__c oppMitigant = DMT_UTIL_TEST.createOpportunityMitigantRecord(opportunityLineItem.Id, mitigantOverrides);
+        DMT_Opportunity_Mitigant__c oppMitigant = DMT_UTIL.createOpportunityMitigantRecord(opportunityLineItem.Id, mitigantOverrides);
         return oppMitigant;
     }
 
     public static DMT_Selected_Features__c generateSelectedFeaturesOpp(Opportunity opp) {
         List<DMT_Feature__c> featureList = new List<DMT_Feature__c>{
-            DMT_UTIL_TEST.buildFeature(
+            DMT_UTIL.buildFeature(
                 new Map<Schema.SObjectField, Object>{
                     DMT_Feature__c.gf_capability_engine_id_number__c => '789',
                     DMT_Feature__c.gf_feature_name_desc__c => 'Feature Test Opp',
@@ -1568,7 +1684,7 @@ public with sharing class  DMT_Test_DataFactory {
                     DMT_Feature__c.gf_code_value_id__c => '201'
                 }
             ),
-            DMT_UTIL_TEST.buildFeature(
+            DMT_UTIL.buildFeature(
                 new Map<Schema.SObjectField, Object>{
                     DMT_Feature__c.gf_capability_engine_id_number__c => '987',
                     DMT_Feature__c.gf_feature_name_desc__c => 'Feature Test OPPB',
@@ -1582,7 +1698,7 @@ public with sharing class  DMT_Test_DataFactory {
         };
         insert featureList;
 
-        DMT_Selected_Features__c selectedFeature = DMT_UTIL_TEST.createSelectedFeatureRecord(
+        DMT_Selected_Features__c selectedFeature = DMT_UTIL.createSelectedFeatureRecord(
             featureList[0].Id,
             new Map<Schema.SObjectField, Object>{
                 DMT_Selected_Features__c.Opportunity__c => opp.Id
@@ -1593,7 +1709,7 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
      public static DMT_X_Sell__c generatexSell(Opportunity opp) {
-        DMT_X_Sell__c xsell = DMT_UTIL_TEST.createXSellRecord(opp.Id);
+        DMT_X_Sell__c xsell = DMT_UTIL.createXSellRecord(opp.Id);
         return xsell;
     }
 
@@ -1628,7 +1744,7 @@ public with sharing class  DMT_Test_DataFactory {
         insert exRateList;
     }
     public static DMT_Underlying__c generateUnderlyingRestriction(OpportunityLineItem opportunityLineItem) {
-        DMT_Underlying__c underlying = DMT_UTIL_TEST.createUnderlyingRecord(opportunityLineItem.Id);
+        DMT_Underlying__c underlying = DMT_UTIL.createUnderlyingRecord(opportunityLineItem.Id);
         return underlying;
     }
 
@@ -1655,7 +1771,7 @@ public with sharing class  DMT_Test_DataFactory {
             guarantorOverrides.putAll(overrides);
         }
 
-        DMT_Opportunity_Mitigant__c oppMitigant = DMT_UTIL_TEST.createOpportunityMitigantRecord(opportunityLineItem.Id, guarantorOverrides);
+        DMT_Opportunity_Mitigant__c oppMitigant = DMT_UTIL.createOpportunityMitigantRecord(opportunityLineItem.Id, guarantorOverrides);
         return oppMitigant;
     }
 }

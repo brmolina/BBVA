@@ -20,8 +20,8 @@ public with sharing class DMT_ProfitabilityRendererTest {
         String result = renderer.renderHtml(null);
         Test.stopTest();
 
-        System.assert(result.contains('Error'), 'Debe retornar error para data null');
-        System.assert(result.contains('Data not provided'), 'Debe incluir mensaje específico');
+        Assert.isTrue(result.contains('Error'), 'Debe retornar error para data null');
+        Assert.isTrue(result.contains('Data not provided'), 'Debe incluir mensaje específico');
     }
 
     @isTest
@@ -44,7 +44,7 @@ public with sharing class DMT_ProfitabilityRendererTest {
         Test.stopTest();
 
         // El renderer intenta delegarlo a DMT_OppProfitabilityLimitVisualRenderer
-        System.assertNotEquals(null, result, 'Debe retornar un string');
+        Assert.areNotEqual(null, result, 'Debe retornar un string');
     }
 
     @isTest
@@ -66,7 +66,7 @@ public with sharing class DMT_ProfitabilityRendererTest {
         String result = renderer.renderHtml(data);
         Test.stopTest();
 
-        System.assert(result.contains('Error'), 'Invalid record type must return error.');
+        Assert.isTrue(result.contains('Error'), 'Invalid record type must return error.');
     }
 
     @isTest
@@ -170,5 +170,75 @@ public with sharing class DMT_ProfitabilityRendererTest {
         Assert.isNotNull(result, 'Full path must return a non-null result.');
         Assert.isTrue(result.contains('Profitability Engine') || result.contains('Summary') || result.contains('Error'),
             'Result should contain Profitability Engine header or Summary, or an error if line items are empty.');
+    }
+
+    // CIBGLOBALD-4713 - External RWA column, modal marker and browser chart image.
+    @isTest
+    static void testOppProfitabilityRenderer_externalRwaAndImage() {
+        Opportunity opp = [
+            SELECT Id, RecordTypeId, Name, DMT_CurrencyText__c, DMT_DATE_Initial_Date__c, DMT_DATE_Maturity_Date__c,
+                   (SELECT Id FROM OpportunityLineItems)
+            FROM Opportunity
+            LIMIT 1
+        ];
+        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
+        data.recordTypeId = opp.RecordTypeId;
+        data.opportunity = opp;
+        data.currencyIsoCode = 'EUR';
+        data.featuresList = new List<Map<String, Object>>{
+            new Map<String, Object>{ 'profitability' => new Map<String, Object>{
+                'results' => new List<Object>{
+                    new Map<String, Object>{ 'rorc' => 0.12 },
+                    new Map<String, Object>{ 'productId' => 'PROD001', 'rorc' => 0.11 }
+                }
+            } }
+        };
+        data.isImg64 = true;
+        DMT_ViewController.ItemImgB64 image = new DMT_ViewController.ItemImgB64();
+        image.imgB64 = 'iVBORw0KGgoAAAANSUhEUg==';
+        data.itemImgBase64 = new List<DMT_ViewController.ItemImgB64>{ image };
+        data.profitabilityShowRwaAction = true;
+        data.profitabilityAprsByProductId = new Map<String, Object>{ 'PROD001' => 1250.5 };
+        data.profitabilityRwaLinkInfo = new Map<String, Object>{
+            'enabled' => true, 'explanationId' => 'ESCD25OPP00000001ES', 'entific' => 'ES', 'baseUrl' => 'https://rwa.example/index.html'
+        };
+
+        Test.startTest();
+        String result = new DMT_ProfitabilityRenderer().renderHtml(data);
+        Test.stopTest();
+
+        Assert.isTrue(result.contains('External RWA 1Y'), 'External RWA column expected: ' + result.left(300));
+        Assert.isTrue(result.contains('explanationId=ESCD25OPP00000001ES_PROD001'), 'RWA calculator link expected');
+        Assert.isTrue(result.contains('data-dmt-action="external-rwa" data-enabled="true"'), 'Modal marker expected');
+        Assert.isTrue(result.contains('<img alt="profitability"'), 'Browser chart image expected');
+    }
+
+    // CIBGLOBALD-4713 - Other views (no modal request) never get the marker or the column.
+    @isTest
+    static void testOppProfitabilityRenderer_noModalMarker() {
+        Opportunity opp = [
+            SELECT Id, RecordTypeId, Name, DMT_CurrencyText__c, DMT_DATE_Initial_Date__c, DMT_DATE_Maturity_Date__c,
+                   (SELECT Id FROM OpportunityLineItems)
+            FROM Opportunity
+            LIMIT 1
+        ];
+        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
+        data.recordTypeId = opp.RecordTypeId;
+        data.opportunity = opp;
+        data.currencyIsoCode = 'EUR';
+        data.isImg64 = false;
+        data.featuresList = new List<Map<String, Object>>{
+            new Map<String, Object>{ 'profitability' => new Map<String, Object>{
+                'results' => new List<Object>{ new Map<String, Object>{ 'rorc' => 0.12 } }
+            } }
+        };
+
+        Test.startTest();
+        String result = new DMT_ProfitabilityRenderer().renderHtml(data);
+        Test.stopTest();
+
+        Assert.isFalse(result.contains('data-dmt-action'), 'No marker outside the modal');
+        Assert.isFalse(result.contains('External RWA 1Y'), 'No External RWA column outside the modal');
+        Assert.isTrue(result.contains('data-dmt-table-block="regulatory"'), 'Table hooks expected: ' + result.left(300));
     }
 }

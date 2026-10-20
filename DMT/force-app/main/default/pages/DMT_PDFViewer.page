@@ -1,0 +1,14 @@
+<!--
+  @description       : 
+  @author            : BBVA DMT
+  @group             : 
+  @last modified on  : 28-11-2024
+  @last modified by  : BBVA DMT
+-->
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false">
+    <title></title>
+    <apex:variable var="base64PdfData" value="{!URLENCODE($CurrentPage.parameters.pdfData)}" />
+
+    <iframe title="PDF Template" src="data:application/pdf;base64,{!base64PdfData}" width="100%" height="600px" style="border:none;"></iframe> <!--NO SONAR-->
+
+</apex:page>
