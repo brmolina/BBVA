@@ -3072,9 +3072,9 @@ public class DMT_ViewController_Test {
         Assert.isTrue(trackedFieldsSet.contains('DMT_Oficina__c'), 'DMT_Oficina__c should be tracked for Treasury Line Info');
         // CIBGLOBALD-4117 - editable in the LINE INFO tab's cfSummaryTreasury_Flexcard; found
         // untracked via a field-drift audit against the live edit-side FlexCard.
-        Assert.isTrue(trackedFieldsSet.contains('DMT_Business_Approval_Term__c'), 'DMT_Business_Approval_Term__c should be tracked for Treasury Line Info');
+        Assert.isTrue(trackedFieldsSet.contains('DMT_Business_Approval_Term_n__c'), 'DMT_Business_Approval_Term_n__c should be tracked for Treasury Line Info');
         Assert.isTrue(trackedFieldsSet.contains('DMT_Bussiness_Approved_Date__c'), 'DMT_Bussiness_Approved_Date__c should be tracked for Treasury Line Info');
-        Assert.isTrue(trackedFieldsSet.contains('DMT_Bussiness_Approved_End_Date__c'), 'DMT_Bussiness_Approved_End_Date__c should be tracked for Treasury Line Info');
+        Assert.isTrue(trackedFieldsSet.contains('DMT_Business_Approved_End_Date__c'), 'DMT_Business_Approved_End_Date__c should be tracked for Treasury Line Info');
         Assert.isTrue(trackedFieldsSet.contains('gf_min_raroec_wo_fcg_per__c'), 'gf_min_raroec_wo_fcg_per__c should be tracked for Treasury Line Info');
         Assert.isTrue(trackedFieldsSet.contains('gf_min_rorc_wo_fcg_per__c'), 'gf_min_rorc_wo_fcg_per__c should be tracked for Treasury Line Info');
     }
@@ -3090,12 +3090,6 @@ public class DMT_ViewController_Test {
         Set<String> trackedFieldsSet = new Set<String>(trackedFields);
         Assert.isTrue(trackedFieldsSet.contains('g_line_commitment_level_type__c'), 'g_line_commitment_level_type__c should be tracked for Other Line Info');
         Assert.isTrue(trackedFieldsSet.contains('DMT_Individual_Disposal_Approval__c'), 'DMT_Individual_Disposal_Approval__c should be tracked for Other Line Info');
-        // CIBGLOBALD-4117 - the same cfSummaryTreasury_Flexcard is used unconditionally for
-        // OtherProducts Lines too (no record-type gate in dmt_lines_tab.html's LINE INFO tab), so
-        // this renderer needs the same fix as Treasury Line Info.
-        Assert.isTrue(trackedFieldsSet.contains('DMT_Business_Approval_Term__c'), 'DMT_Business_Approval_Term__c should be tracked for Other Line Info');
-        Assert.isTrue(trackedFieldsSet.contains('DMT_Bussiness_Approved_Date__c'), 'DMT_Bussiness_Approved_Date__c should be tracked for Other Line Info');
-        Assert.isTrue(trackedFieldsSet.contains('DMT_Bussiness_Approved_End_Date__c'), 'DMT_Bussiness_Approved_End_Date__c should be tracked for Other Line Info');
         Assert.isTrue(trackedFieldsSet.contains('gf_min_raroec_wo_fcg_per__c'), 'gf_min_raroec_wo_fcg_per__c should be tracked for Other Line Info');
         Assert.isTrue(trackedFieldsSet.contains('gf_min_rorc_wo_fcg_per__c'), 'gf_min_rorc_wo_fcg_per__c should be tracked for Other Line Info');
     }

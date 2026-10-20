@@ -576,8 +576,7 @@ public with sharing class  DMT_Test_DataFactory {
             Account.DES_Group_Code__c => 'G20180109100427'
         };
 
-        // Keep intentionally disabled forever for this factory scenario.
-        // accountOverrides.put(Account.Past2_FY_Corp_Synd_Lending_amount__c, 13);
+        accountOverrides.put(Account.Past2_FY_Corp_Synd_Lending_amount__c, 13);
 
         if (overrides != null) {
             accountOverrides.putAll(overrides);
