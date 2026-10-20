@@ -12,7 +12,7 @@ import CASE_CURRENCYISOCODE_FIELD from '@salesforce/schema/Case.CurrencyIsoCode'
 
 // New imports for PDF generation
 import preparePdfAssets from '@salesforce/apex/DMT_PdfService.preparePdfAssets';
-import generateFinalPdf from '@salesforce/apex/DMT_PdfService.generateFinalPdf';
+import generateFinalPdfMob from '@salesforce/apex/DMT_PdfService.generateFinalPdfMob';
 
 import { publish, MessageContext } from 'lightning/messageService';
 import DMT_VIEW_DATA_CHANNEL from '@salesforce/messageChannel/DmtViewData__c';
@@ -321,6 +321,10 @@ export default class Dmt_view_lwc extends NavigationMixin(LightningElement) {
             }
         } catch (e) {
             console.error('[getItemsToDisplay] error:', e);
+            this.finalErrorMessage = '<div class="error-message">Unable to load the opportunity view.</div>';
+            this.vfPageUrl = this.finalErrorMessage;
+            this.isRendered = true;
+            this.loadIframe();
         }
     }
 
@@ -833,7 +837,7 @@ export default class Dmt_view_lwc extends NavigationMixin(LightningElement) {
 
             // ── TX 2: generar PDF ───────────────────────────────────
             console.log('[PDF] ⏳ TX2 — Generating PDF...');
-            const pdfResult = await generateFinalPdf({
+            const pdfResult = await generateFinalPdfMob({
                 finalHtml: prep.modifiedHtml,
                 docIds: prep.documentIds || [],
                 isMobile: isMobile

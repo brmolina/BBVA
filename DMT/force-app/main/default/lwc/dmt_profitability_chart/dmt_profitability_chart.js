@@ -308,7 +308,14 @@ export default class Dmt_profitability_chart extends LightningElement {
     buildOrderedRows(opportunityRow, productRows, underlyingRows) {
         const orderedRows = [];
         const sortedProductRows = [...productRows].sort((a, b) => a.sourceIndex - b.sourceIndex);
-        const sortedUnderlyingRows = [...underlyingRows].sort((a, b) => a.sourceIndex - b.sourceIndex);
+        const sortedUnderlyingRows = [...underlyingRows].sort((a, b) => {
+            const aHasOrder = a.underlyingOrderIndex !== null && a.underlyingOrderIndex !== undefined;
+            const bHasOrder = b.underlyingOrderIndex !== null && b.underlyingOrderIndex !== undefined;
+            if (aHasOrder && bHasOrder) {
+                return a.underlyingOrderIndex - b.underlyingOrderIndex;
+            }
+            return a.sourceIndex - b.sourceIndex;
+        });
         const underlyingRowsByParentId = sortedUnderlyingRows.reduce((accumulator, row) => {
             const parentId = row.productId;
             if (!accumulator[parentId]) {
@@ -438,6 +445,7 @@ export default class Dmt_profitability_chart extends LightningElement {
                 nominalDb = this.formatThousands(totalNominalDb) + ' ' + rowCurrency;
                 nominalFb = this.formatThousands(totalNominalFb) + ' ' + rowCurrency;
             }
+            let underlyingOrderIndex = null;
             if (result.underlyingId) {
                 const underlying = this.underlyingDetailsMap?.[result.underlyingId];
                 id = underlying?.Name || result.underlyingId;
@@ -446,6 +454,7 @@ export default class Dmt_profitability_chart extends LightningElement {
                     nominalFb = this.formatThousands(underlying.nominalFb) + ' ' + (product?.currency || rowCurrency);
                     nominalDbValue = toNumberOrNull(underlying.nominalDb);
                     nominalFbValue = toNumberOrNull(underlying.nominalFb);
+                    underlyingOrderIndex = Number.isFinite(underlying.orderIndex) ? underlying.orderIndex : null;
                 }
             }
 
@@ -461,6 +470,7 @@ export default class Dmt_profitability_chart extends LightningElement {
                 productId: result.productId || null,
                 underlyingId: result.underlyingId || null,
                 sourceIndex: index,
+                underlyingOrderIndex,
                 rowCurrency,
                 nominalDbValue,
                 nominalFbValue,

@@ -72,9 +72,13 @@ public with sharing class DMT_PdfService {
     }
 
     // ── Transaction 2: Generate PDF and clean up ────────────────────────────
+        @AuraEnabled
+    public static String generateFinalPdf(String finalHtml, List<String> docIds) {
+        return generateFinalPdfMob(finalHtml, docIds, false);
+    }
 
     @AuraEnabled
-    public static String generateFinalPdf(String finalHtml, List<String> docIds, Boolean isMobile) {
+    public static String generateFinalPdfMob(String finalHtml, List<String> docIds, Boolean isMobile) {
         try {
             String cleanPageBreakHtml = cleanPageBreakBorders(finalHtml);
             Blob pdfBlob = DMT_BlobBuilderForPDF.buildPdfBlob(cleanPageBreakHtml);
