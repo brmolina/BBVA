@@ -29,6 +29,7 @@ Context and findings: `CIBGLOBALD-4713-context.md`.
 4. Silent marker for the button: `<span data-dmt-action="external-rwa" data-enabled="true|false"></span>` in the Regulatory Capital header, only when the wrapper asks for it (modal). Never present for View List, Configuration, case task modal, snapshots.
 5. PDF readability (ticket: no cut tables, no lost information): fix the ID cell indent that overlaps the next column, `page-break-inside: avoid` on rows, header repeated on page break (`thead` as table-header-group), remove the forced page break before the chart.
 6. Keep the existing inline sizes (option A).
+7. Silent hook on each table wrapper (`data-dmt-table-block="summary|regulatory|economic"`) so the modal can make each table scroll on its own. Harmless for the PDF and the other entry points.
 
 ### 1.2 `DMT_ViewController`
 - `LineDataWrapper`: new fields `profitabilityAprsByProductId` (Map<String, Object>), `profitabilityRwaLinkInfo` (Map<String, Object>), `profitabilityShowRwaAction` (Boolean).
@@ -54,7 +55,9 @@ Context and findings: `CIBGLOBALD-4713-context.md`.
 ### 2.1 New LWC `dmt_profitability_view` (name to confirm)
 - Inputs: `opportunityId`, `profitability` (already passed to the modal).
 - No `profitability.results` -> message 'No profitability data available', no Apex call, `hasData = false` to the parent.
-- Load: spinner -> chart image from a hidden `c-dmt_profitability_chart` (`getChartImage`) -> `renderProfitabilityHtml(oppId, image, false)` -> HTML into a `lwc:dom="manual"` container + modal sizing style -> find the marker and insert the 'External RWA calculate' button (brand, disabled when `data-enabled="false"`).
+- Lives inside `dmt_passport_modal` (body of the profitability branch).
+- Per-table scroll: screen-only style on `[data-dmt-table-block]` (overflow-x auto, table at natural width with the original modal sizes), so each table scrolls like today. Not part of the PDF HTML.
+- Load: spinner -> chart image from a hidden `c-dmt_profitability_chart` (`getChartImage`, same as dmt_view_lwc does today; the component stays the image generator) -> `renderProfitabilityHtml(oppId, image, false)` -> HTML into a `lwc:dom="manual"` container + modal sizing style -> find the marker and insert the 'External RWA calculate' button (brand, disabled when `data-enabled="false"`).
 - RWA click: spinner, `renderProfitabilityHtml(oppId, sameImage, true)`, replace the HTML, re-insert the button; error message inline if the callout failed.
 - `@api getPdfHtml()`: copy of the displayed HTML without the marker/button, plus a landscape `@page` style.
 - Error state: inline message + toast; exceptions logged by Apex.
@@ -81,6 +84,26 @@ No permission set change (no new Apex class). No CMDT change.
 
 ## Before any deploy
 - Fresh retrieve and diff of every component (DMT_ViewController, dmt_view_lwc and DMT_PdfService were changed by other devs today).
+
+## Rollback plan
+What can go wrong is code only: no data, schema, CMDT or permission set changes, so there is nothing to restore in data.
+
+Preparation (before each deploy, by the user):
+1. Fresh retrieve of every component in the manifest into `tickets/CIBGLOBALD-4713/rollback/<date>/` (exact org versions right before our deploy; DMT_ViewController, DMT_PdfService and dmt_view_lwc change often).
+2. Commit that folder in the personal repo; note the commit hash in `CIBGLOBALD-4713-deployment-notes.md`.
+3. Deploy in two separate releases: Step 1 (Apex) first, Step 2 (LWC) only after the Configuration > Views gate passes.
+
+Rollback Step 2 only (modal problem, NBC fine):
+1. Redeploy the backed-up `dmt_passport_modal` (old body `c-dmt_profitability_chart`, footer with Close only).
+2. `dmt_profitability_view` can stay deployed unused (nothing references it); remove later with `CIBGLOBALD-4713-destructiveChanges.xml` if wanted.
+3. Check: modal opens with the old tables and the External RWA button works as before.
+
+Rollback Step 1 (renderer / ViewController / utils problem):
+1. If Step 2 is deployed, roll back Step 2 first (the new LWC calls `renderProfitabilityHtml`).
+2. Redeploy the backed-up `DMT_Profitability_utils`, `DMT_ViewController`, `DMT_OppProfitabilityRenderer` and their three test classes together (RunSpecifiedTests with those test classes, explicit --target-org). This also restores 'with sharing' on the utils class.
+3. Check: Configuration > Views 'Profitability view' and View List render; Download PDF there works; the modal works.
+
+Optional, to decide: keep the old modal body behind a switch for one release, so Step 2 can be turned off without a deploy. Not planned by default (adds a flag to remove later).
 
 ## QA (from the ticket)
 - Modal with data: tables, chart and RWA button in place; Download PDF in the footer with icon.
