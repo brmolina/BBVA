@@ -18,6 +18,8 @@ import generateFinalPdfMob from '@salesforce/apex/DMT_PdfService.generateFinalPd
 
 const RWA_MARKER_SELECTOR = '[data-dmt-action="external-rwa"]';
 const RWA_MARKER_PATTERN = /<div data-dmt-action="external-rwa"[^>]*><\/div>/g;
+// Links (External RWA 1Y values to the RWA calculator) stay clickable in the modal and become plain text in the PDF.
+const LINK_PATTERN = /<a\b[^>]*>([\s\S]*?)<\/a>/gi;
 const CHART_IMAGE_WIDTH = 1400;
 const CHART_IMAGE_HEIGHT = 480;
 const CONTENT_CLASS = 'dmt-profitability-view-content';
@@ -146,11 +148,12 @@ export default class Dmt_profitability_view extends NavigationMixin(LightningEle
 
     /**
      * Downloads the PDF of the content on screen (with the External RWA column only if it was requested),
-     * without the button marker. Generated on demand with DMT_PdfService; nothing is recalculated.
+     * without the button marker and with links as plain text. Generated on demand with DMT_PdfService;
+     * nothing is recalculated.
      */
     @api
     async downloadPdf() {
-        const html = this.renderedHtml.replace(RWA_MARKER_PATTERN, '');
+        const html = this.renderedHtml.replace(RWA_MARKER_PATTERN, '').replace(LINK_PATTERN, '$1');
         const isMobile = FORM_FACTOR === 'Small' || FORM_FACTOR === 'Medium';
         const prep = await preparePdfAssets({ originalHtml: html });
         if (isMobile) {
