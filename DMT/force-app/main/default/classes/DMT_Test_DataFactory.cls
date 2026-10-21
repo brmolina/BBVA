@@ -161,10 +161,10 @@ public with sharing class  DMT_Test_DataFactory {
         List<DMT_Line__c> linesInsert = new List<DMT_Line__c>();
 
         DMT_Line__c lineTest = DMT_UTIL.buildLine(
-            accTest1.Id,
-            DMT_UtilTestClassConstants.DEFAULT_TREASURY_LINE_RECORD_TYPE_ID,
-            '00001',
             new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Client__c => accTest1.Id,
+                DMT_Line__c.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_TREASURY_LINE_RECORD_TYPE_ID,
+                DMT_Line__c.Line_Id__c => '00001',
                 DMT_Line__c.Allowed__c => false,
                 DMT_Line__c.Booking_Geography__c => 'ES',
                 DMT_Line__c.Clearing__c => false,
@@ -190,10 +190,10 @@ public with sharing class  DMT_Test_DataFactory {
         linesInsert.add(lineTest);
 
         DMT_Line__c lineTest2 = DMT_UTIL.buildLine(
-            accTest1.Id,
-            DMT_UtilTestClassConstants.DEFAULT_TREASURY_LINE_RECORD_TYPE_ID,
-            '00002',
             new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Client__c => accTest1.Id,
+                DMT_Line__c.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_TREASURY_LINE_RECORD_TYPE_ID,
+                DMT_Line__c.Line_Id__c => '00002',
                 DMT_Line__c.Allowed__c => false,
                 DMT_Line__c.Booking_Geography__c => 'ES',
                 DMT_Line__c.Clearing__c => false,
@@ -265,8 +265,8 @@ public with sharing class  DMT_Test_DataFactory {
 
         //Risk line terms
         DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL.buildRiskLineTerm(
-            lineTest2.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => lineTest2.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '3',
@@ -292,7 +292,12 @@ public with sharing class  DMT_Test_DataFactory {
         List<Product2> listProducts = new List<Product2>{p1, p2, p3, p4};
         insert listProducts;
 
-        DMT_Line_Product_Item__c pli1 = DMT_UTIL.createLineProductItemRecord(lineTest2.Id, p1.Id);
+        DMT_Line_Product_Item__c pli1 = DMT_UTIL.createLineProductItemRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Line_Product_Item__c.Product__c => p1.Id,
+                DMT_Line_Product_Item__c.Line__c => lineTest2.Id
+            }
+        );
 
 
         return lineTest2;
@@ -309,10 +314,10 @@ public with sharing class  DMT_Test_DataFactory {
         Account accTest1Update = [SELECT Id FROM Account LIMIT 1];
 
         DMT_Line__c lineTest = DMT_UTIL.createLineRecord(
-            accTest1Update.Id,
-            DMT_UtilTestClassConstants.DEFAULT_OTHER_LINE_RECORD_TYPE_ID,
-            '00003',
             new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Client__c => accTest1Update.Id,
+                DMT_Line__c.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_OTHER_LINE_RECORD_TYPE_ID,
+                DMT_Line__c.Line_Id__c => '00003',
                 DMT_Line__c.Allowed__c => false,
                 DMT_Line__c.Booking_Geography__c => 'ES',
                 DMT_Line__c.Clearing__c => false,
@@ -371,8 +376,8 @@ public with sharing class  DMT_Test_DataFactory {
 
         //Risk line terms
         DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL.buildRiskLineTerm(
-            lineTest.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => lineTest.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '3',
@@ -390,7 +395,12 @@ public with sharing class  DMT_Test_DataFactory {
 
 
 
-        DMT_Line_Product_Item__c pli1 = DMT_UTIL.createLineProductItemRecord(lineTest.Id, p1.Id);
+        DMT_Line_Product_Item__c pli1 = DMT_UTIL.createLineProductItemRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Line_Product_Item__c.Product__c => p1.Id,
+                DMT_Line_Product_Item__c.Line__c => lineTest.Id
+            }
+        );
 
 
         return lineTest;
@@ -402,10 +412,10 @@ public with sharing class  DMT_Test_DataFactory {
         Account accTest1Update = [SELECT Id FROM Account WHERE Id =: accTest1.Id LIMIT 1 FOR UPDATE];
 
         DMT_Line__c lineTest = DMT_UTIL.createLineRecord(
-            accTest1Update.Id,
-            DMT_UtilTestClassConstants.DEFAULT_TREASURY_LINE_RECORD_TYPE_ID,
-            '00004',
             new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Client__c => accTest1Update.Id,
+                DMT_Line__c.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_TREASURY_LINE_RECORD_TYPE_ID,
+                DMT_Line__c.Line_Id__c => '00004',
                 DMT_Line__c.Allowed__c => false,
                 DMT_Line__c.Booking_Geography__c => 'ES',
                 DMT_Line__c.Clearing__c => false,
@@ -433,10 +443,10 @@ public with sharing class  DMT_Test_DataFactory {
         DMT_Line__c lineTestUpdate = [SELECT Id FROM DMT_Line__c WHERE Id =: lineTest.Id LIMIT 1 FOR UPDATE];
 
         DMT_Line__c lineTest2 = DMT_UTIL.createLineRecord(
-            accTest1Update.Id,
-            DMT_UtilTestClassConstants.DEFAULT_TREASURY_LINE_RECORD_TYPE_ID,
-            '00005',
             new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Client__c => accTest1Update.Id,
+                DMT_Line__c.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_TREASURY_LINE_RECORD_TYPE_ID,
+                DMT_Line__c.Line_Id__c => '00005',
                 DMT_Line__c.Allowed__c => false,
                 DMT_Line__c.Booking_Geography__c => 'PE',
                 DMT_Line__c.Clearing__c => false,
@@ -466,8 +476,8 @@ public with sharing class  DMT_Test_DataFactory {
 
         //Risk line terms
         DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL.buildRiskLineTerm(
-            lineTest2Update.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => lineTest2Update.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '3',
@@ -477,8 +487,8 @@ public with sharing class  DMT_Test_DataFactory {
         );
 
         DMT_Risk_Line_Term__c rsklt2 = DMT_UTIL.buildRiskLineTerm(
-            lineTest2Update.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => lineTest2Update.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 2',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '5',
@@ -491,8 +501,8 @@ public with sharing class  DMT_Test_DataFactory {
         );
 
         DMT_Risk_Line_Term__c rsklt3 = DMT_UTIL.buildRiskLineTerm(
-            lineTest2Update.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => lineTest2Update.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 3',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '7',
@@ -502,8 +512,8 @@ public with sharing class  DMT_Test_DataFactory {
         );
 
         DMT_Risk_Line_Term__c rsklt4 = DMT_UTIL.buildRiskLineTerm(
-            lineTest2Update.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => lineTest2Update.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 4',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '9',
@@ -513,8 +523,8 @@ public with sharing class  DMT_Test_DataFactory {
         );
 
         DMT_Risk_Line_Term__c rsklt5 = DMT_UTIL.buildRiskLineTerm(
-            lineTest2Update.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => lineTest2Update.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 5',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '6',
@@ -524,8 +534,8 @@ public with sharing class  DMT_Test_DataFactory {
         );
 
         DMT_Risk_Line_Term__c rsklt6 = DMT_UTIL.buildRiskLineTerm(
-            lineTest2Update.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => lineTest2Update.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 6',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '6',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '30',
@@ -559,7 +569,13 @@ public with sharing class  DMT_Test_DataFactory {
 
         insert listProducts;
 
-        DMT_Line_Product_Item__c pli1 = DMT_UTIL.createLineProductItemRecord(lineTest2.Id, p1.Id);
+        DMT_Line_Product_Item__c pli1 = DMT_UTIL.createLineProductItemRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Line_Product_Item__c.Product__c => p1.Id,
+                DMT_Line_Product_Item__c.Line__c => lineTest2.Id
+            }
+        );
+
 
 
         return lineTest2Update;
@@ -789,10 +805,10 @@ public with sharing class  DMT_Test_DataFactory {
         Account accTest1Update = [SELECT Id FROM Account WHERE Id =: accTest1.Id LIMIT 1 FOR UPDATE];
 
         DMT_Line__c testLine = DMT_UTIL.createLineRecord(
-            accTest1Update.Id,
-            DMT_UtilTestClassConstants.DEFAULT_OTHER_LINE_RECORD_TYPE_ID,
-            '00009',
             new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Client__c => accTest1Update.Id,
+                DMT_Line__c.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_OTHER_LINE_RECORD_TYPE_ID,
+                DMT_Line__c.Line_Id__c => '00009',
                 DMT_Line__c.Name => 'Test Line ',
                 DMT_Line__c.Status__c => 'Draft',
                 DMT_Line__c.DMT_Origin__c => 'AMIWEB',
@@ -818,8 +834,8 @@ public with sharing class  DMT_Test_DataFactory {
         insert listProducts;
 
         DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL.buildRiskLineTerm(
-            testLineUpdate.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => testLineUpdate.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '3',
@@ -830,8 +846,8 @@ public with sharing class  DMT_Test_DataFactory {
         );
 
         DMT_Risk_Line_Term__c rsklt2 = DMT_UTIL.buildRiskLineTerm(
-            testLineUpdate.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => testLineUpdate.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 2',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '5',
@@ -842,8 +858,8 @@ public with sharing class  DMT_Test_DataFactory {
         );
 
         DMT_Risk_Line_Term__c rsklt3 = DMT_UTIL.buildRiskLineTerm(
-            testLineUpdate.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => testLineUpdate.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 3',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '7',
@@ -860,10 +876,10 @@ public with sharing class  DMT_Test_DataFactory {
     public static void generateTestRiskApprovalLines(Id accountId){
 
         DMT_Line__c testLine = DMT_UTIL.createLineRecord(
-            accountId,
-            DMT_UtilTestClassConstants.DEFAULT_RISK_APPROVAL_LINE_RECORD_TYPE_ID,
-            '00089',
             new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Client__c => accountId,
+                DMT_Line__c.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_RISK_APPROVAL_LINE_RECORD_TYPE_ID,
+                DMT_Line__c.Line_Id__c => '00089',
                 DMT_Line__c.Name => 'Test Line ',
                 DMT_Line__c.Status__c => 'Draft',
                 DMT_Line__c.Allowed__c => true,
@@ -884,8 +900,8 @@ public with sharing class  DMT_Test_DataFactory {
         insert listProducts;
 
         DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL.createRiskLineTermRecord(
-            testLine.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => testLine.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '3',
@@ -907,10 +923,10 @@ public with sharing class  DMT_Test_DataFactory {
         Account accTest1Update = [SELECT Id FROM Account WHERE Id =: accTest1.Id LIMIT 1 FOR UPDATE];
 
         DMT_Line__c testLine = DMT_UTIL.createLineRecord(
-            accTest1Update.Id,
-            DMT_UtilTestClassConstants.DEFAULT_RISK_APPROVAL_LINE_RECORD_TYPE_ID,
-            '00089',
             new Map<Schema.SObjectField, Object>{
+                DMT_Line__c.Client__c => accTest1Update.Id,
+                DMT_Line__c.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_RISK_APPROVAL_LINE_RECORD_TYPE_ID,
+                DMT_Line__c.Line_Id__c => '000289',
                 DMT_Line__c.Name => 'Test Line ',
                 DMT_Line__c.Status__c => 'Draft',
                 DMT_Line__c.Allowed__c => true,
@@ -937,8 +953,8 @@ public with sharing class  DMT_Test_DataFactory {
         insert listProducts;
 
         DMT_Risk_Line_Term__c rsklt1 = DMT_UTIL.buildRiskLineTerm(
-            testLineUpdate.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => testLineUpdate.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 1',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '3',
@@ -949,8 +965,8 @@ public with sharing class  DMT_Test_DataFactory {
         );
 
         DMT_Risk_Line_Term__c rsklt2 = DMT_UTIL.buildRiskLineTerm(
-            testLineUpdate.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => testLineUpdate.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 2',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '5',
@@ -961,8 +977,8 @@ public with sharing class  DMT_Test_DataFactory {
         );
 
         DMT_Risk_Line_Term__c rsklt3 = DMT_UTIL.buildRiskLineTerm(
-            testLineUpdate.Id,
             new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => testLineUpdate.Id,
                 DMT_Risk_Line_Term__c.Name => 'Line test ENERGIA FINANCIACION	rsk line term 3',
                 DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
                 DMT_Risk_Line_Term__c.DMT_End_Term__c => '7',
@@ -1344,7 +1360,11 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static Custom_Association_Client__c generateCustomAssociationClient(Id caId) {
-        Custom_Association_Client__c cac = DMT_UTIL.createCustomAssociationClientRecord(caId);
+        Custom_Association_Client__c cac = DMT_UTIL.createCustomAssociationClientRecord(
+            new Map<Schema.SObjectField, Object>{
+                Custom_Association_Client__c.custom_association__c => caId
+            }
+        );
 
         return cac;
     }
