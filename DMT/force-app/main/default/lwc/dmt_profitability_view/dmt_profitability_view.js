@@ -20,18 +20,28 @@ const RWA_MARKER_SELECTOR = '[data-dmt-action="external-rwa"]';
 const RWA_MARKER_PATTERN = /<div data-dmt-action="external-rwa"[^>]*><\/div>/g;
 // Links (External RWA 1Y values to the RWA calculator) stay clickable in the modal and become plain text in the PDF.
 const LINK_PATTERN = /<a\b[^>]*>([\s\S]*?)<\/a>/gi;
-const CHART_IMAGE_WIDTH = 1400;
-const CHART_IMAGE_HEIGHT = 480;
+// Same aspect as the former modal chart (canvas 300 x 100).
+const CHART_ASPECT_RATIO = 3;
+const CHART_DEFAULT_WIDTH = 860;
 const CONTENT_CLASS = 'dmt-profitability-view-content';
-// Screen-only sizing so the renderer output looks like the former modal; never sent to the PDF.
+// Screen-only styles so the renderer output looks like the former modal (dmt_profitability_chart: slds-table
+// cell-buffer bordered at 93% zoom, headers wrapped at 120px, 160px ID with ellipsis); never sent to the PDF.
 const SCREEN_STYLE = `
     .${CONTENT_CLASS} > div > h2 { display: none; }
-    .${CONTENT_CLASS} h3 { font-size: 1.125rem !important; font-weight: 400; margin: 1rem 0 0.5rem 0 !important; }
-    .${CONTENT_CLASS} [data-dmt-table-block] { overflow-x: auto; margin-bottom: 0.5rem; }
-    .${CONTENT_CLASS} [data-dmt-table-block] table { table-layout: auto !important; width: auto !important; min-width: 100%; }
-    .${CONTENT_CLASS} [data-dmt-table-block] td { font-size: 0.8125rem !important; padding: 0.4rem 0.6rem !important; white-space: nowrap; word-break: normal !important; }
-    .${CONTENT_CLASS} [data-dmt-table-block] td:first-child { max-width: 14rem; overflow: hidden; text-overflow: ellipsis; }
-    .${CONTENT_CLASS} [data-dmt-action="external-rwa"] { float: right; margin-top: 0.75rem; }
+    .${CONTENT_CLASS} .slds-m-vertical_medium .slds-grid { font-size: 0.8125rem !important; }
+    .${CONTENT_CLASS} .slds-m-vertical_medium .slds-col:nth-child(-n+2) { font-size: 1rem; line-height: 1.25; }
+    .${CONTENT_CLASS} .slds-m-vertical_medium .slds-col { padding-bottom: 0.5rem; }
+    .${CONTENT_CLASS} h3 { font-size: 1rem !important; font-weight: 400; line-height: 1.25; margin: 1rem 0 0.25rem 0 !important; }
+    .${CONTENT_CLASS} [data-dmt-table-block] { overflow-x: auto; max-width: 100%; }
+    .${CONTENT_CLASS} [data-dmt-table-block] table { table-layout: auto !important; width: auto !important; min-width: 98%; zoom: 93%; border-collapse: collapse; }
+    .${CONTENT_CLASS} [data-dmt-table-block] td { font-size: 0.8125rem !important; line-height: 1.5; padding: 0.25rem 0.5rem !important; white-space: nowrap; word-break: normal !important; color: #181818; border-bottom: 0 !important; border-top: 1px solid #e5e5e5 !important; }
+    .${CONTENT_CLASS} [data-dmt-table-block] tr:first-child td { white-space: normal; max-width: 120px; color: #444444; vertical-align: middle; }
+    .${CONTENT_CLASS} [data-dmt-table-block] tr:last-child td { border-bottom: 1px solid #e5e5e5 !important; }
+    .${CONTENT_CLASS} [data-dmt-table-block] td:first-child { padding-left: 1.5rem !important; }
+    .${CONTENT_CLASS} [data-dmt-table-block] td:last-child { padding-right: 1.5rem !important; }
+    .${CONTENT_CLASS} [data-dmt-table-block] tr[data-dmt-row] td:first-child { width: 160px; min-width: 160px; max-width: 160px; overflow: hidden; text-overflow: ellipsis; word-break: normal !important; box-sizing: content-box; }
+    .${CONTENT_CLASS} [data-dmt-table-block] tr[data-dmt-row="underlying"] td:first-child { padding-left: 2.75rem !important; max-width: calc(160px - 1.25rem); min-width: calc(160px - 1.25rem); width: calc(160px - 1.25rem); }
+    .${CONTENT_CLASS} [data-dmt-action="external-rwa"] { float: right; margin-top: 0.5rem; }
     .${CONTENT_CLASS} img[alt="profitability"] { width: 100% !important; height: auto !important; }
 `;
 
@@ -87,7 +97,9 @@ export default class Dmt_profitability_view extends NavigationMixin(LightningEle
         try {
             await loadScript(this, chartJS);
             const chart = this.template.querySelector('c-dmt_profitability_chart');
-            const image = chart ? await chart.getChartImage(CHART_IMAGE_WIDTH, CHART_IMAGE_HEIGHT) : null;
+            // Drawn at the modal width so labels keep the size of the former live chart.
+            const width = this.template.querySelector('.profitability-view')?.clientWidth || CHART_DEFAULT_WIDTH;
+            const image = chart ? await chart.getChartImage(width, Math.round(width / CHART_ASPECT_RATIO)) : null;
             return image ? JSON.stringify([{ imgB64: image }]) : '';
         } catch (error) {
             console.error('[dmt_profitability_view] chart image error', error);
