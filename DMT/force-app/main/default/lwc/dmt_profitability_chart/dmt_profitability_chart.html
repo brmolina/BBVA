@@ -2,6 +2,8 @@
     <lightning-card if:false={hidden}>
 
 
+        <!-- CIBGLOBALD-4713 - OBSOLETE, kept commented to revert easily. The Profitability modal (dmt_passport_modal -> dmt_profitability_view) shows the HTML of DMT_OppProfitabilityRenderer (Apex, DMT_RendererFactory 'Profitability', built by DMT_Profitability_utils.renderProfitabilityHtml): tables, row order, nominals, formats and the External RWA column are edited THERE, not here. This component is now only the chart image generator (getChartImage) used by dmt_profitability_view, dmt_view_lwc, dmt_CreateHTMLAndJSONForTask, dmt_massive_snapshot_worker and pdfGenerator.
+
         <div class="slds-m-vertical_medium">
             <div class="slds-grid slds-wrap slds-m-top_x-small">
                 <template lwc:if={higherRorc}>
@@ -54,7 +56,7 @@
                         </h2>
                     </div>
 
-                    <!-- WRAPPER CON SCROLL -->
+                    
                     <div class="slds-scrollable_x" style="max-width: 100%; overflow-x: auto;">
                         <table
                             class="slds-table slds-table_cell-buffer slds-table_bordered slds-table-slds-table_cell-fixed"
@@ -127,7 +129,7 @@
                             disabled={externalRwaDisabled}
                         ></lightning-button>
                     </div>
-                    <!-- WRAPPER CON SCROLL -->
+                    
                     <div class="slds-scrollable_x" style="max-width: 100%; overflow-x: auto;">
                         <table
                             class="slds-table slds-table_cell-buffer slds-table_bordered slds-table-slds-table_cell-fixed"
@@ -188,7 +190,7 @@
                     <h2 class="slds-text-heading_small slds-m-bottom_x-small" style="color: #004481;">
                         Economic Capital
                     </h2>
-                    <!-- WRAPPER CON SCROLL -->
+                    
                     <div class="slds-scrollable_x" style="max-width: 100%; overflow-x: auto;">
                         <table
                             class="slds-table slds-table_cell-buffer slds-table_bordered slds-table-slds-table_cell-fixed"
@@ -230,6 +232,7 @@
                 </div>
             </div>
         </div>
+        -->
         <div style="margin-top:2em;">
             <canvas lwc:dom="manual" class="chart" height="100" width="300"></canvas>
             <div if:false={chartJsInitialized}>
