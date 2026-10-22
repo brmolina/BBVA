@@ -27,4 +27,4 @@ Cómo probar
 3. Pulsar Download PDF: se descarga un PDF con el mismo contenido, sin el botón.
 4. Si el botón External RWA calculate está habilitado (no aparece en gris), pulsarlo: se añade la columna External RWA 1Y en Regulatory Capital, con los valores como enlace a la calculadora RWA. Pulsar Download PDF: la columna aparece en el PDF, con los valores como texto. Si el servicio responde con error, se muestra un aviso en la parte superior del modal, no se añade la columna y el aviso no sale en el PDF.
 5. Opportunity sin datos de profitability: mensaje en el modal y Download PDF deshabilitado.
-6. Configuration > Views con el componente Profitability: sin marcador ni botón.
+6. En Configuration > Views, una vista con el componente Profitability se ve como antes: sin el botón External RWA calculate.
