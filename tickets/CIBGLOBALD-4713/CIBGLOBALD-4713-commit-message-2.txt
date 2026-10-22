@@ -1,0 +1,5 @@
+CIBGLOBALD-4713 - renderer data, order and formats identical to the former Profitability modal
+
+- DMT_OppProfitabilityRenderer: rows built like the former modal (dmt_profitability_chart): deduplication (the isLine row wins), order with each product followed by its underlyings (by orderIndex), dates, currencies and nominals (underlyings summed into their product, products into the Opportunity, a dash when there is no value). Values formatted like the modal: Average Life and Tenor with the y suffix (Tenor from term), bps, percentages, es-ES amounts and small amounts in scientific notation. RAROEC CDD column removed. ID cells break in the PDF instead of overlapping the next column. Rows marked with data-dmt-row for the modal styles.
+- dmt_profitability_view: screen styles of the former modal (table zoom, header wrapping, ID width with ellipsis, underlying indent, title sizes) and chart image drawn at the modal width, so labels keep their size.
+- DMT_ProfitabilityRendererTest: test for the modal formats, the deduplication and the row order.
