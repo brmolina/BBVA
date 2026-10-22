@@ -27,3 +27,13 @@ Work repo: create the 4711 branch from the 4713 branch (git pull origin 4713), a
 
 ## Conventions to apply (from CLAUDE.md / memory)
 Retrieve fresh before editing; callout doc comments name service, iaso record, call path and LWC; exception logging via DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(...)) + flush; tests with DMT_Test_DataFactory (generatePassport exists since 4713) and Assert class; per-ticket manifest DMT/manifest/CIBGLOBALD-4711-package.xml; technical note rules (no pending section, exact conditions and queries, org-agnostic QA steps).
+
+## Draft questions for Fátima Paterna (Epsilon, profitability_download_detail)
+Send only what DMT cannot answer from the org (re-verify in a fresh session before sending). Spanish, no closing pleasantries.
+
+1. Endpoint y entornos: URL o servicio del catálogo para cada entorno (desarrollo, pre, producción), método HTTP y si ya está publicado para el entorno de desarrollo de DMT. Quién da de alta la configuración iaso (iaso__GBL_integration_service__mdt) y con qué autenticación.
+2. Parámetros de entrada: qué identifica el cálculo de rentabilidad. En Salesforce solo guardamos del último cálculo el opportunityId de Epsilon (el mismo que enviamos al motor, DMT_Opp_Id__c, p. ej. ESCD26OPP00004148ES), el engineVersion y los productId de cada resultado; no tenemos un id de cálculo o de ejecución. ¿Basta con el opportunityId (devuelve siempre el último cálculo) o hace falta otro id, fecha o versión? ¿Se envía también el usuario (enviamos userId con el federation identifier en todas las llamadas iaso)?
+3. Respuesta: ¿devuelve el fichero CSV ya generado (texto o base64) o datos estructurados (JSON)? Ejemplo real de respuesta, incluidos los casos sin datos y de error (códigos HTTP y cuerpo).
+4. Formato del CSV: columnas y orden definitivos, cabeceras, separador (punto y coma o coma), separador decimal y de miles, formato de fechas, codificación (UTF-8 con o sin BOM) y nombre de fichero esperado.
+5. Volumen y tiempos: tamaño máximo esperado de la respuesta y tiempo de respuesta (límites de Salesforce: 12 MB de heap síncrono, 120 s de timeout por callout).
+6. Comportamiento sin cálculo: qué responde el servicio si la Opportunity no tiene cálculo o si el cálculo es antiguo respecto a lo que muestra el Passport.
