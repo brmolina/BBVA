@@ -1,6 +1,7 @@
 import { LightningElement, api, wire } from 'lwc';
 import { loadScript } from 'lightning/platformResourceLoader';
 import chartJS from '@salesforce/resourceUrl/DMT_ChartJS';
+/* CIBGLOBALD-4713 - OBSOLETE, kept commented to revert easily. The Profitability modal (dmt_passport_modal -> dmt_profitability_view) shows the HTML of DMT_OppProfitabilityRenderer (Apex, DMT_RendererFactory 'Profitability', built by DMT_Profitability_utils.renderProfitabilityHtml): tables, row order, nominals, formats and the External RWA column are edited THERE, not here. This component is now only the chart image generator (getChartImage) used by dmt_profitability_view, dmt_view_lwc, dmt_CreateHTMLAndJSONForTask, dmt_massive_snapshot_worker and pdfGenerator.
 import getProductDetailsByIds from '@salesforce/apex/DMT_Profitability_utils.getProductDetailsByIds';
 import getNominalAmountsByOpportunityLineItemIds from '@salesforce/apex/DMT_Profitability_utils.getNominalAmountsByOpportunityLineItemIds';
 import convertNominalsToOppCurrency from '@salesforce/apex/DMT_Profitability_utils.convertNominalsToOppCurrency';
@@ -12,10 +13,12 @@ import OPP_NAME from '@salesforce/schema/Opportunity.Name';
 import { getRecord } from 'lightning/uiRecordApi';
 
 const OPP_FIELDS = [OPP_NAME];
+*/
 
 export default class Dmt_profitability_chart extends LightningElement {
     chart;
     chartJsInitialized = false;
+    /* CIBGLOBALD-4713 - OBSOLETE, kept commented to revert easily. The Profitability modal (dmt_passport_modal -> dmt_profitability_view) shows the HTML of DMT_OppProfitabilityRenderer (Apex, DMT_RendererFactory 'Profitability', built by DMT_Profitability_utils.renderProfitabilityHtml): tables, row order, nominals, formats and the External RWA column are edited THERE, not here. This component is now only the chart image generator (getChartImage) used by dmt_profitability_view, dmt_view_lwc, dmt_CreateHTMLAndJSONForTask, dmt_massive_snapshot_worker and pdfGenerator.
     table1Data = [];
     table2Data = [];
     table3Data = [];
@@ -32,6 +35,7 @@ export default class Dmt_profitability_chart extends LightningElement {
     _cachedNominalMap = null;
     _cachedNominalMapConverted = null;
     _cachedUnderlyingMap = null;
+    */
 
     @api hidden = false;
     @api backgroundColor = '#ffffff';
@@ -39,6 +43,7 @@ export default class Dmt_profitability_chart extends LightningElement {
     @api profitability;
     @api opportunityId;
 
+    /* CIBGLOBALD-4713 - OBSOLETE, kept commented to revert easily. The Profitability modal (dmt_passport_modal -> dmt_profitability_view) shows the HTML of DMT_OppProfitabilityRenderer (Apex, DMT_RendererFactory 'Profitability', built by DMT_Profitability_utils.renderProfitabilityHtml): tables, row order, nominals, formats and the External RWA column are edited THERE, not here. This component is now only the chart image generator (getChartImage) used by dmt_profitability_view, dmt_view_lwc, dmt_CreateHTMLAndJSONForTask, dmt_massive_snapshot_worker and pdfGenerator.
     recordOpportunity;
     cachedOppNameFromApex;
 
@@ -168,6 +173,7 @@ export default class Dmt_profitability_chart extends LightningElement {
         }
     }
 
+    */
     renderedCallback() {
         if (this.chartJsInitialized) {
             return;
@@ -189,8 +195,11 @@ export default class Dmt_profitability_chart extends LightningElement {
         }
     }
 
+    // CIBGLOBALD-4713 - fixedSize (optional, used by dmt_profitability_view) draws the image at exactly width x height
+    // (not resized to the page), so its labels keep the size of the former live chart.
+    // Without it the behaviour is unchanged for the other callers. The third parameter is ignored (pdfGenerator passes it).
     @api
-    getChartImage(width = 200, height = 50) {
+    getChartImage(width = 200, height = 50, unusedParams, fixedSize = false) {
         return new Promise((resolve, reject) => {
             const canvas = document.createElement("canvas");
             const ctx = canvas.getContext('2d');
@@ -201,7 +210,11 @@ export default class Dmt_profitability_chart extends LightningElement {
             canvas.setAttribute("width", width || 200);
             canvas.setAttribute("height", height || 50);
 
-            let chart = new window.Chart(ctx, this.renderChart())
+            const config = this.renderChart();
+            if (fixedSize) {
+                config.options = { ...config.options, responsive: false, maintainAspectRatio: false };
+            }
+            let chart = new window.Chart(ctx, config)
             canvas.remove();
             resolve(chart.toBase64Image());
         });
@@ -223,6 +236,7 @@ export default class Dmt_profitability_chart extends LightningElement {
         return imgBase64;
     }
 
+    /* CIBGLOBALD-4713 - OBSOLETE, kept commented to revert easily. The Profitability modal (dmt_passport_modal -> dmt_profitability_view) shows the HTML of DMT_OppProfitabilityRenderer (Apex, DMT_RendererFactory 'Profitability', built by DMT_Profitability_utils.renderProfitabilityHtml): tables, row order, nominals, formats and the External RWA column are edited THERE, not here. This component is now only the chart image generator (getChartImage) used by dmt_profitability_view, dmt_view_lwc, dmt_CreateHTMLAndJSONForTask, dmt_massive_snapshot_worker and pdfGenerator.
     formatBps(value) {
         const numeric = parseFloat(value ?? 0);
         return `${numeric.toFixed(0)} bps`;
@@ -651,6 +665,7 @@ export default class Dmt_profitability_chart extends LightningElement {
         return { table1, table2, table3 };
     }
 
+    */
     extractChartData(jsonData) {
         const results = jsonData.results;
         const labels = [];

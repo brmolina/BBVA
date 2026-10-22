@@ -99,7 +99,7 @@ export default class Dmt_profitability_view extends NavigationMixin(LightningEle
             const chart = this.template.querySelector('c-dmt_profitability_chart');
             // Drawn at the modal width so labels keep the size of the former live chart.
             const width = this.template.querySelector('.profitability-view')?.clientWidth || CHART_DEFAULT_WIDTH;
-            const image = chart ? await chart.getChartImage(width, Math.round(width / CHART_ASPECT_RATIO)) : null;
+            const image = chart ? await chart.getChartImage(width, Math.round(width / CHART_ASPECT_RATIO), null, true) : null;
             return image ? JSON.stringify([{ imgB64: image }]) : '';
         } catch (error) {
             console.error('[dmt_profitability_view] chart image error', error);
