@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- CIBGLOBALD-4713 - second commit only (renderer parity with the former Profitability modal). The first commit was already done.
-     Order: renderer, its test, then the LWCs (independent of each other).
-     dmt_profitability_modal is deleted by the user in the work repo (not listed here). -->
+<!-- CIBGLOBALD-4713 - third commit only (first and second commits already done).
+     Order arbitrary (independent LWCs). dmt_profitability_modal is deleted by the user in the work repo (not listed here). -->
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
-    <types>
-        <members>DMT_OppProfitabilityRenderer</members>
-        <members>DMT_ProfitabilityRendererTest</members>
-        <name>ApexClass</name>
-    </types>
     <types>
         <members>dmt_profitability_chart</members>
         <members>dmt_profitability_view</members>
