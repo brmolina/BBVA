@@ -1,5 +1,6 @@
 import { LightningElement, api, wire } from "lwc";
 import DMT_RecalcuationLine from "@salesforce/label/c.dmt_cl_recalculationLine";
+import DES_lbl_SurveyWUTFeedback from "@salesforce/label/c.DES_lbl_SurveyWUTFeedback";
 import { CurrentPageReference } from "lightning/navigation";
 import { NavigationMixin } from "lightning/navigation";
 import launchDealManagement from "@salesforce/apex/DMT_LaunchDealManagementService.launchDealManagement";
@@ -9,7 +10,7 @@ import getSalesforceAccountIdsByCustomerIds from "@salesforce/apex/DMT_HPG_MainT
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const FIELDS_LINES = ["countType", "line", "originGroup"];
 const FIELDS_OPPS = ["countType", "opp"];
-const FIELDS_PROFI = ["ClientId", "groupCode", "clientType"];
+const FIELDS_PROFI = ["ClientId", "groupCode", "clientType", "originId"];
 const FIELDS_WORKSPACE = [
     "UserInfo", "originId", "returnedDate", "groupName",
     "groupCode", "originGroup", "OppAccess", "hasOpportunityListAccess", "clientType", "ClientId","taxpayerId"
@@ -141,7 +142,9 @@ export default class DmtDealManagementWorkspace extends NavigationMixin(Lightnin
                 productSelected: pageRef.state.c__productSelected,
                 oppSelected: pageRef.state.c__oppSelected,
                 ClientId: this.workspaceInput?.ClientId,
-                groupCode: this.workspaceInput?.groupCode
+                groupCode: this.workspaceInput?.groupCode,
+                clientType: this.workspaceInput?.clientType,
+                originId: this.workspaceInput?.originId
             };
         }
 
@@ -306,7 +309,12 @@ export default class DmtDealManagementWorkspace extends NavigationMixin(Lightnin
     
     handleRefreshPage() {
         window.location.reload();
-    }    
+    }
+
+    /** CIBGLOBALD-4295 - Opens the WUT proactive feedback form (custom label DES_lbl_SurveyWUTFeedback) in a new tab, same as dmt_highlight_panel. */
+    handleFeedbackClick() {
+        window.open(DES_lbl_SurveyWUTFeedback, '_blank', 'noopener,noreferrer');
+    }
 
     handleOpenScheduleSummaryModal() {
         this.showScheduleSummaryModal = true;
@@ -346,7 +354,6 @@ export default class DmtDealManagementWorkspace extends NavigationMixin(Lightnin
             return;
         }
 
-        // Update the state variable immediately so subsequent clicks check against this new node
         this.currentSelectedCode = newCode;
 
         if (isClientNode) {
@@ -390,7 +397,6 @@ export default class DmtDealManagementWorkspace extends NavigationMixin(Lightnin
             this.scopeToClient = false;
         }
 
-        this.profiMgmtInput["ClientId"] = clientId;
         this.profiMgmtInput = { ...this.profiMgmtInput, productSelected: "", oppSelected: "" };
         this.sourceDataLoaded = false;
         
