@@ -25,6 +25,6 @@ Cómo probar
    y escribir Profitability Engine en Filter results: solo quedan los Passport que tienen ese feature. Para probar también underlyings, escribir underlyingId en Filter results. Abrir la Opportunity (Opportunity__c) y pulsar el semáforo de Profitability Engine en el Passport.
 2. Comprobar que tablas, valores, orden de filas y gráfico son iguales que antes, con el botón External RWA calculate en su sitio y scroll horizontal por tabla.
 3. Pulsar Download PDF: se descarga un PDF con el mismo contenido, sin el botón.
-4. En una Opportunity con branch habilitado en DMT_Taxonomy_Value_link__mdt, pulsar External RWA calculate: aparece la columna External RWA 1Y con enlace; en el PDF sale como texto. Si el servicio responde error, se muestra un aviso y no se añade la columna.
+4. Si el botón External RWA calculate está habilitado (no aparece en gris), pulsarlo: se añade la columna External RWA 1Y en Regulatory Capital, con los valores como enlace a la calculadora RWA. Pulsar Download PDF: la columna aparece en el PDF, con los valores como texto. Si el servicio responde con error, se muestra un aviso en la parte superior del modal, no se añade la columna y el aviso no sale en el PDF.
 5. Opportunity sin datos de profitability: mensaje en el modal y Download PDF deshabilitado.
 6. Configuration > Views con el componente Profitability: sin marcador ni botón.
