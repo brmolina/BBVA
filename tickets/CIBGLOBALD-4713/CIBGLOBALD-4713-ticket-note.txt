@@ -22,7 +22,7 @@ Decisiones
 Cómo probar
 1. Buscar una Opportunity cuyo Passport tenga el feature Profitability Engine calculado. El JSON del Passport (Passport__c.DMT_Passport_Save__c, long text area) no se puede filtrar en SOQL, así que en Salesforce Inspector (Data Export) ejecutar:
    SELECT Id, Opportunity__c, Opportunity__r.Name, Opportunity__r.DMT_Opp_Id__c, DMT_Passport_Save__c FROM Passport__c WHERE Opportunity__c != null AND DMT_Is_Obsoleted_Passport_Save__c = false ORDER BY LastModifiedDate DESC
-   y escribir totalYears en Filter results: solo quedan los Passport con resultados del Profitability Engine (la clave totalYears solo existe en los resultados calculados). Para probar también underlyings, escribir underlyingId en Filter results. Abrir la Opportunity (Opportunity__c) y pulsar el semáforo de Profitability Engine en el Passport.
+   y escribir Profitability Engine en Filter results: solo quedan los Passport que tienen ese feature. Para probar también underlyings, escribir underlyingId en Filter results. Abrir la Opportunity (Opportunity__c) y pulsar el semáforo de Profitability Engine en el Passport.
 2. Comprobar que tablas, valores, orden de filas y gráfico son iguales que antes, con el botón External RWA calculate en su sitio y scroll horizontal por tabla.
 3. Pulsar Download PDF: se descarga un PDF con el mismo contenido, sin el botón.
 4. En una Opportunity con branch habilitado en DMT_Taxonomy_Value_link__mdt, pulsar External RWA calculate: aparece la columna External RWA 1Y con enlace; en el PDF sale como texto. Si el servicio responde error, se muestra un aviso y no se añade la columna.
