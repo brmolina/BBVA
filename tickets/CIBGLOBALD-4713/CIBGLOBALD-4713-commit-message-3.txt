@@ -1,0 +1,5 @@
+CIBGLOBALD-4713 - dmt_profitability_chart only generates the chart image, dmt_profitability_modal deleted
+
+- dmt_profitability_chart: obsolete tables (HTML), data loading (Apex calls, record wire, refreshTables), formats and External RWA logic commented out, not deleted, with a note pointing to DMT_OppProfitabilityRenderer, where the Profitability tables are edited now. The component is only the chart image generator used by dmt_profitability_view, dmt_view_lwc, dmt_CreateHTMLAndJSONForTask, dmt_massive_snapshot_worker and pdfGenerator. getChartImage gets an optional fourth parameter fixedSize that draws the image at the exact requested size instead of the page width; the other callers do not pass it and are unchanged.
+- dmt_profitability_view: calls getChartImage with fixedSize, so the chart labels keep the size of the former modal.
+- dmt_profitability_modal: deleted (old Open Profitability Engine LWC, not referenced by any component or Lightning page).
