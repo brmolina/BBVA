@@ -213,6 +213,72 @@ public with sharing class DMT_ProfitabilityRendererTest {
         Assert.isTrue(result.contains('<img alt="profitability"'), 'Browser chart image expected');
     }
 
+    // CIBGLOBALD-4713 - Same data, order and formats as the former Profitability modal (dmt_profitability_chart).
+    @isTest
+    static void testOppProfitabilityRenderer_modalFormatsAndOrder() {
+        Opportunity opp = [
+            SELECT Id, RecordTypeId, Name, DMT_CurrencyText__c, DMT_DATE_Initial_Date__c, DMT_DATE_Maturity_Date__c,
+                   (SELECT Id FROM OpportunityLineItems)
+            FROM Opportunity
+            LIMIT 1
+        ];
+        DMT_ViewController.LineDataWrapper data = new DMT_ViewController.LineDataWrapper();
+        data.recordTypeId = opp.RecordTypeId;
+        data.opportunity = opp;
+        data.currencyIsoCode = 'EUR';
+        data.isImg64 = false;
+        data.featuresList = new List<Map<String, Object>>{
+            new Map<String, Object>{ 'profitability' => new Map<String, Object>{
+                'audit' => new Map<String, Object>{ 'rorcThreshold' => 0.10, 'raroecThreshold' => 0.20 },
+                'results' => new List<Object>{
+                    new Map<String, Object>{ 'productId' => 'P1', 'underlyingId' => 'U2', 'rorc' => 0.02 },
+                    new Map<String, Object>{ 'rorc' => 0.12, 'raroec' => 0.05, 'rorcProspected' => -0.0036, 'clientRorc' => 0.09 },
+                    new Map<String, Object>{ 'productId' => 'P1', 'averageLife' => 2.5, 'term' => 3, 'allInDb' => 17.6,
+                        'taxRate' => 30, 'incomes12Months' => -0.000447, 'BDIReg' => 12345.678, 'franchiseDeal' => -0.01 },
+                    new Map<String, Object>{ 'productId' => 'P1', 'isLine' => true, 'averageLife' => 2.91, 'term' => 1.17,
+                        'allInDb' => 18, 'taxRate' => 30, 'incomes12Months' => -0.000447, 'BDIReg' => 12345.678,
+                        'regulatoryCcf' => null, 'raroec' => -2.17 },
+                    new Map<String, Object>{ 'productId' => 'P1', 'underlyingId' => 'U1', 'rorc' => 0.01 },
+                    new Map<String, Object>{ 'productId' => 'P2', 'rorc' => 0.03 }
+                }
+            } }
+        };
+        data.profitabilityProductDetailsList = new List<Map<String, Object>>{
+            new Map<String, Object>{
+                'gf_group_priority_opportunity_id__c' => 'P1', 'Name' => 'Leasing Facility', 'Currency' => 'EUR',
+                'InitialDate' => Date.newInstance(2026, 9, 28), 'MaturityDate' => Date.newInstance(2026, 12, 28),
+                'OppInitialDate' => Date.newInstance(2026, 9, 28), 'OppMaturityDate' => Date.newInstance(2026, 12, 28), 'OppCurrency' => 'EUR'
+            }
+        };
+        data.profitabilityNominalAmountsMap = new Map<String, Map<String, Object>>{
+            'P1' => new Map<String, Object>{ 'nominalDb' => 1500000, 'nominalFb' => null }
+        };
+
+        Test.startTest();
+        String result = new DMT_ProfitabilityRenderer().renderHtml(data);
+        Test.stopTest();
+
+        Assert.isTrue(result.contains('-0.36 %'), 'Percent with 2 decimals: ' + result.left(400));
+        Assert.isTrue(result.contains('12.00 % &gt; 10.00 %'), 'Above the threshold uses >');
+        Assert.isTrue(result.contains('5.00 % &lt; 20.00 %'), 'Below the threshold uses <');
+        Assert.isTrue(result.contains('2.91y') && result.contains('1.17y'), 'isLine row wins, years with y suffix, Tenor from term');
+        Assert.isFalse(result.contains('2.50y'), 'Duplicated non-line product row is dropped');
+        Assert.isTrue(result.contains('18 bps') && result.contains('0 bps'), 'bps without decimals, empty as 0');
+        Assert.isTrue(result.contains('30.00 %'), 'Tax rate');
+        Assert.isTrue(result.contains('-4.47e-4 EUR'), 'Small amounts in scientific notation');
+        Assert.isTrue(result.contains('12.345,68 EUR'), 'es-ES grouping and up to 2 decimals');
+        Assert.isTrue(result.contains('0.00 %'), 'Empty CCF counts as 0');
+        Assert.isTrue(result.contains('2026-09-28'), 'Product dates');
+        Assert.isTrue(result.contains(EMPTY_DASH), 'Missing nominals and dates shown as a dash');
+        Assert.isFalse(result.contains('RAROEC CDD'), 'No RAROEC CDD column, as in the modal');
+        Integer productIndex = result.indexOf('Leasing Facility');
+        Assert.isTrue(productIndex > -1 && result.indexOf('>U2<') > productIndex && result.indexOf('>U1<') > productIndex, 'Underlyings after their product');
+        Assert.isTrue(result.indexOf('>U2<') < result.indexOf('>U1<'), 'Underlyings without orderIndex keep the source order');
+        Assert.isTrue(result.contains('data-dmt-row="underlying"'), 'Underlying rows are marked for the modal styles');
+    }
+
+    private static final String EMPTY_DASH = '—';
+
     // CIBGLOBALD-4713 - Other views (no modal request) never get the marker or the column.
     @isTest
     static void testOppProfitabilityRenderer_noModalMarker() {

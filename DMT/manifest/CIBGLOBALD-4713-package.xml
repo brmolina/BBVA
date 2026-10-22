@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- CIBGLOBALD-4713 - Profitability modal shows the Profitability renderer HTML + Download PDF.
-     Order: Apex first (DMT_Test_DataFactory and DMT_ViewController before the classes that use their new members), then LWC (dmt_profitability_view before dmt_passport_modal). -->
+<!-- CIBGLOBALD-4713 - second commit only (renderer parity with the former Profitability modal). The first commit was already done.
+     Order: renderer, its test, then the LWC (independent of each other). -->
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
-        <members>DMT_Test_DataFactory</members>
-        <members>DMT_ViewController</members>
-        <members>DMT_Profitability_utils</members>
         <members>DMT_OppProfitabilityRenderer</members>
-        <members>DMT_Profitability_utilsTest</members>
         <members>DMT_ProfitabilityRendererTest</members>
-        <members>DMT_ViewController_Test</members>
         <name>ApexClass</name>
     </types>
     <types>
         <members>dmt_profitability_view</members>
-        <members>dmt_passport_modal</members>
         <name>LightningComponentBundle</name>
     </types>
     <version>65.0</version>

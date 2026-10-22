@@ -1,0 +1,25 @@
+Nota técnica CIBGLOBALD-4713
+
+Qué se ha hecho
+- El modal de Profitability del Passport de Opportunity (LWC dmt_passport_modal) ya no pinta sus propias tablas: muestra el HTML del renderer de Profitability (DMT_OppProfitabilityRenderer, vía DMT_RendererFactory), el mismo que usan las vistas NBC. Pantalla, vistas NBC y PDF salen de una única implementación; los cambios futuros se hacen solo en el renderer.
+- El renderer reproduce exactamente los datos y el formato del modal anterior: mismas filas y orden (cada producto seguido de sus underlyings), mismas fechas, notionals, importes, porcentajes y bps, y las mismas columnas en Summary, Regulatory Capital y Economic Capital.
+- Nuevo LWC dmt_profitability_view dentro del modal: llama a DMT_Profitability_utils.renderProfitabilityHtml, genera la imagen del gráfico en el navegador (dmt_profitability_chart, Chart.js) y la envía a Apex para que el renderer la incluya. En pantalla aplica los estilos del modal anterior (tamaños, scroll horizontal por tabla, columna ID).
+- Botón Download PDF en el footer del modal, a la derecha de Close, con icono de descarga. El PDF se genera bajo demanda con DMT_PdfService a partir del HTML visible; no recalcula ni modifica datos. El botón se deshabilita mientras carga o descarga, y se muestra un mensaje si falla.
+- External RWA calculate se mantiene en el mismo sitio. El renderer deja un marcador vacío (solo cuando lo pide el modal) y el LWC inserta el botón. Al pulsarlo, Apex llama al servicio DMTO_ExternalOrchestrators (iaso__GBL_integration_service__mdt DMTO_ExternalOrchestrators) y el renderer añade la columna External RWA 1Y con enlace a la calculadora RWA (DMT_Taxonomy_Value_link__mdt por branch de la Opportunity). Si el servicio responde error, se muestra un aviso y no se añade la columna. En el PDF no aparece el botón y los enlaces salen como texto.
+- DMT_ViewController: tres campos nuevos en LineDataWrapper (valores RWA, datos del enlace, flag del marcador). La precarga de datos de profitability pasa a DMT_Profitability_utils.preloadProfitabilityData, compartida por ambos.
+- DMT_Profitability_utils pasa a without sharing.
+- DMT_Test_DataFactory: nuevo método generatePassport.
+
+Decisiones
+- Datos: JSON guardado del Passport (Passport__c.DMT_Passport_Save__c), el mismo que ya mostraba el modal. La Opportunity se lee con la query existente DMT_View_Selector.getOpportunityWithRelatedData; no hay queries nuevas.
+- Gráfico: se sigue generando en el navegador. La generación en servidor (DMT_ProfitabilityChartGenerator) queda como fallback mientras termina su migración.
+- Download PDF va en el footer del modal, junto a Close.
+- Las demás entradas a las vistas (View List, Configuration > Views, modal de tareas, snapshots) no reciben marcador ni botón.
+
+Cómo probar
+1. Abrir una Opportunity con datos de profitability (varios productos y underlyings) y pulsar el semáforo de Profitability Engine en el Passport.
+2. Comprobar que tablas, valores, orden de filas y gráfico son iguales que antes, con el botón External RWA calculate en su sitio y scroll horizontal por tabla.
+3. Pulsar Download PDF: se descarga un PDF con el mismo contenido, sin el botón.
+4. En una Opportunity con branch habilitado en DMT_Taxonomy_Value_link__mdt, pulsar External RWA calculate: aparece la columna External RWA 1Y con enlace; en el PDF sale como texto. Si el servicio responde error, se muestra un aviso y no se añade la columna.
+5. Opportunity sin datos de profitability: mensaje en el modal y Download PDF deshabilitado.
+6. Configuration > Views con el componente Profitability: sin marcador ni botón.

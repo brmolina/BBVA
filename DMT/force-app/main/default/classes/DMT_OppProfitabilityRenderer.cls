@@ -1,5 +1,34 @@
 public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRenderer {
 
+    private static final String CELL_STYLE = 'padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px';
+    private static final String HEADER_CELL_STYLE = 'padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px';
+    // ID cells break anywhere so long Salesforce Ids do not overlap the next column in the PDF.
+    private static final String ID_CELL_STYLE = 'border-bottom: 1px solid #ccc; word-wrap:break-word; word-break:break-all; font-size: 6px';
+    private static final String EMPTY_VALUE = '—';
+
+    /**
+     * CIBGLOBALD-4713 - One table row, with the same data, deduplication, order and formats as the former
+     * Profitability modal (dmt_profitability_chart: normalizeProfitabilityResults, processProfitabilityData,
+     * buildOrderedRows), which is the reference for this renderer.
+     */
+    private class ProfitabilityRow {
+        Map<String, Object> result;
+        Boolean isOpportunity = false;
+        String productId;
+        String underlyingId;
+        Integer sourceIndex;
+        Integer underlyingOrderIndex;
+        String id = '';
+        String initialDate = EMPTY_VALUE;
+        String maturityDate = EMPTY_VALUE;
+        String rowCurrency = '';
+        String amountCurrency = '';
+        String nominalDb = EMPTY_VALUE;
+        String nominalFb = EMPTY_VALUE;
+        Decimal nominalDbValue;
+        Decimal nominalFbValue;
+    }
+
     /**
      * Renders HTML for the Opportunity Profitability feature.
      * @param data The LineDataWrapper containing featuresList.
@@ -20,331 +49,110 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
         List<Object> results = (List<Object>)profitability.get('results');
         Map<String, Object> audit = profitability.containsKey('audit') && profitability.get('audit') != null ? (Map<String, Object>) profitability.get('audit') : new Map<String, Object>();
 
-        Object rorcThreshold = audit.get('rorcThreshold');
-        Object raroecThreshold = audit.get('raroecThreshold');
         if (results == null || results.isEmpty()) {
             return '<div class="error-message">no Profitability results found.</div>';
         }
         try {
-            String currencyIsoCode = !String.isBlank(data.opportunity.DMT_CurrencyText__c) ? data.opportunity.DMT_CurrencyText__c : data.currencyIsoCode;
-
-            List<Map<String, Object>> productDetailsList = data.profitabilityProductDetailsList;
-            Map<String, Map<String, Object>> nominalAmountsMap = data.profitabilityNominalAmountsMap;
-            Map<String, Map<String, Object>> nominalAmountsConvertedMap = data.profitabilityNominalAmountsConvertedMap;
-
-            Map<String, Map<String, Object>> prodDetailsMap = new Map<String, Map<String, Object>>();
-
-            String oppInitialDate = formatDateIso(data.opportunity.DMT_DATE_Initial_Date__c);
-            String oppMaturityDate = formatDateIso(data.opportunity.DMT_DATE_Maturity_Date__c);
-
-            String opportunityCurrency = currencyIsoCode;
-            Decimal opportunityNominalDb = 0;
-            Decimal opportunityNominalFb = 0;
-
-            for (Map<String, Object> productDetail : productDetailsList) {
-                String productKey = String.valueOf(productDetail.get('gf_group_priority_opportunity_id__c'));
-
-                if (String.isBlank(productKey)) {
-                    continue;
-                }
-
-                Map<String, Object> rawNominals = nominalAmountsMap.get(productKey);
-                Map<String, Object> convertedNominals = nominalAmountsConvertedMap.get(productKey);
-
-                Decimal rawNominalDb = 0;
-                Decimal rawNominalFb = 0;
-
-                if (rawNominals != null) {
-                    Decimal rawDbValue = toDecimal(rawNominals.get('nominalDb'));
-                    Decimal rawFbValue = toDecimal(rawNominals.get('nominalFb'));
-
-                    rawNominalDb = rawDbValue != null ? rawDbValue : 0;
-                    rawNominalFb = rawFbValue != null ? rawFbValue : 0;
-                }
-
-                if (convertedNominals != null) {
-                    Decimal convertedDbValue = toDecimal(convertedNominals.get('nominalDb'));
-                    Decimal convertedFbValue = toDecimal(convertedNominals.get('nominalFb'));
-
-                    Decimal rawDbValue = toDecimal(rawNominals != null ? rawNominals.get('nominalDb') : null);
-                    Decimal rawFbValue = toDecimal(rawNominals != null ? rawNominals.get('nominalFb') : null);
-
-                    if (rawFbValue != null && rawFbValue > 0) {
-                        opportunityNominalFb += convertedFbValue != null ? convertedFbValue : 0;
-                    } else {
-                        opportunityNominalDb += convertedDbValue != null ? convertedDbValue : 0;
-                    }
-                }
-
-                Map<String, Object> details = new Map<String, Object>();
-                details.put('Id', productKey);
-                details.put('Name', productDetail.get('Name'));
-                details.put('InitialDate', productDetail.get('InitialDate'));
-                details.put('MaturityDate', productDetail.get('MaturityDate'));
-                details.put('Currency', productDetail.get('Currency'));
-                details.put('NominalDb', rawNominalDb);
-                details.put('NominalFb', rawNominalFb);
-
-                prodDetailsMap.put(productKey, details);
-
-                if (productDetail.containsKey('Id') && productDetail.get('Id') != null) {
-                    prodDetailsMap.put(String.valueOf(productDetail.get('Id')), details);
-                }
-
-                if (productDetail.containsKey('OppCurrency') && productDetail.get('OppCurrency') != null) {
-                    opportunityCurrency = String.valueOf(productDetail.get('OppCurrency'));
-                }
-            }
-            
-            // Underlyings share the productId of their parent Line, so their names are registered by underlyingId
-            // (same source as the Profitability modal: DMT_Profitability_utils.getUnderlyingDetailsByIds)
-            List<String> underlyingIds = new List<String>();
-            for (Object rec : results) {
-                Map<String, Object> resultRow = (Map<String, Object>) rec;
-                if (resultRow.get('underlyingId') != null) {
-                    underlyingIds.add(String.valueOf(resultRow.get('underlyingId')));
-                }
-            }
-            if (!underlyingIds.isEmpty()) {
-                try {
-                    Map<String, Map<String, Object>> underlyingDetails = DMT_Profitability_utils.getUnderlyingDetailsByIds(underlyingIds);
-                    for (String underlyingId : underlyingDetails.keySet()) {
-                        prodDetailsMap.put(underlyingId, new Map<String, Object>{ 'Name' => underlyingDetails.get(underlyingId).get('Name') });
-                    }
-                } catch (Exception e) {
-                    // Do not break the whole section: underlying rows fall back to the raw underlyingId
-                    System.debug(LoggingLevel.WARN, 'Error resolving underlying names: ' + e.getMessage());
-                }
-            }
-
-            String html = '';
-            html += '<div>' + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">Profitability Engine</h2>' + '<div class="slds-scope">';
-            Map<String, Object> summary;
-            for (Object rec : results) {
-                Map<String, Object> mapRec = (Map<String, Object>)rec;
-                if (!mapRec.containsKey('productId') || mapRec.get('productId') == null) {
-                    summary = mapRec;
-                    break;
-                }
-            }
-            if (summary == null) {
-                summary = new Map<String, Object>();
-            }
-
-            List<Object> orderedResults = orderProfitabilityResults(results);
+            List<ProfitabilityRow> rows = buildRows(results, data);
             // CIBGLOBALD-4713 - 'External RWA 1Y' column only when the Profitability modal requested the
             // External RWA service and it returned values (same rule as the former modal code).
             Boolean showExternalRwa = data.profitabilityAprsByProductId != null && !data.profitabilityAprsByProductId.isEmpty();
 
-            String rorcDisplay = formatProfitabilityMetric(summary.get('rorc'), rorcThreshold);
-            String raroecDisplay = formatProfitabilityMetric(summary.get('raroec'), raroecThreshold);
-
-            html += '<div class="slds-m-vertical_medium">'
-                + '<div class="slds-grid slds-wrap slds-m-top_small" style="font-size: 14px;">'
-
-                + '<div class="slds-col slds-size_1-of-2 slds-p-bottom_small">'
-                + '<strong>Deal RORC lifetime:</strong> ' + rorcDisplay
-                + '</div>'
-
-                + '<div class="slds-col slds-size_1-of-2 slds-p-bottom_small">'
-                + '<strong>Deal RAROEC lifetime:</strong> ' + raroecDisplay
-                + '</div>'
-
-                + '<div class="slds-col slds-size_1-of-2 slds-p-bottom_small">'
-                + '<strong>RORC Prospective CDD:</strong> '
-                + DMT_FormattingUtils.formatPercent(summary.get('rorcProspected'))
-                + '</div>'
-
-                + '<div class="slds-col slds-size_1-of-2 slds-p-bottom_small">'
-                + '<strong>Global Expected RORC:</strong> '
-                + DMT_FormattingUtils.formatPercent(summary.get('clientRorc'))
-                + '</div>'
-
-                + '</div>'
-    + '</div>';
+            String html = '';
+            html += '<div>' + '<h2 style="font-size: 18px; color: #004481; margin-bottom: 10px; font-weight: bold">Profitability Engine</h2>' + '<div class="slds-scope">';
+            html += renderHeaderMetrics(results, audit);
 
             html += '<div>'
-            + '<h3 style="font-size: 16px; color: #004481; margin-bottom: 10px;">Summary</h3>'
-            + '<div data-dmt-table-block="summary" style="width:100%;">'
-            + '<table class="style-table" style="width:100%; border-collapse: collapse; table-layout:fixed; word-break:break-word;">'
-                        + '<tr>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>ID</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Initial Date</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Maturity Date</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Average Life</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Tenor</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Allin Drawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Allin Undrawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Spread Drawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Spread Undrawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Fees Drawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Fees Undrawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>FC Drawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>FC Undrawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Country Risk Drawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Country Risk Undrawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Expected Loss</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Tax Rate</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>FD</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Incomes 12 months</strong></td>'
-                        + '</tr>';
-                        for(Object result : orderedResults){
-                            Map<String, Object> row = (Map<String, Object>) result;
-                            Boolean isSummary = isSummaryRow(row);
-                            String rowStyle = getRowClassStyle(isSummary);
-
-                            String oppId = getRowName(row, prodDetailsMap, data.opportunity);
-                            String initialDate = getRowInitialDate(row, prodDetailsMap, oppInitialDate);
-                            String maturityDate = getRowMaturityDate(row, prodDetailsMap, oppMaturityDate);
-                            String rowCurrency = getRowCurrency(row, prodDetailsMap, currencyIsoCode);
-
-                            html += '<tr style="' + rowStyle + '">'
-                                + '<td style="padding: 8px; ' + getIdCellIndent(row) + 'border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + DMT_FormattingUtils.checkNull(oppId) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + DMT_FormattingUtils.checkNull(initialDate) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + DMT_FormattingUtils.checkNull(maturityDate) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatDecimalLikeModal(row.get('averageLife')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatDecimalLikeModal(row.get('tenor')) + '</td>'                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('allInDb')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('allInFb')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('spreadDbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('spreadFbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('feesDbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('feesFbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('fundingDbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('fundingFbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('countryRiskProvisionDbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('countryRiskProvisionFbPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatBpsLikeModal(row.get('expectedLossPbs')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatPercentFromWhole(row.get('taxRate')) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatCurrencyAmountLikeModal(row.containsKey('franchiseDeal') ? row.get('franchiseDeal') : 0, rowCurrency) + '</td>'
-                                + '<td style="padding: 8px; border-bottom: 1px solid #ccc; font-size: 6px">' + formatCurrencyAmountLikeModal(row.get('incomes12Months'), rowCurrency) + '</td>'
-                            + '</tr>';
-                        }
-                html += '</table></div>'
+                + '<h3 style="font-size: 16px; color: #004481; margin-bottom: 10px;">Summary</h3>'
+                + '<div data-dmt-table-block="summary" style="width:100%;">'
+                + '<table class="style-table" style="width:100%; border-collapse: collapse; table-layout:fixed; word-break:break-word;">'
+                + renderHeaderRow(new List<String>{
+                    'ID', 'Initial Date', 'Maturity Date', 'Average Life', 'Tenor', 'Allin Drawn', 'Allin Undrawn',
+                    'Spread Drawn', 'Spread Undrawn', 'Fees Drawn', 'Fees Undrawn', 'FC Drawn', 'FC Undrawn',
+                    'Country Risk Drawn', 'Country Risk Undrawn', 'Expected Loss', 'Tax Rate', 'FD', 'Incomes 12 months'
+                });
+            for (ProfitabilityRow row : rows) {
+                Map<String, Object> r = row.result;
+                html += renderRow(row, new List<String>{
+                    row.initialDate,
+                    row.maturityDate,
+                    formatYears(r.get('averageLife')),
+                    formatYears(r.get('term')),
+                    formatBps(r.get('allInDb')),
+                    formatBps(r.get('allInFb')),
+                    formatBps(r.get('spreadDbPbs')),
+                    formatBps(r.get('spreadFbPbs')),
+                    formatBps(r.get('feesDbPbs')),
+                    formatBps(r.get('feesFbPbs')),
+                    formatBps(r.get('fundingDbPbs')),
+                    formatBps(r.get('fundingFbPbs')),
+                    formatBps(r.get('countryRiskProvisionDbPbs')),
+                    formatBps(r.get('countryRiskProvisionFbPbs')),
+                    formatBps(r.get('expectedLossPbs')),
+                    formatPercentOfWhole(r.get('taxRate')),
+                    formatThousands(isTruthy(r.get('franchiseDeal')) ? r.get('franchiseDeal') : 0) + ' ' + row.amountCurrency,
+                    formatAmountWithCurrencyMax2(r.get('incomes12Months'), row.amountCurrency)
+                });
+            }
+            html += '</table></div>'
                 + '&nbsp;</br>'
                 + getExternalRwaActionMarker(data)
                 + '<h3 style="font-size: 16px; color: #004481; margin-bottom: 10px;">Regulatory Capital</h3>'
                 + '<div data-dmt-table-block="regulatory" style="width:100%;">'
-                + '<table class="style-table" style="width:100%; border-collapse: collapse; table-layout:fixed; word-break:break-word;">'
-                        + '<tr>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>ID</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Notional Drawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Notional Undrawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>EAD reg</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>CCF reg</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>LGD reg</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>NetIncome Reg</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>RWA reg</strong></td>'
-                            + (showExternalRwa ? '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>External RWA 1Y</strong></td>' : '')
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>Regulatory Capital</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>RORC CDD</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>RORC</strong></td>'
-                        + '</tr>';
-                        for(Object result : orderedResults){
-                            Map<String, Object> row = (Map<String, Object>) result;
-                            Boolean isSummary = isSummaryRow(row);
-                            String rowStyle = getRowClassStyle(isSummary);      
-
-                            String oppId = getRowName(row, prodDetailsMap, data.opportunity);
-                            String rowCurrency = isSummaryRow(row) ? opportunityCurrency : getRowCurrency(row, prodDetailsMap, currencyIsoCode);
-
-                            Decimal rowNominalDb = getRowNominalDb(row, prodDetailsMap, opportunityNominalDb);
-                            Decimal rowNominalFb = getRowNominalFb(row, prodDetailsMap, opportunityNominalFb);
-
-                            html += '<tr style="' + rowStyle + '">'
-                                    + '<td style="padding: 8px; ' + getIdCellIndent(row) + 'border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + DMT_FormattingUtils.checkNull(oppId) + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + formatCurrencyAmountLikeModal(rowNominalDb, rowCurrency) + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + formatCurrencyAmountLikeModal(rowNominalFb, rowCurrency) + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + formatCurrencyAmountLikeModal(row.get('regulatoryEad'), rowCurrency) 
-                                    + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + formatPercentFromWhole(row.get('regulatoryCcf')) 
-                                    + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + formatPercentFromWhole(row.get('regulatoryLgd')) 
-                                    + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + formatCurrencyAmountLikeModal(row.get('bdiReg'), rowCurrency) 
-                                    + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + formatCurrencyAmountLikeModal(row.get('regulatoryApr'), rowCurrency)
-                                    + '</td>'
-                                    + (showExternalRwa ? '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + getExternalRwaCell(row, data, rowCurrency) + '</td>' : '')
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    +  formatCurrencyAmountLikeModal(row.get('regulatoryCapital'), rowCurrency) 
-                                    + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + DMT_FormattingUtils.formatPercent(row.get('rorcProspected')) 
-                                    + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + DMT_FormattingUtils.formatPercent(row.get('rorc')) 
-                                    + '</td>'
-                                + '</tr>';
-                        }
-                html += '</table></div>'
+                + '<table class="style-table" style="width:100%; border-collapse: collapse; table-layout:fixed; word-break:break-word;">';
+            List<String> regulatoryHeaders = new List<String>{ 'ID', 'Notional Drawn', 'Notional Undrawn', 'EAD reg', 'CCF reg', 'LGD reg', 'NetIncome Reg', 'RWA reg' };
+            if (showExternalRwa) {
+                regulatoryHeaders.add('External RWA 1Y');
+            }
+            regulatoryHeaders.addAll(new List<String>{ 'Regulatory Capital', 'RORC CDD', 'RORC' });
+            html += renderHeaderRow(regulatoryHeaders);
+            for (ProfitabilityRow row : rows) {
+                Map<String, Object> r = row.result;
+                List<String> cells = new List<String>{
+                    row.nominalDb,
+                    row.nominalFb,
+                    formatThousands(r.get('regulatoryEad')) + ' ' + row.amountCurrency,
+                    formatPercentOfWhole(r.get('regulatoryCcf')),
+                    formatPercentOfWhole(r.get('regulatoryLgd')),
+                    formatAmountWithCurrencyMax2(firstValue(r, 'BDIReg', 'bdiReg'), row.amountCurrency),
+                    formatAmountWithCurrency(r.get('regulatoryApr'), row.amountCurrency)
+                };
+                if (showExternalRwa) {
+                    cells.add(getExternalRwaCell(row, data));
+                }
+                cells.addAll(new List<String>{
+                    formatAmountWithCurrency(r.get('regulatoryCapital'), row.amountCurrency),
+                    formatPercent(r.get('rorcProspected')),
+                    formatPercent(r.get('rorc'))
+                });
+                html += renderRow(row, cells);
+            }
+            html += '</table></div>'
                 + '&nbsp;</br>'
                 + '<h3 style="font-size: 16px; color: #004481; margin-bottom: 10px;">Economic Capital</h3>'
                 + '<div data-dmt-table-block="economic" style="width:100%;">'
                 + '<table class="style-table" style="width:100%; border-collapse: collapse; table-layout:fixed; word-break:break-word;">'
-                        + '<tr>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>ID</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>Notional Drawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>Notional Undrawn</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>EAD eco</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>CCF eco</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>LGD eco</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break:normal; font-size: 6px"><strong>NetIncome Eco</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>RWA eco</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>Economic Capital</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>RAROEC CDD</strong></td>'
-                            + '<td style="padding: 8px; border-bottom: 1px solid #ccc; background-color: #F3F3F3; word-break: normal; font-size: 6px"><strong>RAROEC</strong></td>'
-                        + '</tr>';
-                        for(Object result : orderedResults){
-
-                            Map<String, Object> row = (Map<String, Object>) result;
-                            Boolean isSummary = isSummaryRow(row);
-                            String rowStyle = getRowClassStyle(isSummary);
-
-                            String oppId = getRowName(row, prodDetailsMap, data.opportunity);
-                            String rowCurrency = isSummaryRow(row) ? opportunityCurrency : getRowCurrency(row, prodDetailsMap, currencyIsoCode);
-
-                            Decimal rowNominalDb = getRowNominalDb(row, prodDetailsMap, opportunityNominalDb);
-                            Decimal rowNominalFb = getRowNominalFb(row, prodDetailsMap, opportunityNominalFb);
-
-                            html += '<tr style="' + rowStyle + '">'
-                                    + '<td style="padding: 8px; ' + getIdCellIndent(row) + 'border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + DMT_FormattingUtils.checkNull(oppId) + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + formatCurrencyAmountLikeModal(rowNominalDb, rowCurrency) + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' + formatCurrencyAmountLikeModal(rowNominalFb, rowCurrency) + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + formatCurrencyAmountLikeModal(row.get('economicEad'), rowCurrency)
-                                    + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + formatPercentFromWhole(row.get('economicCcf')) 
-                                    + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + formatPercentFromWhole(row.get('economicLgd')) 
-                                    + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + formatCurrencyAmountLikeModal(row.get('bdiEco'), rowCurrency) 
-                                    + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + formatCurrencyAmountLikeModal(row.get('economicApr'), rowCurrency) 
-                                    + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + formatCurrencyAmountLikeModal(row.get('economicCapital'), rowCurrency) 
-                                    + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + DMT_FormattingUtils.formatPercent(row.get('raroecProspected')) 
-                                    + '</td>'
-                                    + '<td style="padding: 8px; border-bottom: 1px solid #ccc; word-break:break-word; font-size: 6px">' 
-                                    + DMT_FormattingUtils.formatPercent(row.get('raroec')) 
-                                    + '</td>'
-                                + '</tr>';
-                        }
-               html += '</table></div>'
-                    + '&nbsp;</br>'
-                    + '</div>'
-                    + '</div>';
+                + renderHeaderRow(new List<String>{
+                    'ID', 'Notional Drawn', 'Notional Undrawn', 'EAD eco', 'CCF eco', 'LGD eco', 'NetIncome Eco', 'RWA eco', 'Economic Capital', 'RAROEC'
+                });
+            for (ProfitabilityRow row : rows) {
+                Map<String, Object> r = row.result;
+                html += renderRow(row, new List<String>{
+                    row.nominalDb,
+                    row.nominalFb,
+                    formatThousands(r.get('economicEad')) + ' ' + row.amountCurrency,
+                    formatPercentOfWhole(r.get('economicCcf')),
+                    formatPercentOfWhole(r.get('economicLgd')),
+                    formatAmountWithCurrencyMax2(firstValue(r, 'BDIEco', 'bdiEco'), row.amountCurrency),
+                    formatAmountWithCurrency(r.get('economicApr'), row.amountCurrency),
+                    formatAmountWithCurrency(r.get('economicCapital'), row.amountCurrency),
+                    formatPercent(r.get('raroec'))
+                });
+            }
+            html += '</table></div>'
+                + '&nbsp;</br>'
+                + '</div>'
+                + '</div>';
 
             Boolean hasProfitabilityVisual = false;
             if (data.isImg64 == true && !data.itemImgBase64.isEmpty() && data.itemImgBase64.size() > 0) {
@@ -369,12 +177,450 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
                     html += '<div style="margin-top:24px; page-break-before:always; break-before:page; page-break-inside:avoid; break-inside:avoid;">' + profitabilityChartHtml + '</div>';
                 }
             }
-            
+
             return html;
         } catch (Exception e){
-            System.debug('Error in DMT_OppProfitabilityLimitVisualRenderer renderHtml, '+ e.getMessage() + ' ' + e.getLineNumber());
+            System.debug('Error in DMT_OppProfitabilityRenderer renderHtml, '+ e.getMessage() + ' ' + e.getLineNumber());
             return '<div>Error: '+e.getMessage()+' - '+e.getLineNumber()+'</div>';
         }
+    }
+
+    // CIBGLOBALD-4713 - Deal RORC / RAROEC lifetime lines as in the former modal: '>' only when the value is above the threshold.
+    private static String renderHeaderMetrics(List<Object> results, Map<String, Object> audit) {
+        Map<String, Object> summary = new Map<String, Object>();
+        for (Object rec : results) {
+            Map<String, Object> mapRec = (Map<String, Object>) rec;
+            if (!isTruthy(mapRec.get('productId'))) {
+                summary = mapRec;
+                break;
+            }
+        }
+        return '<div class="slds-m-vertical_medium">'
+            + '<div class="slds-grid slds-wrap slds-m-top_small" style="font-size: 14px;">'
+            + '<div class="slds-col slds-size_1-of-2 slds-p-bottom_small">'
+            + '<strong>Deal RORC lifetime:</strong> ' + formatProfitabilityMetric(summary.get('rorc'), audit.get('rorcThreshold'))
+            + '</div>'
+            + '<div class="slds-col slds-size_1-of-2 slds-p-bottom_small">'
+            + '<strong>Deal RAROEC lifetime:</strong> ' + formatProfitabilityMetric(summary.get('raroec'), audit.get('raroecThreshold'))
+            + '</div>'
+            + '<div class="slds-col slds-size_1-of-2 slds-p-bottom_small">'
+            + '<strong>RORC Prospective CDD:</strong> ' + formatPercent(summary.get('rorcProspected'))
+            + '</div>'
+            + '<div class="slds-col slds-size_1-of-2 slds-p-bottom_small">'
+            + '<strong>Global Expected RORC:</strong> ' + formatPercent(summary.get('clientRorc'))
+            + '</div>'
+            + '</div>'
+            + '</div>';
+    }
+
+    private static String renderHeaderRow(List<String> labels) {
+        String html = '<tr>';
+        for (Integer i = 0; i < labels.size(); i++) {
+            String width = i == 0 ? ' width: 14%;' : '';
+            html += '<td style="' + HEADER_CELL_STYLE + ';' + width + '"><strong>' + labels[i] + '</strong></td>';
+        }
+        return html + '</tr>';
+    }
+
+    // CIBGLOBALD-4713 - data-dmt-row marks the Opportunity and underlying rows so the modal can apply the original row styles.
+    private static String renderRow(ProfitabilityRow row, List<String> cells) {
+        String rowType = row.isOpportunity ? 'opportunity' : (row.underlyingId != null ? 'underlying' : 'product');
+        String rowStyle = row.isOpportunity ? 'background-color:#e6f0fa;' : '';
+        String indent = row.underlyingId != null ? 'padding-left: 20px; ' : '';
+        String html = '<tr data-dmt-row="' + rowType + '" style="' + rowStyle + '">'
+            + '<td style="padding: 8px; ' + indent + ID_CELL_STYLE + '">' + DMT_FormattingUtils.checkNull(row.id) + '</td>';
+        for (String cell : cells) {
+            html += '<td style="' + CELL_STYLE + '">' + DMT_FormattingUtils.checkNull(cell) + '</td>';
+        }
+        return html + '</tr>';
+    }
+
+    /**
+     * CIBGLOBALD-4713 - Builds the rows exactly like the former modal: keeps the first Opportunity row, the first
+     * row per underlyingId and one row per productId (a later isLine row wins), computes dates, currencies and
+     * nominals (underlying nominals summed into their product, product nominals summed into the Opportunity) and
+     * orders them Opportunity, then each product followed by its underlyings (by underlying orderIndex).
+     */
+    private static List<ProfitabilityRow> buildRows(List<Object> rawResults, DMT_ViewController.LineDataWrapper data) {
+        List<Map<String, Object>> results = normalizeResults(rawResults);
+
+        Map<String, Map<String, Object>> productById = new Map<String, Map<String, Object>>();
+        String oppInitialDate;
+        String oppMaturityDate;
+        String oppCurrency = '';
+        Boolean hasOpportunityDates = false;
+        for (Map<String, Object> detail : data.profitabilityProductDetailsList) {
+            String key = detail.get('gf_group_priority_opportunity_id__c') != null ? String.valueOf(detail.get('gf_group_priority_opportunity_id__c')) : null;
+            if (key != null) {
+                productById.put(key, detail);
+            }
+            if (!hasOpportunityDates && detail.get('OppInitialDate') != null && detail.get('OppMaturityDate') != null) {
+                hasOpportunityDates = true;
+                oppInitialDate = formatDate(detail.get('OppInitialDate'));
+                oppMaturityDate = formatDate(detail.get('OppMaturityDate'));
+                oppCurrency = detail.get('OppCurrency') != null ? String.valueOf(detail.get('OppCurrency')) : '';
+            }
+        }
+
+        List<String> underlyingIds = new List<String>();
+        for (Map<String, Object> r : results) {
+            if (isTruthy(r.get('underlyingId'))) {
+                underlyingIds.add(String.valueOf(r.get('underlyingId')));
+            }
+        }
+        Map<String, Map<String, Object>> underlyingDetails = new Map<String, Map<String, Object>>();
+        if (!underlyingIds.isEmpty()) {
+            try {
+                underlyingDetails = DMT_Profitability_utils.getUnderlyingDetailsByIds(underlyingIds);
+            } catch (Exception e) {
+                // Same as the modal when the call fails: underlying rows show their raw Id and no nominals.
+                System.debug(LoggingLevel.WARN, 'Error resolving underlyings: ' + e.getMessage());
+            }
+        }
+
+        ProfitabilityRow opportunityRow;
+        List<ProfitabilityRow> productRows = new List<ProfitabilityRow>();
+        List<ProfitabilityRow> underlyingRows = new List<ProfitabilityRow>();
+        for (Integer index = 0; index < results.size(); index++) {
+            Map<String, Object> r = results[index];
+            ProfitabilityRow row = new ProfitabilityRow();
+            row.result = r;
+            row.sourceIndex = index;
+            row.rowCurrency = oppCurrency;
+            row.amountCurrency = oppCurrency;
+
+            if (!isTruthy(r.get('productId'))) {
+                row.isOpportunity = true;
+                row.id = data.opportunity.Name;
+                if (hasOpportunityDates) {
+                    row.initialDate = String.isBlank(oppInitialDate) ? EMPTY_VALUE : oppInitialDate;
+                    row.maturityDate = String.isBlank(oppMaturityDate) ? EMPTY_VALUE : oppMaturityDate;
+                }
+                opportunityRow = row;
+                continue;
+            }
+
+            row.productId = String.valueOf(r.get('productId'));
+            Map<String, Object> product = productById.get(row.productId);
+            String productCurrency = product != null && product.get('Currency') != null ? String.valueOf(product.get('Currency')) : '';
+            row.id = product != null && product.get('Name') != null ? String.valueOf(product.get('Name')) : row.productId;
+            row.initialDate = product != null && product.get('InitialDate') != null ? formatDate(product.get('InitialDate')) : EMPTY_VALUE;
+            row.maturityDate = product != null && product.get('MaturityDate') != null ? formatDate(product.get('MaturityDate')) : EMPTY_VALUE;
+            row.rowCurrency = String.isNotBlank(productCurrency) ? productCurrency : oppCurrency;
+            row.amountCurrency = productCurrency;
+
+            if (isTruthy(r.get('underlyingId'))) {
+                row.underlyingId = String.valueOf(r.get('underlyingId'));
+                Map<String, Object> underlying = underlyingDetails.get(row.underlyingId);
+                row.id = underlying != null && underlying.get('Name') != null ? String.valueOf(underlying.get('Name')) : row.underlyingId;
+                if (underlying != null) {
+                    String nominalCurrency = String.isNotBlank(productCurrency) ? productCurrency : row.rowCurrency;
+                    row.nominalDb = formatThousands(underlying.get('nominalDb')) + ' ' + nominalCurrency;
+                    row.nominalFb = formatThousands(underlying.get('nominalFb')) + ' ' + nominalCurrency;
+                    row.nominalDbValue = toNumberOrZero(underlying.get('nominalDb'));
+                    row.nominalFbValue = toNumberOrZero(underlying.get('nominalFb'));
+                    Object orderIndex = underlying.get('orderIndex');
+                    row.underlyingOrderIndex = orderIndex != null ? Integer.valueOf(orderIndex) : null;
+                }
+                underlyingRows.add(row);
+            } else {
+                Map<String, Object> nominals = data.profitabilityNominalAmountsMap != null ? data.profitabilityNominalAmountsMap.get(row.productId) : null;
+                if (nominals != null) {
+                    row.nominalDb = formatThousands(nominals.get('nominalDb')) + ' ' + productCurrency;
+                    row.nominalFb = formatThousands(nominals.get('nominalFb')) + ' ' + productCurrency;
+                    row.nominalDbValue = toNumberOrZero(nominals.get('nominalDb'));
+                    row.nominalFbValue = toNumberOrZero(nominals.get('nominalFb'));
+                }
+                productRows.add(row);
+            }
+        }
+
+        // Products with underlyings show the sum of their underlyings' nominals.
+        Map<String, List<ProfitabilityRow>> underlyingsByProduct = new Map<String, List<ProfitabilityRow>>();
+        for (ProfitabilityRow underlyingRow : underlyingRows) {
+            if (!underlyingsByProduct.containsKey(underlyingRow.productId)) {
+                underlyingsByProduct.put(underlyingRow.productId, new List<ProfitabilityRow>());
+            }
+            underlyingsByProduct.get(underlyingRow.productId).add(underlyingRow);
+        }
+        for (ProfitabilityRow productRow : productRows) {
+            List<ProfitabilityRow> children = underlyingsByProduct.get(productRow.productId);
+            if (children == null) {
+                continue;
+            }
+            Decimal sumDb = 0;
+            Decimal sumFb = 0;
+            Boolean hasDb = false;
+            Boolean hasFb = false;
+            for (ProfitabilityRow child : children) {
+                if (child.nominalDbValue != null) {
+                    sumDb += child.nominalDbValue;
+                    hasDb = true;
+                }
+                if (child.nominalFbValue != null) {
+                    sumFb += child.nominalFbValue;
+                    hasFb = true;
+                }
+            }
+            productRow.nominalDb = hasDb ? formatAmountWithCurrency(sumDb, productRow.rowCurrency) : EMPTY_VALUE;
+            productRow.nominalFb = hasFb ? formatAmountWithCurrency(sumFb, productRow.rowCurrency) : EMPTY_VALUE;
+            productRow.nominalDbValue = hasDb ? sumDb : null;
+            productRow.nominalFbValue = hasFb ? sumFb : null;
+        }
+
+        // The Opportunity row shows the sum of the product rows.
+        if (opportunityRow != null) {
+            Decimal totalDb = 0;
+            Decimal totalFb = 0;
+            for (ProfitabilityRow productRow : productRows) {
+                totalDb += productRow.nominalDbValue != null ? productRow.nominalDbValue : 0;
+                totalFb += productRow.nominalFbValue != null ? productRow.nominalFbValue : 0;
+            }
+            opportunityRow.nominalDb = formatThousands(totalDb) + ' ' + oppCurrency;
+            opportunityRow.nominalFb = formatThousands(totalFb) + ' ' + oppCurrency;
+        }
+
+        return orderRows(opportunityRow, productRows, underlyingRows);
+    }
+
+    private static List<Map<String, Object>> normalizeResults(List<Object> results) {
+        Integer opportunityIndex;
+        Map<String, Integer> productIndexById = new Map<String, Integer>();
+        Set<String> seenUnderlyings = new Set<String>();
+        Set<Integer> selected = new Set<Integer>();
+        for (Integer i = 0; i < results.size(); i++) {
+            Map<String, Object> r = (Map<String, Object>) results[i];
+            if (!isTruthy(r.get('productId'))) {
+                if (opportunityIndex == null) {
+                    opportunityIndex = i;
+                }
+                continue;
+            }
+            if (isTruthy(r.get('underlyingId'))) {
+                String underlyingId = String.valueOf(r.get('underlyingId'));
+                if (!seenUnderlyings.contains(underlyingId)) {
+                    seenUnderlyings.add(underlyingId);
+                    selected.add(i);
+                }
+                continue;
+            }
+            String productId = String.valueOf(r.get('productId'));
+            Integer currentIndex = productIndexById.get(productId);
+            if (currentIndex == null) {
+                productIndexById.put(productId, i);
+                continue;
+            }
+            Map<String, Object> current = (Map<String, Object>) results[currentIndex];
+            if (current.get('isLine') != true && r.get('isLine') == true) {
+                productIndexById.put(productId, i);
+            }
+        }
+        if (opportunityIndex != null) {
+            selected.add(opportunityIndex);
+        }
+        selected.addAll(productIndexById.values());
+
+        List<Map<String, Object>> normalized = new List<Map<String, Object>>();
+        for (Integer i = 0; i < results.size(); i++) {
+            if (selected.contains(i)) {
+                normalized.add((Map<String, Object>) results[i]);
+            }
+        }
+        return normalized;
+    }
+
+    private static List<ProfitabilityRow> orderRows(ProfitabilityRow opportunityRow, List<ProfitabilityRow> productRows, List<ProfitabilityRow> underlyingRows) {
+        List<ProfitabilityRow> ordered = new List<ProfitabilityRow>();
+        if (opportunityRow != null) {
+            ordered.add(opportunityRow);
+        }
+        List<String> parentOrder = new List<String>();
+        Map<String, List<ProfitabilityRow>> childrenByProduct = new Map<String, List<ProfitabilityRow>>();
+        for (ProfitabilityRow underlyingRow : sortUnderlyings(underlyingRows)) {
+            if (!childrenByProduct.containsKey(underlyingRow.productId)) {
+                childrenByProduct.put(underlyingRow.productId, new List<ProfitabilityRow>());
+                parentOrder.add(underlyingRow.productId);
+            }
+            childrenByProduct.get(underlyingRow.productId).add(underlyingRow);
+        }
+        Set<String> placed = new Set<String>();
+        for (ProfitabilityRow productRow : productRows) {
+            ordered.add(productRow);
+            if (childrenByProduct.containsKey(productRow.productId) && !placed.contains(productRow.productId)) {
+                ordered.addAll(childrenByProduct.get(productRow.productId));
+                placed.add(productRow.productId);
+            }
+        }
+        // Underlyings whose product row is not present go last, as in the modal.
+        for (String productId : parentOrder) {
+            if (!placed.contains(productId)) {
+                ordered.addAll(childrenByProduct.get(productId));
+            }
+        }
+        return ordered;
+    }
+
+    // Stable insertion sort with the modal comparator: by orderIndex when both rows have it, otherwise by source order.
+    private static List<ProfitabilityRow> sortUnderlyings(List<ProfitabilityRow> rows) {
+        List<ProfitabilityRow> sorted = new List<ProfitabilityRow>(rows);
+        for (Integer i = 1; i < sorted.size(); i++) {
+            ProfitabilityRow current = sorted[i];
+            Integer j = i - 1;
+            while (j >= 0 && compareUnderlyings(sorted[j], current) > 0) {
+                sorted[j + 1] = sorted[j];
+                j--;
+            }
+            sorted[j + 1] = current;
+        }
+        return sorted;
+    }
+
+    private static Integer compareUnderlyings(ProfitabilityRow a, ProfitabilityRow b) {
+        if (a.underlyingOrderIndex != null && b.underlyingOrderIndex != null) {
+            return a.underlyingOrderIndex - b.underlyingOrderIndex;
+        }
+        return a.sourceIndex - b.sourceIndex;
+    }
+
+    // ---- Formats of the former modal (dmt_profitability_chart.js), es-ES numbers ----
+
+    // formatThousands: es-ES, exactly 2 decimals, '' when empty.
+    private static String formatThousands(Object value) {
+        Decimal decValue = toDecimal(value);
+        return decValue == null ? '' : formatEs(decValue, 2, 2);
+    }
+
+    // formatAmountWithCurrency: formatThousands + currency, '' when empty.
+    private static String formatAmountWithCurrency(Object value, String currencyCode) {
+        String formatted = formatThousands(value);
+        return String.isBlank(formatted) ? '' : (formatted + ' ' + (currencyCode == null ? '' : currencyCode)).trim();
+    }
+
+    // formatAmountWithCurrencyMax2: scientific notation below 0.01, otherwise es-ES with up to 2 decimals.
+    private static String formatAmountWithCurrencyMax2(Object value, String currencyCode) {
+        Decimal decValue = toDecimal(value);
+        if (decValue == null) {
+            return '';
+        }
+        Decimal absValue = decValue.abs();
+        String formatted = absValue > 0 && absValue < 0.01 ? toExponential2(decValue) : formatEs(decValue, 0, 2);
+        return (formatted + ' ' + (currencyCode == null ? '' : currencyCode)).trim();
+    }
+
+    // formatPercent: value x 100 with 2 decimals, '' when not a number.
+    private static String formatPercent(Object value) {
+        Decimal decValue = toDecimal(value);
+        return decValue == null ? '' : formatFixed(decValue * 100, 2) + ' %';
+    }
+
+    // formatPercent(value / 100) of the modal: an empty value counts as 0.
+    private static String formatPercentOfWhole(Object value) {
+        Decimal decValue = toDecimal(value);
+        return formatFixed(decValue == null ? 0 : decValue, 2) + ' %';
+    }
+
+    // formatBps: an empty value counts as 0, no decimals.
+    private static String formatBps(Object value) {
+        Decimal decValue = toDecimal(value);
+        return formatFixed(decValue == null ? 0 : decValue, 0) + ' bps';
+    }
+
+    // Average Life / Tenor: 2 decimals and the 'y' suffix, '' when empty.
+    private static String formatYears(Object value) {
+        Decimal decValue = toDecimal(value);
+        return decValue == null ? '' : formatFixed(decValue, 2) + 'y';
+    }
+
+    private static String formatProfitabilityMetric(Object value, Object thresholdValue) {
+        Decimal valueDecimal = toDecimal(value);
+        Decimal thresholdDecimal = toDecimal(thresholdValue);
+        String comparisonSign = valueDecimal != null && thresholdDecimal != null && thresholdDecimal < valueDecimal ? '&gt;' : '&lt;';
+        return formatPercent(value) + ' ' + comparisonSign + ' ' + formatPercent(thresholdValue);
+    }
+
+    // Number.toFixed: '.' as decimal separator, no grouping, rounding half away from zero.
+    private static String formatFixed(Decimal value, Integer scale) {
+        Decimal rounded = value.setScale(scale, RoundingMode.HALF_UP);
+        String text = rounded.abs().toPlainString();
+        return (value < 0 ? '-' : '') + text;
+    }
+
+    // toLocaleString('es-ES'): ',' decimals, '.' grouping from 5 integer digits.
+    private static String formatEs(Decimal value, Integer minDecimals, Integer maxDecimals) {
+        Decimal rounded = value.setScale(maxDecimals, RoundingMode.HALF_UP);
+        String text = rounded.abs().toPlainString();
+        String integerPart = text.substringBefore('.');
+        String decimals = text.contains('.') ? text.substringAfter('.') : '';
+        while (decimals.length() > minDecimals && decimals.endsWith('0')) {
+            decimals = decimals.left(decimals.length() - 1);
+        }
+        if (integerPart.length() >= 5) {
+            String grouped = '';
+            Integer count = 0;
+            for (Integer i = integerPart.length() - 1; i >= 0; i--) {
+                grouped = integerPart.substring(i, i + 1) + grouped;
+                count++;
+                if (count == 3 && i > 0) {
+                    grouped = '.' + grouped;
+                    count = 0;
+                }
+            }
+            integerPart = grouped;
+        }
+        String sign = value < 0 ? '-' : '';
+        return sign + integerPart + (decimals.length() > 0 ? ',' + decimals : '');
+    }
+
+    // Number.toExponential(2), e.g. -4.47e-4.
+    private static String toExponential2(Decimal value) {
+        Decimal mantissa = value.abs();
+        Integer exponent = 0;
+        while (mantissa < 1) {
+            mantissa *= 10;
+            exponent--;
+        }
+        while (mantissa >= 10) {
+            mantissa /= 10;
+            exponent++;
+        }
+        mantissa = mantissa.setScale(2, RoundingMode.HALF_UP);
+        if (mantissa >= 10) {
+            mantissa = (mantissa / 10).setScale(2, RoundingMode.HALF_UP);
+            exponent++;
+        }
+        return (value < 0 ? '-' : '') + mantissa.toPlainString() + 'e' + (exponent < 0 ? '-' : '+') + Math.abs(exponent);
+    }
+
+    private static String formatDate(Object value) {
+        if (value == null) {
+            return '';
+        }
+        if (value instanceof Date) {
+            return String.valueOf((Date) value);
+        }
+        return String.valueOf(value);
+    }
+
+    private static Object firstValue(Map<String, Object> row, String key, String fallbackKey) {
+        return row.get(key) != null ? row.get(key) : row.get(fallbackKey);
+    }
+
+    private static Boolean isTruthy(Object value) {
+        if (value == null) {
+            return false;
+        }
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        if (value instanceof Decimal || value instanceof Integer || value instanceof Long || value instanceof Double) {
+            return toDecimal(value) != 0;
+        }
+        return String.isNotBlank(String.valueOf(value));
+    }
+
+    private static Decimal toNumberOrZero(Object value) {
+        Decimal decValue = toDecimal(value);
+        return decValue == null ? 0 : decValue;
     }
 
     private static Decimal toDecimal(Object value) {
@@ -413,263 +659,6 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
         return 'data:' + mime + ';base64,' + cleaned;
     }
 
-    private static String formatPercentFromWhole(Object value) {
-        Decimal decValue = toDecimal(value);
-        if (decValue == null) {
-            return '';
-        }
-        return DMT_FormattingUtils.formatPercent(decValue / 100);
-    }
-
-    private static String formatBpsLikeModal(Object value) {
-        Decimal decValue = toDecimal(value);
-        if (decValue == null) {
-            return '';
-        }
-        return String.valueOf(decValue.setScale(0, RoundingMode.HALF_UP)) + ' bps';
-    }
-
-    private static String formatDecimalLikeModal(Object value) {
-        return formatDecimalLikeModal(value, 2);
-    }
-
-    private static String formatDecimalLikeModal(Object value, Integer scale) {
-        Decimal decValue = toDecimal(value);
-        if (decValue == null) {
-            return '';
-        }
-
-        String formattedValue = DMT_FormattingUtils.formatDecimalEs(decValue, scale);
-        return removeGroupingSeparatorForSmallAmount(formattedValue, decValue);
-    }
-
-    private static String removeGroupingSeparatorForSmallAmount(String formattedValue, Decimal decValue) {
-        if (String.isBlank(formattedValue) || decValue == null) {
-            return formattedValue;
-        }
-
-        Decimal absValue = decValue < 0 ? decValue * -1 : decValue;
-
-        if (absValue >= 1000 && absValue < 10000) {
-            return formattedValue.replace('.', '');
-        }
-
-        return formattedValue;
-    }
-
-    private static String formatDateIso(Object value) {
-        if (value == null) {
-            return '';
-        }
-
-        if (value instanceof Date) {
-            return String.valueOf((Date)value);
-        }
-
-        return String.valueOf(value);
-    }
-
-    private static List<Object> orderProfitabilityResults(List<Object> results) {
-        List<Object> orderedResults = new List<Object>();
-        Object summaryResult;
-
-        for (Object rec : results) {
-            Map<String, Object> mapRec = (Map<String, Object>) rec;
-            if (!mapRec.containsKey('productId') || mapRec.get('productId') == null) {
-                summaryResult = rec;
-                break;
-            }
-        }
-
-        if (summaryResult != null) {
-            orderedResults.add(summaryResult);
-        }
-
-        for (Object rec : results) {
-            Map<String, Object> mapRec = (Map<String, Object>) rec;
-            if (mapRec.containsKey('productId') && mapRec.get('productId') != null) {
-                orderedResults.add(rec);
-            }
-        }
-
-        return orderedResults;
-    }
-
-    private static Boolean isSummaryRow(Map<String, Object> row) {
-        return !row.containsKey('productId') || row.get('productId') == null;
-    }
-
-    private static String getRowName(
-        Map<String, Object> row,
-        Map<String, Map<String, Object>> prodDetailsMap,
-        Opportunity opp
-    ) {
-        if (isSummaryRow(row)) {
-            return DMT_FormattingUtils.checkNull(opp.Name);
-        }
-
-           
-        String prodIdStr = row.get('underlyingId') != null
-            ? String.valueOf(row.get('underlyingId'))
-            : String.valueOf(row.get('productId'));
-
-        if (prodDetailsMap.containsKey(prodIdStr)) {
-            Map<String, Object> details = prodDetailsMap.get(prodIdStr);
-            if (details.containsKey('Name') && details.get('Name') != null) {
-                return DMT_FormattingUtils.checkNull(details.get('Name'));
-            }
-        }
-
-        return DMT_FormattingUtils.checkNull(prodIdStr);
-    }
-
-        
-    private static String getIdCellIndent(Map<String, Object> row) {
-        return row.get('underlyingId') != null ? 'padding-left: 28px; ' : '';
-    }
-
-    private static String getRowCurrency(
-        Map<String, Object> row,
-        Map<String, Map<String, Object>> prodDetailsMap,
-        String defaultCurrency
-    ) {
-        if (isSummaryRow(row)) {
-            return defaultCurrency;
-        }
-
-        String prodIdStr = String.valueOf(row.get('productId'));
-
-        if (prodDetailsMap.containsKey(prodIdStr)) {
-            Map<String, Object> details = prodDetailsMap.get(prodIdStr);
-            if (details.containsKey('Currency') && details.get('Currency') != null) {
-                return String.valueOf(details.get('Currency'));
-            }
-        }
-
-        return defaultCurrency;
-    }
-
-    private static String getRowInitialDate(
-        Map<String, Object> row,
-        Map<String, Map<String, Object>> prodDetailsMap,
-        String oppInitialDate
-    ) {
-        if (isSummaryRow(row)) {
-            return oppInitialDate;
-        }
-
-        String prodIdStr = String.valueOf(row.get('productId'));
-
-        if (prodDetailsMap.containsKey(prodIdStr)) {
-            return formatDateIso(prodDetailsMap.get(prodIdStr).get('InitialDate'));
-        }
-
-        return oppInitialDate;
-    }
-
-    private static String getRowMaturityDate(
-        Map<String, Object> row,
-        Map<String, Map<String, Object>> prodDetailsMap,
-        String oppMaturityDate
-    ) {
-        if (isSummaryRow(row)) {
-            return oppMaturityDate;
-        }
-
-        String prodIdStr = String.valueOf(row.get('productId'));
-
-        if (prodDetailsMap.containsKey(prodIdStr)) {
-            return formatDateIso(prodDetailsMap.get(prodIdStr).get('MaturityDate'));
-        }
-
-        return oppMaturityDate;
-    }
-
-   private static Decimal getRowNominalDb(
-        Map<String, Object> row,
-        Map<String, Map<String, Object>> prodDetailsMap,
-        Decimal totalNominalDb
-    ) {
-        if (isSummaryRow(row)) {
-            return totalNominalDb;
-        }
-
-        String prodIdStr = String.valueOf(row.get('productId'));
-
-        if (prodDetailsMap.containsKey(prodIdStr)) {
-            return toDecimal(prodDetailsMap.get(prodIdStr).get('NominalDb')) != null
-                ? toDecimal(prodDetailsMap.get(prodIdStr).get('NominalDb'))
-                : 0;
-        }
-
-        return 0;
-    }
-
-    private static Decimal getRowNominalFb(
-        Map<String, Object> row,
-        Map<String, Map<String, Object>> prodDetailsMap,
-        Decimal totalNominalFb
-    ) {
-        if (isSummaryRow(row)) {
-            return totalNominalFb;
-        }
-
-        String prodIdStr = String.valueOf(row.get('productId'));
-
-        if (prodDetailsMap.containsKey(prodIdStr)) {
-            return toDecimal(prodDetailsMap.get(prodIdStr).get('NominalFb')) != null
-                ? toDecimal(prodDetailsMap.get(prodIdStr).get('NominalFb'))
-                : 0;
-        }
-
-        return 0;
-    }
-
-    private static String getRowClassStyle(Boolean isSummary) {
-        return isSummary ? 'background-color:#e6f0fa;' : '';
-    }
-
-    private static Object getFirstExistingValue(Map<String, Object> row, List<String> keys) {
-        for (String key : keys) {
-            if (row.containsKey(key) && row.get(key) != null) {
-                return row.get(key);
-            }
-        }
-        return null;
-    }
-
-    private static String formatCurrencyAmountLikeModal(Object value, String currencyIsoCode) {
-        Decimal decValue = toDecimal(value);
-
-        if (decValue == null) {
-            return '';
-        }
-
-        Decimal roundedValue = decValue.setScale(2, RoundingMode.HALF_UP);
-
-        String formattedValue = DMT_FormattingUtils.formatCurrencyAmount(
-            roundedValue,
-            currencyIsoCode
-        );
-
-        return removeGroupingSeparatorForSmallAmount(formattedValue, roundedValue);
-    }
-
-    private static String formatProfitabilityMetric(Object value, Object thresholdValue) {
-        Decimal thresholdDecimal = toDecimal(thresholdValue);
-        String formattedValue = DMT_FormattingUtils.formatPercent(value);
-        if (thresholdDecimal == null) {
-            return formattedValue;
-        }
-
-        Decimal valueDecimal = toDecimal(value);
-        String comparisonSign = valueDecimal == null ? '&lt;'
-            : valueDecimal > thresholdDecimal ? '&gt;'
-            : valueDecimal < thresholdDecimal ? '&lt;'
-            : '=';
-        return formattedValue + ' ' + comparisonSign + ' ' + DMT_FormattingUtils.formatPercent(thresholdDecimal);
-    }
-
     /**
      * CIBGLOBALD-4713 - Empty marker where the Profitability modal (LWC dmt_profitability_view) inserts
      * its 'External RWA calculate' button. Only emitted when the modal asks for it
@@ -691,17 +680,16 @@ public without sharing class DMT_OppProfitabilityRenderer implements DMT_ViewRen
      * calculator when the Opportunity branch has the link enabled (data.profitabilityRwaLinkInfo).
      * Same value and link as the former modal code (dmt_profitability_chart).
      */
-    private static String getExternalRwaCell(Map<String, Object> row, DMT_ViewController.LineDataWrapper data, String rowCurrency) {
-        if (isSummaryRow(row)) {
+    private static String getExternalRwaCell(ProfitabilityRow row, DMT_ViewController.LineDataWrapper data) {
+        if (row.isOpportunity) {
             return '';
         }
-        String productId = String.valueOf(row.get('productId'));
-        String formattedValue = formatCurrencyAmountLikeModal(data.profitabilityAprsByProductId.get(productId), rowCurrency);
+        String formattedValue = formatAmountWithCurrency(data.profitabilityAprsByProductId.get(row.productId), row.rowCurrency);
         Map<String, Object> linkInfo = data.profitabilityRwaLinkInfo;
         if (String.isBlank(formattedValue) || linkInfo == null || linkInfo.get('enabled') != true) {
             return formattedValue;
         }
-        String explanationId = String.valueOf(linkInfo.get('explanationId')) + '_' + productId;
+        String explanationId = String.valueOf(linkInfo.get('explanationId')) + '_' + row.productId;
         String country = linkInfo.get('entific') != null ? String.valueOf(linkInfo.get('entific')) : '';
         String url = String.valueOf(linkInfo.get('baseUrl'))
             + '?explanationId=' + EncodingUtil.urlEncode(explanationId, 'UTF-8')
