@@ -1,0 +1,8 @@
+CIBGLOBALD-4711 - add Profitability Detail CSV download to the Profitability modal
+
+- DMT_Profitability_utils: getProfitabilityDetailFile calls the Epsilon service profitability_download_detail (ASO DmtDownloadDetailsV0, GET download-details by Opportunity DMT_Opp_Id__c) and returns the CSV in base64; parseDetailFileResponse treats 204, 404 and an empty file as no detail and returns the backend message on errors; exceptions logged with DMT_LogExceptionPayload
+- iaso__GBL_integration_service__mdt DMT_ProfitabilityDownloadDetail: new integration service record (GET, mock with a sample CSV in base64)
+- dmt_profitability_view: downloadProfitabilityDetail decodes the file, checks it is CSV text and downloads it; base64ToBytes and saveFile shared with the PDF download; statuschange also reports hasResults
+- dmt_passport_modal: Profitability Detail footer button (desktop only), errors shown above the footer buttons
+- DMT_Integration_MockGenerator: download-details mapped to DMT_ProfitabilityDownloadDetail
+- DMT_Profitability_utilsTest: tests for the new method and every response case; setup uses generateGroupAccount and generateOpportunityForAccount; underlying created with DMT_UTIL.createUnderlyingRecord; comments and assert messages in English
