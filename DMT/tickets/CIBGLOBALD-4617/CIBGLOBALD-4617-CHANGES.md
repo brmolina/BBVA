@@ -43,7 +43,7 @@ DMT/force-app/main/default/lwc/dmt_passport_opportunity/dmt_passport_opportunity
 ```
 
 Anything else that shows as modified in the working tree (for example DMT_Line_Helper, DMT_Case_Steps_Controller) is not part of this ticket.
-`manifest/CIBGLOBALD-4617-package.xml` and `manifest/CIBGLOBALD-4617-destructiveChanges.xml` are local tools and are not staged in the work repo.
+`DMT/tickets/CIBGLOBALD-4617/CIBGLOBALD-4617-package.xml` and `DMT/tickets/CIBGLOBALD-4617/CIBGLOBALD-4617-destructiveChanges.xml` are local tools and are not staged in the work repo.
 
 ## Manual post-deployment steps
 
@@ -55,7 +55,7 @@ Anything else that shows as modified in the working tree (for example DMT_Line_H
 
 ## Retrieve / deploy package
 
-`manifest/CIBGLOBALD-4617-package.xml` (retrieve with `sf project retrieve start -x manifest/CIBGLOBALD-4617-package.xml -o DMT_TCM_DEV`).
+`DMT/tickets/CIBGLOBALD-4617/CIBGLOBALD-4617-package.xml` (retrieve with `sf project retrieve start -x DMT/tickets/CIBGLOBALD-4617/CIBGLOBALD-4617-package.xml -o DMT_TCM_DEV`).
 Everything is already deployed to DMT_TCM_DEV. Deploy all entries together: the Task trigger needs the new `DTM_Task_Helper.processTask` signature and the LWCs read the new event payload.
 
 ## Tests

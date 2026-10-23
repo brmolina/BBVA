@@ -13,6 +13,10 @@ global without sharing class DMT_Integration_MockGenerator implements HttpCallou
 
         // Outer map: endpoint -> inner map
         Map<String, Map<String, String>> endpointToMethodDevName = new Map<String, Map<String, String>>{
+            // CIBGLOBALD-4711 - Epsilon profitability detail CSV (DMT_Profitability_utils.getProfitabilityDetailFile)
+            'download-details' => new Map<String, String>{
+                'GET' => 'DMT_ProfitabilityDownloadDetail'
+            },
             'assumption' => new Map<String, String>{
                 'POST' => 'DMT_ProfitabilityMatrix'
             },
@@ -37,6 +41,9 @@ global without sharing class DMT_Integration_MockGenerator implements HttpCallou
             },
             'global-position' => new Map<String, String>{
                 'POST' => 'DMT_HPG_GlobalPosition'
+            },
+            'groups-data' => new Map<String, String>{
+                'GET' => 'DMT_GetLeveragedLending'
             },
             'used-tables' => new Map<String, String>{
                 'GET' => 'DMT_HPG_GetUsedTables'

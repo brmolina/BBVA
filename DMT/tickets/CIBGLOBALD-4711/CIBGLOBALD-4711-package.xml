@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CIBGLOBALD-4711 - Profitability Detail CSV button in the Profitability modal.
+     Order: iaso service record (read by the Apex test mock), Apex class + test, then the LWCs
+     (dmt_profitability_view calls the new Apex method; dmt_passport_modal calls the view). -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>iaso__GBL_integration_service.DMT_ProfitabilityDownloadDetail</members>
+        <name>CustomMetadata</name>
+    </types>
+    <types>
+        <members>DMT_Profitability_utils</members>
+        <members>DMT_Profitability_utilsTest</members>
+        <members>DMT_Integration_MockGenerator</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>dmt_profitability_view</members>
+        <members>dmt_passport_modal</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <version>65.0</version>
+</Package>
