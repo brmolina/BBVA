@@ -32,4 +32,6 @@ BLOCKER: Jimmy Tonato replaced DMT_Test_DataFactory (08:22 UTC) + DMT_UtilTestCl
 
 **2026-10-23 delivery files:** .apex scripts replaced by CIBGLOBALD-4711-<ORG>-pre-deployment.txt / -post-deployment.txt for DMTPRE2, PREPRO, PRO (steps only; script verified in DEV with savepoint rollback). PRO filled 2026-10-23 (user decision): URL https://aso-backend-global.live-01.platform.bbva.com/dmt/v0/ (host from DMTO_Endpoint_PRO, one source line in the PRO pre file), auth DMT_GrantingTicketPRO. Delivery files complete for DMTPRE2, PREPRO, PRO (source line in every pre file; user confirmed manual steps done 2026-10-23).
 
+**2026-10-23 PAUSED:** everything committed (c6433e6b on 4711), pushed, merged into main (a8e88225), main pushed. Waiting for the service team (Epsilon permission 01211008 for USLHPG01, via Diego). On resume: retest the button on 006KE000003Qx30YAC, check the real CSV against isCsvText (PENDING marker in dmt_profitability_view.js) and replace the mock with real data, then commit message + Spanish technical note for the work repo.
+
 **Status:** analysis only. Nothing retrieved/edited/deployed. Blocked on the service contract (params, response format, columns, iaso config).
