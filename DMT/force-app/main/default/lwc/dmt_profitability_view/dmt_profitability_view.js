@@ -15,6 +15,51 @@ import renderProfitabilityHtml from '@salesforce/apex/DMT_Profitability_utils.re
 import preparePdfAssets from '@salesforce/apex/DMT_PdfService.preparePdfAssets';
 import generateFinalPdf from '@salesforce/apex/DMT_PdfService.generateFinalPdf';
 import generateFinalPdfMob from '@salesforce/apex/DMT_PdfService.generateFinalPdfMob';
+import getProfitabilityDetailFile from '@salesforce/apex/DMT_Profitability_utils.getProfitabilityDetailFile';
+
+// CIBGLOBALD-4711 - The decoded Profitability detail file is accepted as CSV when it is text (no NUL byte, no ZIP/XLSX
+// or PDF signature) and its first line contains a column separator.
+// PENDING (CIBGLOBALD-4711): rule built from the service spec only (its example file is placeholder text). Review it
+// against a real file from Epsilon (separator, header row, encoding).
+const CSV_SEPARATOR_PATTERN = /[;,\t]/;
+const CSV_SNIFF_LENGTH = 1024;
+const BINARY_SIGNATURES = ['PK', '%PDF'];
+const DETAIL_FAILED_MESSAGE = 'The profitability detail could not be downloaded.';
+const DETAIL_UNREADABLE_MESSAGE = 'The file returned by the profitability detail service could not be read.';
+const DETAIL_NOT_CSV_MESSAGE = 'The file returned by the profitability detail service is not a CSV file.';
+
+function base64ToBytes(base64) {
+    const byteChars = atob(base64);
+    const byteArray = new Uint8Array(byteChars.length);
+    for (let i = 0; i < byteChars.length; i++) {
+        byteArray[i] = byteChars.charCodeAt(i);
+    }
+    return byteArray;
+}
+
+function isCsvText(byteArray) {
+    if (!byteArray.length) {
+        return false;
+    }
+    const head = String.fromCharCode(...byteArray.subarray(0, CSV_SNIFF_LENGTH));
+    if (head.includes('\u0000') || BINARY_SIGNATURES.some((signature) => head.startsWith(signature))) {
+        return false;
+    }
+    const firstLine = head.replace(/^\u00EF\u00BB\u00BF/, '').split(/\r?\n/)[0];
+    return CSV_SEPARATOR_PATTERN.test(firstLine);
+}
+
+// Browser download of the bytes as they are (temporary object URL + anchor).
+function saveFile(byteArray, mimeType, fileName) {
+    const blobUrl = URL.createObjectURL(new Blob([byteArray], { type: mimeType }));
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(blobUrl);
+}
 
 const RWA_MARKER_SELECTOR = '[data-dmt-action="external-rwa"]';
 const RWA_MARKER_PATTERN = /<div data-dmt-action="external-rwa"[^>]*><\/div>/g;
@@ -184,19 +229,32 @@ export default class Dmt_profitability_view extends NavigationMixin(LightningEle
             finalHtml: prep.modifiedHtml,
             docIds: prep.documentIds || []
         });
-        const byteChars = atob(pdfBase64);
-        const byteArray = new Uint8Array(byteChars.length);
-        for (let i = 0; i < byteChars.length; i++) {
-            byteArray[i] = byteChars.charCodeAt(i);
+        saveFile(base64ToBytes(pdfBase64), 'application/pdf', this.fileName);
+    }
+
+    /**
+     * CIBGLOBALD-4711 - Downloads the Profitability detail CSV from Epsilon (DMT_Profitability_utils
+     * .getProfitabilityDetailFile, service DMT_ProfitabilityDownloadDetail). The service returns the CSV in base64;
+     * the decoded bytes are saved unchanged, so Epsilon's columns, separators and encoding are kept. Throws an Error
+     * with the message to show when there is no file or it is not CSV text, so no empty or wrong file is downloaded.
+     * Desktop only (dmt_passport_modal shows the button only on the Large form factor).
+     */
+    @api
+    async downloadProfitabilityDetail() {
+        const result = await getProfitabilityDetailFile({ oppId: this.opportunityId });
+        if (!result?.success) {
+            throw new Error(result?.message || DETAIL_FAILED_MESSAGE);
         }
-        const blobUrl = URL.createObjectURL(new Blob([byteArray], { type: 'application/pdf' }));
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = this.fileName;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        URL.revokeObjectURL(blobUrl);
+        let byteArray;
+        try {
+            byteArray = base64ToBytes(result.fileBase64);
+        } catch (error) {
+            throw new Error(DETAIL_UNREADABLE_MESSAGE);
+        }
+        if (!isCsvText(byteArray)) {
+            throw new Error(DETAIL_NOT_CSV_MESSAGE);
+        }
+        saveFile(byteArray, 'text/csv', result.fileName);
     }
 
     setLoading(value) {
@@ -210,7 +268,7 @@ export default class Dmt_profitability_view extends NavigationMixin(LightningEle
 
     notifyStatus() {
         this.dispatchEvent(new CustomEvent('statuschange', {
-            detail: { isLoading: this.isLoading, canDownload: this.canDownload }
+            detail: { isLoading: this.isLoading, canDownload: this.canDownload, hasResults: this.hasResults }
         }));
     }
 }

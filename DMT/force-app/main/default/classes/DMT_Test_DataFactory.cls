@@ -592,9 +592,7 @@ public with sharing class  DMT_Test_DataFactory {
             Account.DES_Group_Code__c => 'G20180109100427'
         };
 
-        // CIBGLOBALD-4713 - kept disabled (see the preservation rule above): the field is not createable for
-        // the test running user, so every test that calls generateAccount() failed in setup. To review.
-        // accountOverrides.put(Account.Past2_FY_Corp_Synd_Lending_amount__c, 13);
+        accountOverrides.put(Account.Past2_FY_Corp_Synd_Lending_amount__c, 13);
 
         if (overrides != null) {
             accountOverrides.putAll(overrides);
@@ -1007,14 +1005,18 @@ public with sharing class  DMT_Test_DataFactory {
         return approverUpdate;
     }
     public static DMT_Approver_Type__c generateApproverTypeRisk() {
-        DMT_Approver_Type__c approverType = DMT_UTIL.createApproverTypeRecord(DMT_Constants.APPROVER_TYPE_RISK, '1');
+        DMT_Approver_Type__c approverType = DMT_UTIL.createApproverTypeRecord('1', new Map<Schema.SObjectField, Object>{
+                DMT_Approver_Type__c.Name => DMT_Constants.APPROVER_TYPE_RISK
+            });
 
         DMT_Approver_Type__c approverTypeUpdate = [SELECT Id FROM DMT_Approver_Type__c WHERE Id =: approverType.Id LIMIT 1 FOR UPDATE];
         return approverTypeUpdate;
     }
 
     public static DMT_Approver_Type__c generateApproverTypeBusiness() {
-        DMT_Approver_Type__c approverType = DMT_UTIL.createApproverTypeRecord(DMT_Constants.APPROVER_TYPE_BUSINESS, '32');
+        DMT_Approver_Type__c approverType = DMT_UTIL.createApproverTypeRecord('32', new Map<Schema.SObjectField, Object>{
+                DMT_Approver_Type__c.Name => DMT_Constants.APPROVER_TYPE_BUSINESS
+            });
         System.debug('**** Approver type bsn In Factory: ' + approverType);
         DMT_Approver_Type__c approverTypeUpdate = [SELECT Id FROM DMT_Approver_Type__c WHERE Id =: approverType.Id LIMIT 1 FOR UPDATE];
         return approverTypeUpdate;
@@ -1083,9 +1085,10 @@ public with sharing class  DMT_Test_DataFactory {
             caseOverrides.put(Case.opportunity_id__c, opportunityId);
         }
 
+        caseOverrides.put(Case.RecordTypeId, DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID);
+
         Case c = DMT_UTIL.createCaseRecord(
             ownerId,
-            DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
             caseOverrides
         );
 
@@ -1094,10 +1097,15 @@ public with sharing class  DMT_Test_DataFactory {
     }
 
     public static Case generateCase(Id ownerId, Map<Schema.SObjectField, Object> overrides) {
+        Map<Schema.SObjectField, Object> caseOverrides = new Map<Schema.SObjectField, Object>{
+            Case.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID
+        };
+        if (overrides != null) {
+            caseOverrides.putAll(overrides);
+        }
         Case caseRecord = DMT_UTIL.createCaseRecord(
             ownerId,
-            DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
-            overrides
+            caseOverrides
         );
 
         return caseRecord;
@@ -1106,8 +1114,8 @@ public with sharing class  DMT_Test_DataFactory {
     public static Case generateCaseOppLine(Id lineId, Id opportunityId, Id ownerId) {
         Case c = DMT_UTIL.createCaseRecord(
             ownerId,
-            DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
             new Map<Schema.SObjectField, Object>{
+                Case.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
                 Case.DMT_Line__c => lineId,
                 Case.opportunity_id__c => opportunityId,
                 Case.DMT_Feature_Id__c => 'Test',
@@ -1124,6 +1132,7 @@ public with sharing class  DMT_Test_DataFactory {
         List<DMT_Task_Type__c> taskTypes = generateTaskTypes();
         for (Integer i = 0; i < num; i++) {
         Map<Schema.SObjectField, Object> caseOverrides = new Map<Schema.SObjectField, Object>{
+            Case.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
             Case.DMT_Feature_Id__c => String.valueOf(num),
             Case.DMT_Related_feature_name__c => 'Test' + String.valueOf(num),
             Case.Amount__c => 100000,
@@ -1138,14 +1147,13 @@ public with sharing class  DMT_Test_DataFactory {
 
         Case c = DMT_UTIL.createCaseRecord(
             ownerId,
-            DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
             caseOverrides
         );
         Task t = DMT_UTIL.buildTask(
             ownerId,
-            DMT_UtilTestClassConstants.DEFAULT_TASK_STEP_RECORD_TYPE_ID,
             c.Id,
             new Map<Schema.SObjectField, Object>{
+                Task.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_TASK_STEP_RECORD_TYPE_ID,
                 Task.Status => DMT_Constants.FINISHED,
                 Task.Subject => 'Task' + i,
                 Task.DMT_Task_Type__c => taskTypes[i].Id,
@@ -1162,6 +1170,7 @@ public with sharing class  DMT_Test_DataFactory {
         List<DMT_Task_Type__c> taskTypes = generateTaskTypes();
         for (Integer i = 0; i < num; i++) {
         Map<Schema.SObjectField, Object> caseOverrides = new Map<Schema.SObjectField, Object>{
+            Case.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
             Case.DMT_Feature_Id__c => String.valueOf(num),
             Case.DMT_Related_feature_name__c => 'Test' + String.valueOf(num),
             Case.Amount__c => 100000,
@@ -1176,14 +1185,13 @@ public with sharing class  DMT_Test_DataFactory {
 
         Case c = DMT_UTIL.createCaseRecord(
             ownerId,
-            DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
             caseOverrides
         );
         Task t = DMT_UTIL.buildTask(
             ownerId,
-            DMT_UtilTestClassConstants.DEFAULT_TASK_STEP_RECORD_TYPE_ID,
             c.Id,
             new Map<Schema.SObjectField, Object>{
+                Task.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_TASK_STEP_RECORD_TYPE_ID,
                 Task.Status => DMT_Constants.FINISHED,
                 Task.Subject => 'Task' + i,
                 Task.DMT_Task_Type__c => taskTypes[i].Id,
@@ -1206,6 +1214,7 @@ public with sharing class  DMT_Test_DataFactory {
 
         for (Integer i = 0; i < numTasks; i++) {
             Map<Schema.SObjectField, Object> taskOverrides = new Map<Schema.SObjectField, Object>{
+                Task.RecordTypeId => recordTypeId,
                 Task.Status => 'In Progress',
                 Task.Subject => 'Task' + i
             };
@@ -1214,7 +1223,7 @@ public with sharing class  DMT_Test_DataFactory {
                 taskOverrides.putAll(overrides);
             }
 
-            tasks.add(DMT_UTIL.buildTask(ownerId, recordTypeId, whatId, taskOverrides));
+            tasks.add(DMT_UTIL.buildTask(ownerId, whatId, taskOverrides));
         }
 
         insert tasks;
@@ -1446,34 +1455,38 @@ public with sharing class  DMT_Test_DataFactory {
 
         List<DMT_Taxonomy_Values__c> taxonomies = new List<DMT_Taxonomy_Values__c>{
             DMT_UTIL.buildTaxonomyValue(
-                'Project Finance Advisory',
                 '2880',
                 'C375',
                 new Map<Schema.SObjectField, Object>{
+                    DMT_Taxonomy_Values__c.DMT_Name__c => 'Project Finance Advisory',
+                    DMT_Taxonomy_Values__c.DMT_Name_EN__c => 'Project Finance Advisory',
                     DMT_Taxonomy_Values__c.DMT_Key__c => '2880'
                 }
             ),
             DMT_UTIL.buildTaxonomyValue(
-                'Project Finance Advisory2',
                 '28802',
                 'C375',
                 new Map<Schema.SObjectField, Object>{
+                    DMT_Taxonomy_Values__c.DMT_Name__c => 'Project Finance Advisory2',
+                    DMT_Taxonomy_Values__c.DMT_Name_EN__c => 'Project Finance Advisory2',
                     DMT_Taxonomy_Values__c.DMT_Key__c => '28802'
                 }
             ),
             DMT_UTIL.buildTaxonomyValue(
-                'Project Finance Advisory3',
                 '28803',
                 'C375',
                 new Map<Schema.SObjectField, Object>{
+                    DMT_Taxonomy_Values__c.DMT_Name__c => 'Project Finance Advisory3',
+                    DMT_Taxonomy_Values__c.DMT_Name_EN__c => 'Project Finance Advisory3',
                     DMT_Taxonomy_Values__c.DMT_Key__c => '28803'
                 }
             ),
             DMT_UTIL.buildTaxonomyValue(
-                'Others > Surety guarantee',
                 '3810',
                 'E895',
                 new Map<Schema.SObjectField, Object>{
+                    DMT_Taxonomy_Values__c.DMT_Name__c => 'Others > Surety guarantee',
+                    DMT_Taxonomy_Values__c.DMT_Name_EN__c => 'Others > Surety guarantee',
                     DMT_Taxonomy_Values__c.DMT_Value__c => '01'
                 }
             )
@@ -1487,10 +1500,11 @@ public with sharing class  DMT_Test_DataFactory {
     // CIBGLOBALD-4630 - Single active taxonomy value of a catalog (e.g. a rating of catalog C204)
     public static DMT_Taxonomy_Values__c generateTaxonomyValue(String catalog, String value) {
         DMT_Taxonomy_Values__c taxonomy = DMT_UTIL.createTaxonomyValueRecord(
-            value,
             catalog + '_' + value,
             catalog,
             new Map<Schema.SObjectField, Object>{
+                DMT_Taxonomy_Values__c.DMT_Name__c => value,
+                DMT_Taxonomy_Values__c.DMT_Name_EN__c => value,
                 DMT_Taxonomy_Values__c.DMT_Value__c  => value,
                 DMT_Taxonomy_Values__c.DMT_Active__c => true
             }

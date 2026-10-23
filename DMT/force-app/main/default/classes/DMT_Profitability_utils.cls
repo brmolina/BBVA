@@ -6,6 +6,14 @@ public without sharing class DMT_Profitability_utils {
     private static final String RWA_BASE_URL_KEY = 'baseUrl';
     private static final String RWA_BASE_URL_INTEGRATED = 'https://calculadoraholding-int.work-03.nextgen.igrupobbva/index.html';
     private static final String RWA_BASE_URL_PRODUCTION = 'https://calculadoraholding.live-03.nextgen.igrupobbva/index.html';
+    // CIBGLOBALD-4711 - Profitability detail CSV download (getProfitabilityDetailFile).
+    private static final String DETAIL_SERVICE_NAME = 'DMT_ProfitabilityDownloadDetail';
+    @TestVisible
+    private static final String DETAIL_NO_CALCULATION_MESSAGE = 'There is no profitability calculation for this Opportunity.';
+    @TestVisible
+    private static final String DETAIL_NOT_AVAILABLE_MESSAGE = 'The profitability detail is not available for this Opportunity.';
+    @TestVisible
+    private static final String DETAIL_FAILED_MESSAGE = 'The profitability detail could not be downloaded.';
 
     private static Boolean isIntegratedOrg() {
         Boolean isSandboxOrg = false;
@@ -255,6 +263,92 @@ public without sharing class DMT_Profitability_utils {
         }
 
         return result;
+    }
+
+    /**
+     * CIBGLOBALD-4711 - Gets the Profitability detail file (monthly amortization table) of an Opportunity for
+     * the 'Profitability Detail' button of the Profitability modal (LWC dmt_profitability_view
+     * .downloadProfitabilityDetail, called from dmt_passport_modal). Nothing is recalculated or stored.
+     *
+     * Callout: Epsilon service profitability_download_detail (APX), exposed by the ASO API DmtDownloadDetailsV0
+     * as GET /dmt/v0/download-details?opportunityId=<Opportunity.DMT_Opp_Id__c>; custom metadata
+     * iaso__GBL_integration_service__mdt record DMT_ProfitabilityDownloadDetail (custom setting
+     * iaso__GBL_Rest_Services_Url__c DMT_ProfitabilityDownloadDetail_INT, iaso__Enable_Log__c writes
+     * iaso__GBL_Application_Log__c); call path getProfitabilityDetailFile -> DMT_Utils.callService ->
+     * DMT_HPG_Utils.callService. Response 200: {data: [{file: CSV in base64, opportunityVersion}]}.
+     *
+     * @param oppId Opportunity Id.
+     * @return Map with 'success', 'fileBase64', 'fileName' and 'message' (error text or null).
+     */
+    @AuraEnabled
+    public static Map<String, Object> getProfitabilityDetailFile(String oppId) {
+        Map<String, Object> result;
+        try {
+            Opportunity opp = String.isBlank(oppId) ? null : [SELECT Id, DMT_Opp_Id__c FROM Opportunity WHERE Id = :oppId LIMIT 1];
+            if (opp == null || String.isBlank(opp.DMT_Opp_Id__c)) {
+                result = buildDetailFileError(DETAIL_NO_CALCULATION_MESSAGE);
+            } else {
+                String externalOppId = opp.DMT_Opp_Id__c.trim();
+                HttpResponse response = DMT_Utils.callService(DETAIL_SERVICE_NAME, new Map<String, Object>{ 'opportunityId' => externalOppId });
+                result = parseDetailFileResponse(response, externalOppId);
+            }
+        } catch (Exception e) {
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(), 'DMT_Profitability_utils', 'getProfitabilityDetailFile', 'DMT', 'Opportunity'));
+            result = buildDetailFileError(DETAIL_FAILED_MESSAGE);
+        }
+        DMT_AsyncOrchestrator.flush();
+        return result;
+    }
+
+    /**
+     * CIBGLOBALD-4711 - Reads the DMT_ProfitabilityDownloadDetail response. 204, 404, an empty data list or a
+     * blank file mean there is no detail; other non-2xx codes return the backend message
+     * (messages[0].message, e.g. code functionalError on 400) when present. A 200 body that is not the
+     * documented JSON throws, so the caller logs it.
+     */
+    @TestVisible
+    private static Map<String, Object> parseDetailFileResponse(HttpResponse response, String externalOppId) {
+        Integer statusCode = response != null ? response.getStatusCode() : 0;
+        String body = response != null ? response.getBody() : null;
+        if (statusCode == 204 || statusCode == 404) {
+            return buildDetailFileError(DETAIL_NOT_AVAILABLE_MESSAGE);
+        }
+        if (statusCode < 200 || statusCode >= 300) {
+            String backendMessage = getBackendMessage(body);
+            return buildDetailFileError(String.isBlank(backendMessage)
+                ? DETAIL_FAILED_MESSAGE + ' (status ' + statusCode + ')'
+                : DETAIL_FAILED_MESSAGE + ' ' + backendMessage);
+        }
+        if (String.isBlank(body)) {
+            return buildDetailFileError(DETAIL_NOT_AVAILABLE_MESSAGE);
+        }
+        List<Object> dataList = (List<Object>) ((Map<String, Object>) JSON.deserializeUntyped(body)).get('data');
+        Map<String, Object> detail = dataList == null || dataList.isEmpty() ? null : (Map<String, Object>) dataList[0];
+        String fileBase64 = detail == null ? null : (String) detail.get('file');
+        if (String.isBlank(fileBase64)) {
+            return buildDetailFileError(DETAIL_NOT_AVAILABLE_MESSAGE);
+        }
+        String version = detail.get('opportunityVersion') == null ? '' : String.valueOf(detail.get('opportunityVersion'));
+        return new Map<String, Object>{
+            'success' => true,
+            'fileBase64' => fileBase64,
+            'fileName' => 'ProfitabilityDetail_' + externalOppId + (String.isBlank(version) ? '' : '_v' + version) + '.csv',
+            'message' => null
+        };
+    }
+
+    // CIBGLOBALD-4711 - messages[0].message of an ASO error body, or null when the body has another shape.
+    private static String getBackendMessage(String body) {
+        try {
+            List<Object> messages = (List<Object>) ((Map<String, Object>) JSON.deserializeUntyped(body)).get('messages');
+            return messages == null || messages.isEmpty() ? null : (String) ((Map<String, Object>) messages[0]).get('message');
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static Map<String, Object> buildDetailFileError(String message) {
+        return new Map<String, Object>{ 'success' => false, 'message' => message };
     }
 
     /**

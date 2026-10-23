@@ -39,14 +39,14 @@ Both Passport LWCs (`dmt_passport` = Lines, `dmt_passport_opportunity` = Opportu
 - classes/DMT_ApprovalChangeStep_Helper.cls: removed explicit CASE_UPDATE publish (Task trigger events now cover the reopen).
 - lwc/dmt_passport/dmt_passport.js and lwc/dmt_passport_opportunity/dmt_passport_opportunity.js: only /event/DMT_Task__e, match on lineId/opportunityId, PASSPORT op refreshes passport record, unsubscribe when tab hidden + one catch-up refresh if hidden >30s; Opp 'Close Task' detection now uses MODIFY_MULTI.
 - NEW classes/DTM_Task_Helper_Test.cls (+meta) - written but NOT run (no deploy allowed).
-- manifest/CIBGLOBALD-4617-package.xml (deploy together: Apex + trigger + both LWCs).
+- DMT/tickets/CIBGLOBALD-4617/CIBGLOBALD-4617-package.xml (deploy together: Apex + trigger + both LWCs).
 
 ## Pending / open
 - User reviews git diff, org-diffs, deploys and runs tests themselves; QA in Lines + Opps; ANS draft at wrap-up (Task.trigger/DTM_Task_Helper = Task object shared trigger; DMT_Task__e payload semantics changed; likely Nivel 2).
 - Known gap: no push when backend flips Obsolete via non-Passport-update path? (flows/markAsObsolete update Passport__c so trigger covers). Cases changed without Task DML are not covered.
 
 ## Destructive (2026-10-08)
-- Only thing to delete in the org: PlatformEventChannelMember `ChangeEvents_Passport_ChangeEvent` (CDC for Passport__c; was NOT tracked in this repo, only listed in manifest/package-full.xml). Manifest: manifest/CIBGLOBALD-4617-destructiveChanges.xml (the deletion list, reason written inside). The user runs destructive deploys on the other laptop, not here. Dry run of the deletion on DMT_TCM_DEV succeeded.
+- Only thing to delete in the org: PlatformEventChannelMember `ChangeEvents_Passport_ChangeEvent` (CDC for Passport__c; was NOT tracked in this repo, only listed in manifest/package-full.xml). Manifest: DMT/tickets/CIBGLOBALD-4617/CIBGLOBALD-4617-destructiveChanges.xml (the deletion list, reason written inside). The user runs destructive deploys on the other laptop, not here. Dry run of the deletion on DMT_TCM_DEV succeeded.
 - Must be deployed AFTER the new Apex + LWCs are live (old LWCs still subscribe to /data/Passport__ChangeEvent). DMT_Task__e and CIB_skip_platform_event__c stay (still used by the filtered flow).
 - Dry-run of main package: compiles, 64/64 tests pass with DTM_Task_Helper_Test + DMT_ApprovalChangeStep_HelperTest + DMT_Passport_Handler_test + DMT_Passport_FeatureSync_test; Status Failed only due to 75% per-class coverage of DMT_ApprovalChangeStep_Helper (pre-existing; 7 existing Line/Opp tests also fail on baseline).
 

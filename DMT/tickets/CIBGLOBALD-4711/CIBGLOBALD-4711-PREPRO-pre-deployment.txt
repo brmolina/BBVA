@@ -1,0 +1,16 @@
+CIBGLOBALD-4711 - PREPRO - PRE-DEPLOYMENT
+URL copied from custom setting DMT_ProfitabilityEndPoint (https://aso-aus-global.work-01.platform.bbva.com/dmt/v0/).
+
+1. Developer Console > Debug > Open Execute Anonymous Window.
+2. Paste the script below.
+3. Click Execute.
+4. Check the log shows: DONE DMT_ProfitabilityDownloadDetail_AUS
+
+iaso__GBL_Rest_Services_Url__c endpoint = new iaso__GBL_Rest_Services_Url__c(Name = 'DMT_ProfitabilityDownloadDetail_AUS');
+for (iaso__GBL_Rest_Services_Url__c existing : [SELECT Id FROM iaso__GBL_Rest_Services_Url__c WHERE Name = :endpoint.Name LIMIT 1]) {
+    endpoint.Id = existing.Id;
+}
+endpoint.iaso__Url__c = 'https://aso-aus-global.work-01.platform.bbva.com/dmt/v0/';
+endpoint.iaso__Enable_Log__c = true;
+upsert endpoint;
+System.debug('DONE ' + endpoint.Name);

@@ -77,7 +77,7 @@ Context and findings: `CIBGLOBALD-4713-context.md`.
 - `DMT_ViewController_Test`: preload still filled through the helper.
 - Data only through `DMT_Test_DataFactory` (add generators if missing, retrieved fresh first). `System.assert*` -> `Assert.*` in every touched test file.
 
-## Manifest (`manifest/CIBGLOBALD-4713-package.xml`, order)
+## Manifest (`DMT/tickets/CIBGLOBALD-4713/CIBGLOBALD-4713-package.xml`, order)
 1. ApexClass: DMT_Profitability_utils, DMT_ViewController, DMT_OppProfitabilityRenderer, DMT_Profitability_utilsTest, DMT_ProfitabilityRendererTest, DMT_ViewController_Test
 2. LightningComponentBundle: dmt_profitability_view, dmt_passport_modal
 No permission set change (no new Apex class). No CMDT change.

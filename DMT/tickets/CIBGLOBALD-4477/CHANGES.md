@@ -43,7 +43,7 @@ approval Case yet (open or closed), and `startCase` also refuses a feature that 
 
 ## Retrieve / deploy package
 
-`manifest/CIBGLOBALD-4477-package.xml` (retrieve with `sf project retrieve start -x manifest/CIBGLOBALD-4477-package.xml -o DMT_TCM_DEV`).
+`DMT/tickets/CIBGLOBALD-4477/CIBGLOBALD-4477-package.xml` (retrieve with `sf project retrieve start -x DMT/tickets/CIBGLOBALD-4477/CIBGLOBALD-4477-package.xml -o DMT_TCM_DEV`).
 All components, including the new `DMT_StartApprovalCasePayload`, are already deployed to DMT_TCM_DEV, so the retrieve returns them normally. If they ever have to be deployed again, deploy everything together: the entries reference each other.
 
 Components: DMT_StartApprovalCasePayload (new), DMT_Case_Steps_Controller, DMT_AsyncDispatcher, DMT_AsyncQueueJob, DMT_Passport_Handler, DMT_Line_Helper,

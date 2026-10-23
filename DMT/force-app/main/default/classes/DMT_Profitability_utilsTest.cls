@@ -1,10 +1,16 @@
 @isTest
 public with sharing class DMT_Profitability_utilsTest {
 
+    private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass();
+
     @testSetup
     static void setupData() {
 
-        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+        // CIBGLOBALD-4711 - Group Account instead of generateOpportunity(): its generateAccount() sets
+        // Account.Past2_FY_Corp_Synd_Lending_amount__c, which is not createable for every running user.
+        // Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+        Account account = DMT_Test_DataFactory.generateGroupAccount('Profitability Test Group', null, null);
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunityForAccount(account.Id);
         DMT_Test_DataFactory.generateOpportunityClient(opp.Id);
         Product2 product2 = DMT_Test_DataFactory.generateProduct2();
         PricebookEntry pricebookEntry = DMT_Test_DataFactory.generatePricebookEntry(product2);
@@ -15,25 +21,25 @@ public with sharing class DMT_Profitability_utilsTest {
 
     @isTest
     static void testGetProductDetailsByIds() {
-        // Obtener un OLI creado en testSetup
+        // OLI created in testSetup
         OpportunityLineItem oli = [SELECT Id, OpportunityId, gf_group_priority_opportunity_id__c FROM OpportunityLineItem LIMIT 1];
 
-        // Llamar al método
+        // Call the method
         List<Map<String, Object>> results = DMT_profitability_utils.getProductDetailsByIds(new List<String>{oli.gf_group_priority_opportunity_id__c}, oli.OpportunityId);
 
-        Assert.areEqual(1, results.size(), 'Debe devolver un registro');
+        Assert.areEqual(1, results.size(), 'One record expected');
         Assert.areEqual(oli.Id, results[0].get('Id'));
-        Assert.isTrue(results[0].containsKey('Name'), 'Debe incluir el nombre del producto');
-        Assert.isTrue(results[0].containsKey('InitialDate'), 'Debe incluir InitialDate');
-        Assert.isTrue(results[0].containsKey('MaturityDate'), 'Debe incluir MaturityDate');
-        Assert.isTrue(results[0].containsKey('OppInitialDate'), 'Debe incluir OppInitialDate');
-        Assert.isTrue(results[0].containsKey('OppMaturityDate'), 'Debe incluir OppMaturityDate');
+        Assert.isTrue(results[0].containsKey('Name'), 'Product name expected');
+        Assert.isTrue(results[0].containsKey('InitialDate'), 'InitialDate expected');
+        Assert.isTrue(results[0].containsKey('MaturityDate'), 'MaturityDate expected');
+        Assert.isTrue(results[0].containsKey('OppInitialDate'), 'OppInitialDate expected');
+        Assert.isTrue(results[0].containsKey('OppMaturityDate'), 'OppMaturityDate expected');
     }
 
     @isTest
     static void testGetProductDetailsByIds_Empty() {
         List<Map<String, Object>> results = DMT_profitability_utils.getProductDetailsByIds(new List<String>(), null);
-        Assert.areEqual(0, results.size(), 'Si no hay IDs, debe devolver vacío');
+        Assert.areEqual(0, results.size(), 'No Ids must return an empty result');
     }
 
     @isTest
@@ -42,18 +48,18 @@ public with sharing class DMT_Profitability_utilsTest {
 
         Map<String, Map<String, Object>> results = DMT_profitability_utils.getNominalAmountsByOpportunityLineItemIds(new List<String>{oli.gf_group_priority_opportunity_id__c}, oli.OpportunityId);
 
-        Assert.areNotEqual(null, results, 'El resultado no debe ser nulo');
+        Assert.areNotEqual(null, results, 'Result must not be null');
     }
 
     @isTest
     static void testGetNominalAmountsByOpportunityLineItemIds_Empty() {
         Map<String, Map<String, Object>> results = DMT_profitability_utils.getNominalAmountsByOpportunityLineItemIds(new List<String>(), null);
-        Assert.areEqual(0, results.size(), 'Si no hay IDs, debe devolver vacío');
+        Assert.areEqual(0, results.size(), 'No Ids must return an empty result');
     }
 
     @isTest
     static void testConvertNominalsToOppCurrency() {
-        // Usar EUR->EUR para evitar dependencia de datos de tipo de cambio en BD
+        // EUR->EUR avoids depending on exchange rate data in the org
         String productKey = 'PROD-001';
 
         List<Map<String, Object>> productDetails = new List<Map<String, Object>>{
@@ -75,42 +81,42 @@ public with sharing class DMT_Profitability_utilsTest {
         Map<String, Map<String, Object>> result = DMT_Profitability_utils.convertNominalsToOppCurrency(productDetails, nominalAmounts);
         Test.stopTest();
 
-        // Debe devolver entrada para el producto y para TOTAL
-        Assert.isTrue(result.containsKey(productKey), 'Debe existir entrada para el producto');
-        Assert.isTrue(result.containsKey('TOTAL'), 'Debe existir entrada TOTAL');
+        // Entries expected for the product and for TOTAL
+        Assert.isTrue(result.containsKey(productKey), 'Product entry expected');
+        Assert.isTrue(result.containsKey('TOTAL'), 'TOTAL entry expected');
 
         Map<String, Object> productResult = result.get(productKey);
-        Assert.areEqual(1000.0, (Decimal) productResult.get('nominalFb'), 'nominalFb debe conservarse en EUR->EUR');
-        Assert.areEqual(500.0,  (Decimal) productResult.get('nominalDb'), 'nominalDb debe conservarse en EUR->EUR');
+        Assert.areEqual(1000.0, (Decimal) productResult.get('nominalFb'), 'nominalFb must be kept in EUR->EUR');
+        Assert.areEqual(500.0,  (Decimal) productResult.get('nominalDb'), 'nominalDb must be kept in EUR->EUR');
         Assert.areEqual('EUR', (String) productResult.get('fromCurrency'));
         Assert.areEqual('EUR', (String) productResult.get('toCurrency'));
 
         Map<String, Object> total = result.get('TOTAL');
-        Assert.areEqual(1000.0, (Decimal) total.get('nominalFb'), 'TOTAL nominalFb debe ser la suma');
-        Assert.areEqual(500.0,  (Decimal) total.get('nominalDb'), 'TOTAL nominalDb debe ser la suma');
-        Assert.areEqual('EUR', (String) total.get('toCurrency'), 'TOTAL toCurrency debe ser la moneda de la oportunidad');
+        Assert.areEqual(1000.0, (Decimal) total.get('nominalFb'), 'TOTAL nominalFb must be the sum');
+        Assert.areEqual(500.0,  (Decimal) total.get('nominalDb'), 'TOTAL nominalDb must be the sum');
+        Assert.areEqual('EUR', (String) total.get('toCurrency'), 'TOTAL toCurrency must be the Opportunity currency');
     }
 
     @isTest
     static void testConvertNominalsToOppCurrency_Empty() {
-        // Ambas entradas vacías deben devolver mapa vacío
+        // Both inputs empty must return an empty map
         Map<String, Map<String, Object>> resultEmpty = DMT_Profitability_utils.convertNominalsToOppCurrency(
             new List<Map<String, Object>>(),
             new Map<String, Map<String, Object>>()
         );
-        Assert.areEqual(0, resultEmpty.size(), 'Con entradas vacías debe devolver mapa vacío');
+        Assert.areEqual(0, resultEmpty.size(), 'Empty inputs must return an empty map');
 
-        // productDetails null también debe devolver vacío
+        // productDetails null must also return an empty map
         Map<String, Map<String, Object>> resultNull = DMT_Profitability_utils.convertNominalsToOppCurrency(
             null,
             null
         );
-        Assert.areEqual(0, resultNull.size(), 'Con entradas nulas debe devolver mapa vacío');
+        Assert.areEqual(0, resultNull.size(), 'Null inputs must return an empty map');
     }
 
     @isTest
     static void testConvertNominalsToOppCurrency_MissingCurrencyInfo() {
-        // Producto en nominalAmounts pero con clave distinta a productDetails -> currencies == null
+        // Product in nominalAmounts with a key not in productDetails -> currencies == null
         List<Map<String, Object>> productDetails = new List<Map<String, Object>>{
             new Map<String, Object>{
                 'gf_group_priority_opportunity_id__c' => 'DIFFERENT-KEY',
@@ -130,16 +136,16 @@ public with sharing class DMT_Profitability_utilsTest {
         Map<String, Map<String, Object>> result = DMT_Profitability_utils.convertNominalsToOppCurrency(productDetails, nominalAmounts);
         Test.stopTest();
 
-        Assert.isTrue(result.containsKey('PROD-NO-CURRENCY'), 'Debe existir entrada para producto sin currency info');
-        Assert.isTrue(result.containsKey('TOTAL'), 'Debe existir entrada TOTAL');
+        Assert.isTrue(result.containsKey('PROD-NO-CURRENCY'), 'Entry expected for a product without currency info');
+        Assert.isTrue(result.containsKey('TOTAL'), 'TOTAL entry expected');
         Map<String, Object> total = result.get('TOTAL');
-        Assert.areEqual(3000.0, (Decimal) total.get('nominalFb'), 'TOTAL nominalFb debe ser el valor original');
-        Assert.areEqual(1500.0, (Decimal) total.get('nominalDb'), 'TOTAL nominalDb debe ser el valor original');
+        Assert.areEqual(3000.0, (Decimal) total.get('nominalFb'), 'TOTAL nominalFb must be the original value');
+        Assert.areEqual(1500.0, (Decimal) total.get('nominalDb'), 'TOTAL nominalDb must be the original value');
     }
 
     @isTest
     static void testConvertNominalsToOppCurrency_NullNominalsNoCurrencyInfo() {
-        // Nominals nulos + sin currency info -> cubre ramos ternarios null en bloque currencies==null
+        // Null nominals + no currency info -> covers the null ternary branches in the currencies == null block
         List<Map<String, Object>> productDetails = new List<Map<String, Object>>{
             new Map<String, Object>{
                 'gf_group_priority_opportunity_id__c' => 'DIFFERENT-KEY',
@@ -159,16 +165,16 @@ public with sharing class DMT_Profitability_utilsTest {
         Map<String, Map<String, Object>> result = DMT_Profitability_utils.convertNominalsToOppCurrency(productDetails, nominalAmounts);
         Test.stopTest();
 
-        Assert.isTrue(result.containsKey('PROD-NULL-NOMINALS'), 'Debe existir entrada para producto con nominals null');
-        Assert.isTrue(result.containsKey('TOTAL'), 'Debe existir entrada TOTAL');
+        Assert.isTrue(result.containsKey('PROD-NULL-NOMINALS'), 'Entry expected for a product with null nominals');
+        Assert.isTrue(result.containsKey('TOTAL'), 'TOTAL entry expected');
         Map<String, Object> total = result.get('TOTAL');
-        Assert.areEqual(0, (Decimal) total.get('nominalFb'), 'TOTAL nominalFb debe ser 0 con nominals null');
-        Assert.areEqual(0, (Decimal) total.get('nominalDb'), 'TOTAL nominalDb debe ser 0 con nominals null');
+        Assert.areEqual(0, (Decimal) total.get('nominalFb'), 'TOTAL nominalFb must be 0 with null nominals');
+        Assert.areEqual(0, (Decimal) total.get('nominalDb'), 'TOTAL nominalDb must be 0 with null nominals');
     }
 
     @isTest
     static void testConvertNominalsToOppCurrency_NullNominalsWithCurrency() {
-        // Nominals nulos con currency info -> cubre ramos ternarios null en ruta principal
+        // Null nominals with currency info -> covers the null ternary branches in the main path
         String productKey = 'PROD-NULL-MAIN';
 
         List<Map<String, Object>> productDetails = new List<Map<String, Object>>{
@@ -190,11 +196,11 @@ public with sharing class DMT_Profitability_utilsTest {
         Map<String, Map<String, Object>> result = DMT_Profitability_utils.convertNominalsToOppCurrency(productDetails, nominalAmounts);
         Test.stopTest();
 
-        Assert.isTrue(result.containsKey(productKey), 'Debe existir entrada para el producto');
-        Assert.isTrue(result.containsKey('TOTAL'), 'Debe existir entrada TOTAL');
+        Assert.isTrue(result.containsKey(productKey), 'Product entry expected');
+        Assert.isTrue(result.containsKey('TOTAL'), 'TOTAL entry expected');
         Map<String, Object> total = result.get('TOTAL');
-        Assert.areEqual(0, (Decimal) total.get('nominalFb'), 'TOTAL nominalFb debe ser 0');
-        Assert.areEqual(0, (Decimal) total.get('nominalDb'), 'TOTAL nominalDb debe ser 0');
+        Assert.areEqual(0, (Decimal) total.get('nominalFb'), 'TOTAL nominalFb must be 0');
+        Assert.areEqual(0, (Decimal) total.get('nominalDb'), 'TOTAL nominalDb must be 0');
     }
 
     @isTest
@@ -203,9 +209,9 @@ public with sharing class DMT_Profitability_utilsTest {
         Map<String, Object> result = DMT_Profitability_utils.getRwaRegLinkInfo(null);
         Test.stopTest();
 
-        Assert.areEqual(false, (Boolean) result.get('enabled'), 'Con oppId nulo no debe habilitarse el link');
-        Assert.areEqual('', (String) result.get('explanationId'), 'Con oppId nulo explanationId debe ir vacio');
-        Assert.areEqual('', (String) result.get('entific'), 'Con oppId nulo entific debe ir vacio');
+        Assert.areEqual(false, (Boolean) result.get('enabled'), 'Null oppId must not enable the link');
+        Assert.areEqual('', (String) result.get('explanationId'), 'Null oppId must return an empty explanationId');
+        Assert.areEqual('', (String) result.get('entific'), 'Null oppId must return an empty entific');
     }
 
     @isTest
@@ -213,7 +219,7 @@ public with sharing class DMT_Profitability_utilsTest {
         Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
         OpportunityLineItem oli = [SELECT Id FROM OpportunityLineItem LIMIT 1];
 
-        // Forzamos datos vacios para validar el retorno por defecto.
+        // Empty branch data to validate the default return.
         opp.DMT_branch_id_c__c = null;
         oli.g_branch_id__c = null;
         update new List<SObject>{ opp, oli };
@@ -222,9 +228,9 @@ public with sharing class DMT_Profitability_utilsTest {
         Map<String, Object> result = DMT_Profitability_utils.getRwaRegLinkInfo(opp.Id);
         Test.stopTest();
 
-        Assert.areEqual(false, (Boolean) result.get('enabled'), 'Sin branch en Opp ni OLI no debe habilitarse el link');
-        Assert.areEqual('', (String) result.get('explanationId'), 'Sin match explanationId debe ir vacio');
-        Assert.areEqual('', (String) result.get('entific'), 'Sin match entific debe ir vacio');
+        Assert.areEqual(false, (Boolean) result.get('enabled'), 'No branch on Opportunity or OLI must not enable the link');
+        Assert.areEqual('', (String) result.get('explanationId'), 'No match must return an empty explanationId');
+        Assert.areEqual('', (String) result.get('entific'), 'No match must return an empty entific');
     }
 
     @isTest
@@ -257,18 +263,18 @@ public with sharing class DMT_Profitability_utilsTest {
         Map<String, Map<String, Object>> result = DMT_Profitability_utils.getUnderlyingDetailsByIds(new List<String>());
         Test.stopTest();
 
-        Assert.areNotEqual(null, result, 'El resultado no debe ser nulo');
-        Assert.areEqual(0, result.size(), 'Con lista vacia debe devolver mapa vacio');
+        Assert.areNotEqual(null, result, 'Result must not be null');
+        Assert.areEqual(0, result.size(), 'Empty list must return an empty map');
     }
 
     @isTest
     static void testGetUnderlyingDetailsByIds_Success() {
-        DMT_Underlying__c underlying = new DMT_Underlying__c(
-            Name = 'Underlying Test',
-            DMT_Drawn_Reference_Amount__c = 1250.5,
-            DMT_Undrawn_Reference_Amount__c = 349.25
-        );
-        insert underlying;
+        OpportunityLineItem oli = [SELECT Id FROM OpportunityLineItem LIMIT 1];
+        DMT_Underlying__c underlying = DMT_UTIL.createUnderlyingRecord(oli.Id, new Map<Schema.SObjectField, Object>{
+            DMT_Underlying__c.Name => 'Underlying Test',
+            DMT_Underlying__c.DMT_Drawn_Reference_Amount__c => 1250.5,
+            DMT_Underlying__c.DMT_Undrawn_Reference_Amount__c => 349.25
+        });
 
         Test.startTest();
         Map<String, Map<String, Object>> result = DMT_Profitability_utils.getUnderlyingDetailsByIds(
@@ -276,8 +282,8 @@ public with sharing class DMT_Profitability_utilsTest {
         );
         Test.stopTest();
 
-        Assert.areEqual(1, result.size(), 'Debe devolver el underlying solicitado');
-        Assert.isTrue(result.containsKey(underlying.Id), 'Debe contener la clave del underlying');
+        Assert.areEqual(1, result.size(), 'The requested underlying expected');
+        Assert.isTrue(result.containsKey(underlying.Id), 'Underlying key expected');
 
         Map<String, Object> row = result.get(underlying.Id);
         Assert.areEqual(underlying.Id, (String) row.get('Id'));
@@ -375,5 +381,87 @@ public with sharing class DMT_Profitability_utilsTest {
         Assert.isTrue(blank.isEmpty(), 'Blank response returns an empty map');
     }
 
-    
+    // CIBGLOBALD-4711 - Profitability detail CSV (service DMT_ProfitabilityDownloadDetail, mock from its iaso record).
+    @isTest
+    static void testGetProfitabilityDetailFile_Success() {
+        Opportunity opp = [SELECT Id, DMT_Opp_Id__c FROM Opportunity LIMIT 1];
+        opp.DMT_Opp_Id__c = 'ESCD25OPP00000001ES';
+        update opp;
+
+        Test.setMock(HttpCalloutMock.class, new DMT_Integration_MockGenerator());
+        Test.startTest();
+        Map<String, Object> result = DMT_Profitability_utils.getProfitabilityDetailFile(opp.Id);
+        Test.stopTest();
+
+        Assert.isTrue((Boolean) result.get('success'), 'Mock response must be accepted: ' + result.get('message'));
+        Assert.areEqual('ProfitabilityDetail_ESCD25OPP00000001ES_v7.csv', result.get('fileName'), 'File name from DMT_Opp_Id__c and opportunityVersion');
+        // The mock file (iaso record DMT_ProfitabilityDownloadDetail) is a real CSV in base64.
+        List<String> csvLines = EncodingUtil.base64Decode((String) result.get('fileBase64')).toString().split('\r\n');
+        Assert.areEqual('Mes;Fecha;Capital pendiente;Amortización;Interés;Descripción', csvLines[0], 'CSV header expected');
+        Assert.areEqual(3, csvLines.size(), 'Header plus two rows expected');
+    }
+
+    @isTest
+    static void testGetProfitabilityDetailFile_NoOpportunity() {
+        Test.startTest();
+        Map<String, Object> blankId = DMT_Profitability_utils.getProfitabilityDetailFile(null);
+        Map<String, Object> unknownId = DMT_Profitability_utils.getProfitabilityDetailFile('006000000000000AAA');
+        Test.stopTest();
+
+        Assert.isFalse((Boolean) blankId.get('success'), 'No Opportunity Id means no file');
+        Assert.areEqual(DMT_Profitability_utils.DETAIL_NO_CALCULATION_MESSAGE, blankId.get('message'), 'No calculation message expected');
+        Assert.isFalse((Boolean) unknownId.get('success'), 'Unknown Opportunity means no file');
+        Assert.areEqual(DMT_Profitability_utils.DETAIL_FAILED_MESSAGE, unknownId.get('message'), 'Failure message expected');
+    }
+
+    @isTest
+    static void testParseDetailFileResponse() {
+        Test.startTest();
+        Map<String, Object> noContent = DMT_Profitability_utils.parseDetailFileResponse(buildResponse(204, ''), 'OPP1');
+        Map<String, Object> notFound = DMT_Profitability_utils.parseDetailFileResponse(buildResponse(404, ''), 'OPP1');
+        Map<String, Object> functionalError = DMT_Profitability_utils.parseDetailFileResponse(
+            buildResponse(400, '{"messages":[{"code":"functionalError","message":"Backend error text.","type":"ERROR"}]}'), 'OPP1');
+        Map<String, Object> serverError = DMT_Profitability_utils.parseDetailFileResponse(buildResponse(500, 'not json'), 'OPP1');
+        Map<String, Object> emptyData = DMT_Profitability_utils.parseDetailFileResponse(buildResponse(200, '{"data":[]}'), 'OPP1');
+        Map<String, Object> blankFile = DMT_Profitability_utils.parseDetailFileResponse(buildResponse(200, '{"data":[{"file":"","opportunityVersion":"1"}]}'), 'OPP1');
+        Map<String, Object> noVersion = DMT_Profitability_utils.parseDetailFileResponse(buildResponse(200, '{"data":[{"file":"YSxiCjEsMg=="}]}'), 'OPP1');
+        Test.stopTest();
+
+        Assert.areEqual(DMT_Profitability_utils.DETAIL_NOT_AVAILABLE_MESSAGE, noContent.get('message'), '204 means no detail');
+        Assert.areEqual(DMT_Profitability_utils.DETAIL_NOT_AVAILABLE_MESSAGE, notFound.get('message'), '404 means no detail');
+        Assert.areEqual(DMT_Profitability_utils.DETAIL_FAILED_MESSAGE + ' Backend error text.', functionalError.get('message'), 'Backend message must be shown');
+        Assert.areEqual(DMT_Profitability_utils.DETAIL_FAILED_MESSAGE + ' (status 500)', serverError.get('message'), 'Status code shown without backend message');
+        Assert.areEqual(DMT_Profitability_utils.DETAIL_NOT_AVAILABLE_MESSAGE, emptyData.get('message'), 'Empty data means no detail');
+        Assert.areEqual(DMT_Profitability_utils.DETAIL_NOT_AVAILABLE_MESSAGE, blankFile.get('message'), 'Blank file means no detail');
+        Assert.isTrue((Boolean) noVersion.get('success'), 'A file without version is still valid');
+        Assert.areEqual('ProfitabilityDetail_OPP1.csv', noVersion.get('fileName'), 'No version suffix when it is missing');
+    }
+
+    // CIBGLOBALD-4711 - Real CSV (header, ; separator, decimal comma, accents, quoted field) encoded as base64 in the
+    // documented response shape: the file returned must decode to exactly the same CSV.
+    @isTest
+    static void testParseDetailFileResponse_RealCsv() {
+        String csv = 'Mes;Fecha;Capital pendiente;Amortización;Interés;Descripción\r\n'
+            + '1;31/01/2026;1.000.000,00;10.000,50;2.345,67;Año 1 - cuota inicial\r\n'
+            + '2;28/02/2026;990.000,00;10.000,50;2.320,11;"Revisión; tipo variable €"\r\n';
+        String csvBase64 = EncodingUtil.base64Encode(Blob.valueOf(csv));
+        String body = JSON.serialize(new Map<String, Object>{
+            'data' => new List<Object>{ new Map<String, Object>{ 'file' => csvBase64, 'opportunityVersion' => '3' } }
+        });
+
+        Test.startTest();
+        Map<String, Object> result = DMT_Profitability_utils.parseDetailFileResponse(buildResponse(200, body), 'ESCD26OPP00004148ES');
+        Test.stopTest();
+
+        Assert.isTrue((Boolean) result.get('success'), 'A real CSV file must be accepted: ' + result.get('message'));
+        Assert.areEqual('ProfitabilityDetail_ESCD26OPP00004148ES_v3.csv', result.get('fileName'), 'File name from external Id and version');
+        Assert.areEqual(csv, EncodingUtil.base64Decode((String) result.get('fileBase64')).toString(), 'The CSV must reach the browser unchanged');
+    }
+
+    private static HttpResponse buildResponse(Integer statusCode, String body) {
+        HttpResponse response = new HttpResponse();
+        response.setStatusCode(statusCode);
+        response.setBody(body);
+        return response;
+    }
 }
