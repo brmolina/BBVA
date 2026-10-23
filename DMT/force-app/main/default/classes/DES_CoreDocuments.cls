@@ -111,7 +111,40 @@ public with sharing class DES_CoreDocuments {
         return headers;
     }
 
-    /**
+    public static void deleteFileMetadata(DeleteFileMetadataRequest request) {
+        try {
+
+            Config cfg = getConfig('DMT_DELETE');
+
+            //DES_CoreDocuments.MetadataUpdateRequest metadataRequest = new DES_CoreDocuments.MetadataUpdateRequest();
+            //DES_CoreDocuments.DocumentInfo documentInfo = new DES_CoreDocuments.DocumentInfo();
+            //DES_CoreDocuments.Categorization categorization = new DES_CoreDocuments.Categorization();
+            //DES_CoreDocuments.OriginInfo originInfo = new DES_CoreDocuments.OriginInfo();
+            //DES_CoreDocuments.SecurityLevelInfo securityLevelInfo = new DES_CoreDocuments.SecurityLevelInfo();
+
+
+            
+
+            String metadataRequestStr = JSON.serialize(request);
+
+            Map<String, Object> serviceRequest = new Map<String, Object>();
+            serviceRequest.put('payload', metadataRequestStr);
+            System.debug(LoggingLevel.INFO, 'DES_CoreDocuments.deleteFileMetadata - payload: ' + metadataRequestStr);
+            System.debug(LoggingLevel.INFO, 'DES_CoreDocuments.deleteFileMetadata - serviceRequest: ' + JSON.serialize(serviceRequest));
+                        System.debug(LoggingLevel.INFO, 'DES_CoreDocuments.deleteFileMetadata - request: ' + JSON.serialize(request));
+
+
+            HttpResponse response = DES_CoreDocumentsUtils.callService(cfg.metadataServiceName, (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(request)));
+
+            if (response.getStatusCode() >= 300) {
+                throw new CalloutException('Metadata delete failed: ' + response.getBody());
+            }
+
+        } catch (Exception e) {
+            throw new CalloutException(e.getMessage());
+        }
+    }
+        /**
     * @description Update file metadata with configuration from Custom Metadata
     * @param request Update parameters (includes configName)
     */
@@ -229,7 +262,20 @@ public with sharing class DES_CoreDocuments {
         @AuraEnabled
         public String objectCode {get;set;}
     }
+    /**
+     *  @Description: Class DeleteFileMetadataRequest
+    */
+    public class DeleteFileMetadataRequest {
+        @AuraEnabled
+        public String delType {get;set;}
 
+        @AuraEnabled
+        public String documentId {get;set;}
+
+        @AuraEnabled
+        public String folderId {get;set;}
+
+    }
     /**
      *  @Description: Class MetadataUpdateRequest
     */
