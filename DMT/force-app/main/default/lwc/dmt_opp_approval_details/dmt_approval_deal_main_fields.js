@@ -1,4 +1,4 @@
-﻿// TODO: Add actual field API names from Salesforce once confirmed
+// TODO: Add actual field API names from Salesforce once confirmed
 export const dealMainFields = [
   {
     id: "DMT_Commitment_Deadline__c",
@@ -25,6 +25,19 @@ export const dealMainFields = [
     isRequired: false,
     maxLength: "3085",
     showCharacterCounter: true
+  },
+  {
+    id: "DMT_Purpose_Summary__c",
+    label: "Purpose Summary",
+    apiName: "DMT_Purpose_Summary__c",
+    objectType: 'DMT_Opportunity_Client__c',
+    value: "",
+    size: "1-of-2",
+    type: "picklist",
+    isReadOnly: false,
+    isHidden: false,
+    isRequired: false,
+    options: []
   },
   {
     id: "DMT_Purpose__c",

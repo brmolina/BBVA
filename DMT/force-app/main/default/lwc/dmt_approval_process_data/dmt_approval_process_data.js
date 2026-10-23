@@ -31,6 +31,8 @@ import APPROVER_NAME from '@salesforce/schema/DMT_Line__c.DMT_Approver__r.Name';
 import APPROVER_GB_ID from "@salesforce/schema/DMT_Line__c.DMT_ApproverGlobalBanker__c";
 import APPROVER_GB_NAME from '@salesforce/schema/DMT_Line__c.DMT_ApproverGlobalBanker__r.Name';
 import CLIENT_USE_FIELD from '@salesforce/schema/DMT_Line__c.DMT_Client_Use__c';
+// Changes been made for CIBGLOBALD-4763 - Import approval-state UI edit eligibility for approval data.
+import canEditLineInApprovalStateUi from '@salesforce/apex/DMT_LineController.canEditLineInApprovalStateUi';
 
 
 export default class Dmt_approval_process_data extends LightningElement {
@@ -102,7 +104,8 @@ export default class Dmt_approval_process_data extends LightningElement {
             APPROVER_GB_ID, APPROVER_GB_NAME,
             CLIENT_USE_FIELD]
     })
-    wiredRecordLine(result) {
+    // Changes been made for CIBGLOBALD-4763 - Resolve UI edit permission when line status data loads.
+    async wiredRecordLine(result) {
         this.wiredLineResult = result;
         this.isLoading = true;
         const {
@@ -131,7 +134,16 @@ export default class Dmt_approval_process_data extends LightningElement {
             const isDraft = this.lineStatus === 'Draft';
             const isNotLockedByOthers = (this.lineLock == null || this.lineLock === this.currentUserId);
 
-            this.isAllowedEditing = isDraft && isNotLockedByOthers;
+            let canEditApprovalStateUi = false;
+            if (!isDraft) {
+                try {
+                    canEditApprovalStateUi = await canEditLineInApprovalStateUi({ recordId: this.recordId });
+                } catch (permissionError) {
+                    canEditApprovalStateUi = false;
+                }
+            }
+            // Changes been made for CIBGLOBALD-4763 - Enable approval data edits for qualified users while honoring line locks.
+            this.isAllowedEditing = (isDraft || canEditApprovalStateUi === true) && isNotLockedByOthers;
             this.isLoading = false;
         }
     }

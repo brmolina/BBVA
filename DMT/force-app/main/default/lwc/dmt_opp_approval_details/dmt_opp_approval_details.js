@@ -50,6 +50,13 @@ const CLIENT_PROFITABILITY_SECTION_REFS = ['clientProfitability'];
 const BUSINESS_PLAN_SECTION_REFS = ['businessPlan'];
 const APPROVERS_SECTION_REFS = ['approversSection'];
 const ALL_FORM_SECTION_REFS = [...APPROVERS_SECTION_REFS, ...DEAL_SECTION_REFS, ...CLIENT_INFO_SECTION_REFS, ...CLIENT_PROFITABILITY_SECTION_REFS, ...BUSINESS_PLAN_SECTION_REFS];
+const BP_NON_DATA_FIELDS = new Set([
+    'Id', 'DMT_Year__c', 'DMT_Booking_Geography__c', 'DMT_Opportunity__c', 'DMT_Client__c',
+    'DMT_Active__c', 'DMT_QAOTER__c', 'DMT_Currency__c'
+]);
+const hasBusinessPlanValueChanges = changes => changes.some(change =>
+    Object.keys(change).some(fieldName => !BP_NON_DATA_FIELDS.has(fieldName))
+);
 // Approver fields belong to Opportunity (not DMT_Opportunity_Client__c);
 // SPPI fields are routed via objectType metadata on their field definitions
 const OPPORTUNITY_FIELD_NAMES = new Set([
@@ -575,12 +582,22 @@ export default class DmtOppApprovalDetails extends LightningElement {
                     }
                 }
             }
-            const hasFieldChanges = Object.keys(recordFields).length > 0;
             const hasOppChanges   = Object.keys(opportunityFields).length > 0;
 
             // Collect BP table changes (array of { Id, Field__c: value } update objects)
             const bpChanges    = this.refs?.businessPlan?.collectBpChanges?.() ?? [];
             const hasBpChanges = bpChanges.length > 0;
+            const hasBpDataChanges = hasBusinessPlanValueChanges(bpChanges);
+
+            // Initialize the year only when BP data is first persisted; the Apex layer
+            // also guards against overwriting a value set concurrently or by Support.
+            if (hasBpDataChanges &&
+                this.opportunityClientId && this.allData?.DMT_Year_Business_Plan__c == null) {
+                const firstYear = this.refs?.businessPlan?.firstDisplayedYear;
+                if (firstYear != null) recordFields.DMT_Year_Business_Plan__c = firstYear;
+            }
+
+            const hasFieldChanges = Object.keys(recordFields).length > 0;
 
             if (!hasFieldChanges && !hasBpChanges && !hasOppChanges && allRequiredValid) {
                 // Nothing to save — exit edit mode silently

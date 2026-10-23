@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CIBGLOBALD-3981 bugfix: Client Profitability fields rounded to 2 decimals on load and typing limited to 2 decimals. Order is arbitrary: dmt_form_renderer ignores maxDecimals until the field definitions set it. -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>dmt_form_renderer</members>
+        <members>dmt_opp_approval_details</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <version>65.0</version>
+</Package>

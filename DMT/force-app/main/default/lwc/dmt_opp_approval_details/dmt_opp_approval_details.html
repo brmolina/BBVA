@@ -265,6 +265,7 @@
                     group-id={groupId}
                     is-read-only-user={isReadOnlyUser}
                     opportunity-client-id={opportunityClientId}
+                    persisted-first-year={allData.DMT_Year_Business_Plan__c}
                     is-gtb={isGtb}
                     oneditmodechange={handleEditModeChange}
                     onfieldchange={handleFieldChange}
@@ -294,6 +295,7 @@
                                         lwc:ref="financialsTable"
                                         record-id={currentRecordId}
                                         opportunity-client-id={opportunityClientId}
+                                        persisted-first-year={allData.DMT_Year_Business_Plan__c}
                                         group-id={groupId}
                                         stage-name={stageRecord}
                                         is-edit-mode={isEditMode}
