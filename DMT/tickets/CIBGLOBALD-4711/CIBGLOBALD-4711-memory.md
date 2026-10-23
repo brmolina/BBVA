@@ -34,4 +34,6 @@ BLOCKER: Jimmy Tonato replaced DMT_Test_DataFactory (08:22 UTC) + DMT_UtilTestCl
 
 **2026-10-23 PAUSED:** everything committed (c6433e6b on 4711), pushed, merged into main (a8e88225), main pushed. Waiting for the service team (Epsilon permission 01211008 for USLHPG01, via Diego). On resume: retest the button on 006KE000003Qx30YAC, check the real CSV against isCsvText (PENDING marker in dmt_profitability_view.js) and replace the mock with real data, then commit message + Spanish technical note for the work repo.
 
+**2026-10-23 BLOCKED:** user contacted Fatima Paterna Roda (Epsilon) directly; waiting for her analysis. Blocked comment for the ticket drafted (Spanish, development state + 01211008 permission block, USLHPG01 INT/AUS, USLHPG02 PRO expected).
+
 **Status:** analysis only. Nothing retrieved/edited/deployed. Blocked on the service contract (params, response format, columns, iaso config).
