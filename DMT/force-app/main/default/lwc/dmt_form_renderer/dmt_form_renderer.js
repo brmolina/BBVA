@@ -53,6 +53,7 @@ export default class dmt_form_renderer extends LightningElement {
     _checkOverflowFrame = null;          // rAF handle for debounce
     _pendingScrollIndex = null;          // Field index to scroll to after edit mode activates
     _scrollAfterRender = false;          // Flag: execute scroll on next renderedCallback
+    _pendingValidationClearFieldId = null;
 
     /**
      * Public property used by the parent to feed the field configuration.
@@ -135,6 +136,11 @@ export default class dmt_form_renderer extends LightningElement {
             this._pendingScrollIndex = null;
             this._scrollToFieldIndex(idx);
         }
+        if (this._pendingValidationClearFieldId) {
+            const fieldId = this._pendingValidationClearFieldId;
+            this._pendingValidationClearFieldId = null;
+            this._clearNativeValidation(fieldId);
+        }
     }
 
     _scrollToFieldIndex(index) {
@@ -154,6 +160,18 @@ export default class dmt_form_renderer extends LightningElement {
                 // el objeto de opciones; se reintenta sin argumentos.
                 inputEl.focus();
             }
+        }
+    }
+
+    _clearNativeValidation(fieldId) {
+        const control = this.template.querySelector(`[data-id="${fieldId}"]`);
+        if (!control) return;
+
+        if (typeof control.setCustomValidity === 'function') {
+            control.setCustomValidity('');
+        }
+        if (typeof control.reportValidity === 'function') {
+            control.reportValidity();
         }
     }
 
@@ -199,6 +217,14 @@ export default class dmt_form_renderer extends LightningElement {
             'lightning-input, lightning-textarea, lightning-combobox, lightning-record-picker, c-dmt_custom_lookup'
         );
 
+        // Work with new field objects so a redo cannot retain stale validation or
+        // highlight state from the previous scenario values.
+        const clearedFields = this._rawFields.map((field) => ({
+            ...field,
+            isFieldValid: true,
+            isHighlighted: false
+        }));
+
         for (const control of controls) {
             if (typeof control.setCustomValidity === 'function') {
                 control.setCustomValidity('');
@@ -206,11 +232,15 @@ export default class dmt_form_renderer extends LightningElement {
 
             const fieldIndex = this._fieldIndexById.get(control.dataset?.id);
             if (fieldIndex !== undefined) {
-                this._rawFields[fieldIndex].isFieldValid = typeof control.reportValidity === 'function'
+                clearedFields[fieldIndex].isFieldValid = typeof control.reportValidity === 'function'
                     ? control.reportValidity()
                     : true;
             }
         }
+
+        this._rawFields = clearedFields;
+        this._enrichedFields = clearedFields.map((field) => this._enrichField(field));
+        this._displayFieldsDirty = true;
     }
 
     disconnectedCallback() {
@@ -469,7 +499,8 @@ export default class dmt_form_renderer extends LightningElement {
 
         // ----- standard value / hasValue -----
         // For recordPicker the internal value is always the normalised object (or null)
-        const value = isRecordPicker ? normalizedRecordValue : field.value;
+        // CIBGLOBALD-3981 - fields with maxDecimals show the stored value rounded to that many decimals
+        const value = isRecordPicker ? normalizedRecordValue : this._roundToMaxDecimals(field.value, field.maxDecimals);
         const hasValue = isRecordPicker
             ? normalizedRecordValue !== null
             : isCustomLookup
@@ -668,6 +699,35 @@ export default class dmt_form_renderer extends LightningElement {
         this._commitChange(fieldId, newValue);
     }
 
+    /**
+     * CIBGLOBALD-3981 - Rounds a numeric value (half up) to maxDecimals for display. Values loaded
+     * from the record can carry more decimals than the input step allows (e.g. 18.7492 inferred from
+     * the Account by DMT_OpportunityClientTriggerHelper), which lightning-input rejects with
+     * 'Your entry isn't a valid increment.'. The record itself is not changed unless the user edits it.
+     */
+    _roundToMaxDecimals(value, maxDecimals) {
+        if (maxDecimals === undefined || maxDecimals === null) return value;
+        if (value === null || value === undefined || value === '') return value;
+        const num = Number(value);
+        if (!Number.isFinite(num)) return value;
+        const rounded = Number(Math.round(Number(`${num}e${maxDecimals}`)) + `e-${maxDecimals}`);
+        return Number.isFinite(rounded) ? rounded : num;
+    }
+
+    /**
+     * CIBGLOBALD-3981 - Drops typed decimals beyond field.maxDecimals and writes the trimmed value
+     * back to the input, so the user cannot enter more decimals than the field allows.
+     */
+    _limitTypedDecimals(el, field) {
+        if (field?.maxDecimals === undefined || field?.maxDecimals === null) return;
+        if (typeof el?.value !== 'string') return;
+        const match = /^(-?\d*)([.,])(\d*)$/.exec(el.value);
+        if (!match || match[3].length <= field.maxDecimals) return;
+        el.value = field.maxDecimals > 0
+            ? `${match[1]}${match[2]}${match[3].slice(0, field.maxDecimals)}`
+            : match[1];
+    }
+
     handleEdit(event) {
         this._pendingScrollIndex = event.currentTarget.dataset.index;
         this.dispatchEvent(new CustomEvent('editmodechange', { detail: { isEditMode: true } }));
@@ -686,6 +746,8 @@ export default class dmt_form_renderer extends LightningElement {
         const fieldIndex = this._fieldIndexById.get(fieldId);
         if (fieldIndex === undefined) return;
 
+        this._limitTypedDecimals(el, this._rawFields[fieldIndex]);
+
         const isValid = typeof el.reportValidity === 'function'
             ? el.reportValidity()
             : true;
@@ -702,6 +764,13 @@ export default class dmt_form_renderer extends LightningElement {
         const fieldId = event.target.dataset.id;
         const fieldType = event.target.dataset.type;
         if (fieldType === FIELD_TYPES.BLANK) return;
+
+        // CIBGLOBALD-3981 - lightning-input fires change before the input event reaches handleFieldInput,
+        // so the decimal limit is also applied here before the value is committed.
+        const limitFieldIndex = this._fieldIndexById.get(fieldId);
+        if (limitFieldIndex !== undefined) {
+            this._limitTypedDecimals(event.target, this._rawFields[limitFieldIndex]);
+        }
 
         const newValue = fieldType === FIELD_TYPES.CHECKBOX
             ? event.target.checked
@@ -840,7 +909,8 @@ export default class dmt_form_renderer extends LightningElement {
         const field = this._rawFields[fieldIndex];
         if (field.type === FIELD_TYPES.BLANK) return;
 
-        const updatedRaw = { ...field, value: newValue };
+        const isFieldValid = extra.isFieldValid ?? field.isFieldValid ?? true;
+        const updatedRaw = { ...field, value: newValue, isFieldValid };
         this._rawFields[fieldIndex] = updatedRaw;
 
         // New array reference so LWC detects the change, but only rebuild the single entry
@@ -850,7 +920,6 @@ export default class dmt_form_renderer extends LightningElement {
         this._displayFieldsDirty = true;
 
         const wasHighlighted = field.isHighlighted;
-        const isFieldValid = updatedRaw.isFieldValid !== undefined ? updatedRaw.isFieldValid : true;
 
         this.dispatchEvent(new CustomEvent('fieldchange', {
             detail: {
@@ -967,7 +1036,44 @@ export default class dmt_form_renderer extends LightningElement {
             ? originalValue.value
             : originalValue;
 
-        this._commitChange(fieldId, revertValue, { isRevert: true });
+        this._commitChange(fieldId, revertValue, {
+            isRevert: true,
+            isFieldValid: this._isValueValidForField(field, revertValue)
+        });
+        this._pendingValidationClearFieldId = fieldId;
+    }
+
+    _isValueValidForField(field, value) {
+        const isEmpty = Array.isArray(value)
+            ? value.length === 0
+            : value === null || value === undefined || value === '';
+
+        if (field.isRequired && isEmpty) {
+            return false;
+        }
+        if (isEmpty) {
+            return true;
+        }
+
+        if ([FIELD_TYPES.NUMBER, FIELD_TYPES.CURRENCY, FIELD_TYPES.NUMBER_WITH_SUFFIX].includes(field.type)) {
+            const numericValue = Number(value);
+            if (!Number.isFinite(numericValue)) {
+                return false;
+            }
+            if (field.min !== undefined && field.min !== null && numericValue < Number(field.min)) {
+                return false;
+            }
+            if (field.max !== undefined && field.max !== null && numericValue > Number(field.max)) {
+                return false;
+            }
+        }
+
+        if (field.type === FIELD_TYPES.DATE &&
+            ((field.minDate && value < field.minDate) || (field.maxDate && value > field.maxDate))) {
+            return false;
+        }
+
+        return !field.maxLength || String(value).length <= Number(field.maxLength);
     }
 
     // =========================================================================

@@ -1,0 +1,29 @@
+Corrección rework - decimales en Client Profitability
+
+Causa
+Los valores no llegan directamente del servicio a la pestaña. Al crear el Opportunity Client, el trigger DMT_OpportunityClientTrigger (DMT_OpportunityClientTriggerHelper.syncInferredAccountGroupFields, before insert) copia cuatro campos de la Account de la Opportunity (de su DES_Main_Parent__c si la Account es Subsidiary), solo si el campo destino está vacío:
+- Account.DES_RORC_NBC__c (RORC NBC (Last 12M)) -> DMT_Opportunity_Client__c.DMT_Clients_Global_RORC_CIB_Past_FY__c (Client RORC NBC Last FY (%))
+- Account.DES_RORC_YTD__c (Historical RORC (YTD)) -> DMT_Client_RORC_YTD__c (Client RORC NBC YTD (%))
+- Account.DES_BDI_Last12m__c (BDI Last12m) -> DMT_Client_Net_Incomes__c (Economic Profit RORC NBC 12m (Non Xsell))
+- Account.DES_RWA_Last12m__c (RWA Last12m) -> DMT_Client_RWA__c (RWA Total RORC NBC Last 12m * CET1 (Non Xsell))
+Todos son campos con scale 2, pero los valores cargados por API/integración en la Account conservan más decimales (ej. 18.7492) y el trigger los copia tal cual. El lightning-input de la pestaña (type number, step 0.01) rechaza ese valor con 'Your entry isn't a valid increment.' y bloquea el Save.
+
+Solución (solo LWC, el trigger sigue copiando el valor exacto de la Account)
+- LWC dmt_form_renderer: nueva propiedad opcional maxDecimals en la definición del field.
+  - Al cargar: el valor se muestra redondeado a maxDecimals (half up), en modo lectura y en edición (_roundToMaxDecimals, llamado desde _enrichField). El registro no se modifica si el usuario no edita el campo: entrar en edición y cancelar no muestra el aviso de cambios sin guardar, y un Save no envía ese campo si no se ha tocado.
+  - Al teclear: los decimales que superan maxDecimals se cortan mientras se escribe (_limitTypedDecimals, llamado desde handleFieldInput y handleFieldChange).
+  - Los fields sin maxDecimals no cambian de comportamiento; el resto de formularios que usan dmt_form_renderer no se ven afectados.
+- LWC dmt_opp_approval_details, fichero dmt_approval_client_profitability_fields.js: maxDecimals: 2 en los cuatro campos anteriores.
+- Ruta de la pestaña: Opportunity > Approval Process Data (dmt_opp_tab) > Client Profitability (dmt_opp_approval_details > dmt_section_simple_form > dmt_form_renderer).
+
+Cómo probar
+1. Buscar un Opportunity Client con más de dos decimales en alguno de los cuatro campos (Salesforce Inspector):
+   SELECT Id, Name, DMT_MDE_Opportunity__c, DMT_Clients_Global_RORC_CIB_Past_FY__c, DMT_Client_RORC_YTD__c, DMT_Client_Net_Incomes__c, DMT_Client_RWA__c FROM DMT_Opportunity_Client__c WHERE DMT_Client_RORC_YTD__c != null ORDER BY CreatedDate DESC LIMIT 50
+   Si no hay ninguno, editar uno de esos campos desde Salesforce Inspector con 4 decimales (ej. 18.7492): el valor se guarda tal cual por API.
+   También se puede reproducir el origen creando un Opportunity Client nuevo en una Opportunity cuya Account (o su DES_Main_Parent__c si es Subsidiary) tenga DES_RORC_YTD__c con más de dos decimales:
+   SELECT Id, Name, DES_Structure_Type__c, DES_RORC_NBC__c, DES_RORC_YTD__c, DES_RWA_Last12m__c, DES_BDI_Last12m__c FROM Account WHERE DES_RORC_YTD__c != null ORDER BY LastModifiedDate DESC LIMIT 50
+2. Abrir la Opportunity (DMT_MDE_Opportunity__c) > Approval Process Data > Client Profitability.
+3. Modo lectura: el campo muestra el valor con 2 decimales (18.7492 -> 18,75 %).
+4. Pulsar el lápiz: el input muestra 18,75 sin error de validación. Pulsar Save sin modificarlo: guarda sin el error 'Your entry isn't a valid increment.'.
+5. Escribir 12,3456 en el campo: el input se queda en 12,34 mientras se teclea.
+6. Entrar en edición desde otro campo y pulsar Cancel: no aparece el diálogo Unsaved Changes; volver a consultar el registro: el valor almacenado no ha cambiado.

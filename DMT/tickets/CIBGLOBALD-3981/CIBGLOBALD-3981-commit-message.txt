@@ -1,0 +1,4 @@
+CIBGLOBALD-3981 - round Client Profitability values to 2 decimals on load and limit typing to 2 decimals
+
+- dmt_form_renderer: new optional field property maxDecimals. When set, the input shows the stored value rounded half up to that many decimals (the record keeps its value unless the user edits the field), and decimals typed beyond the limit are cut off as the user types.
+- dmt_approval_client_profitability_fields: maxDecimals 2 on Client RORC NBC Last FY (%), Client RORC NBC YTD (%), Economic Profit RORC NBC 12m (Non Xsell) and RWA Total RORC NBC Last 12m * CET1 (Non Xsell). Values inferred from the Account can carry more than 2 decimals; the input rejected them with 'Your entry isn't a valid increment.' and Save was blocked.

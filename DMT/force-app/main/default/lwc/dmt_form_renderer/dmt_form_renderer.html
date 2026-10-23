@@ -65,20 +65,9 @@
                                                     </lightning-formatted-number>
                                                 </template>
 
-                                                <!-- CIBGLOBALD-3779 - stored value is a fraction (0.2), shown as a percentage (20%) -->
-                                                <template if:true={field.isFractionPercent}>
-                                                    <lightning-formatted-number
-                                                        value={field.fractionPercentValue}
-                                                        format-style="percent"
-                                                        maximum-fraction-digits={field.percentFractionDigits}>
-                                                    </lightning-formatted-number>
-                                                </template>
-
                                                 <template if:true={field.isNumber}>
                                                     <template if:false={field.isPercent}>
-                                                    <template if:false={field.isFractionPercent}>
                                                     <lightning-formatted-number value={field.value}></lightning-formatted-number>
-                                                    </template>
                                                 </template>
                                                 </template>
 

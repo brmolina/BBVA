@@ -15,7 +15,8 @@ export const clientProfitabilityFields = [
     isRequired: false,
     min:0,
     max:9999999999999999,
-    step:0.01
+    step:0.01,
+    maxDecimals: 2 // CIBGLOBALD-3981 - shown rounded, typing limited to 2 decimals (dmt_form_renderer)
   },
   {
     id: "DMT_CDD_Clients_Global_Rorc_Last_FY__c",
@@ -47,7 +48,8 @@ export const clientProfitabilityFields = [
     isRequired: false,
     min:0,
     max:9999999999999999,
-    step:0.01
+    step:0.01,
+    maxDecimals: 2 // CIBGLOBALD-3981 - shown rounded, typing limited to 2 decimals (dmt_form_renderer)
   },
   {
     id: "DMT_Client_Net_Incomes__c",
@@ -63,7 +65,8 @@ export const clientProfitabilityFields = [
     isRequired: false,
     min:0,
     max:9999999999999999,
-    step:0.01
+    step:0.01,
+    maxDecimals: 2 // CIBGLOBALD-3981 - shown rounded, typing limited to 2 decimals (dmt_form_renderer)
   },
   {
     id: "DMT_Client_RWA__c",
@@ -79,7 +82,8 @@ export const clientProfitabilityFields = [
     isRequired: false,
     min:0,
     max:9999999999999999,
-    step:0.01
+    step:0.01,
+    maxDecimals: 2 // CIBGLOBALD-3981 - shown rounded, typing limited to 2 decimals (dmt_form_renderer)
   },
   {
     id: "DMT_Exception_Pool__c",
