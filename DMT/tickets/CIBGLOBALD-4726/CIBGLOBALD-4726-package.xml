@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CIBGLOBALD-4726 - conditionDesc tooltip on the RED Asset Allocation traffic light. Order arbitrary: no entry depends on another being deployed first (dmt_traffic_light tooltipmessage already exists in the org). -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>dmt_traffic_light</members>
+        <members>dmt_feature_with_workflow</members>
+        <members>dmt_passport_opportunity</members>
+        <members>dmt_passport_child</members>
+        <members>dmt_passport</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <version>65.0</version>
+</Package>

@@ -4,6 +4,7 @@
 public with sharing class DMT_CoreDocuments_Controller {
     
     private static final String CONFIG_NAME = 'DMT';
+    private static final String CONFIG_NAME_DELETE = 'DMT_DELETE';
 
     @AuraEnabled
     public static DES_CoreDocumentsExpedientFolders.Wrapper getDocuments(String folderCode) {
@@ -38,6 +39,14 @@ public with sharing class DMT_CoreDocuments_Controller {
         updateFileMetadataWithObjectCode(fileId, fileName, docType, folderId, docType);
     }
 
+    @AuraEnabled
+    public static void deleteDocument(String fileId, String fileName, String folderId) {
+        DES_CoreDocuments.DeleteFileMetadataRequest req = new DES_CoreDocuments.DeleteFileMetadataRequest();
+            req.delType = 'DOCUMENT';
+            req.documentId = fileId;
+            req.folderId = folderId;
+        DES_CoreDocuments.deleteFileMetadata(req);
+    }
     @AuraEnabled
     public static void updateFileMetadataWithObjectCode(String fileId, String fileName, String docType, String folderId, String objectCode) {
         try {

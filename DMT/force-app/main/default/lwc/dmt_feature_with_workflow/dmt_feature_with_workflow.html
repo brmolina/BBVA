@@ -8,13 +8,16 @@
       </td>
 
       <template lwc:if={feature.capabilityIsValid}>
-        <td class="slds-p-left_large slds-align-center">
+        <td class="slds-p-left_large slds-align-center dmt-capability-cell">
           <template lwc:if={feature.showTrafficLight}>
             <div class="slds-truncate">
               <template lwc:if={isreadytoclose}>
                 <template lwc:if={disableReadyToCloseBusinessClick}>
                   <c-dmt_traffic_light
                     status={feature.stateName}
+                    tooltipmessage={feature.trafficLightTooltip}
+                    tooltipposition="above"
+                    faded={feature.isFaded}
                     data-id={feature.idProccess}
                     simplelight="false"
                     lightsize="25px"
@@ -23,6 +26,9 @@
                 <template lwc:else>
                   <c-dmt_traffic_light
                     status={feature.stateName}
+                    tooltipmessage={feature.trafficLightTooltip}
+                    tooltipposition="above"
+                    faded={feature.isFaded}
                     data-id={feature.idProccess}
                     simplelight="false"
                     lightsize="25px"
@@ -34,6 +40,9 @@
               <template lwc:else>
                 <c-dmt_traffic_light
                   status={feature.stateName}
+                  tooltipmessage={feature.trafficLightTooltip}
+                  tooltipposition="above"
+                  faded={feature.isFaded}
                   data-id={feature.idProccess}
                   simplelight="false"
                   lightsize="25px"

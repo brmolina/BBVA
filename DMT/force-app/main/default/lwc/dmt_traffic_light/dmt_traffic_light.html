@@ -10,14 +10,14 @@
             </template>
             <template lwc:else>
                 <div class="dmt-tooltip">
-                    <div class="traffic-light-container">
+                    <div class="traffic-light-container" style={lightsContainerStyle}>
                         <div class={redClass} style={customStyle}></div>
                         <div class={yellowClass} style={customStyle}></div>
                         <div class={greenClass} style={customStyle}></div>
                     </div>
                     <template lwc:if={tooltipmessage}> 
-                        <div class="dmt-tooltip-message slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-rise-from-ground" style="position:absolute;top:-35px;left:25px">
-                            <div class="slds-popover__body">{tooltipmessage}</div>
+                        <div class="dmt-tooltip-message slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-rise-from-ground" style={tooltipStyle}>
+                            <div class="slds-popover__body" style="white-space: pre-line;">{tooltipmessage}</div>
                         </div>
                     </template>
                 </div>

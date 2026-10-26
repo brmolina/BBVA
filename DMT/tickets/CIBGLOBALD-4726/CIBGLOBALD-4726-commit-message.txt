@@ -1,0 +1,6 @@
+CIBGLOBALD-4726 - tooltip with conditionDesc reasons on the red Asset Allocation traffic light
+
+- dmt_passport_opportunity and dmt_passport: new getAssetAllocationTooltip builds the hover text for the feature with motorDesc 'Line Engine - Asset Allocation' when its state is RED, from products[].opportunityValidation.conditionDesc of the Passport JSON (all products, split on ', ', one reason per line, no repeats). No text when conditionDesc is not informed, so no empty tooltip. Rebuilt on every Passport processing, so a recalculation replaces it.
+- dmt_feature_with_workflow and dmt_passport_child: pass the text to the capability traffic light.
+- dmt_traffic_light: new tooltipposition ('above' opens the popover over the light at its natural width) and faded attributes; multi-line text in the popover. Without them the previous tooltip position is kept.
+- dmt_feature_with_workflow: faded rows fade cell by cell, the capability tooltip stays fully opaque.

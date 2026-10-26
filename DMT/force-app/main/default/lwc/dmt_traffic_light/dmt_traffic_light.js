@@ -8,6 +8,22 @@ export default class Dmt_traffic_light extends LightningElement {
     @api simplelight;
     @api lightsize;
     @api tooltipmessage;
+    // CIBGLOBALD-4726 - 'above': the popover opens upwards from the bottom of the positioned table cell at its natural
+    // width, so multi-line reasons (Asset Allocation feature in dmt_feature_with_workflow and dmt_passport_child)
+    // neither squeeze into the cell nor cover the light. Without it the original position is kept (cfSummaryTreasury_Flexcard_76_BBVA).
+    @api tooltipposition;
+    // CIBGLOBALD-4726 - faded feature row (isFaded in dmt_feature_with_workflow): only the lights are faded, the tooltip stays opaque.
+    @api faded;
+
+    get tooltipStyle() {
+        return this.tooltipposition === 'above'
+            ? 'position:absolute;bottom:calc(50% + 1.25rem);left:0;width:max-content;max-width:13rem;'
+            : 'position:absolute;top:-35px;left:25px';
+    }
+
+    get lightsContainerStyle() {
+        return this.faded ? 'opacity: 0.4;' : '';
+    }
 
     get greenClass() {
         return this.isGreen ? 'status-indicator green on '  : 'status-indicator grey ';
