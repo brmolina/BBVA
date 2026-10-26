@@ -13,6 +13,11 @@
 {
     padding-left: 28px;
 }
-.faded-row {
+/* CIBGLOBALD-4726 - cells are faded one by one instead of the whole row, so the capability tooltip (dmt_traffic_light) stays readable;
+   the capability lights are faded inside dmt_traffic_light (faded attribute). */
+.faded-row > td:not(.dmt-capability-cell) {
     opacity: 0.4;
+}
+.faded-row > td.dmt-capability-cell {
+    border-top-color: rgba(201, 201, 201, 0.4);
 }

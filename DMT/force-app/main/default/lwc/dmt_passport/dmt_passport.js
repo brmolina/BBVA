@@ -38,6 +38,7 @@ import ClientsVALIDATION_MSG_1 from '@salesforce/label/c.DMT_PassportErrorMsgCli
 import Success_MSG from '@salesforce/label/c.Success';
 import Required_MSG from '@salesforce/label/c.DMT_PassportMsgRequired';
 const CUSTOMER_STRG = 'Customer';
+const ASSET_ALLOCATION_ENGINE_FEATURE = 'Line Engine - Asset Allocation';
 import { CurrentPageReference } from 'lightning/navigation';
 import hasLineGodPermission from '@salesforce/customPermission/DMT_Line_God';
 
@@ -539,9 +540,31 @@ export default class Dmt_passport extends LightningElement {
           if(ftr.motorDesc === 'Salesforce'){
               buffer.push({id: ftr.id, name: ftr.name, passportSanction: ftr.passportSanction, motorDesc: ftr.motorDesc, stateName: ftr.stateName, active: ftr.active, validations: ftr.validations, idProccess: ftr.id});
           } else {
-              buffer.push({ id: ftr.id, name: ftr.name, passportSanction: ftr.passportSanction, motorDesc: ftr.motorDesc, stateName: ftr.stateName, active: ftr.active, validations: ftr.validations, tasks: ftr.tasks, consumptionLimits: ftr.consumptionLimits, idProccess: ftr.id, profitability: ftr.profitability, orderNumber: ftr.orderNumber });
+              buffer.push({ id: ftr.id, name: ftr.name, passportSanction: ftr.passportSanction, motorDesc: ftr.motorDesc, stateName: ftr.stateName, active: ftr.active, validations: ftr.validations, tasks: ftr.tasks, consumptionLimits: ftr.consumptionLimits, idProccess: ftr.id, profitability: ftr.profitability, orderNumber: ftr.orderNumber, trafficLightTooltip: this.getAssetAllocationTooltip(ftr) });
           }
       });
+  }
+
+  /**
+   * CIBGLOBALD-4726 - Hover text for the RED traffic light of the Asset Allocation feature
+   * (motorDesc 'Line Engine - Asset Allocation'). Reasons come from products[].opportunityValidation.conditionDesc
+   * of the Passport JSON (Passport__c.DMT_Passport_Save__c), all products, split on ', ', one per line, without repeats.
+   * Undefined when the feature is not RED or no conditionDesc is informed, so no empty tooltip is shown (dmt_traffic_light).
+   */
+  getAssetAllocationTooltip(ftr) {
+      if (ftr?.motorDesc !== ASSET_ALLOCATION_ENGINE_FEATURE || ftr?.stateName?.toUpperCase() !== 'RED') {
+          return undefined;
+      }
+      const reasons = [];
+      (ftr.products || []).forEach(product => {
+          (product?.opportunityValidation?.conditionDesc || '').split(', ').forEach(reason => {
+              const trimmedReason = reason.trim();
+              if (trimmedReason && !reasons.includes(trimmedReason)) {
+                  reasons.push(trimmedReason);
+              }
+          });
+      });
+      return reasons.length > 0 ? reasons.join('\n') : undefined;
   }
 
   sortBuffer(buffer) {

@@ -1,0 +1,33 @@
+CIBGLOBALD-4726 - Nota técnica
+
+QUÉ SE HA HECHO
+Tooltip informativo sobre el semáforo de la columna CAPABILITY del panel PASSPORT para la feature de Asset Allocation, en Opportunity y en Line. No cambia el cálculo del semáforo ni ninguna validación.
+
+REGLA EXACTA
+- Origen de datos: JSON del Passport, campo Passport__c.DMT_Passport_Save__c (label Passport Save), nodo data.features[].
+- Identificación de la feature: motorDesc igual a Line Engine - Asset Allocation (comparación exacta, mayúsculas incluidas). Ninguna otra feature recibe tooltip.
+- Condición: stateName de esa feature = RED (sin distinguir mayúsculas). En GREEN, YELLOW, GRAY o WHITE no hay tooltip.
+- Texto: products[].opportunityValidation.conditionDesc de TODOS los products de la feature (no solo products[0]). Cada valor se separa por coma + espacio, se quitan espacios y duplicados y se muestra un motivo por línea, en el orden en que llegan.
+- Sin conditionDesc informado (ausente o vacío en todos los products): no se renderiza el popover (no existe el elemento div.dmt-tooltip-message), así que no aparece un recuadro vacío.
+- El texto se recalcula cada vez que la LWC procesa el JSON (carga de la página, Calculate, refresco por el platform event DMT_Task__e al cambiar el JSON del Passport), por lo que nunca queda texto de un cálculo anterior.
+
+DÓNDE ESTÁ
+- Opportunity: LWC dmt_passport_opportunity, método getAssetAllocationTooltip(feature), llamado desde setFeatureProperties; guarda el texto en feature.trafficLightTooltip. Se pinta en LWC dmt_feature_with_workflow, celda td.dmt-capability-cell (sección READY TO CLOSE y resto de secciones de esa LWC).
+- Line: LWC dmt_passport, método getAssetAllocationTooltip(ftr), llamado desde buildWrapperList (trafficLightTooltip en el wrapper). Se pinta en LWC dmt_passport_child.
+- LWC dmt_traffic_light: usa el @api tooltipmessage existente. Nuevos @api: tooltipposition (valor above: popover encima del semáforo, ancho natural hasta 13rem, saltos de línea con white-space: pre-line) y faded (atenúa solo las luces). El popover se muestra al hover con las reglas .dmt-tooltip:hover .dmt-tooltip-message del static resource DMT_Styles. Sin estos atributos se mantiene la posición anterior (FlexCard cfSummaryTreasury_Flexcard_76_BBVA no cambia).
+- Filas atenuadas (feature.isFaded: indicatorId = Y con la Opportunity en Ready to close o Closed Won): la opacidad 0.4 se aplica ahora celda a celda (dmt_feature_with_workflow.css, .faded-row > td:not(.dmt-capability-cell)) y en la celda CAPABILITY solo a las luces, para que el tooltip se lea sin atenuar. El aspecto de la fila no cambia.
+
+CÓMO ENCONTRAR UN REGISTRO (Salesforce Inspector)
+Cada Opportunity o Line tiene un único Passport (DMT_Passport_Selector), y la consulta devuelve su Id en Opportunity__c o DMT_Line__c. DMT_Passport_Save__c es long text y no se puede filtrar en SOQL, así que la búsqueda se hace en el JSON del resultado:
+- Opportunity: SELECT Id, Opportunity__c, Opportunity__r.Name, Opportunity__r.StageName, DMT_Passport_Save__c FROM Passport__c WHERE Opportunity__r.StageName = 'Ready to close' ORDER BY LastModifiedDate DESC
+- Line: SELECT Id, DMT_Line__c, DMT_Line__r.Name, DMT_Line__r.Status__c, DMT_Passport_Save__c FROM Passport__c WHERE DMT_Line__r.Status__c = 'Ready to close' ORDER BY LastModifiedDate DESC
+En el resultado, elegir una fila cuyo DMT_Passport_Save__c contenga Line Engine - Asset Allocation con stateName RED y conditionDesc informado dentro de products. El registro a abrir es el Opportunity__c (o DMT_Line__c) de esa misma fila: /lightning/r/Opportunity/<Opportunity__c>/view o /lightning/r/DMT_Line__c/<DMT_Line__c>/view.
+
+CÓMO PROBAR
+1. Abrir el Opportunity__c de la fila encontrada arriba.
+2. Panel PASSPORT, columna CAPABILITY: pasar el ratón por el semáforo rojo de esa feature. Aparece encima del semáforo un tooltip con un motivo por línea, igual a los conditionDesc de todos sus products y sin repetidos.
+3. Modificar los datos que provocan las validaciones y pulsar Calculate: el tooltip muestra los nuevos motivos y no los anteriores. Si la feature deja de estar en RED, no hay tooltip.
+4. Pasar el ratón por los semáforos de otras features: sin tooltip, comportamiento igual que antes.
+5. Feature en RED sin conditionDesc en ningún product: al pasar el ratón no aparece nada.
+6. Si la fila de la feature aparece atenuada (feature congelada), el tooltip se ve sin atenuar.
+7. Repetir los pasos 1 y 2 con el DMT_Line__c de una fila de la consulta de Line.

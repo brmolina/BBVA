@@ -45,6 +45,7 @@ const LIMIT_ENGINE_FEATURE = 'Limit Engine';
 const LINE_ENGINE_FEATURE = 'Line Engine';
 const CONSUME_ENGINE_FEATURE = 'Consume Engine';
 const PROFITABILITY_ENGINE_FEATURE = 'Profitability Engine';
+const ASSET_ALLOCATION_ENGINE_FEATURE = 'Line Engine - Asset Allocation';
 const APPROVAL_SECTION_FEATURE = 'approval';
 const PASSPORT_SECTION_FEATURE = 'passport';
 const READYTOCLOSE_SECTION_FEATURE = 'readytoclose';
@@ -633,6 +634,7 @@ export default class Dmt_passport_opportunity extends LightningElement {
         feature.showTrafficLight = feature.stateName != WHITE_STATE && feature.stateName != BLANK_STATE && feature.stateName != undefined;
         feature.showErrorCapability = feature.validations?.length > 0;
         feature.showErrorWorkflow = feature.validations?.length > 0;
+        feature.trafficLightTooltip = this.getAssetAllocationTooltip(feature);
 
         feature = this.formatValidation(feature);
         
@@ -680,6 +682,28 @@ export default class Dmt_passport_opportunity extends LightningElement {
 
         const freezedFeature = (feature?.indicatorId || '').trim().toUpperCase();
         feature.isFaded = freezedFeature=== 'Y' && (this.checkStatusReadyToClose || this.checkStatusClosedWon); //&& !isReadyToCloseFeature && !isMandatoryFeature;
+    }
+
+    /**
+     * CIBGLOBALD-4726 - Hover text for the RED traffic light of the Asset Allocation feature
+     * (motorDesc 'Line Engine - Asset Allocation'). Reasons come from products[].opportunityValidation.conditionDesc
+     * of the Passport JSON (Passport__c.DMT_Passport_Save__c), all products, split on ', ', one per line, without repeats.
+     * Undefined when the feature is not RED or no conditionDesc is informed, so no empty tooltip is shown (dmt_traffic_light).
+     */
+    getAssetAllocationTooltip(feature) {
+        if (feature?.motorDesc !== ASSET_ALLOCATION_ENGINE_FEATURE || feature?.stateName?.toUpperCase() !== RED_STATE) {
+            return undefined;
+        }
+        const reasons = [];
+        (feature.products || []).forEach(product => {
+            (product?.opportunityValidation?.conditionDesc || '').split(', ').forEach(reason => {
+                const trimmedReason = reason.trim();
+                if (trimmedReason && !reasons.includes(trimmedReason)) {
+                    reasons.push(trimmedReason);
+                }
+            });
+        });
+        return reasons.length > 0 ? reasons.join('\n') : undefined;
     }
 
     formatValidation(feature) {
