@@ -78,13 +78,29 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
     public static void restartTasksForRecord(Id recordId, List<Task> tasksToRestart) {
         Savepoint sp = Database.setSavepoint();
         try {
+            // CIBGLOBALD-4800 - Enhancement fix to existing process: re-read the tasks under a row lock and
+            // keep only the ones still open. The list can come from a DMT_RestartApprovalTasksPayload or an
+            // HPG callout check queued before another restart already cancelled them; without this check
+            // each run inserted its own replacement, leaving two open tasks on the Case.
+            Set<Id> requestedTaskIds = new Map<Id, Task>(tasksToRestart).keySet();
+            List<Task> stillOpenTasks = [
+                SELECT Id, WhatId, OwnerId, DMT_ViewStatusAtClose__c, DMT_Task_Type__c, RecordTypeId, CreatedDate
+                FROM Task
+                WHERE Id IN :requestedTaskIds
+                AND Status != :DMT_Constants.CANCELLED
+                FOR UPDATE
+            ];
+            if (stillOpenTasks.isEmpty()) {
+                return;
+            }
+
             // Keyed by Case Id because several stale tasks can share one Case, and a bulk update
             // containing the same Id twice throws "Duplicate id in list". Every task for a Case
             // gets cancelled, but only ONE replacement is created per Case - cloned from that
             // Case's oldest stale task - not one replacement per cancelled task.
             Map<Id, Case> casesToResetByCaseId = new Map<Id, Case>();
             Map<Id, Task> oldestTaskByCaseId = new Map<Id, Task>();
-            for (Task task : tasksToRestart) {
+            for (Task task : stillOpenTasks) { // CIBGLOBALD-4800
                 task.Status = DMT_Constants.CANCELLED;
                 Case resetCase = createResetCase(task.WhatId, task.OwnerId);
                 casesToResetByCaseId.put(resetCase.Id, resetCase);
@@ -98,7 +114,7 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
             for (Task oldestTask : oldestTaskByCaseId.values()) {
                 tasksToCreate.add(createResetTask(oldestTask));
             }
-            Database.update(tasksToRestart, AccessLevel.SYSTEM_MODE);
+            Database.update(stillOpenTasks, AccessLevel.SYSTEM_MODE); // CIBGLOBALD-4800
             Database.insert(tasksToCreate, AccessLevel.SYSTEM_MODE);
             Database.update(casesToResetByCaseId.values(), AccessLevel.SYSTEM_MODE);
 
@@ -591,14 +607,35 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
         return (value instanceof String && String.isBlank((String) value)) ? null : value;
     }
 
+    // CIBGLOBALD-4800 - Enhancement fix to existing process: task Ids already restarted inline or queued
+    // for an async restart in this transaction (see dispatchRestarts).
+    private static Set<Id> restartDispatchedTaskIds = new Set<Id>();
+
+    @TestVisible // CIBGLOBALD-4800
     private static void dispatchRestarts(Map<Id, List<Task>> tasksToRestartByRecordId) {
-        if (tasksToRestartByRecordId.size() < SYNC_RESTART_RECORD_LIMIT) {
-            for (Id recordId : tasksToRestartByRecordId.keySet()) {
-                restartTasksForRecord(recordId, tasksToRestartByRecordId.get(recordId));
+        // CIBGLOBALD-4800 - Enhancement fix to existing process: skip tasks this transaction already
+        // restarted or queued. In Ready to close every save re-checks, so a second save of the same records
+        // in one transaction would otherwise queue the same restart again.
+        Map<Id, List<Task>> pendingByRecordId = new Map<Id, List<Task>>();
+        for (Id recordId : tasksToRestartByRecordId.keySet()) {
+            List<Task> pendingTasks = new List<Task>();
+            for (Task task : tasksToRestartByRecordId.get(recordId)) {
+                if (restartDispatchedTaskIds.add(task.Id)) {
+                    pendingTasks.add(task);
+                }
+            }
+            if (!pendingTasks.isEmpty()) {
+                pendingByRecordId.put(recordId, pendingTasks);
+            }
+        }
+
+        if (pendingByRecordId.size() < SYNC_RESTART_RECORD_LIMIT) { // CIBGLOBALD-4800
+            for (Id recordId : pendingByRecordId.keySet()) { // CIBGLOBALD-4800
+                restartTasksForRecord(recordId, pendingByRecordId.get(recordId)); // CIBGLOBALD-4800
             }
         } else {
-            for (Id recordId : tasksToRestartByRecordId.keySet()) {
-                DMT_AsyncOrchestrator.enqueue(new DMT_RestartApprovalTasksPayload(recordId, tasksToRestartByRecordId.get(recordId)));
+            for (Id recordId : pendingByRecordId.keySet()) { // CIBGLOBALD-4800
+                DMT_AsyncOrchestrator.enqueue(new DMT_RestartApprovalTasksPayload(recordId, pendingByRecordId.get(recordId))); // CIBGLOBALD-4800
             }
         }
     }

@@ -10,7 +10,27 @@
 @IsTest
 public with sharing class DMT_ApprovalChangeStep_HelperTest {
 
+    private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass();
     private static final List<String> TRACKED_FIELDS = new List<String>{ 'Alpha_Code_Client__c', 'DMT_ClientRating__c' };
+    private static Id queueId;
+
+    private static Id getQueueId() {
+        if (queueId == null) {
+            queueId = [SELECT Id FROM Group WHERE DeveloperName = 'DMT_Approvers1' LIMIT 1].Id;
+        }
+        return queueId;
+    }
+
+      @TestSetup
+    static void setupTestData() {
+        DMT_Test_DataFactory.generateCase(
+            UserInfo.getUserId(),
+            new Map<Schema.SObjectField, Object>{
+                Case.DMT_Passport_Sanction__c => 'approval'
+            }
+        );
+    }
+
 
     // CIBGLOBALD-4117 - found live 2026-09-25: DMT_NBC_AssessmentRenderer declared
     // 'DMT_equator_Principles_Category__c' while DMT_OppApprovalProcessDataRenderer independently
@@ -145,11 +165,14 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
 
     @IsTest
     static void testCreateResetTaskPreservesRecordTypeAndResetsStatus() {
+         Case c = [SELECT Id FROM Case LIMIT 1];
         Id approvalStepRTId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
-        Task source = new Task(
-            RecordTypeId = approvalStepRTId,
-            Status = 'Completed',
-            Subject = 'Original subject'
+        Task source = DMT_UTIL.buildTask(getQueueId(), c.id,
+            new Map<Schema.SObjectField, Object>{
+                Task.RecordTypeId => approvalStepRTId,
+                Task.Status => 'Completed',
+                Task.Subject => 'Original subject'
+            }
         );
 
         Task reset = DMT_ApprovalChangeStep_Helper.createResetTask(source);
@@ -184,12 +207,33 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
         Id caseRTId = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
         Id taskRTId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
 
-        Case approvalCase = new Case(Status = 'Pending', RecordTypeId = caseRTId, Subject = 'Test');
-        insert approvalCase;
+        Case approvalCase = DMT_UTIL.createCaseRecord(getQueueId(),
+            new Map<Schema.SObjectField, Object>{
+                Case.RecordTypeId => caseRTId,
+                Case.Status => 'Pending',
+                Case.Subject => 'Test'
+            }
+        );
 
-        Task olderTask = new Task(WhatId = approvalCase.Id, RecordTypeId = taskRTId, Status = 'Completed', Subject = 'Older');
-        Task newerTask = new Task(WhatId = approvalCase.Id, RecordTypeId = taskRTId, Status = 'Completed', Subject = 'Newer');
-        insert new List<Task>{ olderTask, newerTask };
+        List<Task> tasksToInsert = new List<Task>{
+            DMT_UTIL.buildTask(getQueueId(), approvalCase.Id,
+                new Map<Schema.SObjectField, Object>{
+                    Task.RecordTypeId => taskRTId,
+                    Task.Status => 'Completed',
+                    Task.Subject => 'Older'
+                }
+            ),
+            DMT_UTIL.buildTask(getQueueId(), approvalCase.Id,
+                new Map<Schema.SObjectField, Object>{
+                    Task.RecordTypeId => taskRTId,
+                    Task.Status => 'Completed',
+                    Task.Subject => 'Newer'
+                }
+            )
+        };
+        insert tasksToInsert;
+        Task olderTask = tasksToInsert[0];
+        Task newerTask = tasksToInsert[1];
         Test.setCreatedDate(olderTask.Id, DateTime.now().addDays(-2));
         Test.setCreatedDate(newerTask.Id, DateTime.now().addDays(-1));
 
@@ -217,13 +261,101 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
         Assert.areEqual('Task', replacementTasks[0].Subject, 'The single replacement must come from createResetTask, cloned from the oldest stale task.');
     }
 
+    // CIBGLOBALD-4800 - the same task list restarted twice (an async restart queued twice before the first
+    // run) must leave exactly one replacement: the second run finds the tasks already cancelled.
+    @IsTest
+    static void testRestartTasksForRecordTwiceCreatesOneReplacement() {
+        Id caseRTId = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
+        Id taskRTId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
+
+        Case approvalCase = DMT_UTIL.createCaseRecord(getQueueId(),
+            new Map<Schema.SObjectField, Object>{
+                Case.RecordTypeId => caseRTId,
+                Case.Status => 'Pending',
+                Case.Subject => 'Test'
+            }
+        );
+        Task staleTask = DMT_UTIL.createTaskRecord(getQueueId(), approvalCase.Id,
+            new Map<Schema.SObjectField, Object>{
+                Task.RecordTypeId => taskRTId,
+                Task.Status => 'Completed',
+                Task.Subject => 'Stale'
+            }
+        );
+        List<Task> tasksToRestart = [
+            SELECT Id, WhatId, OwnerId, RecordTypeId, DMT_Task_Type__c, CreatedDate
+            FROM Task WHERE Id = :staleTask.Id
+        ];
+
+        Test.startTest();
+        DMT_ApprovalChangeStep_Helper.restartTasksForRecord(approvalCase.Id, tasksToRestart);
+        DMT_ApprovalChangeStep_Helper.restartTasksForRecord(approvalCase.Id, tasksToRestart);
+        Test.stopTest();
+
+        Assert.areEqual(1, [SELECT COUNT() FROM Task WHERE WhatId = :approvalCase.Id AND Status = :DMT_Constants.NOTSTARTED],
+            'Restarting the same tasks twice must leave exactly one replacement task.');
+        Assert.areEqual(1, [SELECT COUNT() FROM Task WHERE WhatId = :approvalCase.Id AND Status = :DMT_Constants.CANCELLED],
+            'The stale task must be cancelled once.');
+    }
+
+    // CIBGLOBALD-4800 - two records (the async path, at or above SYNC_RESTART_RECORD_LIMIT) dispatched twice in
+    // one transaction, like two saves while parked in Ready to close: each Case still gets one replacement.
+    @IsTest
+    static void testDispatchRestartsTwiceCreatesOneReplacementPerCase() {
+        Id caseRTId = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
+        Id taskRTId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
+        Map<Schema.SObjectField, Object> caseOverrides = new Map<Schema.SObjectField, Object>{
+            Case.RecordTypeId => caseRTId,
+            Case.Status => 'Pending',
+            Case.Subject => 'Test'
+        };
+
+        List<Case> approvalCases = new List<Case>{
+            DMT_UTIL.buildCase(getQueueId(), caseOverrides),
+            DMT_UTIL.buildCase(getQueueId(), caseOverrides)
+        };
+        insert approvalCases;
+
+        Map<Schema.SObjectField, Object> taskOverrides = new Map<Schema.SObjectField, Object>{
+            Task.RecordTypeId => taskRTId,
+            Task.Status => 'Completed',
+            Task.Subject => 'Stale'
+        };
+        List<Task> staleTasks = new List<Task>{
+            DMT_UTIL.buildTask(getQueueId(), approvalCases[0].Id, taskOverrides),
+            DMT_UTIL.buildTask(getQueueId(), approvalCases[1].Id, taskOverrides)
+        };
+        insert staleTasks;
+
+        // recordId only keys the payload; restartTasksForRecord works from the tasks themselves.
+        Map<Id, List<Task>> tasksByRecordId = new Map<Id, List<Task>>();
+        for (Task t : [SELECT Id, WhatId, OwnerId, RecordTypeId, DMT_Task_Type__c, CreatedDate FROM Task WHERE Id IN :staleTasks]) {
+            tasksByRecordId.put(t.WhatId, new List<Task>{ t });
+        }
+
+        Test.startTest();
+        DMT_ApprovalChangeStep_Helper.dispatchRestarts(tasksByRecordId);
+        DMT_ApprovalChangeStep_Helper.dispatchRestarts(tasksByRecordId);
+        DMT_AsyncOrchestrator.flush();
+        Test.stopTest();
+
+        Map<Id, Integer> replacementsByCaseId = new Map<Id, Integer>();
+        for (Task replacement : [SELECT WhatId FROM Task WHERE WhatId IN :approvalCases AND Status = :DMT_Constants.NOTSTARTED]) {
+            Integer count = replacementsByCaseId.get(replacement.WhatId);
+            replacementsByCaseId.put(replacement.WhatId, count == null ? 1 : count + 1);
+        }
+        for (Case approvalCase : approvalCases) {
+            Assert.areEqual(1, replacementsByCaseId.get(approvalCase.Id), 'Each Case must get exactly one replacement task.');
+        }
+    }
+
     // CIBGLOBALD-4117: trackedComponentsForSnapshot scopes the restart watch gate's field comparison
     // to the components a task's own approver view actually had, instead of blindly checking every
     // renderer-tracked component - see the method's own header comment for the Treasury/Approval
     // Process Data bug this fixes. Pure function over an in-memory record, no DML needed.
     @IsTest
     static void testTrackedComponentsForSnapshotBlankFallsBackToFullList() {
-        DMT_TaskStatusWhenCompleted__c snapshot = new DMT_TaskStatusWhenCompleted__c();
+        DMT_TaskStatusWhenCompleted__c snapshot = DMT_UTIL.buildTaskStatusWhenCompleted();
         Assert.areEqual(
             DMT_RendererFactory.getTrackedComponentNames(),
             DMT_ApprovalChangeStep_Helper.trackedComponentsForSnapshot(snapshot),
@@ -233,8 +365,10 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
 
     @IsTest
     static void testTrackedComponentsForSnapshotScopesToConfiguredComponents() {
-        DMT_TaskStatusWhenCompleted__c snapshot = new DMT_TaskStatusWhenCompleted__c(
-            DMT_TrackedComponents__c = 'Line Info;Client'
+        DMT_TaskStatusWhenCompleted__c snapshot = DMT_UTIL.buildTaskStatusWhenCompleted(
+            new Map<Schema.SObjectField, Object>{
+                DMT_TaskStatusWhenCompleted__c.DMT_TrackedComponents__c => 'Line Info;Client'
+            }
         );
         Assert.areEqual(
             new List<String>{ 'Line Info', 'Client' },
@@ -248,8 +382,10 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
         // 'Limit' is the standing example of a component no renderer tracks elsewhere in this
         // ticket's tests (DMT_RendererFactoryTest, DMT_ViewController_Test) - Products was the
         // original example here, but it is now tracked (Treasury/Opportunity).
-        DMT_TaskStatusWhenCompleted__c snapshot = new DMT_TaskStatusWhenCompleted__c(
-            DMT_TrackedComponents__c = 'Line Info;Limit'
+        DMT_TaskStatusWhenCompleted__c snapshot = DMT_UTIL.buildTaskStatusWhenCompleted(
+            new Map<Schema.SObjectField, Object>{
+                DMT_TaskStatusWhenCompleted__c.DMT_TrackedComponents__c => 'Line Info;Limit'
+            }
         );
         Assert.areEqual(
             new List<String>{ 'Line Info' },
@@ -263,8 +399,10 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
         // Mirrors the real Treasury Line scenario: Approval Process Data is a renderer-tracked
         // component, but a Treasury view's DMT_Items__c list never included it, so it must never be
         // checked for a task frozen against that view - regardless of it being in DMT_RendererFactory.getTrackedComponentNames().
-        DMT_TaskStatusWhenCompleted__c snapshot = new DMT_TaskStatusWhenCompleted__c(
-            DMT_TrackedComponents__c = 'Line Info;Client'
+        DMT_TaskStatusWhenCompleted__c snapshot = DMT_UTIL.buildTaskStatusWhenCompleted(
+            new Map<Schema.SObjectField, Object>{
+                DMT_TaskStatusWhenCompleted__c.DMT_TrackedComponents__c => 'Line Info;Client'
+            }
         );
         List<String> scoped = DMT_ApprovalChangeStep_Helper.trackedComponentsForSnapshot(snapshot);
         Assert.isFalse(scoped.contains('Approval Process Data'), 'A renderer-tracked component absent from this view\'s own tracked-components list must not be checked for this snapshot.');
