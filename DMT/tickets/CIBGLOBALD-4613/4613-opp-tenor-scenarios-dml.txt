@@ -1,0 +1,6 @@
+CIBGLOBALD-4613 - Opportunity IBERDROLA 2026 (006KE000002ooDlYAI): data changed with DML inside a savepoint, validation recalculated, then rolled back
+A data as it is | GREEN  |  Tenors Payment Date is complete  |  All User-Defined tenors have a Payment Date.
+B Renting 14-Jul Payment Date emptied | YELLOW  |  Tenors Payment Date is missing  |  One or more User-Defined tenors are missing a Payment Date.
+C same empty date but Renting set to Line, other products One-off | GREEN  |  Tenors Payment Date is complete  |  All User-Defined tenors have a Payment Date.
+D all products set to Line | ROW NOT SHOWN
+E after rollback | GREEN  |  Tenors Payment Date is complete  |  All User-Defined tenors have a Payment Date.

@@ -45,7 +45,7 @@ public with sharing class DMT_Passport_Helper {
         body.line = buildLineForOtherProducts(dmtLine);
         body.products = buildProductsForOtherProducts(dmtLine);
         if ( dmtLine.RecordType.DeveloperName != 'Sanction') {
-        body.features = new List<DMT_Wrapper_Passport_Abs.Feature> { calculateFeatureGenCons(recordId, clientsGroup) };
+        body.features = new List<DMT_Wrapper_Passport_Abs.Feature> { calculateFeatureGenCons(dmtLine, clientsGroup) }; // CIBGLOBALD-4613
         }
         body.documentsloads = buildDocumentLoads(dmtLine.CoreDocsTaxonomyValues__c);
         body.optionalFeatures = calculateOptionalFeatures(dmtLine);
@@ -65,7 +65,7 @@ public with sharing class DMT_Passport_Helper {
         body.documentsloads = buildDocumentLoads(dmtLine.CoreDocsTaxonomyValues__c);
 
         if(clientsGroup != ''){
-            body.features = new List<DMT_Wrapper_Passport_Abs.Feature> { calculateFeatureGenCons(recordId, clientsGroup) };
+            body.features = new List<DMT_Wrapper_Passport_Abs.Feature> { calculateFeatureGenCons(dmtLine, clientsGroup) }; // CIBGLOBALD-4613
             body.optionalFeatures = calculateOptionalFeatures(dmtLine);
         }
 
@@ -110,7 +110,7 @@ public with sharing class DMT_Passport_Helper {
         if (dmtLine.RecordType.DeveloperName == 'TreasurySettlement') {
             client.extension = DMT_LineFeatureGenCons_Calc.validationRenovation(dmtLine.Id, dmtLine.DMT_Parent_Line__c);
         } else if (dmtLine.RecordType.DeveloperName == 'OtherProducts') {
-            client.extension = DMT_LineFeatureGenCons_Calc.validationRenovationOtherLines(dmtLine.Id, dmtLine.DMT_Parent_Line__c);
+            client.extension = DMT_LineFeatureGenCons_Calc.validationRenovationOtherLines(dmtLine); // CIBGLOBALD-4613
         }
 
         if (dmtLine.Custom_Association__c != null) {
@@ -286,7 +286,8 @@ public with sharing class DMT_Passport_Helper {
             fd.endDateParent = dmtLine.DMT_Parent_Line__r.End_Date__c;
             parentConsums.add(fd);
 
-            for(DMT_Risk_Line_Term__c r : DMT_Passport_Selector.getRiskLineTerm(dmtLine.DMT_Parent_Line__r.Line_Id__c)){
+            // CIBGLOBALD-4613 - Enhancement fix to existing process: the parent Derivatives terms are read by the parent record Id (DMT_Parent_Line__c); the external Id Line_Id__c never matched DMT_Risk_Line_Term__c.DMT_Line__c, so endDateParent was always the parent Start Date + 0
+            for(DMT_Risk_Line_Term__c r : DMT_Passport_Selector.getRiskLineTerm(dmtLine.DMT_Parent_Line__c)){ // CIBGLOBALD-4613
                 endTerm = !String.isEmpty(r.DMT_End_Term__c) && endTerm < Integer.valueOf(r.DMT_End_Term__c) ? Integer.valueOf(r.DMT_End_Term__c) : endTerm;
             }
 
@@ -460,7 +461,6 @@ public with sharing class DMT_Passport_Helper {
         opp.contingentCommitments = oppty.DMT_ContingentCommitments__c;
         opp.confidential = oppty.DMT_Confidential__c;
         opp.bookingGeography = oppty.DMT_branch_id_c__c;
-        opp.bookingEFAN = oppty.DMT_Booking_EFAN__c;
         opp.sppiFileUploaded = oppty.DMT_SPPI_File_Uploaded__c;
         opp.sppiStatus = oppty.DMT_SPPI_Status__c;
         opp.sppiUser = oppty.DMT_SPPI_User__c;
@@ -687,6 +687,7 @@ public with sharing class DMT_Passport_Helper {
         DMT_PassportOpportunity_Wrapper.Product product = new DMT_PassportOpportunity_Wrapper.Product();
         product.name = opplitem.DMT_TXT_ProductNameOLI__c;
         product.geographyBranch = opplitem.g_branch_id__c;
+        product.bookingEFAN = oppty.DMT_Booking_EFAN__c;
         product.initDate = opplitem.gf_initial_date__c;
         product.endDate = opplitem.gf_maturity_date__c;
         product.currencyId = opplitem.g_currency_id__c;
@@ -698,6 +699,13 @@ public with sharing class DMT_Passport_Helper {
         product.committedLine = opplitem.g_line_commitment_level_type__c;
         product.prco = opplitem.ProductCode;
         product.intermediateDate = opplitem.gf_intermediate_date__c;
+        if (product.intermediateDate == null) {
+            product.intermediateDate = resolveIntermediateDateFromTenors(
+                opplitem.gf_initial_date__c,
+                opplitem.gf_maturity_date__c,
+                amortizationPayMap.get(opplitem.Id)
+            );
+        }
         product.countryRisk = opplitem.gf_country_risk__c;
         product.groupCountryRisk = groupCountryRiskMap.get(opplitem.gf_country_risk__c);
         product.crr2 = String.valueOf(opplitem.gf_crr2_essential_public_services__c);
@@ -705,7 +713,6 @@ public with sharing class DMT_Passport_Helper {
         product.tenorAmount = opplitem.bbva_prtcp_tranche_amount__c;
         product.committedUncommitted = opplitem.DMT_Line_LC_LNC__c;
         product.lineOneOffDeal = opplitem.DMT_Line_Oneoffdeal__c;
-
         product.funding = buildFunding(opplitem);
         product.mitigants = buildMitigants(opplitem.Id, mitigantsMap, tax895Map);
         product.amortization = buildAmortization(opplitem, amortizationPayMap.get(opplitem.Id));
@@ -799,6 +806,9 @@ public with sharing class DMT_Passport_Helper {
                 prdAmortizationPayment.spreadFbAmount = amortizationPayment.gf_spread_fb__c != null ? amortizationPayment.gf_spread_fb__c : 0;
                 prdAmortizationPayment.feesOther = amortizationPayment.gf_accrual_fees_bp__c != null ? amortizationPayment.gf_accrual_fees_bp__c : 0;
                 prdAmortizationPayment.feesUpfront = amortizationPayment.gf_non_accrual_fees_bp__c != null ? amortizationPayment.gf_non_accrual_fees_bp__c : 0;
+                prdAmortizationPayment.manualRW = amortizationPayment.DMT_Manual_RW__c != null
+                    ? amortizationPayment.DMT_Manual_RW__c.setScale(2, System.RoundingMode.HALF_UP)
+                    : 0;
                 prdAmortizationPayment.financeType = 'Standard' /*opplitem.gf_financing_type__c*/;
 
                 amortization.payments.add(prdAmortizationPayment);
@@ -806,6 +816,31 @@ public with sharing class DMT_Passport_Helper {
         }
 
         return amortization;
+    }
+
+    private static Date resolveIntermediateDateFromTenors(Date initDate, Date maturityDate, List<DMT_Opportunity_Tenor__c> amortizationPayments) {
+        if (amortizationPayments == null || amortizationPayments.isEmpty()) {
+            return null;
+        }
+
+        List<Date> candidateDates = new List<Date>();
+        for (DMT_Opportunity_Tenor__c payment : amortizationPayments) {
+            if (payment == null || payment.gf_tenor_date__c == null) {
+                continue;
+            }
+            Date paymentDate = payment.gf_tenor_date__c;
+            if ((initDate != null && paymentDate == initDate) || (maturityDate != null && paymentDate == maturityDate)) {
+                continue;
+            }
+            candidateDates.add(paymentDate);
+        }
+
+        if (candidateDates.isEmpty()) {
+            return null;
+        }
+
+        candidateDates.sort();
+        return candidateDates[0];
     }
 
     private static Map<String, Map<String, String>> termPicklistLabelsCache = new Map<String, Map<String, String>>();
@@ -931,7 +966,7 @@ public with sharing class DMT_Passport_Helper {
         return recId.getSObjectType().getDescribe().getName();
     }
 
-    public static DMT_Wrapper_Passport_Abs.Feature calculateFeatureGenCons(String recordId, String clientsGroup) {
+    public static DMT_Wrapper_Passport_Abs.Feature calculateFeatureGenCons(DMT_Line__c dmtLine, String clientsGroup) { // CIBGLOBALD-4613 - Enhancement to existing process: receives the payload line so DMT_LineFeatureGenCons_Calc does not query it again
         DMT_Wrapper_Passport_Abs.Feature featureBody = new DMT_Wrapper_Passport_Abs.Feature();
         featureBody.id = DMT_Constants.FEATURE_GC_ID;
         featureBody.name = DMT_Constants.FEATURE_GC_NAME;
@@ -939,7 +974,7 @@ public with sharing class DMT_Passport_Helper {
         featureBody.active = DMT_Constants.FEATURE_GC_ACTIVE;
         featureBody.motorDesc = DMT_Constants.FEATURE_GC_MOTORDESC;
         featureBody.stateName = DMT_Constants.FEATURE_GC_STATE_GREEN;
-        featureBody.validations = DMT_LineFeatureGenCons_Calc.checkValidations(recordId, clientsGroup);
+        featureBody.validations = DMT_LineFeatureGenCons_Calc.checkValidations(dmtLine, clientsGroup); // CIBGLOBALD-4613
 
         for (DMT_Wrapper_Passport_Abs.FeatureGenConsiderations validation : featureBody.validations) {
             if (validation.state == DMT_Constants.FEATURE_GC_STATE_YELLOW) {

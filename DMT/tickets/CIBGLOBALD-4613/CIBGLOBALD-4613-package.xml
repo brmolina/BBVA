@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- Order: labels first (referenced by DMT_LineFeatureGenCons_Calc), selector before the calc classes, tests last. -->
+    <types>
+        <members>dmt_cl_FeatureRestrictionAmountTitle</members>
+        <members>dmt_cl_FeatureRestrictionAmountGreen</members>
+        <members>dmt_cl_FeatureRestrictionAmountYellow</members>
+        <name>CustomLabel</name>
+    </types>
+    <types>
+        <members>DMT_Passport_Selector</members>
+        <members>DMT_LineFeatureGenCons_Calc</members>
+        <members>DMT_OppFeatureGenCons_Calc</members>
+        <members>DMT_Passport_Helper</members>
+        <members>DMT_LineFeatureGenCons_Calc_test</members>
+        <members>DMT_OppFeatureGenCons_Calc_Test</members>
+        <members>DMT_Passport_Helper_test</members>
+        <name>ApexClass</name>
+    </types>
+    <version>65.0</version>
+</Package>

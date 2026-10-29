@@ -195,17 +195,10 @@ public with sharing class DMT_OppFeatureGenCons_Calc {
             }*/
 
             //Validate Tenors
-            Boolean userDefinedNotPaymentDate = false;
-            for (DMT_Opportunity_Tenor__c tenorItem : tenorsMap.values()) {
-                if (productsMap.get(tenorItem.DMT_Opportunity_Product__c).gf_amortization_type__c == 'User-Defined' && tenorItem.gf_tenor_date__c == null) {
-                    userDefinedNotPaymentDate = true;
-                }
-            }
-            if(userDefinedNotPaymentDate){
-                listFeatureReturn.add(generateFeatureGenConsideration('One or more User-Defined tenors are missing a Payment Date.',DMT_Constants.FEATURE_GC_STATE_YELLOW,'Tenors Payment Date is missing'));
-            }else{
-                listFeatureReturn.add(generateFeatureGenConsideration('All User-Defined tenors have a Payment Date.',DMT_Constants.FEATURE_GC_STATE_GREEN,'Tenors Payment Date is complete'));
-
+            // CIBGLOBALD-4613 - User-Defined tenors check only on One-Off products; no row when the Opportunity has Line products only
+            DMT_Wrapper_Passport_Abs.FeatureGenConsiderations userDefinedTenors = userDefinedTenorsValidation(productsMap, tenorsMap);
+            if(userDefinedTenors != null){
+                listFeatureReturn.add(userDefinedTenors);
             }
 
             //Validate Opportunity Products
@@ -289,8 +282,7 @@ public with sharing class DMT_OppFeatureGenCons_Calc {
             missingFields.add('Products');
         }else{
             for(OpportunityLineItem oli : productsMap.values()){
-                Boolean isLineProduct = String.isNotBlank(oli.DMT_Line_Oneoffdeal__c)
-                    && oli.DMT_Line_Oneoffdeal__c.equalsIgnoreCase('Line');
+                Boolean isLineProduct = isLineProduct(oli); // CIBGLOBALD-4613
 
                 addIfBlank(missingFields, oli.Name, 'Product Name');
                 addIfNull(missingFields, oli.gf_initial_date__c, 'Product Start Date');
@@ -312,6 +304,42 @@ public with sharing class DMT_OppFeatureGenCons_Calc {
         result.sort();
 
         return result;
+    }
+
+    /**
+     * CIBGLOBALD-4613 - User-Defined tenors Payment Date validation, calculated only on One-Off Deal products
+     * (OpportunityLineItem.DMT_Line_Oneoffdeal__c other than 'Line'). Line products cannot have User-Defined
+     * tenors with a Payment Date, so an Opportunity without One-Off Deal products gets no validation (null).
+     */
+    @TestVisible
+    private static DMT_Wrapper_Passport_Abs.FeatureGenConsiderations userDefinedTenorsValidation(Map<Id, OpportunityLineItem> productsMap, Map<Id, DMT_Opportunity_Tenor__c> tenorsMap){
+        Boolean hasOneOffProduct = false;
+        for(OpportunityLineItem oli : productsMap.values()){
+            if(!isLineProduct(oli)){
+                hasOneOffProduct = true;
+                break;
+            }
+        }
+        if(!hasOneOffProduct){
+            return null;
+        }
+
+        Boolean userDefinedNotPaymentDate = false;
+        for (DMT_Opportunity_Tenor__c tenorItem : tenorsMap.values()) {
+            OpportunityLineItem product = productsMap.get(tenorItem.DMT_Opportunity_Product__c);
+            if (product != null && !isLineProduct(product) && product.gf_amortization_type__c == 'User-Defined' && tenorItem.gf_tenor_date__c == null) {
+                userDefinedNotPaymentDate = true;
+            }
+        }
+        if(userDefinedNotPaymentDate){
+            return generateFeatureGenConsideration('One or more User-Defined tenors are missing a Payment Date.',DMT_Constants.FEATURE_GC_STATE_YELLOW,'Tenors Payment Date is missing');
+        }
+        return generateFeatureGenConsideration('All User-Defined tenors have a Payment Date.',DMT_Constants.FEATURE_GC_STATE_GREEN,'Tenors Payment Date is complete');
+    }
+
+    // CIBGLOBALD-4613 - A product is a Line when OpportunityLineItem.DMT_Line_Oneoffdeal__c = 'Line'; any other value (One-off deal, blank) is One-Off
+    private static Boolean isLineProduct(OpportunityLineItem oli){
+        return String.isNotBlank(oli.DMT_Line_Oneoffdeal__c) && oli.DMT_Line_Oneoffdeal__c.equalsIgnoreCase('Line');
     }
 
     private static void addIfBlank(Set<String> missingFields, String value, String label){

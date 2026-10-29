@@ -22616,6 +22616,33 @@ SER_Product_Cancellation_Date_FORMULA__c &lt; LAST_90_DAYS</value>
         <shortDescription>featureEndDate</shortDescription>
         <value>End Date should be the last day of the month.</value>
     </labels>
+    <!-- CIBGLOBALD-4613 -->
+    <labels>
+        <fullName>dmt_cl_FeatureRestrictionAmountGreen</fullName>
+        <categories>DMT</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>featureRestrictionAmount</shortDescription>
+        <value>All products enabled in the Derivatives, Depos and Repos restriction tables have an amount in their line table.</value>
+    </labels>
+    <!-- CIBGLOBALD-4613 -->
+    <labels>
+        <fullName>dmt_cl_FeatureRestrictionAmountTitle</fullName>
+        <categories>DMT</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>featureRestrictionAmount</shortDescription>
+        <value>Line amount informed for restricted products</value>
+    </labels>
+    <!-- CIBGLOBALD-4613 -->
+    <labels>
+        <fullName>dmt_cl_FeatureRestrictionAmountYellow</fullName>
+        <categories>DMT</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>featureRestrictionAmount</shortDescription>
+        <value>Products enabled in a restriction table without an amount in their line table:</value>
+    </labels>
     <labels>
         <fullName>dmt_cl_Filter_Selected</fullName>
         <categories>DMT</categories>
