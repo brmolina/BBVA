@@ -1,0 +1,9 @@
+a5uKE000000GwwKYAS | GREEN | Maximum consumption and maturities relationship | All the maturities in the available product  are shorter than the maximum consumption limit
+a5uKE000000GwwKYAS | YELLOW | Line amount informed for restricted products | Products enabled in a restriction table without an amount in their line table: Reverse Repo (BBVA finances the counterparty) (Repos), Repo (BBVA is financed by the counterparty) (Repos), Depo Lent (only for Financial Institutions) (Depos)
+a5uKE000000GwPGYA0 | YELLOW | Maximum consumption and maturities relationship | There are maturities in the available products longer than the maximum consumption limit: FX, CCS, Reverse Repo (BBVA finances the counterparty), Repo (BBVA is financed by the counterparty)
+a5uKE000000GwPGYA0 | YELLOW | Line amount informed for restricted products | Products enabled in a restriction table without an amount in their line table: FX (Derivatives), CCS (Derivatives)
+a5uKE000000Gw1TYAS | GREEN | Maximum consumption and maturities relationship | All the maturities in the available product  are shorter than the maximum consumption limit
+a5uKE000000Gw1TYAS | GREEN | Line amount informed for restricted products | All products enabled in the Derivatives, Depos and Repos restriction tables have an amount in their line table.
+a5ugN0000001eD7QAI | YELLOW | Maximum consumption and maturities relationship | There are maturities in the available products longer than the maximum consumption limit: Depo Lent (only for Financial Institutions)
+a5ugN0000001eD7QAI | GREEN | Line amount informed for restricted products | All products enabled in the Derivatives, Depos and Repos restriction tables have an amount in their line table.
+a5uKE000000Gx3uYAC | GREEN | Maximum consumption and maturities relationship | All the maturities in the available product  are shorter than the maximum consumption limit

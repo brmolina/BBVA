@@ -1,7 +1,11 @@
 public with sharing class DMT_LineFeatureGenCons_Calc {
     public static List<DMT_Wrapper_Passport_Abs.FeatureGenConsiderations> checkValidations(String recordId, String clientsGroup) {
+        return checkValidations(DMT_Passport_Selector.getLine(recordId), clientsGroup); // CIBGLOBALD-4613
+    }
+
+    // CIBGLOBALD-4613 - Enhancement to existing process: validations of a line already queried by the caller (DMT_Passport_Helper.calculateFeatureGenCons passes the payload line), so the line is not queried again
+    public static List<DMT_Wrapper_Passport_Abs.FeatureGenConsiderations> checkValidations(DMT_Line__c line, String clientsGroup) {
         List<DMT_Wrapper_Passport_Abs.FeatureGenConsiderations> mapFeatureResult = new List<DMT_Wrapper_Passport_Abs.FeatureGenConsiderations>();
-        DMT_Line__c line = DMT_Passport_Selector.getLine(recordId);
         List<Object> clientsInGroups = (List<Object>)JSON.deserializeUntyped(clientsGroup);
 
         List<String> caIds = new List<String>{line.Custom_Association__c};
@@ -18,7 +22,7 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
         }
         //mapFeatureResult.add(isCurrentLine(clientsCodeList, line.Start_Date__c, recordId));
 
-        List<DMT_Line_Product_Item__c> lineProductItems = DMT_Passport_Selector.getProductLineItems(recordId);
+        List<DMT_Line_Product_Item__c> lineProductItems = DMT_Passport_Selector.getProductLineItems(line.Id); // CIBGLOBALD-4613
 
         Set<Custom_Association_Client__c> listOfClients = new Set<Custom_Association_Client__c>();
         List<String> alphaCodeList = new List<String>();
@@ -107,8 +111,8 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
                 mapFeatureResult.add(clientSelected(line, listOfClients));
                 mapFeatureResult.add(customAssociationClientValidation(line));
             }
-            List<DMT_Risk_Line_Term__c> riskLineDeri = DMT_Passport_Selector.getRiskLineTerm(line.Id);
-            
+            List<DMT_Risk_Line_Term__c> lineRiskTerms = DMT_Passport_Selector.getRiskLineTerm(line.Id, new Set<String>{ DMT_Constants.RSK_DERIVATIVES, DMT_Constants.RSK_DEPOS, DMT_Constants.RSK_REPOS }); // CIBGLOBALD-4613
+
             List<DMT_OperationalRestrictionsTRSR__mdt> listOperationalRestrictions = DMT_Passport_Selector.getOperationalRestrictionMDT(line.Booking_Geography__c);
             Map<String, DMT_OperationalRestrictionsTRSR__mdt> mapOpRestric = new Map<String, DMT_OperationalRestrictionsTRSR__mdt>();
             for (DMT_OperationalRestrictionsTRSR__mdt aux : listOperationalRestrictions) {
@@ -116,12 +120,17 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
             }
 
             mapFeatureResult.add(isCurrentLine(clientsCodeList, line.Start_Date__c, line));
-            mapFeatureResult.add(restricGreaterTerm(lineProductItems, riskLineDeri));
+            mapFeatureResult.add(restricGreaterTerm(lineProductItems, lineRiskTerms, mapOpRestric)); // CIBGLOBALD-4613
             mapFeatureResult.add(deriRestricNOFdDvp(lineProductItems, mapOpRestric));
             if (line.Waiver__c == true) {
-                mapFeatureResult.add(waiverValidation(line, riskLineDeri, lineProductItems));
+                mapFeatureResult.add(waiverValidation(line, lineRiskTerms, lineProductItems)); // CIBGLOBALD-4613
             }
             mapFeatureResult.add(noSettlementAmount(lineProductItems, line));
+            // CIBGLOBALD-4613 - MX: products enabled in a restriction table without amount in their line table; no row for other geographies
+            DMT_Wrapper_Passport_Abs.FeatureGenConsiderations restrictionAmount = restrictionWithoutAmount(lineProductItems, lineRiskTerms, mapOpRestric);
+            if (restrictionAmount != null) {
+                mapFeatureResult.add(restrictionAmount);
+            }
             mapFeatureResult.add(startDate(line));
             mapFeatureResult.add(endDate(line));
             mapFeatureResult.add(counterparty(listOfClients));
@@ -234,8 +243,7 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
         Set<String> currentclientCodeList = new Set<String> ();
         System.debug('clientsCodeList, '+ clientsCodeList);
         System.debug('lineStartDate, '+ lineStartDate);
-        DMT_Line__c lineChild = DMT_Passport_Selector.getLine(line.Id);
-        List<DMT_Line__c> currentLinesList = DMT_Passport_Selector.getCurrentLinesByClient(lineStartDate, lineChild.Id, lineChild.DMT_Parent_Line__c);
+        List<DMT_Line__c> currentLinesList = DMT_Passport_Selector.getCurrentLinesByClient(lineStartDate, line.Id, line.DMT_Parent_Line__c); // CIBGLOBALD-4613 - Enhancement to existing process: uses the line received instead of querying it again
         System.debug('currentLinesList, '+ currentLinesList);
         List<String> caInCurrentLines = new List<String>();
         for(DMT_Line__c currentLine : currentLinesList){
@@ -261,19 +269,42 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
         return currentLineClientResult;
     }
 
+    // CIBGLOBALD-4613 - Derivatives-only comparison (riskList = Derivatives terms); delegates to the per-table version
     public static DMT_Wrapper_Passport_Abs.FeatureGenConsiderations restricGreaterTerm(List<DMT_Line_Product_Item__c> lpiList, List<DMT_Risk_Line_Term__c> riskList){
+        return restricGreaterTerm(lpiList, riskList, null); // CIBGLOBALD-4613
+    }
+
+    /**
+     * CIBGLOBALD-4613 - Maturity term check where each product is compared with the risk line terms of its own
+     * line table. The table comes from the product's DMT_OperationalRestrictionsTRSR__mdt record (key
+     * DMT_Operational_Restrictions_Name__c = DMT_Line_Product_Item__c.Product_Code_Value__c): DMT_Depos_layout2__c ->
+     * Depos terms, DMT_Repos_layout2__c -> Repos terms, otherwise Derivatives terms. Only the MX records carry the
+     * layout2 flags (MX template in LWC dmtRiskTablesLine), so other geographies keep the Derivatives comparison.
+     */
+    public static DMT_Wrapper_Passport_Abs.FeatureGenConsiderations restricGreaterTerm(List<DMT_Line_Product_Item__c> lpiList, List<DMT_Risk_Line_Term__c> lineRiskTerms, Map<String, DMT_OperationalRestrictionsTRSR__mdt> mapOpRestric){
         DMT_Wrapper_Passport_Abs.FeatureGenConsiderations incorrectProductLineTerm = new DMT_Wrapper_Passport_Abs.FeatureGenConsiderations();
         incorrectProductLineTerm.state = DMT_Constants.FEATURE_GC_STATE_GREEN;
         incorrectProductLineTerm.name = DMT_Constants.FEATURE_NAME_RESTRICGREATERTERM;
         incorrectProductLineTerm.message = DMT_Constants.GREATER_RESTRIC_TERM_GREENMESSAGE;
-        Integer maxTerm = 0;
-        for(DMT_Risk_Line_Term__c risk : riskList) {
-            if(risk.DMT_End_Term__c != null && Integer.valueOf(risk.DMT_End_Term__c) > maxTerm) {
-                maxTerm = Integer.valueOf(risk.DMT_End_Term__c);
+
+        // CIBGLOBALD-4613 - longest End Term of each line table (DMT_Risk_Type__c Derivatives / Depos / Repos)
+        Map<String, Integer> maxTermByRiskType = new Map<String, Integer>();
+        for(DMT_Risk_Line_Term__c risk : lineRiskTerms) {
+            if(risk.DMT_End_Term__c == null || String.isBlank(risk.DMT_Risk_Type__c)) {
+                continue;
+            }
+            Integer endTerm = Integer.valueOf(risk.DMT_End_Term__c);
+            Integer currentMax = maxTermByRiskType.get(risk.DMT_Risk_Type__c);
+            if(currentMax == null || endTerm > currentMax) {
+                maxTermByRiskType.put(risk.DMT_Risk_Type__c, endTerm);
             }
         }
+
         List<String> retrictGreaterTermMessageList = new List<String> ();
         for(DMT_Line_Product_Item__c lpi : lpiList){
+            // CIBGLOBALD-4613 - each product is compared with the End Term of its own table
+            String riskType = getRestrictionRiskType(mapOpRestric?.get(lpi.Product_Code_Value__c));
+            Integer maxTerm = maxTermByRiskType.containsKey(riskType) ? maxTermByRiskType.get(riskType) : 0;
             if(!String.isBlank(lpi.Max_Tenor_WC__c) && Integer.valueOf(lpi.Max_Tenor_WC__c) > maxTerm){
                 incorrectProductLineTerm.state = DMT_Constants.FEATURE_GC_STATE_YELLOW;
                 retrictGreaterTermMessageList.add(lpi.Name);
@@ -282,6 +313,75 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
         }
 
         return incorrectProductLineTerm;
+    }
+
+    /**
+     * CIBGLOBALD-4613 - Products enabled in a line table (DMT_Line_Product_Item__c.DMT_DerivativeRestriction__c, the
+     * line checkbox of the Derivatives / Depos / Repos restrictions tables of the MX template) whose table has no
+     * amount: no DMT_Risk_Line_Term__c of that DMT_Risk_Type__c with DMT_Amount__c > 0. The table comes from the
+     * layout2 flags of DMT_OperationalRestrictionsTRSR__mdt (see getRestrictionRiskType). Returns null when no
+     * restriction record of the line geography has a layout2 flag (every geography except MX), so those lines
+     * keep their current validations. FD / DvP amounts are checked by noSettlementAmount.
+     */
+    public static DMT_Wrapper_Passport_Abs.FeatureGenConsiderations restrictionWithoutAmount(List<DMT_Line_Product_Item__c> lpiList, List<DMT_Risk_Line_Term__c> lineRiskTerms, Map<String, DMT_OperationalRestrictionsTRSR__mdt> mapOpRestric){
+        Boolean hasLayout2Restrictions = false;
+        if (mapOpRestric != null) {
+            for (DMT_OperationalRestrictionsTRSR__mdt restriction : mapOpRestric.values()) {
+                if (isLayout2Restriction(restriction)) {
+                    hasLayout2Restrictions = true;
+                    break;
+                }
+            }
+        }
+        if (!hasLayout2Restrictions) {
+            return null;
+        }
+
+        DMT_Wrapper_Passport_Abs.FeatureGenConsiderations restrictionAmountResult = new DMT_Wrapper_Passport_Abs.FeatureGenConsiderations();
+        restrictionAmountResult.state = DMT_Constants.FEATURE_GC_STATE_GREEN;
+        restrictionAmountResult.name = System.Label.dmt_cl_FeatureRestrictionAmountTitle;
+        restrictionAmountResult.message = System.Label.dmt_cl_FeatureRestrictionAmountGreen;
+
+        Set<String> riskTypesWithAmount = new Set<String>();
+        for (DMT_Risk_Line_Term__c risk : lineRiskTerms) {
+            if (risk.DMT_Amount__c != null && risk.DMT_Amount__c > 0 && String.isNotBlank(risk.DMT_Risk_Type__c)) {
+                riskTypesWithAmount.add(risk.DMT_Risk_Type__c);
+            }
+        }
+
+        List<String> productsWithoutAmount = new List<String>();
+        for (DMT_Line_Product_Item__c lpi : lpiList) {
+            DMT_OperationalRestrictionsTRSR__mdt restriction = mapOpRestric.get(lpi.Product_Code_Value__c);
+            String riskType = getRestrictionRiskType(restriction);
+            if (isLayout2Restriction(restriction) && lpi.DMT_DerivativeRestriction__c == true && !riskTypesWithAmount.contains(riskType)) {
+                productsWithoutAmount.add(lpi.Name + ' (' + riskType + ')');
+            }
+        }
+
+        if (!productsWithoutAmount.isEmpty()) {
+            restrictionAmountResult.state = DMT_Constants.FEATURE_GC_STATE_YELLOW;
+            restrictionAmountResult.message = System.Label.dmt_cl_FeatureRestrictionAmountYellow + ' ' + String.join(productsWithoutAmount, ', ');
+        }
+
+        return restrictionAmountResult;
+    }
+
+    // CIBGLOBALD-4613 - Line table (DMT_Risk_Line_Term__c.DMT_Risk_Type__c) of an operational restriction, from its layout2 flags; Derivatives by default
+    @TestVisible
+    private static String getRestrictionRiskType(DMT_OperationalRestrictionsTRSR__mdt restriction) {
+        if (restriction != null && restriction.DMT_Depos_layout2__c) {
+            return DMT_Constants.RSK_DEPOS;
+        }
+        if (restriction != null && restriction.DMT_Repos_layout2__c) {
+            return DMT_Constants.RSK_REPOS;
+        }
+        return DMT_Constants.RSK_DERIVATIVES;
+    }
+
+    // CIBGLOBALD-4613 - True when the restriction belongs to a table of the MX template (any layout2 flag set)
+    private static Boolean isLayout2Restriction(DMT_OperationalRestrictionsTRSR__mdt restriction) {
+        return restriction != null
+            && (restriction.DMT_Derivatives_layout2__c || restriction.DMT_Depos_layout2__c || restriction.DMT_Repos_layout2__c);
     }
 
     public static DMT_Wrapper_Passport_Abs.FeatureGenConsiderations deriRestricNOFdDvp(List<DMT_Line_Product_Item__c> lpiList, Map<String, DMT_OperationalRestrictionsTRSR__mdt> mapOpRestric){
@@ -572,10 +672,14 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
             return false;
         }
 
-        List<DMT_Line_Product_Item__c> lineProductItems = DMT_Passport_Selector.getProductLineItems(lineId);
-        List<DMT_Line_Product_Item__c> fatherLineProductItems = DMT_Passport_Selector.getProductLineItems(fatherLineId);
-        List<DMT_Risk_Line_Term__c> riskLine = DMT_Passport_Selector.getRiskLineTerm(lineId);
-        List<DMT_Risk_Line_Term__c> fatherRiskLine = DMT_Passport_Selector.getRiskLineTerm(fatherLineId);
+        // CIBGLOBALD-4613 - Enhancement to existing process: product items of the line and of its parent line in one query (DMT_Passport_Selector.getProductLineItemsByLines)
+        Map<Id, List<DMT_Line_Product_Item__c>> productItemsByLine = DMT_Passport_Selector.getProductLineItemsByLines(new Set<Id>{ lineId, fatherLineId });
+        List<DMT_Line_Product_Item__c> lineProductItems = productItemsByLine.get(lineId); // CIBGLOBALD-4613
+        List<DMT_Line_Product_Item__c> fatherLineProductItems = productItemsByLine.get(fatherLineId); // CIBGLOBALD-4613
+        // CIBGLOBALD-4613 - Enhancement to existing process: Derivatives terms of the line and of its parent line in one query (DMT_Passport_Selector.getRiskLineTermsByLines)
+        Map<Id, List<DMT_Risk_Line_Term__c>> derivativesTermsByLine = DMT_Passport_Selector.getRiskLineTermsByLines(new Set<Id>{ lineId, fatherLineId }, new Set<String>{ DMT_Constants.RSK_DERIVATIVES });
+        List<DMT_Risk_Line_Term__c> riskLine = derivativesTermsByLine.get(lineId); // CIBGLOBALD-4613
+        List<DMT_Risk_Line_Term__c> fatherRiskLine = derivativesTermsByLine.get(fatherLineId); // CIBGLOBALD-4613
 
         Map<String, DMT_Line_Product_Item__c> lineProductItemsMap = new Map<String, DMT_Line_Product_Item__c>();
         Map<String, DMT_Line_Product_Item__c> fatherLineProductItemsMap = new Map<String, DMT_Line_Product_Item__c>();
@@ -647,24 +751,45 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
         if (fatherLineId == null) {
             return false;
         }
+        return validationRenovationOtherLines(lineId, fatherLineId, null); // CIBGLOBALD-4613
+    }
 
-        List<DMT_Risk_Line_Term__c> riskLineOther = DMT_Passport_Selector.getRiskLineTermWhithoutRiskType(lineId);
-        List<DMT_Risk_Line_Term__c> fatherRiskLineOther = DMT_Passport_Selector.getRiskLineTermWhithoutRiskType(fatherLineId);
+    // CIBGLOBALD-4613 - Enhancement to existing process: renewal check of an OtherProducts line already queried by the caller (DMT_Passport_Helper.buildClientDetails), with the parent amount from DMT_Parent_Line__r.Amount__c
+    public static Boolean validationRenovationOtherLines(DMT_Line__c line){
+        if (line.DMT_Parent_Line__c == null) {
+            return false;
+        }
+        return validationRenovationOtherLines(line.Id, line.DMT_Parent_Line__c, line);
+    }
 
+    /**
+     * CIBGLOBALD-4613 - Enhancement to existing process: the risk line terms of the line and of its parent line come in one
+     * query (DMT_Passport_Selector.getRiskLineTermWhithoutRiskTypeByLines) and the line amounts are read once, outside the
+     * loop (before, DMT_Passport_Selector.getLine ran twice per risk term). line is null when only the Ids are known.
+     */
+    private static Boolean validationRenovationOtherLines(Id lineId, Id fatherLineId, DMT_Line__c line){
+        Map<Id, List<DMT_Risk_Line_Term__c>> termsByLine = DMT_Passport_Selector.getRiskLineTermWhithoutRiskTypeByLines(new Set<Id>{ lineId, fatherLineId });
+        List<DMT_Risk_Line_Term__c> riskLineOther = termsByLine.get(lineId);
+        List<DMT_Risk_Line_Term__c> fatherRiskLineOther = termsByLine.get(fatherLineId);
 
         if (fatherRiskLineOther.isEmpty()) {
             return true;
         }
+        // CIBGLOBALD-4613 - Enhancement to existing process: a line without OtherProducts risk terms has nothing to compare (same result as the old loop with no iterations)
+        if (riskLineOther.isEmpty()) {
+            return false;
+        }
 
+        // CIBGLOBALD-4613 - Enhancement to existing process: line and parent line amounts read once, before the loop
+        Decimal lineAmount = line != null ? line.Amount__c : DMT_Passport_Selector.getLine(lineId).Amount__c;
+        Decimal fatherLineAmount = line != null ? line.DMT_Parent_Line__r.Amount__c : DMT_Passport_Selector.getLine(fatherLineId).Amount__c;
 
         Integer fatherCountOther = 0;
         for (Integer i = 0; i < riskLineOther.size(); i++) {
             DMT_Risk_Line_Term__c fatherLineRisk = fatherRiskLineOther.get(fatherCountOther);
             DMT_Risk_Line_Term__c childLineRisk = riskLineOther.get(i);
-            DMT_Line__c childLine = DMT_Passport_Selector.getLine(lineId);
-            DMT_Line__c fatherLine = DMT_Passport_Selector.getLine(fatherLineId);
 
-            if (fatherLineRisk.DMT_Amount__c < childLineRisk.DMT_Amount__c || fatherLine.Amount__c < childLine.Amount__c || childLineRisk.DMT_Parent_Product__c == null) {
+            if (fatherLineRisk.DMT_Amount__c < childLineRisk.DMT_Amount__c || fatherLineAmount < lineAmount || childLineRisk.DMT_Parent_Product__c == null) { // CIBGLOBALD-4613
                 return true;
             }
 

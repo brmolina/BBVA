@@ -1,0 +1,67 @@
+CIBGLOBALD-4613 - Correcciones en General Validations (Variadito) del Passport y optimizacion del payload
+
+Contexto
+La lista General Validations (primer traffic light del Passport, modal General Validations) se calcula en Salesforce solo al pulsar Calculate / Calculate Passport: LWC dmt_passport o dmt_passport_opportunity -> DMT_Passport_Handler.buttonCallPassport -> DMT_Passport_Helper.setPayloadPassport -> DMT_LineFeatureGenCons_Calc.checkValidations (Line) o DMT_OppFeatureGenCons_Calc.checkValidations (Opportunity). El resultado se envia al servicio Passport y la respuesta se guarda en Passport__c.DMT_Passport_Save__c; al cargar la pagina solo se pinta ese JSON. Para ver un cambio de datos hay que volver a pulsar Calculate. Editar un importe de la linea muestra el aviso Template values have been modified en el Passport.
+
+1. Opportunity - validacion Tenors Payment Date
+- Clase: DMT_OppFeatureGenCons_Calc, metodo userDefinedTenorsValidation (llamado desde checkValidations) y helper isLineProduct.
+- Un producto es Line cuando OpportunityLineItem.DMT_Line_Oneoffdeal__c (label Line / One-off deal) = 'Line'. Cualquier otro valor (One-off deal o vacio) es One-Off.
+- Sin ningun producto One-Off, la fila no se anade a la lista.
+- Con al menos uno, solo se revisan los DMT_Opportunity_Tenor__c de productos One-Off con OpportunityLineItem.gf_amortization_type__c (label Amortization Type) = 'User-Defined':
+  - algun tenor con gf_tenor_date__c (label Tenor Date (Payment Tenor)) vacio -> YELLOW, nombre 'Tenors Payment Date is missing', mensaje 'One or more User-Defined tenors are missing a Payment Date.'
+  - si no -> GREEN, nombre 'Tenors Payment Date is complete', mensaje 'All User-Defined tenors have a Payment Date.'
+- Los tenors de productos Line se ignoran, tambien en una Opportunity mixta.
+- El LWC dmt_opp_product_details_schedule ofrece Bullet / Amortizing / User-Defined. DMT_TableTenors.getTenorsData y syncTenors borran los tenors sin Payment Date al cargar o guardar el schedule, por eso el YELLOW solo aparece si existe un tenor sin fecha.
+
+2. Treasury Line MX - nueva fila Line amount informed for restricted products
+- Clase: DMT_LineFeatureGenCons_Calc.restrictionWithoutAmount, en la rama TreasurySettlement de checkValidations, despues de Settlement amount informed for available products.
+- Mapping producto -> tabla: custom metadata DMT_OperationalRestrictionsTRSR__mdt, registro activo (isActive__c) con Entific__c = DMT_Line__c.Booking_Geography__c y DMT_Operational_Restrictions_Name__c = DMT_Line_Product_Item__c.Product_Code_Value__c.
+  - DMT_Derivatives_layout2__c = true -> tabla Derivatives (IRSW, FOEX, CCSW, DBIC, BOSP, EQSP)
+  - DMT_Depos_layout2__c = true -> tabla Depos (DELE)
+  - DMT_Repos_layout2__c = true -> tabla Repos (REAC, REPA)
+  - Solo los registros *_MX_2 tienen estos flags. Si ningun registro de la geografia tiene un flag layout2, la fila no se anade y el resto de geografias no cambia.
+- Producto habilitado = DMT_Line_Product_Item__c.DMT_DerivativeRestriction__c (label Derivative Restriction) = true. En pantalla es el checkbox de la columna DERIVATIVES LINE de DERIVATIVES / DEPOS / REPOS AVAILABLE PRODUCTS (LWC dmtRiskTablesLine, pestana PRODUCTS).
+- Tabla con importe = existe al menos un DMT_Risk_Line_Term__c de la linea con DMT_Risk_Type__c (label Risk Type) = Derivatives / Depos / Repos y DMT_Amount__c (label Amount) > 0. En pantalla, la columna AMOUNT de DERIVATIVES / DEPOS / REPOS RISK LINE.
+- Nombre de la fila: custom label dmt_cl_FeatureRestrictionAmountTitle.
+- GREEN: custom label dmt_cl_FeatureRestrictionAmountGreen, 'All products enabled in the Derivatives, Depos and Repos restriction tables have an amount in their line table.'
+- YELLOW: custom label dmt_cl_FeatureRestrictionAmountYellow + lista Nombre del producto (Tabla), por ejemplo 'Depo Lent (only for Financial Institutions) (Depos)'.
+- FD / DvP siguen en la validacion existente noSettlementAmount, sin cambios.
+
+3. Treasury Line - Maximum consumption and maturities relationship por tabla
+- Clase: DMT_LineFeatureGenCons_Calc.restricGreaterTerm (version con mapOpRestric; la de 2 parametros delega en ella).
+- Antes: todos los productos se comparaban con el End Term maximo de la tabla Derivatives.
+- Ahora: DMT_Line_Product_Item__c.Max_Tenor_WC__c (label Max Tenor With Clearing, en dias; en pantalla MATURITY TERM) se compara con el DMT_End_Term__c maximo de los DMT_Risk_Line_Term__c de su propia tabla segun los flags layout2. Sin flag o sin registro se usa Derivatives, asi que el resto de geografias no cambia.
+- Mensaje YELLOW sin cambios: 'There are maturities in the available products longer than the maximum consumption limit: <productos>'.
+
+4. Mejora del proceso existente: menos SOQL en el payload del Passport
+- DMT_Passport_Selector guarda en una cache de transaccion (mapa estatico por Id de linea, solo vive durante la transaccion): DMT_Risk_Line_Term__c (getRiskLineTerm, getRiskLineTermWhithoutRiskType) y DMT_Line_Product_Item__c (getProductLineItems, maximo 200 por linea como antes). La linea y su linea padre se cargan en una sola query (getRiskLineTermsByLines, getRiskLineTermWhithoutRiskTypeByLines, getProductLineItemsByLines) y cada uso filtra en memoria. El flujo del Passport no escribe estos objetos, por eso la cache no devuelve datos antiguos. clearTransactionCache (solo tests) la vacia.
+- La linea ya consultada por DMT_Passport_Helper se pasa a calculateFeatureGenCons, a checkValidations (nueva sobrecarga con DMT_Line__c; la de String delega), a isCurrentLine y a validationRenovationOtherLines (nueva sobrecarga con DMT_Line__c). validationRenovationOtherLines ya no ejecuta getLine dentro del bucle; el importe del padre viene de DMT_Parent_Line__r.Amount__c, anadido a DMT_Passport_Selector.getLine.
+- SOQL por payload, medido: Treasury Line con linea padre 31 -> 24 (linea 3 -> 1, product items 3 -> 1, risk line terms 4 -> 1). OtherProducts con linea padre 24 -> 19 (linea 4 -> 1, risk line terms 3 -> 1; antes el bucle sumaba 2 queries por cada risk line term adicional). Treasury Line sin padre: 2 queries menos.
+
+5. Correccion del proceso existente: parentConsums del payload
+- DMT_Passport_Helper.parentConsumsStandard buscaba los risk line terms Derivatives del padre con DMT_Parent_Line__r.Line_Id__c (external Id, por ejemplo ESCD26LIN00002736ES), que nunca coincide con DMT_Risk_Line_Term__c.DMT_Line__c (lookup al Id de registro). No encontraba ninguno y endDateParent del parentConsum productParent 03 era siempre el Start_Date__c del padre.
+- Ahora usa DMT_Parent_Line__c: endDateParent (03) = Start_Date__c del padre + el DMT_End_Term__c maximo de sus risk line terms Derivatives. productParent 01 y 02 (FD, DvP) sin cambios.
+
+Componentes
+- ApexClass: DMT_Passport_Selector, DMT_LineFeatureGenCons_Calc, DMT_OppFeatureGenCons_Calc, DMT_Passport_Helper.
+- Test classes: DMT_LineFeatureGenCons_Calc_test, DMT_OppFeatureGenCons_Calc_Test, DMT_Passport_Helper_test.
+- CustomLabel: dmt_cl_FeatureRestrictionAmountTitle, dmt_cl_FeatureRestrictionAmountGreen, dmt_cl_FeatureRestrictionAmountYellow.
+- Cada cambio en el codigo lleva el comentario CIBGLOBALD-4613; las mejoras y la correccion de los puntos 4 y 5 empiezan por Enhancement to existing process / Enhancement fix to existing process.
+- Deploy con RunSpecifiedTests: para la cobertura de DMT_Passport_Selector incluir DMT_LineFeatureGenCons_Calc_test, DMT_OppFeatureGenCons_Calc_Test, DMT_Passport_Helper_test, DMT_Passport_Handler_test, DMT_Line_Helper_test, DMT_Passport_FeatureSync_test, DMT_Passport_CalloutQueueableTest, DMT_GetCreationParameters_Test, DMT_OpportunityProductsControllerTest, DMT_TaxonomyMultipleProductsTest, DMT_RenewLineServiceTest y DMT_Rules_FeatureTest.
+
+Como probar (Salesforce Inspector para encontrar registros)
+A. Opportunity solo con productos Line:
+   SELECT OpportunityId, Opportunity.Name FROM OpportunityLineItem WHERE DMT_Line_Oneoffdeal__c = 'Line'
+   Elegir una Opportunity cuyos productos sean todos Line, pulsar Calculate en el Passport y abrir General Validations: no aparece ninguna fila Tenors Payment Date.
+B. Opportunity con producto One-Off User-Defined:
+   SELECT OpportunityId, Opportunity.Name FROM OpportunityLineItem WHERE DMT_Line_Oneoffdeal__c != 'Line' AND gf_amortization_type__c = 'User-Defined'
+   Pulsar Calculate: GREEN Tenors Payment Date is complete si todos los tenors tienen Payment Date.
+C. Opportunity mixta (un producto Line y uno One-Off): solo cuentan los tenors del One-Off.
+D. Treasury Line MX con un producto marcado en DEPOS o REPOS AVAILABLE PRODUCTS y la AMOUNT de DEPOS / REPOS RISK LINE vacia:
+   SELECT Line__c, Line__r.Name, Name, Product_Code_Value__c FROM DMT_Line_Product_Item__c WHERE Line__r.Booking_Geography__c = 'MX' AND Line__r.RecordType.DeveloperName = 'TreasurySettlement' AND DMT_DerivativeRestriction__c = true AND Product_Code_Value__c IN ('DELE','REAC','REPA')
+   SELECT DMT_Risk_Type__c, DMT_Amount__c FROM DMT_Risk_Line_Term__c WHERE DMT_Line__c = '<Id de la linea>'
+   Pulsar Calculate Passport: YELLOW Line amount informed for restricted products con cada producto y su tabla. Informar AMOUNT en la tabla, guardar y volver a pulsar Calculate Passport: el producto sale de la lista; con todas las tablas informadas pasa a GREEN.
+E. Misma linea MX: poner en Depo Lent un MATURITY TERM mayor que el END TERM de DEPOS RISK LINE (por ejemplo 1M contra 2D) y pulsar Calculate Passport: Maximum consumption and maturities relationship en YELLOW con Depo Lent. Antes salia GREEN porque se comparaba con la tabla Derivatives.
+F. Treasury Line de otra geografia (por ejemplo ES): no aparece la fila Line amount informed for restricted products y el resto de filas no cambia.
+G. Regresion de la mejora: pulsar Calculate Passport en una Treasury Line con linea padre, en una OtherProducts con linea padre y en una Opportunity; las filas de General Validations deben ser las mismas que antes del despliegue.
+   SELECT Id, Name, RecordType.DeveloperName, DMT_Parent_Line__c FROM DMT_Line__c WHERE DMT_Parent_Line__c != null AND RecordType.DeveloperName IN ('TreasurySettlement','OtherProducts')

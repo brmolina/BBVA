@@ -1,6 +1,7 @@
 public with sharing class DMT_Passport_Selector {
     public static DMT_Line__c getLine(String recordId) {
-        return [SELECT Name,Waiver__c, DMT_DerivativesAmount__c, Line_Id__c, DMT_Client_Entific__c, Booking_Geography__c, OwnerId, DMT_Status_Completed__c, Start_Date__c, End_Date__c, CurrencyIsoCode, Line_Details__c, Client__c, Client_Code__c, Client__r.Name, Client_Type__c,
+        // CIBGLOBALD-4613 - Enhancement to existing process: DMT_Parent_Line__r.Amount__c added to this query (DMT_LineFeatureGenCons_Calc.validationRenovationOtherLines no longer queries the parent line)
+        return [SELECT Name,Waiver__c, DMT_Parent_Line__r.Amount__c, DMT_DerivativesAmount__c, Line_Id__c, DMT_Client_Entific__c, Booking_Geography__c, OwnerId, DMT_Status_Completed__c, Start_Date__c, End_Date__c, CurrencyIsoCode, Line_Details__c, Client__c, Client_Code__c, Client__r.Name, Client_Type__c,
                     Client__r.DES_Tax_Identification_Number__c, Custom_Association__c, Custom_Association__r.Name, Client__r.Group_Code_EGS__c, Client__r.DES_Main_Parent__r.Name, DvP_Amount__c, FD_Amount__c, DMT_Total_Amount__c, Client__r.DES_Activity__c,
                     Repos_Limit_6M__c, Repos_Limit__c, DMT_ClientStarCode__c, DMT_Client_Rating_Date__c, DMT_ClientRating__c, DMT_ClientContracts__c, DMT_Parent_Line__r.Line_Id__c, DMT_Parent_Line__r.CurrencyIsoCode, DMT_Parent_Line__r.DvP_Amount__c,
                     DMT_Parent_Line__r.FD_Amount__c, DMT_Parent_Line__r.DMT_DerivativesAmount__c, DMT_Parent_Line__r.End_Date__c, DMT_Parent_Line__r.Start_Date__c , DMT_ApproverGlobalBanker__r.DMT_External_Id__c, DMT_Booking_Unit_Risk_Analyst__r.DMT_External_Id__c, DMT_Approver__r.DMT_External_Id__c,
@@ -11,18 +12,74 @@ public with sharing class DMT_Passport_Selector {
     }
 
     public static List<DMT_Risk_Line_Term__c> getRiskLineTerm(String recordId) {
-        return [SELECT Id, DMT_Risk_Type__c, DMT_End_Term__c, DMT_Init_Term__c, DMT_Amount__c, DMT_Parent_Product__c, DMT_Parent_Product__r.DMT_End_Term__c, DMT_Parent_Product__r.DMT_Amount__c, DMT_Parent_Product__r.gf_group_priority_line_id__c,
-            DMT_Parent_Product__r.CurrencyIsoCode
-            FROM DMT_Risk_Line_Term__c
-            WHERE DMT_Line__c = :recordId AND DMT_Risk_Type__c = 'Derivatives' WITH USER_MODE];
+        return getRiskLineTerm(recordId, new Set<String>{ DMT_Constants.RSK_DERIVATIVES }); // CIBGLOBALD-4613
+    }
+
+    // CIBGLOBALD-4613 - Risk line terms of a line filtered by DMT_Risk_Type__c (Derivatives / Depos / Repos / Equities), so one query serves several line tables
+    public static List<DMT_Risk_Line_Term__c> getRiskLineTerm(String recordId, Set<String> riskTypes) {
+        if (String.isBlank(recordId) || !(recordId instanceof Id)) {
+            return new List<DMT_Risk_Line_Term__c>();
+        }
+        return getRiskLineTermsByLines(new Set<Id>{ (Id) recordId }, riskTypes).get((Id) recordId);
+    }
+
+    /**
+     * CIBGLOBALD-4613 - Enhancement to existing process: transaction cache of DMT_Risk_Line_Term__c by line. Each line
+     * is queried once with all its risk types and every caller filters in memory, so the passport payload
+     * (DMT_Passport_Helper.buildStandardLinePayload: validationRenovation, parentConsumsStandard, checkValidations)
+     * runs one query instead of one per caller. Rows keep the query order inside each line.
+     */
+    private static Map<Id, List<DMT_Risk_Line_Term__c>> riskLineTermsByLine = new Map<Id, List<DMT_Risk_Line_Term__c>>();
+
+    // CIBGLOBALD-4613 - Enhancement to existing process: risk line terms of several lines (e.g. line and parent line) loaded in one query, filtered by DMT_Risk_Type__c
+    public static Map<Id, List<DMT_Risk_Line_Term__c>> getRiskLineTermsByLines(Set<Id> lineIds, Set<String> riskTypes) {
+        Set<Id> linesToQuery = new Set<Id>();
+        for (Id lineId : lineIds) {
+            if (lineId != null && !riskLineTermsByLine.containsKey(lineId)) {
+                linesToQuery.add(lineId);
+                riskLineTermsByLine.put(lineId, new List<DMT_Risk_Line_Term__c>());
+            }
+        }
+        if (!linesToQuery.isEmpty()) {
+            for (DMT_Risk_Line_Term__c term : [SELECT Id, DMT_Line__c, DMT_Risk_Type__c, DMT_End_Term__c, DMT_Init_Term__c, DMT_Amount__c, DMT_Parent_Product__c, DMT_Parent_Product__r.DMT_End_Term__c, DMT_Parent_Product__r.DMT_Amount__c, DMT_Parent_Product__r.gf_group_priority_line_id__c,
+                    DMT_Parent_Product__r.CurrencyIsoCode
+                    FROM DMT_Risk_Line_Term__c
+                    WHERE DMT_Line__c IN :linesToQuery WITH USER_MODE]) {
+                riskLineTermsByLine.get(term.DMT_Line__c).add(term);
+            }
+        }
+
+        Map<Id, List<DMT_Risk_Line_Term__c>> result = new Map<Id, List<DMT_Risk_Line_Term__c>>();
+        for (Id lineId : lineIds) {
+            List<DMT_Risk_Line_Term__c> filteredTerms = new List<DMT_Risk_Line_Term__c>();
+            if (lineId != null) {
+                for (DMT_Risk_Line_Term__c term : riskLineTermsByLine.get(lineId)) {
+                    if (riskTypes.contains(term.DMT_Risk_Type__c)) {
+                        filteredTerms.add(term);
+                    }
+                }
+            }
+            result.put(lineId, filteredTerms);
+        }
+        return result;
+    }
+
+    // CIBGLOBALD-4613 - Enhancement to existing process: empties the transaction caches (risk line terms, product items) when that data is changed and read again in the same transaction
+    @TestVisible
+    private static void clearTransactionCache() {
+        riskLineTermsByLine.clear();
+        productLineItemsByLine.clear();
+        riskLineTermsWithoutRiskTypeByLine.clear();
     }
 
     public static List<DMT_OperationalRestrictionsTRSR__mdt> getOperationalRestrictionMDT(String entific){
+        // CIBGLOBALD-4613 - layout2 fields added to this query (DMT_Derivatives_layout2__c, DMT_Depos_layout2__c, DMT_Repos_layout2__c)
         return [SELECT Id, DeveloperName, MasterLabel, Language, NamespacePrefix, Label, QualifiedApiName,
         SystemModstamp, Entific__c, Product_Group__c, DMT_Operational_Restrictions_Name__c, Description__c,
         DVP_dependent_Derivatives__c, FD_dependent_Derivatives__c, DERIVATIVES_Editable__c, FD_Editable__c,
         DVP_Editable__c, Apply_Validations_FD__c, Apply_Validations_DVP__c, DERIVATIVES_Disabled__c, DVP_Disabled__c,
-        FD_Disabled__c, OrderRestriction__c, isActive__c FROM DMT_OperationalRestrictionsTRSR__mdt
+        FD_Disabled__c, OrderRestriction__c, isActive__c, DMT_Derivatives_layout2__c, DMT_Depos_layout2__c, DMT_Repos_layout2__c
+        FROM DMT_OperationalRestrictionsTRSR__mdt
         WHERE Entific__c = :entific AND isActive__c = true];
     }
 
@@ -39,15 +96,43 @@ public with sharing class DMT_Passport_Selector {
     }
 
     public static List<DMT_Risk_Line_Term__c> getRiskLineTermWhithoutRiskType(String recordId) {
-        return [SELECT Id, DMT_End_Term__c, DMT_Line__r.Line_Id__c, g_global_product_family_id__c, g_global_product_subfamily_id__c, g_global_product_category_id__c, g_gbl_product_subcategory_id__c, g_global_product_id__c,
-            DMT_Amount__c, CurrencyIsoCode, (SELECT Id, g_currency_id__c FROM DMT_Currency_Provisions__r), (SELECT Id, g_limits_grid_guarantee_type__c FROM DMT_Warranties__r), DMT_LastLevelId__c, DMT_Product__r.DMT_Product_family__c,
-            DMT_Product__r.DMT_Product_Subfamily__c, DMT_Product__r.DMT_Product_category__c, DMT_Product__r.DMT_Product_Subcategory__c, DMT_Product__r.ProductCode, g_bullet_ind_type__c, DMT_Init_Term__c,
-            g_limit_sinds_ast_sctr_id__c, g_limit_sinds_ast_subsec_id__c, gf_inscol_months_grace_number__c, gf_loan_value_per__c, g_notary_crtfn_ind_type__c, g_gtee_public_adm_ind_type__c, gf_loan_eca_cntrb_per__c,
-            gf_min_raroec_fcg_per__c, gf_min_raroec_wo_fcg_per__c, gf_min_rorc_fcg_per__c, gf_min_rorc_wo_fcg_per__c, gf_revolvence_pd_days_number__c, g_multioperation_ind_type__c, DMT_Comments__c, g_branch_id__c, gf_group_priority_line_id__c,
-            DMT_Parent_Product__c, DMT_Parent_Product__r.DMT_End_Term__c, DMT_Parent_Product__r.DMT_Amount__c, DMT_Parent_Product__r.gf_group_priority_line_id__c,
-            DMT_Parent_Product__r.CurrencyIsoCode, DMT_Product__r.Name, g_expert_criteria_risk_type__c, Name
-            FROM DMT_Risk_Line_Term__c
-            WHERE DMT_Line__c = :recordId AND DMT_Risk_Type__c = '' WITH USER_MODE];
+        if (String.isBlank(recordId) || !(recordId instanceof Id)) { // CIBGLOBALD-4613
+            return new List<DMT_Risk_Line_Term__c>(); // CIBGLOBALD-4613
+        } // CIBGLOBALD-4613
+        return getRiskLineTermWhithoutRiskTypeByLines(new Set<Id>{ (Id) recordId }).get((Id) recordId); // CIBGLOBALD-4613
+    }
+
+    // CIBGLOBALD-4613 - Enhancement to existing process: transaction cache of the OtherProducts risk line terms (DMT_Risk_Line_Term__c without DMT_Risk_Type__c) by line, read by DMT_Passport_Helper.buildProductsForOtherProducts and DMT_LineFeatureGenCons_Calc.validationRenovationOtherLines
+    private static Map<Id, List<DMT_Risk_Line_Term__c>> riskLineTermsWithoutRiskTypeByLine = new Map<Id, List<DMT_Risk_Line_Term__c>>();
+
+    // CIBGLOBALD-4613 - Enhancement to existing process: OtherProducts risk line terms of several lines (e.g. line and parent line) loaded in one query
+    public static Map<Id, List<DMT_Risk_Line_Term__c>> getRiskLineTermWhithoutRiskTypeByLines(Set<Id> lineIds) {
+        Set<Id> linesToQuery = new Set<Id>();
+        for (Id lineId : lineIds) {
+            if (lineId != null && !riskLineTermsWithoutRiskTypeByLine.containsKey(lineId)) {
+                linesToQuery.add(lineId);
+                riskLineTermsWithoutRiskTypeByLine.put(lineId, new List<DMT_Risk_Line_Term__c>());
+            }
+        }
+        if (!linesToQuery.isEmpty()) {
+            for (DMT_Risk_Line_Term__c term : [SELECT Id, DMT_Line__c, DMT_End_Term__c, DMT_Line__r.Line_Id__c, g_global_product_family_id__c, g_global_product_subfamily_id__c, g_global_product_category_id__c, g_gbl_product_subcategory_id__c, g_global_product_id__c,
+                    DMT_Amount__c, CurrencyIsoCode, (SELECT Id, g_currency_id__c FROM DMT_Currency_Provisions__r), (SELECT Id, g_limits_grid_guarantee_type__c FROM DMT_Warranties__r), DMT_LastLevelId__c, DMT_Product__r.DMT_Product_family__c,
+                    DMT_Product__r.DMT_Product_Subfamily__c, DMT_Product__r.DMT_Product_category__c, DMT_Product__r.DMT_Product_Subcategory__c, DMT_Product__r.ProductCode, g_bullet_ind_type__c, DMT_Init_Term__c,
+                    g_limit_sinds_ast_sctr_id__c, g_limit_sinds_ast_subsec_id__c, gf_inscol_months_grace_number__c, gf_loan_value_per__c, g_notary_crtfn_ind_type__c, g_gtee_public_adm_ind_type__c, gf_loan_eca_cntrb_per__c,
+                    gf_min_raroec_fcg_per__c, gf_min_raroec_wo_fcg_per__c, gf_min_rorc_fcg_per__c, gf_min_rorc_wo_fcg_per__c, gf_revolvence_pd_days_number__c, g_multioperation_ind_type__c, DMT_Comments__c, g_branch_id__c, gf_group_priority_line_id__c,
+                    DMT_Parent_Product__c, DMT_Parent_Product__r.DMT_End_Term__c, DMT_Parent_Product__r.DMT_Amount__c, DMT_Parent_Product__r.gf_group_priority_line_id__c,
+                    DMT_Parent_Product__r.CurrencyIsoCode, DMT_Product__r.Name, g_expert_criteria_risk_type__c, Name
+                    FROM DMT_Risk_Line_Term__c
+                    WHERE DMT_Line__c IN :linesToQuery AND DMT_Risk_Type__c = '' WITH USER_MODE]) {
+                riskLineTermsWithoutRiskTypeByLine.get(term.DMT_Line__c).add(term);
+            }
+        }
+
+        Map<Id, List<DMT_Risk_Line_Term__c>> result = new Map<Id, List<DMT_Risk_Line_Term__c>>();
+        for (Id lineId : lineIds) {
+            result.put(lineId, lineId == null ? new List<DMT_Risk_Line_Term__c>() : new List<DMT_Risk_Line_Term__c>(riskLineTermsWithoutRiskTypeByLine.get(lineId)));
+        }
+        return result;
     }
 
     public static List<Opportunity> getOpportunity(String recordId) {
@@ -106,7 +191,7 @@ public with sharing class DMT_Passport_Selector {
                                 ),
                                 // Child Opportunity Tenors
                                 (
-                                    SELECT Id,DMT_Opportunity_Product__c,gf_tenor_date__c,gj_nominal_amount_db__c,gf_nominal_amount_fb__c,gf_spread_db__c,gf_spread_fb__c,gf_accrual_fees_bp__c,gf_non_accrual_fees_bp__c
+                                    SELECT Id,DMT_Opportunity_Product__c,gf_tenor_date__c,gj_nominal_amount_db__c,gf_nominal_amount_fb__c,gf_spread_db__c,gf_spread_fb__c,gf_accrual_fees_bp__c,gf_non_accrual_fees_bp__c,DMT_Manual_RW__c
                                     FROM Opportunity_Tenors__r
                                 ),
                                 // Child Underlyings
@@ -138,10 +223,43 @@ public with sharing class DMT_Passport_Selector {
     //    WHERE DMT_Status_Completed__c = : 'Closed Won' AND End_Date__c > = :startDateLine AND Id != :recordId WITH USER_MODE];
     }
     public static List<DMT_Line_Product_Item__c> getProductLineItems(String recordId){
-        return [SELECT CurrencyIsoCode,Max_Tenor_WC__c ,Max_Tenor_WOC__c,Product__c,  Id, Name, Product__r.ProductCode,
-        Product__r.DMT_Product_family__c,Line__c,Product__r.DMT_Product_Subfamily__c,Product__r.DMT_Product_category__c,Product__r.DMT_Product_Subcategory__c,
-        Product__r.DMT_Global_Product_Id__c, Product__r.Name, Product_Code_Value__c,
-        DMT_DerivativeRestriction__c,DMT_FDRestriction__c,DMT_DVPRestriction__c,DMT_RestrictionActive__c, Line__r.Booking_Geography__c FROM DMT_Line_Product_Item__c WHERE Line__c = :recordId WITH USER_MODE LIMIT 200];
+        if (String.isBlank(recordId) || !(recordId instanceof Id)) { // CIBGLOBALD-4613
+            return new List<DMT_Line_Product_Item__c>(); // CIBGLOBALD-4613
+        } // CIBGLOBALD-4613
+        return getProductLineItemsByLines(new Set<Id>{ (Id) recordId }).get((Id) recordId); // CIBGLOBALD-4613
+    }
+
+    // CIBGLOBALD-4613 - Enhancement to existing process: transaction cache of DMT_Line_Product_Item__c by line, read by DMT_LineFeatureGenCons_Calc.checkValidations and validationRenovation in the same passport payload
+    private static Map<Id, List<DMT_Line_Product_Item__c>> productLineItemsByLine = new Map<Id, List<DMT_Line_Product_Item__c>>();
+
+    // CIBGLOBALD-4613 - Enhancement to existing process: product items of several lines (e.g. line and parent line) loaded in one query, at most 200 per line as before
+    public static Map<Id, List<DMT_Line_Product_Item__c>> getProductLineItemsByLines(Set<Id> lineIds) {
+        Integer maxItemsPerLine = 200;
+        Set<Id> linesToQuery = new Set<Id>();
+        for (Id lineId : lineIds) {
+            if (lineId != null && !productLineItemsByLine.containsKey(lineId)) {
+                linesToQuery.add(lineId);
+                productLineItemsByLine.put(lineId, new List<DMT_Line_Product_Item__c>());
+            }
+        }
+        if (!linesToQuery.isEmpty()) {
+            Integer queryLimit = maxItemsPerLine * linesToQuery.size();
+            for (DMT_Line_Product_Item__c item : [SELECT CurrencyIsoCode,Max_Tenor_WC__c ,Max_Tenor_WOC__c,Product__c,  Id, Name, Product__r.ProductCode,
+                    Product__r.DMT_Product_family__c,Line__c,Product__r.DMT_Product_Subfamily__c,Product__r.DMT_Product_category__c,Product__r.DMT_Product_Subcategory__c,
+                    Product__r.DMT_Global_Product_Id__c, Product__r.Name, Product_Code_Value__c,
+                    DMT_DerivativeRestriction__c,DMT_FDRestriction__c,DMT_DVPRestriction__c,DMT_RestrictionActive__c, Line__r.Booking_Geography__c FROM DMT_Line_Product_Item__c WHERE Line__c IN :linesToQuery WITH USER_MODE LIMIT :queryLimit]) {
+                List<DMT_Line_Product_Item__c> lineItems = productLineItemsByLine.get(item.Line__c);
+                if (lineItems.size() < maxItemsPerLine) {
+                    lineItems.add(item);
+                }
+            }
+        }
+
+        Map<Id, List<DMT_Line_Product_Item__c>> result = new Map<Id, List<DMT_Line_Product_Item__c>>();
+        for (Id lineId : lineIds) {
+            result.put(lineId, lineId == null ? new List<DMT_Line_Product_Item__c>() : new List<DMT_Line_Product_Item__c>(productLineItemsByLine.get(lineId)));
+        }
+        return result;
     }
 
     public static Id getRecordTypeId(String name,String sobjectType) {
@@ -251,10 +369,34 @@ public with sharing class DMT_Passport_Selector {
         }
 
         if (opportunityId != null) {
-            return [SELECT Id, Opportunity__r.dmt_opp_id__c,DMT_Line__c ,Opportunity__c,DMT_Is_Obsoleted_Passport_Save__c,DMT_Passport_Save__c, Opportunity__r.StageName, Opportunity__r.OwnerId,Opportunity__r.RecordType.DeveloperName, DMT_Line__r.DMT_Additional_Restrictions__c FROM Passport__c WHERE Opportunity__c = :opportunityId WITH USER_MODE];
+            List<Passport__c> passports = [
+                SELECT Id, Opportunity__r.dmt_opp_id__c, DMT_Line__c, Opportunity__c,
+                       DMT_Is_Obsoleted_Passport_Save__c, DMT_Passport_Save__c,
+                       Opportunity__r.StageName, Opportunity__r.OwnerId,
+                       Opportunity__r.RecordType.DeveloperName,
+                       DMT_Line__r.DMT_Additional_Restrictions__c
+                FROM Passport__c
+                WHERE Opportunity__c = :opportunityId
+                WITH USER_MODE
+                ORDER BY LastModifiedDate DESC
+                LIMIT 1
+            ];
+            return passports.isEmpty() ? null : passports[0];
         }
 
-        return [SELECT Id, Opportunity__r.dmt_opp_id__c,DMT_Line__c ,Opportunity__c,DMT_Is_Obsoleted_Passport_Save__c,DMT_Passport_Save__c, Opportunity__r.StageName, Opportunity__r.OwnerId,Opportunity__r.RecordType.DeveloperName, DMT_Line__r.DMT_Additional_Restrictions__c FROM Passport__c WHERE Opportunity__r.dmt_opp_id__c = :recordId WITH USER_MODE];
+        List<Passport__c> passports = [
+            SELECT Id, Opportunity__r.dmt_opp_id__c, DMT_Line__c, Opportunity__c,
+                   DMT_Is_Obsoleted_Passport_Save__c, DMT_Passport_Save__c,
+                   Opportunity__r.StageName, Opportunity__r.OwnerId,
+                   Opportunity__r.RecordType.DeveloperName,
+                   DMT_Line__r.DMT_Additional_Restrictions__c
+            FROM Passport__c
+            WHERE Opportunity__r.dmt_opp_id__c = :recordId
+            WITH USER_MODE
+            ORDER BY LastModifiedDate DESC
+            LIMIT 1
+        ];
+        return passports.isEmpty() ? null : passports[0];
     }
 
     public static List<Account> getLocalclient (List<String> localclientId) {
@@ -424,19 +566,19 @@ public with sharing class DMT_Passport_Selector {
     }
 
     public static Account getAccountFromCustomerId(String customerId) {
-        if (String.isBlank(customerId)) {
-            return null;
-        }
+    if (String.isBlank(customerId)) {
+        return null;
+    }
         // Search Account directly by g_customer_id__c.
-        List<Account> accList = [
-            SELECT Id, DES_Group_Code__c, DES_Rating_Int__c, DES_Client_Type__c, Name, DES_Segment__c
-            FROM Account
+    List<Account> accList = [
+        SELECT Id, DES_Group_Code__c, DES_Rating_Int__c, DES_Client_Type__c, Name, DES_Segment__c
+        FROM Account
             WHERE g_customer_id__c = :customerId
             WITH USER_MODE
-            LIMIT 1
-        ];
-        return accList.isEmpty() ? null : accList[0];
-    }
+        LIMIT 1
+    ];
+    return accList.isEmpty() ? null : accList[0];
+}
 
     public static List<Case> getActiveProposalCasesByOpportunityAndFeatureIds(Id opportunityId, Set<String> featureIds) {
         if (opportunityId == null || featureIds == null || featureIds.isEmpty()) {

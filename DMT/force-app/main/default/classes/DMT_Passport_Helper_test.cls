@@ -574,8 +574,8 @@ public with sharing class DMT_Passport_Helper_test {
         Case caseAfterExecution = [SELECT Status FROM Case WHERE Id = :case1.Id];
         Task taskAfterExecution = [SELECT Status FROM Task WHERE Id = :task1.Id];
 
-        System.assertEquals('Pending', caseAfterExecution.Status, 'El Case no debe cambiar si la Opportunity no está en Approval ni Ready to close.');
-        System.assertEquals('In Progress', taskAfterExecution.Status, 'La Task no debe cambiar si la Opportunity no está en Approval ni Ready to close.');
+        Assert.areEqual('Pending', caseAfterExecution.Status, 'El Case no debe cambiar si la Opportunity no está en Approval ni Ready to close.'); // CIBGLOBALD-4613
+        Assert.areEqual('In Progress', taskAfterExecution.Status, 'La Task no debe cambiar si la Opportunity no está en Approval ni Ready to close.'); // CIBGLOBALD-4613
 
         TriggerBypass.removeBypass();
     }
@@ -608,8 +608,8 @@ public with sharing class DMT_Passport_Helper_test {
         Case caseAfterExecution = [SELECT Status FROM Case WHERE Id = :case1.Id];
         Task taskAfterExecution = [SELECT Status FROM Task WHERE Id = :task1.Id];
 
-        System.assertEquals('Pending', caseAfterExecution.Status, 'El Case no debe cambiar si la feature es obligatoria.');
-        System.assertEquals('In Progress', taskAfterExecution.Status, 'La Task no debe cambiar si la feature es obligatoria.');
+        Assert.areEqual('Pending', caseAfterExecution.Status, 'El Case no debe cambiar si la feature es obligatoria.'); // CIBGLOBALD-4613
+        Assert.areEqual('In Progress', taskAfterExecution.Status, 'La Task no debe cambiar si la feature es obligatoria.'); // CIBGLOBALD-4613
 
         TriggerBypass.removeBypass();
     }
@@ -710,7 +710,7 @@ public with sharing class DMT_Passport_Helper_test {
 
         Case caseAfterExecution = [SELECT Status FROM Case WHERE Id = :newCase.Id];
         
-        System.assertEquals('Finished', caseAfterExecution.Status, 'Un Case ya finalizado no debe modificarse.');
+        Assert.areEqual('Finished', caseAfterExecution.Status, 'Un Case ya finalizado no debe modificarse.'); // CIBGLOBALD-4613
 
         TriggerBypass.removeBypass();
     }
@@ -1324,6 +1324,42 @@ public with sharing class DMT_Passport_Helper_test {
         Test.setMock(HttpCalloutMock.class, new DMT_Integration_MockGenerator());
         DMT_Passport_Handler.buttonCallPassport(targetOpp.Id, JSON.serialize(clientsGroup));
         Test.stopTest();
+    }
+
+    // CIBGLOBALD-4613 - Enhancement fix to existing process: the Derivatives parent consumption (productParent 03) ends at the parent Start Date plus the longest parent Derivatives End Term
+    @isTest
+    static void testSetPayloadPassport_treasuryParentConsumsDerivativesEndDate() {
+        TriggerBypass.setBypass();
+        DMT_Line__c treasuryLine = DMT_Test_DataFactory.generateTestTreasuryLines();
+        DMT_Line__c parentLine = [SELECT Id, Start_Date__c FROM DMT_Line__c WHERE Line_Id__c = '00001' LIMIT 1];
+        // The factory builds both lines in one insert, so the parent link is set here
+        update new DMT_Line__c(Id = treasuryLine.Id, DMT_Parent_Line__c = parentLine.Id);
+        TriggerBypass.removeBypass();
+        new DMT_UtilTestClass().createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{
+            DMT_Risk_Line_Term__c.DMT_Line__c => parentLine.Id,
+            DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+            DMT_Risk_Line_Term__c.DMT_End_Term__c => '30',
+            DMT_Risk_Line_Term__c.DMT_Amount__c => 100000,
+            DMT_Risk_Line_Term__c.DMT_Risk_Type__c => DMT_Constants.RSK_DERIVATIVES
+        });
+
+        Test.startTest();
+        String payload = DMT_Passport_Helper.setPayloadPassport(treasuryLine.Id, '');
+        Test.stopTest();
+
+        Map<String, Object> payloadMap = (Map<String, Object>) JSON.deserializeUntyped(payload);
+        Map<String, Object> body = (Map<String, Object>) JSON.deserializeUntyped((String) payloadMap.get('body'));
+        Map<String, Object> client = (Map<String, Object>) body.get('client');
+        Map<String, Object> derivativesParent;
+        for (Object parentConsum : (List<Object>) client.get('parentConsums')) {
+            Map<String, Object> parentConsumMap = (Map<String, Object>) parentConsum;
+            if (parentConsumMap.get('productParent') == '03') {
+                derivativesParent = parentConsumMap;
+            }
+        }
+
+        Assert.isNotNull(derivativesParent, 'The payload must contain the Derivatives parent consumption (productParent 03)');
+        Assert.areEqual(String.valueOf(parentLine.Start_Date__c.addDays(30)), String.valueOf(derivativesParent.get('endDateParent')), 'endDateParent = parent Start Date + longest parent Derivatives End Term');
     }
 
 }

@@ -1,5 +1,7 @@
 @isTest
 public with sharing class DMT_LineFeatureGenCons_Calc_test {
+    private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass(); // CIBGLOBALD-4613
+
     @TestSetup
     static void loadTestData(){
 
@@ -171,12 +173,13 @@ public with sharing class DMT_LineFeatureGenCons_Calc_test {
         insert listRsklt;
         Test.startTest();
 
-        System.assertEquals(DMT_LineFeatureGenCons_Calc.validationRenovation(lineList[0].Id, lineList[1].Id), false, 'testier is testier');
+        Assert.areEqual(DMT_LineFeatureGenCons_Calc.validationRenovation(lineList[0].Id, lineList[1].Id), false, 'testier is testier'); // CIBGLOBALD-4613
 
         pli2.DMT_DerivativeRestriction__c = true;
         update pli2;
+        DMT_Passport_Selector.clearTransactionCache(); // CIBGLOBALD-4613 - product items changed in the same test transaction
 
-        System.assertEquals(DMT_LineFeatureGenCons_Calc.validationRenovation(lineList[0].Id, lineList[1].Id), true, 'testier is testier');
+        Assert.areEqual(DMT_LineFeatureGenCons_Calc.validationRenovation(lineList[0].Id, lineList[1].Id), true, 'testier is testier'); // CIBGLOBALD-4613
 
         Test.stoptest();
 
@@ -346,6 +349,7 @@ public with sharing class DMT_LineFeatureGenCons_Calc_test {
         );
         insert additionalChildRiskTerm;
 
+        DMT_Passport_Selector.clearTransactionCache(); // CIBGLOBALD-4613 - risk line term added in the same test transaction
         Boolean result2 = DMT_LineFeatureGenCons_Calc.validationRenovationOtherLines(childLine.Id, parentLine.Id);
         Assert.areEqual(true, result2, 'validationRenovationOtherLines should return true when child line has more risk terms than parent');
         Test.stopTest();
@@ -355,7 +359,7 @@ public with sharing class DMT_LineFeatureGenCons_Calc_test {
     @isTest
     private static void testLineFeatureGenConsCalcIsCurrentLineGreen() {
         // Setup: create a line and a duplicate client line
-        DMT_Line__c line = [SELECT Id, Status__c, Custom_Association__c, Closed__c, DMT_Status_Completed__c, RecordTypeId, Client_Code__c, Start_Date__c FROM DMT_Line__c WHERE Line_Id__c = '00002' LIMIT 1];
+        DMT_Line__c line = [SELECT Id, DMT_Parent_Line__c, Status__c, Custom_Association__c, Closed__c, DMT_Status_Completed__c, RecordTypeId, Client_Code__c, Start_Date__c FROM DMT_Line__c WHERE Line_Id__c = '00002' LIMIT 1]; // CIBGLOBALD-4613
 
         Date startDate = line.Start_Date__c;
 
@@ -385,7 +389,7 @@ public with sharing class DMT_LineFeatureGenCons_Calc_test {
         TriggerBypass.setBypass();
         Test.startTest();
         // Setup: create a line and a duplicate client line
-        List<DMT_Line__c> lineList = [SELECT Id, Status__c, Start_Date__c, Custom_Association__c, Closed__c, DMT_Status_Completed__c, RecordTypeId, Client_Code__c FROM DMT_Line__c WHERE Client_Code__c = 'ES0182054986618'];
+        List<DMT_Line__c> lineList = [SELECT Id, DMT_Parent_Line__c, Status__c, Start_Date__c, Custom_Association__c, Closed__c, DMT_Status_Completed__c, RecordTypeId, Client_Code__c FROM DMT_Line__c WHERE Client_Code__c = 'ES0182054986618']; // CIBGLOBALD-4613
         System.debug('lineList, '+ lineList);
 
         for(DMT_Line__c line : lineList) {
@@ -518,4 +522,223 @@ public with sharing class DMT_LineFeatureGenCons_Calc_test {
 
     }
 
+    /**
+     * CIBGLOBALD-4613 - MX restriction tables: in-memory DMT_OperationalRestrictionsTRSR__mdt rows (custom metadata
+     * cannot be inserted) mapping FOEX to Derivatives, DELE to Depos and REAC to Repos, as the MX_2 records do.
+     */
+    private static Map<String, DMT_OperationalRestrictionsTRSR__mdt> buildMxRestrictions() {
+        return new Map<String, DMT_OperationalRestrictionsTRSR__mdt>{
+            'FOEX' => new DMT_OperationalRestrictionsTRSR__mdt(DMT_Operational_Restrictions_Name__c = 'FOEX', DMT_Derivatives_layout2__c = true, DMT_Depos_layout2__c = false, DMT_Repos_layout2__c = false),
+            'DELE' => new DMT_OperationalRestrictionsTRSR__mdt(DMT_Operational_Restrictions_Name__c = 'DELE', DMT_Derivatives_layout2__c = false, DMT_Depos_layout2__c = true, DMT_Repos_layout2__c = false),
+            'REAC' => new DMT_OperationalRestrictionsTRSR__mdt(DMT_Operational_Restrictions_Name__c = 'REAC', DMT_Derivatives_layout2__c = false, DMT_Depos_layout2__c = false, DMT_Repos_layout2__c = true)
+        };
+    }
+
+    // CIBGLOBALD-4613 - In-memory line product item (no DML: the validations receive the lists)
+    private static DMT_Line_Product_Item__c buildProduct(String productCode, Boolean lineEnabled, String maxTenor) {
+        return DMT_UTIL.buildLineProductItem(new Map<Schema.SObjectField, Object>{
+            DMT_Line_Product_Item__c.Name => productCode + ' product',
+            DMT_Line_Product_Item__c.Product_Code_Value__c => productCode,
+            DMT_Line_Product_Item__c.DMT_DerivativeRestriction__c => lineEnabled,
+            DMT_Line_Product_Item__c.Max_Tenor_WC__c => maxTenor
+        });
+    }
+
+    // CIBGLOBALD-4613 - In-memory risk line term of one line table
+    private static DMT_Risk_Line_Term__c buildTerm(String riskType, String endTerm, Decimal amount) {
+        return DMT_UTIL.buildRiskLineTerm(new Map<Schema.SObjectField, Object>{
+            DMT_Risk_Line_Term__c.DMT_Risk_Type__c => riskType,
+            DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+            DMT_Risk_Line_Term__c.DMT_End_Term__c => endTerm,
+            DMT_Risk_Line_Term__c.DMT_Amount__c => amount
+        });
+    }
+
+    // CIBGLOBALD-4613 - MX: products enabled in the Depos and Repos tables without amount give one YELLOW entry
+    @isTest
+    private static void restrictionWithoutAmountMxYellowTest() {
+        List<DMT_Line_Product_Item__c> products = new List<DMT_Line_Product_Item__c>{
+            buildProduct('FOEX', true, null),
+            buildProduct('DELE', true, null),
+            buildProduct('REAC', true, null)
+        };
+        List<DMT_Risk_Line_Term__c> terms = new List<DMT_Risk_Line_Term__c>{
+            buildTerm(DMT_Constants.RSK_DERIVATIVES, '1095', 1000),
+            buildTerm(DMT_Constants.RSK_DEPOS, '30', 0)
+        };
+
+        Test.startTest();
+        DMT_Wrapper_Passport_Abs.FeatureGenConsiderations result = DMT_LineFeatureGenCons_Calc.restrictionWithoutAmount(products, terms, buildMxRestrictions());
+        Test.stopTest();
+
+        Assert.areEqual(DMT_Constants.FEATURE_GC_STATE_YELLOW, result.state, 'Depos and Repos tables have no amount');
+        Assert.areEqual(System.Label.dmt_cl_FeatureRestrictionAmountTitle, result.name, 'Validation title');
+        Assert.isTrue(result.message.contains('DELE product (Depos)'), 'DELE is listed with its table: ' + result.message);
+        Assert.isTrue(result.message.contains('REAC product (Repos)'), 'REAC is listed with its table: ' + result.message);
+        Assert.isFalse(result.message.contains('FOEX'), 'FOEX has a Derivatives amount: ' + result.message);
+    }
+
+    // CIBGLOBALD-4613 - MX: every enabled product has an amount in its table, or the product is not enabled -> GREEN
+    @isTest
+    private static void restrictionWithoutAmountMxGreenTest() {
+        List<DMT_Line_Product_Item__c> products = new List<DMT_Line_Product_Item__c>{
+            buildProduct('FOEX', true, null),
+            buildProduct('DELE', true, null),
+            buildProduct('REAC', false, null)
+        };
+        List<DMT_Risk_Line_Term__c> terms = new List<DMT_Risk_Line_Term__c>{
+            buildTerm(DMT_Constants.RSK_DERIVATIVES, '1095', 1000),
+            buildTerm(DMT_Constants.RSK_DEPOS, '30', 500)
+        };
+
+        Test.startTest();
+        DMT_Wrapper_Passport_Abs.FeatureGenConsiderations result = DMT_LineFeatureGenCons_Calc.restrictionWithoutAmount(products, terms, buildMxRestrictions());
+        Test.stopTest();
+
+        Assert.areEqual(DMT_Constants.FEATURE_GC_STATE_GREEN, result.state, 'Enabled tables have an amount');
+        Assert.areEqual(System.Label.dmt_cl_FeatureRestrictionAmountGreen, result.message, 'Green message');
+    }
+
+    // CIBGLOBALD-4613 - Geographies without layout2 restriction records get no new validation
+    @isTest
+    private static void restrictionWithoutAmountOtherGeographyTest() {
+        Map<String, DMT_OperationalRestrictionsTRSR__mdt> esRestrictions = new Map<String, DMT_OperationalRestrictionsTRSR__mdt>{
+            'FOEX' => new DMT_OperationalRestrictionsTRSR__mdt(DMT_Operational_Restrictions_Name__c = 'FOEX', DMT_Derivatives_layout2__c = false, DMT_Depos_layout2__c = false, DMT_Repos_layout2__c = false)
+        };
+
+        Test.startTest();
+        DMT_Wrapper_Passport_Abs.FeatureGenConsiderations result = DMT_LineFeatureGenCons_Calc.restrictionWithoutAmount(
+            new List<DMT_Line_Product_Item__c>{ buildProduct('FOEX', true, null) }, new List<DMT_Risk_Line_Term__c>(), esRestrictions);
+        Test.stopTest();
+
+        Assert.isNull(result, 'No validation for geographies without layout2 restrictions');
+    }
+
+    // CIBGLOBALD-4613 - MX maturity term: Depos and Repos products are compared with their own table terms
+    @isTest
+    private static void restricGreaterTermPerTableTest() {
+        List<DMT_Risk_Line_Term__c> terms = new List<DMT_Risk_Line_Term__c>{
+            buildTerm(DMT_Constants.RSK_DERIVATIVES, '16425', 1000),
+            buildTerm(DMT_Constants.RSK_DEPOS, '30', 500),
+            buildTerm(DMT_Constants.RSK_REPOS, '10', 500)
+        };
+
+        Test.startTest();
+        DMT_Wrapper_Passport_Abs.FeatureGenConsiderations green = DMT_LineFeatureGenCons_Calc.restricGreaterTerm(
+            new List<DMT_Line_Product_Item__c>{ buildProduct('FOEX', true, '3650'), buildProduct('DELE', true, '30'), buildProduct('REAC', true, '10') },
+            terms, buildMxRestrictions());
+        DMT_Wrapper_Passport_Abs.FeatureGenConsiderations yellow = DMT_LineFeatureGenCons_Calc.restricGreaterTerm(
+            new List<DMT_Line_Product_Item__c>{ buildProduct('FOEX', true, '3650'), buildProduct('DELE', true, '60'), buildProduct('REAC', true, '30') },
+            terms, buildMxRestrictions());
+        DMT_Wrapper_Passport_Abs.FeatureGenConsiderations derivativesOnly = DMT_LineFeatureGenCons_Calc.restricGreaterTerm(
+            new List<DMT_Line_Product_Item__c>{ buildProduct('DELE', true, '60') },
+            new List<DMT_Risk_Line_Term__c>{ terms[0] });
+        Test.stopTest();
+
+        Assert.areEqual(DMT_Constants.FEATURE_GC_STATE_GREEN, green.state, 'Each product within its table term: ' + green.message);
+        Assert.areEqual(DMT_Constants.FEATURE_GC_STATE_YELLOW, yellow.state, 'DELE and REAC exceed their table term');
+        Assert.isTrue(yellow.message.contains('DELE product') && yellow.message.contains('REAC product'), 'Products listed: ' + yellow.message);
+        Assert.isFalse(yellow.message.contains('FOEX'), 'FOEX within the Derivatives term: ' + yellow.message);
+        Assert.areEqual(DMT_Constants.FEATURE_GC_STATE_GREEN, derivativesOnly.state, 'Without restriction records every product is compared with the Derivatives terms');
+    }
+
+    // CIBGLOBALD-4613 - Enhancement to existing process: the risk line terms of a line are queried once per transaction and filtered by risk type in memory (DMT_Passport_Selector)
+    @isTest
+    private static void riskLineTermCacheTest() {
+        DMT_Line__c childLine = [SELECT Id, DMT_Parent_Line__c FROM DMT_Line__c WHERE Line_Id__c = '00002' LIMIT 1];
+        // The factory builds both lines in one insert, so the parent link is set here
+        childLine.DMT_Parent_Line__c = [SELECT Id FROM DMT_Line__c WHERE Line_Id__c = '00001' LIMIT 1].Id;
+        TriggerBypass.setBypass();
+        update childLine;
+        TriggerBypass.removeBypass();
+        DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{
+            DMT_Risk_Line_Term__c.DMT_Line__c => childLine.Id,
+            DMT_Risk_Line_Term__c.DMT_Init_Term__c => '0',
+            DMT_Risk_Line_Term__c.DMT_End_Term__c => '2',
+            DMT_Risk_Line_Term__c.DMT_Amount__c => 500,
+            DMT_Risk_Line_Term__c.DMT_Risk_Type__c => DMT_Constants.RSK_DEPOS
+        });
+        Set<String> derivatives = new Set<String>{ DMT_Constants.RSK_DERIVATIVES };
+        DMT_Passport_Selector.clearTransactionCache();
+
+        Test.startTest();
+        Integer queriesBefore = Limits.getQueries();
+        Map<Id, List<DMT_Risk_Line_Term__c>> byLine = DMT_Passport_Selector.getRiskLineTermsByLines(new Set<Id>{ childLine.Id, childLine.DMT_Parent_Line__c }, derivatives);
+        List<DMT_Risk_Line_Term__c> childTables = DMT_Passport_Selector.getRiskLineTerm(childLine.Id, new Set<String>{ DMT_Constants.RSK_DERIVATIVES, DMT_Constants.RSK_DEPOS });
+        List<DMT_Risk_Line_Term__c> parentDerivatives = DMT_Passport_Selector.getRiskLineTerm(childLine.DMT_Parent_Line__c);
+        List<DMT_Risk_Line_Term__c> byExternalId = DMT_Passport_Selector.getRiskLineTerm('00001');
+        Integer queriesWithCache = Limits.getQueries() - queriesBefore;
+        DMT_Passport_Selector.clearTransactionCache();
+        List<DMT_Risk_Line_Term__c> afterClear = DMT_Passport_Selector.getRiskLineTerm(childLine.Id);
+        Integer queriesAfterClear = Limits.getQueries() - queriesBefore;
+        Test.stopTest();
+
+        Assert.areEqual(1, byLine.get(childLine.Id).size(), 'Child line has one Derivatives term');
+        Assert.areEqual(0, byLine.get(childLine.DMT_Parent_Line__c).size(), 'Parent line has no Derivatives term');
+        Assert.areEqual(2, childTables.size(), 'Derivatives and Depos terms of the child line from the cache');
+        Assert.areEqual(0, parentDerivatives.size(), 'Parent line read from the cache');
+        Assert.areEqual(0, byExternalId.size(), 'A value that is not a record Id returns no terms');
+        Assert.areEqual(1, queriesWithCache, 'Line and parent line loaded in one query, later reads from the cache');
+        Assert.areEqual(1, afterClear.size(), 'After clearing the cache the line is queried again');
+        Assert.areEqual(2, queriesAfterClear, 'Clearing the cache runs a new query');
+    }
+
+    // CIBGLOBALD-4613 - Enhancement to existing process: product items of a line and its parent line come in one query and later reads use the transaction cache (DMT_Passport_Selector)
+    @isTest
+    private static void productLineItemCacheTest() {
+        DMT_Line__c childLine = [SELECT Id FROM DMT_Line__c WHERE Line_Id__c = '00002' LIMIT 1];
+        DMT_Line__c parentLine = [SELECT Id FROM DMT_Line__c WHERE Line_Id__c = '00001' LIMIT 1];
+        Integer childItems = [SELECT COUNT() FROM DMT_Line_Product_Item__c WHERE Line__c = :childLine.Id];
+        DMT_Passport_Selector.clearTransactionCache();
+
+        Test.startTest();
+        Integer queriesBefore = Limits.getQueries();
+        Map<Id, List<DMT_Line_Product_Item__c>> byLine = DMT_Passport_Selector.getProductLineItemsByLines(new Set<Id>{ childLine.Id, parentLine.Id });
+        List<DMT_Line_Product_Item__c> childAgain = DMT_Passport_Selector.getProductLineItems(childLine.Id);
+        List<DMT_Line_Product_Item__c> byExternalId = DMT_Passport_Selector.getProductLineItems('00002');
+        Integer queriesUsed = Limits.getQueries() - queriesBefore;
+        Test.stopTest();
+
+        Assert.areEqual(childItems, byLine.get(childLine.Id).size(), 'Child line product items');
+        Assert.areEqual(childItems, childAgain.size(), 'Same product items from the cache');
+        Assert.areEqual(0, byExternalId.size(), 'A value that is not a record Id returns no product items');
+        Assert.areEqual(1, queriesUsed, 'Line and parent line product items loaded in one query');
+    }
+
+    // CIBGLOBALD-4613 - Enhancement to existing process: the OtherProducts renewal check with the line already queried gives the same result as with the Ids and does not query the lines inside the loop
+    @isTest
+    private static void validationRenovationOtherLinesWithLineTest() {
+        DMT_Line__c parentLine = [SELECT Id FROM DMT_Line__c WHERE Line_Id__c = '00002' LIMIT 1];
+        DMT_Line__c childLine = [SELECT Id FROM DMT_Line__c WHERE Line_Id__c = '00003' LIMIT 1];
+        // The factory builds the lines without parent link, so it is set here
+        childLine.DMT_Parent_Line__c = parentLine.Id;
+        TriggerBypass.setBypass();
+        update childLine;
+        TriggerBypass.removeBypass();
+        insert new List<DMT_Risk_Line_Term__c>{
+            DMT_UTIL.buildRiskLineTerm(new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => parentLine.Id,
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '12',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 5000
+            }),
+            DMT_UTIL.buildRiskLineTerm(new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => childLine.Id,
+                DMT_Risk_Line_Term__c.DMT_End_Term__c => '12',
+                DMT_Risk_Line_Term__c.DMT_Amount__c => 6000
+            })
+        };
+        DMT_Line__c payloadLine = DMT_Passport_Selector.getLine(childLine.Id);
+        DMT_Passport_Selector.clearTransactionCache();
+
+        Test.startTest();
+        Integer queriesBefore = Limits.getQueries();
+        Boolean withLine = DMT_LineFeatureGenCons_Calc.validationRenovationOtherLines(payloadLine);
+        Integer queriesWithLine = Limits.getQueries() - queriesBefore;
+        Boolean withIds = DMT_LineFeatureGenCons_Calc.validationRenovationOtherLines(childLine.Id, parentLine.Id);
+        Test.stopTest();
+
+        Assert.isTrue(withLine, 'Child risk amount greater than the parent one: renewal with changes');
+        Assert.areEqual(withIds, withLine, 'Same result with the line and with the Ids');
+        Assert.areEqual(1, queriesWithLine, 'Only the risk line terms of line and parent are queried');
+    }
 }
