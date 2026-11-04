@@ -231,6 +231,42 @@ static void testBuildOpportunityClient_Direct() {
     Assert.areEqual('N/A', oppClientNa.DMT_Leveraged_Lending__c, 'The N/A conversion failed');
     Assert.areEqual('Technology', oppClientNo.DMT_Industry__c, 'Values were not mapped correctly');
 }
+
+    /**
+     * @description CIBGLOBALD-4806 - Client Type (Counterpart__c) comes from the HPG Rating Tool (ratingSystemId)
+     * validated against catalog D971; HPG wins over the Account Segment label, 'Fin Inst B' maps to 'Fin Inst-B',
+     * and a missing or unknown HPG value keeps the Segment label.
+     */
+    @isTest
+    static void testBuildOpportunityClient_ClientTypeFromHpg() {
+        DMT_Test_DataFactory.generateTaxonomyValue('D971', 'SME');
+        DMT_Test_DataFactory.generateTaxonomyValue('D971', 'Fin Inst-B');
+
+        DMT_CreateOpportunityService.ClientValues cv = new DMT_CreateOpportunityService.ClientValues();
+        cv.segmentLabel = 'Corporates';
+
+        DMT_HPG_GlobalPosition.Data hpgSme = new DMT_HPG_GlobalPosition.Data();
+        hpgSme.ratingSystemId = 'SME';
+        DMT_HPG_GlobalPosition.Data hpgFinInstB = new DMT_HPG_GlobalPosition.Data();
+        hpgFinInstB.ratingSystemId = 'Fin Inst B';
+        DMT_HPG_GlobalPosition.Data hpgUnknown = new DMT_HPG_GlobalPosition.Data();
+        hpgUnknown.ratingSystemId = 'Not In Catalog';
+        DMT_HPG_GlobalPosition.Data hpgBlank = new DMT_HPG_GlobalPosition.Data();
+
+        Test.startTest();
+        DMT_Opportunity_Client__c clientSme = DMT_CreateOpportunityService.buildOpportunityClient(null, cv, hpgSme, 'NO', null);
+        DMT_Opportunity_Client__c clientFinInstB = DMT_CreateOpportunityService.buildOpportunityClient(null, cv, hpgFinInstB, 'NO', null);
+        DMT_Opportunity_Client__c clientUnknown = DMT_CreateOpportunityService.buildOpportunityClient(null, cv, hpgUnknown, 'NO', null);
+        DMT_Opportunity_Client__c clientBlank = DMT_CreateOpportunityService.buildOpportunityClient(null, cv, hpgBlank, 'NO', null);
+        DMT_Opportunity_Client__c clientNoHpg = DMT_CreateOpportunityService.buildOpportunityClient(null, cv, null, 'NO', null);
+        Test.stopTest();
+
+        Assert.areEqual('SME', clientSme.Counterpart__c, 'The HPG Rating Tool must win over the Account Segment');
+        Assert.areEqual('Fin Inst-B', clientFinInstB.Counterpart__c, 'Fin Inst B from HPG must map to the D971 value Fin Inst-B');
+        Assert.areEqual('Corporates', clientUnknown.Counterpart__c, 'A value not in D971 must keep the Account Segment label');
+        Assert.areEqual('Corporates', clientBlank.Counterpart__c, 'A blank HPG value must keep the Account Segment label');
+        Assert.areEqual('Corporates', clientNoHpg.Counterpart__c, 'No HPG row must keep the Account Segment label');
+    }
     // =========================================================
     // EXISTING TESTS
     // =========================================================

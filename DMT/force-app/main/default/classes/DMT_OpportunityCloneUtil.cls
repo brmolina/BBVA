@@ -1,7 +1,7 @@
 /**
  * @description       : APex class aux for clone DMT Opportunity and related data. Call services for retrieve information when clone to a different account.
  * @author            : BBVA
- * @last modified on  : 10-08-2026
+ * @last modified on  : 15-10-2026
  **/
 public without sharing class DMT_OpportunityCloneUtil {
     public class CloneInput {
@@ -45,10 +45,6 @@ public without sharing class DMT_OpportunityCloneUtil {
     
     /**
      * @description clone DMT Opportunity and related data. Call services for retrieve information when clone to a different account.
-     * TODO: Clase de test cobertura 90% con asserts que comprueben el resultado: Happy path y algun error.
-     * Review nombre de variables para mejorar comprension, si se puede optimizar el código,
-     * si se puede hacer más legible, si se puede dividir en métodos más pequeños.
-     * Limpiar system debugs antes de añadir a la rama. y codigo comentado / obsoleto
      * @author BBVA | 10-08-2026
      * @param inputs recieved from flow
      * @return List<CloneResult>
@@ -75,17 +71,15 @@ public without sharing class DMT_OpportunityCloneUtil {
                 ow.mitigants =input?.mitigants;
                 ow.oppParticipants = input?.participants;
                 ow.oppOriginalEntific= input?.originalOpportunity.Entific__c;
-                System.debug('WRAPPER RELLENO OW=>'+ow);
+                
             }//FOR
             Boolean isSameAccount = ow.oppOriginal.AccountId == ow.oppLocalClient.Id ? true : false;
-             System.debug('******ow.oppOriginal.AccountId =>'+ow.oppOriginal.AccountId +'///'+'ow.oppLocalClient.Id =>'+ow.oppLocalClient.Id );
             Boolean isSubsidiaryTarget = ow.oppLocalClient.DES_Structure_Type__c == 'Subsidiary' ? true : false;
             Date lastDate;
             String lastDatetxt;
             MainHolderSelection mainHolderSelection;
             DMT_HPG_GlobalPosition.Wrapper subsidiaryWrapper;
             
-            System.debug('******isSubsidiaryTarget'+ow.oppLocalClient.DES_Structure_Type__c);
             // Same-account clones preserve the original data snapshot. For a different target,
             // all destination-data service calls must complete before the first DML operation.
             if (!isSameAccount) {
@@ -93,7 +87,6 @@ public without sharing class DMT_OpportunityCloneUtil {
                 lastDate = Date.valueOf(lastDatetxt);
                 
                 if (isSubsidiaryTarget) {
-                    System.debug('Clonamos hacia un cliente subsidiaria');
                     subsidiaryWrapper = DMT_HPG_MainTableCustomController.fetchClientDataFromServiceLine(
                         null,
                     '1',
@@ -103,19 +96,17 @@ public without sharing class DMT_OpportunityCloneUtil {
                     'Y',
                     ow.oppLocalClient.Id
                         );
-                    
-                    System.debug('Account subsidiaria DATA SERVICIO =>'+subsidiaryWrapper);
-                    System.debug('ID CUENTA EN LA QUE VAMOS A CLONAR =>'+ow.oppLocalClient.Id );
+                   
                     Map<String, Object> comparisonResult = DMT_Opportunity_Utils.getComparisonAccount(
                     new Map<String, Object>{ 'oppAccountId' => ow.oppLocalClient.Id },
                     new Map<String, Object>(),
                     null
                         );
                     Id comparisonAccountId = (Id) comparisonResult.get('comparisonAccountId');
-                    System.debug('***** COMPARISON ACCOUNT ID clonada (La cuenta "padre" de la que saca data)=>'+comparisonAccountId);
+                    
                     
                     clientValues = DMT_CreateOpportunityService.getClientValues(ow.oppLocalClient.Id, comparisonAccountId);
-                    System.debug('***** clientValues ID clonada=>'+clientValues);
+                    
                     
                     leveragedLendingOutput = DMT_Callout_LeveragedLending.callLeveragedLendingService(
                         clientValues.groupCode, lastDatetxt, new Map<String, Object>()
@@ -126,7 +117,7 @@ public without sharing class DMT_OpportunityCloneUtil {
                     ow.oppOriginal.Entific__c,
                     lastDate
                         );
-                    System.debug('MAIN HOLDER SELECTION =>'+mainHolderSelection);
+                    
                     
                     Map<String, Object> comparisonResult = DMT_Opportunity_Utils.getComparisonAccount(
                     new Map<String, Object>{ 'oppAccountId' => mainHolderSelection.accountId },
@@ -156,6 +147,10 @@ public without sharing class DMT_OpportunityCloneUtil {
             oppCloned.StageName = system.Label.Draft_Status;
             oppCloned.OwnerId = UserInfo.getUserId();
             oppCloned.DMT_Sanction__c = null;
+            oppCloned.DMT_Clan_Call_Code__c = '';
+            oppCloned.DMT_Clan_File_Id__c = '';
+            oppCloned.DMT_Clan_File_Status__c = '';
+            oppCloned.DMT_Clan_Retry_Number__c = 0;
             oppCloned.DMT_Parent_Opportunity__c = null;
             oppCloned.DMT_Opp_User_Lock__c = null;
             oppCloned.DMT_Requested_Passport__c=false;
@@ -164,21 +159,19 @@ public without sharing class DMT_OpportunityCloneUtil {
             result.newOpportunityId = oppCloned.Id;
             ow.oppCloned = oppCloned;
             
-            //--------------------------------------------------------------------------------------------------------------------------------
             //MISMO ACC
-            System.debug('Account relacionado a la opp original=>'+ow.oppOriginal.AccountID);
-            System.debug('Account elegido por el usuario al que se va a clonar =>'+ow.oppLocalClient.Id);
-            
+ 
             if(isSameAccount){
-                System.debug('Clonamos EN MISMO ACC');
+                
                 
                 //OPPCLIENT
+                DMT_Opportunity_Client__c oppClientClone; // CIBGLOBALD-4806
                 if(ow.oppCloneClient != null) {
-                    System.debug('EN CLIENT CLONE');
-                    DMT_Opportunity_Client__c oppClientClone = ow.oppCloneClient.clone(false, false, false, false);
+
+                    oppClientClone = ow.oppCloneClient.clone(false, false, false, false); // CIBGLOBALD-4806
                     oppClientClone.Id = null;
                     oppClientClone.DMT_MDE_Opportunity__c = ow.oppCloned.Id;
-                    insert oppClientClone;
+                    // CIBGLOBALD-4806 - inserted after the clone's own Custom_Association_Opportunity__c (below)
                 }
                 
                 //RELATED
@@ -188,13 +181,13 @@ public without sharing class DMT_OpportunityCloneUtil {
                 List<Custom_Association_Opportunity__c> customAssoOpp = [SELECT Id, Name,CreatedDate, Opportunity__c, Group__c, g_customer_id__c, g_group_id__c, gf_customer_group_id__c, gf_cutoff_date__c, gf_origin_application_type__c, g_entific_id__c 
                                                                      FROM Custom_Association_Opportunity__c 
                                                                      WHERE Opportunity__c =:ow.oppOriginal.Id LIMIT 1];
-                System.debug('ASSO OP =>'+customAssoOpp);
+                
                 List<DMT_Custom_Association_ClientOpportunity__c> lCustomAssoClientOppOriginal=[SELECT Id, Name, DMT_Custom_Association_Opportunity__c,
                                                                                 DMT_g_customer_id__c,DMT_gf_customer_group_id__c 
                                                                                     FROM DMT_Custom_Association_ClientOpportunity__c
                                                                                         WHERE DMT_Custom_Association_Opportunity__r.Opportunity__c =: ow.oppOriginal.Id];
                 
-                System.debug('ASSO CLI OP =>'+lCustomAssoClientOppOriginal);
+                
                 //Objeto para opp multiholder, relacionado con opp y indica el mainholder ( cliente principal)
                 Custom_Association_Opportunity__c customAssoOppClone=new Custom_Association_Opportunity__c();
                 
@@ -208,7 +201,16 @@ public without sharing class DMT_OpportunityCloneUtil {
                     
                     insert customAssoOppClone;
                 }
-                
+
+                // CIBGLOBALD-4806 - the cloned Opportunity Client points to the clone's own Main Holder association, not
+                // to the source Opportunity's one (Client Data, DMT_OpportunityClientController, finds the Main Holder by it)
+                if (oppClientClone != null) {
+                    if (customAssoOppClone.Id != null) {
+                        oppClientClone.Custom_Association__c = customAssoOppClone.Id;
+                    }
+                    insert oppClientClone;
+                }
+
                 
                 if(!lCustomAssoClientOppOriginal.isEmpty()){
                     //Relaciones de la opp con cada cliente ( caso opp multiholder)
@@ -233,12 +235,12 @@ public without sharing class DMT_OpportunityCloneUtil {
                 result.success = true;
                 results.add(result);
                 
-                System.debug('END IF MISMA CUENTA');
+                
             }else{
-                System.debug('Diferente cuenta');
+                
                 //SUBSIDIARY
                 if(isSubsidiaryTarget){
-                    System.debug('Diferente a subsidiary');
+                    
                     if(ow.oppLocalClient != null) {
                         
                         //Servicio leveraged lending
@@ -246,16 +248,9 @@ public without sharing class DMT_OpportunityCloneUtil {
                         if (subsidiaryWrapper == null || !subsidiaryWrapper.success || subsidiaryWrapper.data == null || subsidiaryWrapper.data.isEmpty()) {
                             throw new CloneException('The service did not return client data.');
                         }
-                        
-                        /*  DMT_Opportunity_Client__c dmtClient = DMT_CreateOpportunityService.buildOpportunityClient(
-                        oppCloned.Id,
-                        clientValues,
-                        subsidiaryWrapper.data[0],
-                        leveragedLendingIndType,
-                        null); */
                             DMT_Opportunity_Client__c dmtClient =   DMT_CreateOpportunityService.buildOpportunityClient(oppCloned.Id,clientValues,subsidiaryWrapper.data[0],leveragedLendingIndType,null,ow.oppCloneClient,true);
                         
-                        System.debug('···················Opportunity client clonado =>'+dmtClient);
+                        
                         insert dmtClient;
                     }
                     
@@ -265,7 +260,7 @@ public without sharing class DMT_OpportunityCloneUtil {
                     results.add(result);
                     
                 }else{
-                    System.debug('Diferente a un grupo');
+                    
                     if (ow.oppLocalClient.DES_Structure_Type__c != 'Subsidiary') {
                         String leveragedLendingIndType = leveragedLendingOutput != null
                             ? (String) leveragedLendingOutput.get('leveragedLendingIndType')
@@ -301,7 +296,6 @@ public without sharing class DMT_OpportunityCloneUtil {
     }
     @TestVisible
     private static MainHolderSelection resolveMainHolderSelection(Id localClientId, String sourceEntific, Date lastDate) {
-        System.debug('Resolving main holder selection for local client ' + localClientId + ' and source Entific ' + sourceEntific);
         if (localClientId == null || String.isBlank(sourceEntific)) {
             throw new CloneException('Cannot resolve the main holder without a local client and source Entific.');
         }
@@ -373,7 +367,6 @@ public without sharing class DMT_OpportunityCloneUtil {
             throw new CloneException('Cannot create associations without a resolved main holder.');
         }
         
-        System.debug('Creating main holder associations for cloned opportunity ' + oppCloned.Id + ' and main holder account ' + selection.accountId);
         Custom_Association_Opportunity__c association = new Custom_Association_Opportunity__c(
             Opportunity__c = oppCloned.Id,
         Group__c = selection.accountId,
@@ -381,15 +374,8 @@ public without sharing class DMT_OpportunityCloneUtil {
         g_group_id__c = selection.groupId,
         gf_customer_group_id__c = oppCloned.DMT_Opp_Id__c);
         insert association;
-        
-        /* DMT_Opportunity_Client__c opportunityClient = DMT_CreateOpportunityService.buildOpportunityClient(
-        oppCloned.Id,
-        clientValues,
-        selection.clientData,
-        leveragedLendingIndType,
-        null
-            ); */
-            DMT_Opportunity_Client__c opportunityClient = DMT_CreateOpportunityService.buildOpportunityClient(oppCloned.Id,clientValues,selection.clientData,leveragedLendingIndType,null,oppCloneClient,true);
+
+        DMT_Opportunity_Client__c opportunityClient = DMT_CreateOpportunityService.buildOpportunityClient(oppCloned.Id,clientValues,selection.clientData,leveragedLendingIndType,null,oppCloneClient,true);
         
         opportunityClient.Custom_Association__c = association.Id;
         opportunityClient.Alpha_Code_Client__c = selection.customerId;
@@ -454,7 +440,6 @@ public without sharing class DMT_OpportunityCloneUtil {
                     clonedOLIsByOriginalId.put(originalOli.Id, clone);
                 }
             }
-            System.debug('***Productos clonados a insertar: ' + clonedOLIsByOriginalId);
             insert clonedOLIsByOriginalId.values();
             for (Id originalId : clonedOLIsByOriginalId.keySet()) {
                 oldOLItoNewOLI.put(originalId, clonedOLIsByOriginalId.get(originalId).Id);
@@ -610,7 +595,6 @@ public without sharing class DMT_OpportunityCloneUtil {
         Map<String, Object> response = (Map<String, Object>)handler.call('getLineId', wrapperMap);
         
         String lineId = (String)response.get('lineId');
-        System.debug('Resultado lineId: ' + lineId);
         return lineId;
     }
     

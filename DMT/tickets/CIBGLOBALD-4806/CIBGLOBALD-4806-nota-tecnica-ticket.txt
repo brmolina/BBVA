@@ -1,0 +1,57 @@
+CIBGLOBALD-4806 - Nota técnica
+
+1. Qué se ha cambiado
+
+a) Client Type se obtiene de HPG (Rating Tool), ya no del Segment del Account
+- Campo: DMT_Opportunity_Client__c.Counterpart__c (label 'Client Type' en la sección Client Data, LWC dmt_opp_client).
+- Origen: atributo ratingSystemId (backend gf_rating_system_id) del servicio HPG DMT_HPG_GlobalPosition (iaso__GBL_integration_service__mdt DMT_HPG_GlobalPosition).
+- Cliente de referencia: el propio Customer/Subsidiary cuando la Opportunity se crea a nivel Customer; el Main Holder cuando se crea a nivel Group.
+- El valor se valida contra el catálogo D971 (DMT_Taxonomy_Values__c con DMT_Catalog__c = 'D971', campo DMT_Value__c), que es el que alimenta el picklist Client Type del LWC. HPG devuelve el mismo texto que D971 salvo 'Fin Inst B' -> 'Fin Inst-B' y 'Fin Inst I' -> 'Fin Inst-I'. Valores vistos en HPG: Corporates, SME, Small Ent, Fin Inst, Fin Inst B, Fin Inst I, Prom, XXXX.
+- Fallback: si HPG no devuelve ratingSystemId, o devuelve un valor que no existe en D971, se mantiene el comportamiento anterior: Account.DES_Segment__c del mismo cliente (00001 Sov, 00002 Pub Inst, 00003 SME, 00005 Corporates, 00006 Fin Inst-B).
+- Código: DMT_CreateOpportunityService.resolveClientTypeFromHpg (nuevo) y DMT_CreateOpportunityService.buildOpportunityClient. Aplica a la creación (dmtNewOpportunityModal -> DMT_CreateOpportunityService.createOpportunity) y a los clones que reconstruyen el cliente (DMT_OpportunityCloneUtil.clone con destino Subsidiary u otro Group).
+
+b) Client Data compara contra el Main Holder en Opportunities de nivel Group
+- Main Holder: Custom_Association_Opportunity__c.g_customer_id__c (alpha code) -> Account con el mismo g_customer_id__c.
+- Antes, DMT_OpportunityClientController usaba Opportunity.AccountId (el Group) para consultar HPG y el Segment del Group para el Client Type original. Ahora usa el Account del Main Holder (resolveClientId + nuevo findMainHolderAccount). Si no existe un Account con ese alpha code, se usa Opportunity.AccountId como antes.
+- El Client Type original de la comparación (buildOriginalRecord) sigue la misma regla HPG + fallback del punto a), con el Segment del Main Holder. Al elegir un nuevo Main Holder en Client Data (getMainHolderData), el Client Type inicial sigue la misma regla.
+- Opportunities de nivel Customer/Subsidiary: sin cambios (siguen usando Opportunity.AccountId).
+
+c) Clone de una Opportunity al mismo Group
+- DMT_OpportunityCloneUtil.clone (rama mismo cliente): el DMT_Opportunity_Client__c clonado conservaba Custom_Association__c de la Opportunity origen, así que Client Data no encontraba Main Holder en el clon y mostraba los campos vacíos. Ahora se inserta después del Custom_Association_Opportunity__c del clon y apunta a él.
+
+2. Consumo de límites
+- Creación y clones que reconstruyen el cliente: +1 SOQL (consulta al catálogo D971, solo si HPG devuelve Rating Tool).
+- Carga de Client Data en Opportunities de nivel Group: +2 SOQL (Account del Main Holder y catálogo D971). Mismo número de callouts a HPG. Antes se recuperaba la posición de todo el Group (cientos o miles de filas) y se filtraba el Main Holder; ahora la consulta es del Main Holder, con mucho menos heap y CPU.
+- Ninguna consulta dentro de bucles.
+
+3. Registros existentes
+- Las Opportunities ya creadas conservan el Client Type guardado con la regla anterior (Segment). Si el Rating Tool de HPG difiere de ese valor, Client Data muestra ahora la diferencia en Client Type: es la diferencia real entre lo guardado y HPG.
+
+4. Cómo probar (QA)
+a) Client Type desde HPG, Opportunity de nivel Group
+- Deal Management > New Opportunity sobre un Group, con un Booking Geography en el que el Group tenga clientes. Guardar.
+- Consultas (Salesforce Inspector):
+  SELECT Id, Alpha_Code_Client__c, Counterpart__c, Custom_Association__c FROM DMT_Opportunity_Client__c WHERE DMT_MDE_Opportunity__c = '<OpportunityId>'
+  SELECT Id, g_customer_id__c FROM Custom_Association_Opportunity__c WHERE Opportunity__c = '<OpportunityId>'
+  SELECT Id, Name, DES_Segment__c FROM Account WHERE g_customer_id__c = '<Alpha_Code_Client__c>'
+- Esperado: Counterpart__c = Rating Tool que HPG devuelve para el Main Holder (Alpha_Code_Client__c), no para el Group. Custom_Association__c = Id del Custom_Association_Opportunity__c de la propia Opportunity.
+- Abrir la Opportunity, sección Client Data, sin modificar nada: Client Type no muestra icono de aviso (triángulo).
+- Caso Segment distinto de HPG: elegir un Group cuyo Main Holder tenga un DES_Segment__c cuya traducción (tabla del punto 1.a) no coincida con el Rating Tool de HPG; el Client Type guardado debe ser el de HPG.
+
+b) Client Type desde HPG, Opportunity de nivel Customer
+- Crear la Opportunity sobre un Customer/Subsidiary y comprobar con la primera consulta que Counterpart__c es el Rating Tool de HPG de ese Customer.
+
+c) Diferencias reales
+- En Client Data, cambiar Client Type a otro valor y guardar: al volver a abrir, Client Type muestra el aviso con el valor original de HPG.
+
+d) Clone al mismo Group
+- En la Opportunity de nivel Group, acción de clone eligiendo el mismo Group como cliente.
+- En el clon, ejecutar las dos primeras consultas del punto a): Custom_Association__c del DMT_Opportunity_Client__c = Id del Custom_Association_Opportunity__c del clon (no el de la Opportunity origen).
+- Client Data del clon muestra los valores (Client Type, Sector, Internal Rating, Scoring), no campos vacíos.
+- Clones creados antes del cambio con el problema:
+  SELECT Id, DMT_MDE_Opportunity__c, Custom_Association__c, Custom_Association__r.Opportunity__c FROM DMT_Opportunity_Client__c WHERE Custom_Association__c != null
+  (filas donde Custom_Association__r.Opportunity__c es distinto de DMT_MDE_Opportunity__c).
+
+5. Fuera del alcance de este bugfix (comportamiento conocido)
+- CAMN: la creación guarda el código HPG (activityMinimumLevelCodeId, p. ej. F.41.10.01) y Client Data compara con el catálogo A521 buscado por la descripción HPG; si la descripción no existe en A521, CAMN muestra aviso aunque no haya cambiado.
+- Guardado de clientes desde la tabla de clientes (DMT_HPG_MainTableCustomController.saveOpportunityClients -> calculateSegment): sigue informando Client Type desde el Segment del Account (00003 -> FINS, valor que no existe en D971).
