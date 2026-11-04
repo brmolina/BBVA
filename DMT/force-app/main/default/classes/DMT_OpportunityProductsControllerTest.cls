@@ -946,6 +946,43 @@ static Map<String, Object> createFullTestSetup() {
         Assert.areEqual(true, result.get('success'), 'Tenor upsert should succeed');
     }
 
+    // CIBGLOBALD-4811 - the reopen check before a save writes nothing and answers empty when the save
+    // would fail validation or has no Opportunity to check.
+    @isTest
+    static void testPreviewOpportunityProductSave_InvalidTenorsOrNoOpportunity_ReturnsNothing() {
+        OpportunityLineItem oli = (OpportunityLineItem) testData.get('opportunityLineItem');
+        Opportunity opp = (Opportunity) testData.get('opportunity');
+        Map<String, Object> recordFields = new Map<String, Object>{
+            'Id'               => oli.Id,
+            'DMT_Risk_Type__c' => '4000000'
+        };
+        List<Object> invalidTenors = new List<Object>{ new Map<String, Object>{
+            'gf_tenor_date__c'        => String.valueOf(System.today()),
+            'gj_nominal_amount_db__c' => 0,
+            'gf_nominal_amount_fb__c' => 0
+        } };
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> invalidSave = DMT_OpportunityProductsController.previewOpportunityProductSave(
+            'readytoclose', recordFields, invalidTenors, null, null, null, null, null,
+            System.today(), System.today().addDays(365), opp.Id
+        );
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> noOpportunity = DMT_OpportunityProductsController.previewOpportunityProductSave(
+            'readytoclose', recordFields, null, null, null, null, null, null,
+            System.today(), System.today().addDays(365), null
+        );
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> noCase = DMT_OpportunityProductsController.previewOpportunityProductSave(
+            'readytoclose', recordFields, null, null, null, null, null, null,
+            System.today(), System.today().addDays(365), opp.Id
+        );
+        Test.stopTest();
+
+        Assert.isTrue(invalidSave.isEmpty(), 'A save that fails validation is not checked');
+        Assert.isTrue(noOpportunity.isEmpty(), 'Without the Opportunity there is nothing to check');
+        Assert.isTrue(noCase.isEmpty(), 'Without a Ready to close Case nothing reopens');
+        Assert.areNotEqual('4000000', [SELECT DMT_Risk_Type__c FROM OpportunityLineItem WHERE Id = :oli.Id].DMT_Risk_Type__c, 'The preview saves nothing');
+    }
+
     @isTest
     static void testSaveOpportunityProduct_InvalidTenors_FailsValidation() {
         // Amounts = 0 → validateTenorsFromRaw sets validationPassed = false
@@ -1729,33 +1766,58 @@ static Map<String, Object> createFullTestSetup() {
     // CIBGLOBALD-4630 - Guarantor data preload from HPG
     // ═══════════════════════════════════════════════════════════════════════════
 
+    // CIBGLOBALD-4630 - HPG callouts in tests read their response from the Mock_LTA field of the custom
+    // metadata record DMT_HPG_Utils.getMock uses (iaso__GBL_integration_service__mdt, DeveloperName
+    // DMT_HPG_GlobalPosition). That record differs per org (the data array is empty in some orgs), so the
+    // tests read the same record instead of assuming a customer. Null when the mock has no customers.
+    private static Map<String, Object> getHpgMockCustomer() {
+        iaso__GBL_integration_service__mdt service = [
+            SELECT iaso__Mock_LTA__c
+            FROM iaso__GBL_integration_service__mdt
+            WHERE DeveloperName = 'DMT_HPG_GlobalPosition'
+            LIMIT 1
+        ];
+        Map<String, Object> body = (Map<String, Object>) JSON.deserializeUntyped(service.iaso__Mock_LTA__c);
+        List<Object> rows = (List<Object>) body.get('data');
+        return rows == null || rows.isEmpty() ? null : (Map<String, Object>) rows[0];
+    }
+
     @isTest
     static void testGetGuarantorHpgData_FoundMapsInternalRating() {
-        // The HPG mock returns customer ES0000000000001 with internal rating BBB2
+        // CIBGLOBALD-4630 - customer and rating come from the HPG mock record of this org (getHpgMockCustomer)
+        Map<String, Object> mockCustomer = getHpgMockCustomer();
+        String customerCode = mockCustomer == null ? 'ES0000000000001' : (String) mockCustomer.get('customerId');
+        String mockRating = mockCustomer == null ? null : (String) mockCustomer.get('updLmsclInternalRatgType');
         Account guarantor = DMT_Test_DataFactory.generateAccount(
             new Map<Schema.SObjectField, Object>{
                 Account.DES_Group_Code__c => 'G20260101000001',
-                Account.g_customer_id__c => 'ES0000000000001'
+                Account.g_customer_id__c => customerCode // CIBGLOBALD-4630
             }
         );
-        DMT_Test_DataFactory.generateTaxonomyValue('C204', 'BBB2');
+        if (String.isNotBlank(mockRating)) { // CIBGLOBALD-4630
+            DMT_Test_DataFactory.generateTaxonomyValue('C204', mockRating); // CIBGLOBALD-4630
+        }
 
         Test.startTest();
         Map<String, Object> result = DMT_OpportunityProductsController.getGuarantorHpgData(guarantor.Id);
         Test.stopTest();
 
         Assert.isTrue((Boolean) result.get('success'), 'The HPG call should succeed: ' + result.get('message'));
-        Assert.isTrue((Boolean) result.get('found'), 'The Guarantor should be found in the HPG response');
-        Assert.areEqual('BBB2', result.get('internalRating'), 'Internal rating should come from HPG');
+        // CIBGLOBALD-4630 - an org whose HPG mock has no customers answers success without the Guarantor
+        Assert.areEqual(mockCustomer != null, (Boolean) result.get('found'), 'The Guarantor is found when the HPG mock has customers'); // CIBGLOBALD-4630
+        Assert.areEqual(mockRating, result.get('internalRating'), 'Internal rating should come from HPG'); // CIBGLOBALD-4630
         Assert.isNull(result.get('externalRating'), 'External rating is not informed by the mock and must stay empty');
     }
 
     @isTest
     static void testGetGuarantorHpgData_InternalRatingNotInCatalogStaysEmpty() {
+        // CIBGLOBALD-4630 - customer code taken from the HPG mock record of this org (getHpgMockCustomer)
+        Map<String, Object> mockCustomer = getHpgMockCustomer();
+        String customerCode = mockCustomer == null ? 'ES0000000000001' : (String) mockCustomer.get('customerId');
         Account guarantor = DMT_Test_DataFactory.generateAccount(
             new Map<Schema.SObjectField, Object>{
                 Account.DES_Group_Code__c => 'G20260101000001',
-                Account.g_customer_id__c => 'ES0000000000001'
+                Account.g_customer_id__c => customerCode // CIBGLOBALD-4630
             }
         );
 
@@ -1763,7 +1825,7 @@ static Map<String, Object> createFullTestSetup() {
         Map<String, Object> result = DMT_OpportunityProductsController.getGuarantorHpgData(guarantor.Id);
         Test.stopTest();
 
-        Assert.isTrue((Boolean) result.get('found'), 'The Guarantor should be found in the HPG response');
+        Assert.areEqual(mockCustomer != null, (Boolean) result.get('found'), 'The Guarantor is found when the HPG mock has customers'); // CIBGLOBALD-4630
         Assert.isNull(result.get('internalRating'), 'A rating missing from catalog C204 must not be preloaded');
     }
 

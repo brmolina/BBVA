@@ -157,7 +157,8 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
     // Implemented by DMT_SnapshotChildComparator. Returns true when a record's child rows no
     // longer match the frozen snapshot.
     public interface SnapshotChildComparator {
-        Boolean hasChanges(Id recordId, Map<String, Object> snapshotJson);
+        Boolean hasChanges(Id recordId, Map<String, Object> snapshotJson, List<String> componentNames); // CIBGLOBALD-4811
+        List<String> changedComponents(Id recordId, Map<String, Object> snapshotJson, List<String> componentNames); // CIBGLOBALD-4811
     }
 
     /**
@@ -211,14 +212,15 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
      * @param caseIdToRecordId   Case Id -> owning DMT_Line__c/Opportunity Id
      * @param records            the qualifying records as loaded by the trigger (Trigger.new)
      * @param snapshotSectionKey snapshot section holding this object's frozen fields ('line' or 'opportunity')
-     * @param childComparator    child-record comparison, or null if this object has none
+     * @param childRecordsById   CIBGLOBALD-4811 - records whose child rows are compared (the comparator is built
+     *                           here, after the snapshots are known); null if this object has none
      * @param originClassName    calling class, for the failure log
      */
     public static void restartStaleApprovalTasks(
         Map<Id, Id> caseIdToRecordId,
         List<SObject> records,
         String snapshotSectionKey,
-        SnapshotChildComparator childComparator,
+        Map<Id, SObject> childRecordsById, // CIBGLOBALD-4811
         String originClassName
     ) {
         try {
@@ -236,20 +238,19 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
             // in Apex, but Map<Id, DMT_Line__c> does not assign to Map<Id, SObject>.
             Map<Id, SObject> recordsById = new Map<Id, SObject>(cloneRecords(records));
             mergeRelationshipFields(recordsById, originClassName);
+            // CIBGLOBALD-4811 - Enhancement fix to existing process: child rows are queried only now, for the
+            // components frozen in these snapshots (before: every component, even with no task to compare).
+            SnapshotChildComparator childComparator = DMT_SnapshotChildComparator.forRecords(childRecordsById, trackedComponentsForSnapshots(snapshotsById.values()));
 
-            // Grouped by record so each record's restarts stay one isolated DML group.
-            Map<Id, List<Task>> tasksToRestartByRecordId = new Map<Id, List<Task>>();
-            for (Task task : tasksByViewStatusId.values()) {
+            // CIBGLOBALD-4811 - comparison moved to findStaleTasks, to be shared with the preview.
+            List<Task> currentTasks = new List<Task>();
+            Map<Id, List<Task>> tasksToRestartByRecordId = findStaleTasks(
+                tasksByViewStatusId, snapshotsById, caseIdToRecordId, recordsById,
+                snapshotSectionKey, childComparator, originClassName, currentTasks, null
+            );
+            for (Task task : currentTasks) {
                 try {
-                    if (isTaskStale(task, snapshotsById, caseIdToRecordId, recordsById, snapshotSectionKey, childComparator)) {
-                        Id recordId = caseIdToRecordId.get(task.WhatId);
-                        if (!tasksToRestartByRecordId.containsKey(recordId)) {
-                            tasksToRestartByRecordId.put(recordId, new List<Task>());
-                        }
-                        tasksToRestartByRecordId.get(recordId).add(task);
-                    } else {
-                        enqueueCalloutTrackableChecks(task, snapshotsById, caseIdToRecordId);
-                    }
+                    enqueueCalloutTrackableChecks(task, snapshotsById, caseIdToRecordId);
                 } catch (Exception e) {
                     logRestartFailure(e, 'Task', 'restartStaleApprovalTasks', originClassName);
                 }
@@ -259,6 +260,208 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
         } catch (Exception e) {
             logRestartFailure(e, 'Task', 'restartStaleApprovalTasks', originClassName);
         }
+    }
+
+    /**
+     * CIBGLOBALD-4811 - The snapshot comparison of restartStaleApprovalTasks. Returns the stale tasks
+     * grouped by record, so each record's restarts stay one isolated DML group.
+     *
+     * @param currentTasks    out: the tasks found not stale
+     * @param changesByTaskId out: what differs per stale task, or null to stop at the first
+     *                        difference (the trigger only needs yes or no)
+     */
+    private static Map<Id, List<Task>> findStaleTasks(
+        Map<Id, Task> tasksByViewStatusId,
+        Map<Id, DMT_TaskStatusWhenCompleted__c> snapshotsById,
+        Map<Id, Id> caseIdToRecordId,
+        Map<Id, SObject> recordsById,
+        String snapshotSectionKey,
+        SnapshotChildComparator childComparator,
+        String originClassName,
+        List<Task> currentTasks,
+        Map<Id, List<String>> changesByTaskId
+    ) {
+        Map<Id, List<Task>> staleTasksByRecordId = new Map<Id, List<Task>>();
+        for (Task task : tasksByViewStatusId.values()) {
+            try {
+                List<String> changes = changesByTaskId == null ? null : new List<String>();
+                if (isTaskStale(task, snapshotsById, caseIdToRecordId, recordsById, snapshotSectionKey, childComparator, changes)) {
+                    Id recordId = caseIdToRecordId.get(task.WhatId);
+                    if (!staleTasksByRecordId.containsKey(recordId)) {
+                        staleTasksByRecordId.put(recordId, new List<Task>());
+                    }
+                    staleTasksByRecordId.get(recordId).add(task);
+                    if (changesByTaskId != null) {
+                        changesByTaskId.put(task.Id, changes);
+                    }
+                } else {
+                    currentTasks.add(task);
+                }
+            } catch (Exception e) {
+                logRestartFailure(e, 'Task', 'restartStaleApprovalTasks', originClassName);
+            }
+        }
+        return staleTasksByRecordId;
+    }
+
+    /**
+     * CIBGLOBALD-4811 - The tasks a restart would cancel on these Cases, without restarting anything.
+     * Same steps as restartStaleApprovalTasks: getRestartableTasks (a Case already reopened has no
+     * task with a snapshot, so it is skipped), getSnapshots, mergeRelationshipFields, findStaleTasks.
+     * Only when the Salesforce data shows no change, the callout-tracked values are compared here:
+     * the trigger defers that to DMT_CalloutTrackableCheckPayload, the preview runs on one record
+     * outside a trigger. Called by DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase and
+     * previewCompareUnsavedChanges.
+     *
+     * @param recordId           the DMT_Line__c or Opportunity
+     * @param caseIdToRecordId   the Cases to check -> recordId
+     * @param snapshotSectionKey 'line' or 'opportunity'
+     * @param unsavedValues      field API name -> value a tab has not saved yet, put on the stored record
+     *                           before the comparison (see applyUnsavedValues); null compares the stored record
+     * @param unsavedRows        child rows a tab has not saved yet, put on the stored child rows
+     *                           (DMT_SnapshotChildComparator.applyUnsavedRows); null compares the stored rows
+     * @return Task Id -> field API names and component names that differ
+     */
+    public static Map<Id, List<String>> findTasksToRestart(Id recordId, Map<Id, Id> caseIdToRecordId, String snapshotSectionKey, Map<String, Object> unsavedValues, List<Map<String, Object>> unsavedRows) {
+        Map<Id, List<String>> changesByTaskId = new Map<Id, List<String>>();
+        Map<Id, Task> tasksByViewStatusId = getRestartableTasks(caseIdToRecordId.keySet());
+        if (tasksByViewStatusId.isEmpty()) {
+            return changesByTaskId;
+        }
+
+        Map<Id, DMT_TaskStatusWhenCompleted__c> snapshotsById = getSnapshots(tasksByViewStatusId.keySet());
+        Map<Id, SObject> recordsById = new Map<Id, SObject>{ recordId => queryAllFields(recordId) };
+        applyUnsavedValues(recordsById.get(recordId), unsavedValues); // CIBGLOBALD-4811
+        mergeRelationshipFields(recordsById, 'DMT_ApprovalChangeStep_Handler');
+
+        DMT_SnapshotChildComparator childComparator = DMT_SnapshotChildComparator.forRecords(recordsById, trackedComponentsForSnapshots(snapshotsById.values()));
+        if (childComparator != null) {
+            childComparator.applyUnsavedRows(recordId, unsavedRows); // CIBGLOBALD-4811
+        }
+        findStaleTasks(
+            tasksByViewStatusId, snapshotsById, caseIdToRecordId, recordsById, snapshotSectionKey,
+            childComparator, 'DMT_ApprovalChangeStep_Handler',
+            new List<Task>(), changesByTaskId
+        );
+        if (changesByTaskId.isEmpty()) {
+            addCalloutChanges(tasksByViewStatusId, snapshotsById, recordId, changesByTaskId);
+        }
+        return changesByTaskId;
+    }
+
+    // CIBGLOBALD-4811 - the record with the same fields Trigger.new carries: the renderers read any
+    // field to decide what is tracked, so a narrower SELECT could make them throw.
+    private static SObject queryAllFields(Id recordId) {
+        Schema.DescribeSObjectResult describeResult = recordId.getSObjectType().getDescribe();
+        List<String> fieldNames = new List<String>();
+        for (Schema.SObjectField field : describeResult.fields.getMap().values()) {
+            Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
+            if (fieldDescribe.getType() != Schema.DisplayType.ADDRESS && fieldDescribe.getType() != Schema.DisplayType.LOCATION) {
+                fieldNames.add(fieldDescribe.getName());
+            }
+        }
+        return Database.query('SELECT ' + String.join(fieldNames, ',') + ' FROM ' + describeResult.getName() + ' WHERE Id = :recordId');
+    }
+
+    // CIBGLOBALD-4811 - puts the values a tab has not saved yet on the record, typed as the field expects:
+    // the LWC sends dates and numbers as text. Fields that do not exist or cannot be written are skipped.
+    // Relationship values (Client__r.Name) still come from the stored lookup (mergeRelationshipFields).
+    // Also used for child rows (DMT_SnapshotChildComparator.applyUnsavedRows).
+    public static void applyUnsavedValues(SObject record, Map<String, Object> unsavedValues) {
+        if (unsavedValues == null) {
+            return;
+        }
+        Map<String, Schema.SObjectField> fieldsByName = record.getSObjectType().getDescribe().fields.getMap();
+        for (String fieldName : unsavedValues.keySet()) {
+            Schema.SObjectField field = fieldsByName.get(fieldName);
+            if (field == null || !field.getDescribe().isUpdateable()) {
+                continue;
+            }
+            record.put(field, toFieldType(field.getDescribe().getType(), unsavedValues.get(fieldName)));
+        }
+    }
+
+    // CIBGLOBALD-4811 - one unsaved value converted to the field type; blank text is null, as it is stored.
+    private static Object toFieldType(Schema.DisplayType fieldType, Object value) {
+        if (value == null || (value instanceof String && String.isBlank((String) value))) {
+            return null;
+        }
+        String text = String.valueOf(value);
+        switch on fieldType {
+            when DATE {
+                return value instanceof Date ? value : Date.valueOf(text);
+            }
+            when DATETIME {
+                return value instanceof Datetime ? value : (Datetime) JSON.deserialize('"' + text + '"', Datetime.class);
+            }
+            when DOUBLE, CURRENCY, PERCENT {
+                return Decimal.valueOf(text);
+            }
+            when INTEGER {
+                return Integer.valueOf(text);
+            }
+            when BOOLEAN {
+                return value instanceof Boolean ? value : Boolean.valueOf(text);
+            }
+            when else {
+                return text;
+            }
+        }
+    }
+
+    // CIBGLOBALD-4811 - compares only the components frozen in each snapshot, with one live fetch
+    // per component (DMT_CalloutTrackableRenderer.fetchLiveTrackedValues, HPG services). A failing
+    // callout is logged and counts as no change.
+    private static void addCalloutChanges(
+        Map<Id, Task> tasksByViewStatusId,
+        Map<Id, DMT_TaskStatusWhenCompleted__c> snapshotsById,
+        Id recordId,
+        Map<Id, List<String>> changesByTaskId
+    ) {
+        Map<String, Map<String, Object>> liveValuesByComponent = new Map<String, Map<String, Object>>();
+        SObject recordShell = recordId.getSObjectType().newSObject(recordId);
+        try {
+            for (Task task : tasksByViewStatusId.values()) {
+                DMT_TaskStatusWhenCompleted__c snapshot = snapshotsById.get(task.DMT_ViewStatusAtClose__c);
+                if (snapshot == null || String.isBlank(snapshot.DMT_ViewFieldStatusAtClose__c)) {
+                    continue;
+                }
+                Map<String, Object> snapshotJson = (Map<String, Object>) JSON.deserializeUntyped(snapshot.DMT_ViewFieldStatusAtClose__c);
+                Map<String, Object> calloutTrackedValuesByComponent = (Map<String, Object>) snapshotJson.get('calloutTrackedValues');
+                if (calloutTrackedValuesByComponent == null) {
+                    continue;
+                }
+                for (String componentName : trackedComponentsForSnapshot(snapshot)) {
+                    Map<String, Object> frozenValues = (Map<String, Object>) calloutTrackedValuesByComponent.get(componentName);
+                    if (frozenValues == null || !DMT_RendererFactory.isCalloutTrackable(componentName)) {
+                        continue;
+                    }
+                    if (!liveValuesByComponent.containsKey(componentName)) {
+                        Map<String, Object> liveValues = DMT_RendererFactory.getCalloutTrackableRenderer(componentName).fetchLiveTrackedValues(recordShell);
+                        liveValuesByComponent.put(componentName, (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(liveValues)));
+                    }
+                    if (calloutValuesDiffer(frozenValues, liveValuesByComponent.get(componentName))) {
+                        if (!changesByTaskId.containsKey(task.Id)) {
+                            changesByTaskId.put(task.Id, new List<String>());
+                        }
+                        changesByTaskId.get(task.Id).add(componentName);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logRestartFailure(e, 'Task', 'findTasksToRestart', 'DMT_ApprovalChangeStep_Handler');
+        }
+    }
+
+    // CIBGLOBALD-4811 - the value check of checkCalloutTrackableComponentOrThrow, shared with the
+    // preview. Both sides must already be JSON primitives (see isTaskStale).
+    private static Boolean calloutValuesDiffer(Map<String, Object> frozenValues, Map<String, Object> liveValuesAsJson) {
+        for (String fieldName : frozenValues.keySet()) {
+            if (normalizeBlank(frozenValues.get(fieldName)) != normalizeBlank(liveValuesAsJson.get(fieldName))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Clones so mergeRelationshipFields can call SObject.putSObject() on them - Trigger.new records
@@ -346,6 +549,15 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
             FROM DMT_TaskStatusWhenCompleted__c
             WHERE Id IN :viewStatusIds
         ]);
+    }
+
+    // CIBGLOBALD-4811 - the components of several snapshots together, for one child-row query per section.
+    private static List<String> trackedComponentsForSnapshots(List<DMT_TaskStatusWhenCompleted__c> snapshots) {
+        Set<String> componentNames = new Set<String>();
+        for (DMT_TaskStatusWhenCompleted__c snapshot : snapshots) {
+            componentNames.addAll(trackedComponentsForSnapshot(snapshot));
+        }
+        return new List<String>(componentNames);
     }
 
     // CIBGLOBALD-4117 - components to compare for one snapshot, scoped to DMT_TrackedComponents__c.
@@ -516,12 +728,10 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
         // equal via !=.
         Map<String, Object> liveValuesAsJson = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(liveValues));
 
-        for (String fieldName : frozenValues.keySet()) {
-            if (normalizeBlank(frozenValues.get(fieldName)) != normalizeBlank(liveValuesAsJson.get(fieldName))) {
-                restartTasksForRecord(payload.recordId, new List<Task>{ task });
-                // CIBGLOBALD-4117 - abort the chain: this task is already restarting.
-                return;
-            }
+        if (calloutValuesDiffer(frozenValues, liveValuesAsJson)) { // CIBGLOBALD-4811
+            restartTasksForRecord(payload.recordId, new List<Task>{ task });
+            // CIBGLOBALD-4117 - abort the chain: this task is already restarting.
+            return;
         }
 
         continueCalloutTrackableCheckChain(payload);
@@ -547,13 +757,15 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
     // True when the frozen snapshot no longer matches the record's current tracked fields, or its
     // child rows. Returns false (never restart) when the snapshot is missing, blank, or has no
     // section for this object, so older snapshots can't trigger a wave of spurious restarts.
+    // CIBGLOBALD-4811 - with a changes list it collects every difference instead of stopping at the first.
     private static Boolean isTaskStale(
         Task task,
         Map<Id, DMT_TaskStatusWhenCompleted__c> snapshotsById,
         Map<Id, Id> caseIdToRecordId,
         Map<Id, SObject> recordsById,
         String snapshotSectionKey,
-        SnapshotChildComparator childComparator
+        SnapshotChildComparator childComparator,
+        List<String> changes // CIBGLOBALD-4811
     ) {
         DMT_TaskStatusWhenCompleted__c snapshot = snapshotsById.get(task.DMT_ViewStatusAtClose__c);
         Id recordId = caseIdToRecordId.get(task.WhatId);
@@ -578,15 +790,21 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
 
         for (String fieldName : DMT_RendererFactory.getTrackedFields(trackedComponentsForSnapshot(snapshot), record)) {
             if (valueAt(liveFields, fieldName) != valueAt(frozenFields, fieldName)) {
-                return true;
+                if (changes == null) { // CIBGLOBALD-4811
+                    return true;
+                }
+                changes.add(fieldName); // CIBGLOBALD-4811
             }
         }
 
         // Child-record fields don't live on the record, so they're compared separately.
         if (childComparator != null) {
-            return childComparator.hasChanges(recordId, snapshotJson);
+            if (changes == null) { // CIBGLOBALD-4811
+                return childComparator.hasChanges(recordId, snapshotJson, trackedComponentsForSnapshot(snapshot)); // CIBGLOBALD-4811
+            }
+            changes.addAll(childComparator.changedComponents(recordId, snapshotJson, trackedComponentsForSnapshot(snapshot))); // CIBGLOBALD-4811
         }
-        return false;
+        return changes != null && !changes.isEmpty(); // CIBGLOBALD-4811
     }
 
     // CIBGLOBALD-4117 - reads a tracked field's value from a JSON-primitive-shaped map.
@@ -641,6 +859,25 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
     }
 
     // CIBGLOBALD-4117 - row-matching rule for a snapshot's child-record sections.
+    // CIBGLOBALD-4811 - Enhancement to existing process: true when the update only takes the edit lock (lock field
+    // from empty to a user, every other field unchanged). Nothing the user changes can be compared yet, so the Ready to
+    // close checkpoint skips it. Releasing the lock is still compared: it is what reopens after child-only saves.
+    public static Boolean isOnlyEditLockAcquired(SObject newRecord, SObject oldRecord, String lockFieldName) {
+        if (oldRecord == null || oldRecord.get(lockFieldName) != null || newRecord.get(lockFieldName) == null) {
+            return false;
+        }
+        // Audit stamps written on every update (Last_Modified_By_Human__c on DMT_Line__c) are not data.
+        Set<String> ignoredFields = new Set<String>{ lockFieldName.toLowerCase(), 'lastmodifieddate', 'lastmodifiedbyid', 'systemmodstamp', 'last_modified_by_human__c' };
+        Set<String> fieldNames = new Set<String>(newRecord.getPopulatedFieldsAsMap().keySet());
+        fieldNames.addAll(oldRecord.getPopulatedFieldsAsMap().keySet());
+        for (String fieldName : fieldNames) {
+            if (!ignoredFields.contains(fieldName.toLowerCase()) && newRecord.get(fieldName) != oldRecord.get(fieldName)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static Boolean rowsDiffer(Map<String, Object> frozenRows, Map<String, Object> liveRows, List<String> trackedFields) {
         if (liveRows == null) {
             liveRows = new Map<String, Object>();

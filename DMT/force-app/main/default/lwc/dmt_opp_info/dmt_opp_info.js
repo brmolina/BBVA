@@ -9,6 +9,8 @@ import { getFieldValue, getRecord, getRecordNotifyChange } from 'lightning/uiRec
 import getFormattedAmountsForCurrency from '@salesforce/apex/DMT_OppInfoController.getFormattedAmountsForCurrency';
 import getCurrencyLabel from '@salesforce/apex/DMT_Currency_Conversion_Utils.getCurrencyLabel';
 import { applyNbcMarks } from 'c/dmt_nbc_marks';
+import LightningConfirm from 'lightning/confirm'; // CIBGLOBALD-4811
+import previewCompareUnsavedChanges from '@salesforce/apex/DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges'; // CIBGLOBALD-4811
 
 // Maps a Booking Geography value to a default Booking EFAN value.
 // TODO: Populate this map once taxonomy catalog values are confirmed by business.
@@ -21,6 +23,8 @@ const DEFAULT_READONLY = new Map(oppInfoFields.map(f => [f.id, f.isReadOnly]));
 const RELATED_OPPORTUNITY_FIELDS = oppInfoFields
     .filter(f => f.sourceField)
     .map(f => f.sourceField);
+// CIBGLOBALD-4811 - record type read for the Ready to close reopen check (_confirmReopen).
+const RECORD_TYPE_DEVELOPER_NAME_FIELD = 'Opportunity.RecordType.DeveloperName';
 
 export default class Dmt_opp_info extends LightningElement {
     // ─── Public API ───────────────────────────────────────────────────────────
@@ -118,7 +122,7 @@ export default class Dmt_opp_info extends LightningElement {
         }
     }
 
-    @wire(getRecord, { recordId: '$recordId', optionalFields: RELATED_OPPORTUNITY_FIELDS })
+    @wire(getRecord, { recordId: '$recordId', optionalFields: [...RELATED_OPPORTUNITY_FIELDS, RECORD_TYPE_DEVELOPER_NAME_FIELD] }) // CIBGLOBALD-4811
     wiredRelatedOpportunity({ data, error }) {
         if (data) {
             this._relatedOpportunityRecord = data;
@@ -260,6 +264,11 @@ export default class Dmt_opp_info extends LightningElement {
                 }
             }
 
+            // CIBGLOBALD-4811 - Cancel keeps the tab in edit mode with the typed values.
+            if (!(await this._confirmReopen())) {
+                return;
+            }
+
             await saveOpportunity({ opportunityId: this.recordId, fieldValues });
             getRecordNotifyChange([{ recordId: this.recordId }]);
 
@@ -279,6 +288,56 @@ export default class Dmt_opp_info extends LightningElement {
     }
 
     // ─── Private ──────────────────────────────────────────────────────────────
+    /**
+     * CIBGLOBALD-4811 - Asks before a save that would reopen features. Same filter as the Opportunity
+     * trigger checkpoint 3 (DMT_OpportunityTriggerHandler.restartApprovalTasksOnOpportunityResubmission):
+     * record type DMT_Opportunity, stage Ready to close before and after the save, Cases 'readytoclose'.
+     * Only the editable fields changed since edit mode started are sent
+     * (DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges); none changed -> no call. Dialog text
+     * as in dmt_opp_client. A failed check returns true: the save goes ahead.
+     * @returns true to save, false when the user cancels
+     */
+    async _confirmReopen() {
+        const recordType = this._relatedOpportunityRecord
+            ? getFieldValue(this._relatedOpportunityRecord, RECORD_TYPE_DEVELOPER_NAME_FIELD)
+            : null;
+        if (this.stageRecord !== 'Ready to close' || recordType !== 'DMT_Opportunity' || !this._snapshot) {
+            return true;
+        }
+
+        const unsavedValues = {};
+        for (const f of this.fields) {
+            const before = this._snapshot.fields.find(s => s.id === f.id);
+            if (!f.isReadOnly && before && f.value !== before.value) {
+                unsavedValues[f.apiName] = f.value;
+            }
+        }
+        if (Object.keys(unsavedValues).length === 0) {
+            return true;
+        }
+
+        try {
+            const features = await previewCompareUnsavedChanges({
+                recordId: this.recordId,
+                caseTypeToCheck: 'readytoclose',
+                unsavedValues
+            });
+            if (!features || features.length === 0) {
+                return true;
+            }
+        } catch (error) {
+            console.error('[dmt_opp_info][_confirmReopen]', error);
+            return true;
+        }
+
+        return LightningConfirm.open({
+            label: 'Modify Opportunity?',
+            message: 'The Opportunity will be modified and the associated cases and tasks will be reopened.' +
+                '\n\nDo you want to modify the Opportunity?',
+            theme: 'warning'
+        });
+    }
+
     _notifyConfidentialIfChanged() {
         const current = this.fields.find(f => f.id === 'DMT_Confidential__c')?.value ?? false;
         const previous = this._snapshot?.fields.find(f => f.id === 'DMT_Confidential__c')?.value ?? false;

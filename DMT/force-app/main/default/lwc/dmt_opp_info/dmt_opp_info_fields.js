@@ -202,28 +202,6 @@ export const oppInfoFields = [
         isRequired: false
     },
     {
-        id: 'DMT_Clan_File_Id__c',
-        label: 'Id Expedient Clan',
-        apiName: 'DMT_Clan_File_Id__c',
-        value: '',
-        size: '1-of-2',
-        type: 'text',
-        isReadOnly: true,
-        isHidden: false,
-        isRequired: false
-    },
-    {
-        id: 'DMT_Clan_File_Status__c',
-        label: 'Status Expedient Clan',
-        apiName: 'DMT_Clan_File_Status__c',
-        value: '',
-        size: '1-of-2',
-        type: 'text',
-        isReadOnly: true,
-        isHidden: false,
-        isRequired: false
-    },
-    {
         id: 'DMT_Defense_Due_Diligence__c',
         label: 'Defense Due Diligence required',
         apiName: 'DMT_Defense_Due_Diligence__c',
@@ -235,6 +213,28 @@ export const oppInfoFields = [
         isRequired: false,
         linkUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSeL9Q8oTfItwkP9yGHImCGrNipBwSZmDEKmVv-WV3ielt_LnQ/viewform',
         linkLabel: 'Defense Due Diligence Form'
+    },
+    {
+        id: 'DMT_Clan_File_Id__c',
+        label: 'CLAN Id',
+        apiName: 'DMT_Clan_File_Id__c',
+        value: '',
+        size: '1-of-2',
+        type: 'text',
+        isReadOnly: true,
+        isHidden: false,
+        isRequired: false
+    },
+    {
+        id: 'DMT_Clan_File_Status__c',
+        label: 'CLAN Status',
+        apiName: 'DMT_Clan_File_Status__c',
+        value: '',
+        size: '1-of-2',
+        type: 'text',
+        isReadOnly: true,
+        isHidden: false,
+        isRequired: false
     },
     {
         id: 'DMT_Under_X_Selling_Monitoring__c',
@@ -289,8 +289,8 @@ export const oppInfoFields = [
     {
         id: 'DMT_Risk_Approval_Date__c',
         label: 'Risk Approval Date',
-        apiName: 'DMT_Sanction__r.DMT_ApprovalDate__c',
-        sourceField: 'Opportunity.DMT_Sanction__r.DMT_ApprovalDate__c',
+        apiName: 'DMT_Sanction__r.End_Date__c',
+        sourceField: 'Opportunity.DMT_Sanction__r.End_Date__c',
         value: '',
         size: '1-of-2',
         type: 'date',

@@ -12,6 +12,7 @@ import ID_FIELD from '@salesforce/schema/DMT_Line__c.Id'
 import WON_LOST_FIELD from '@salesforce/schema/DMT_Line__c.Closed__c'
 import GEOGRAPHY_FIELD from '@salesforce/schema/DMT_Line__c.Booking_Geography__c'
 import DATETOPROPOSAL_FIELD from '@salesforce/schema/DMT_Line__c.DMT_DateToProposal__c'
+import RECORD_TYPE_DEVELOPER_NAME_FIELD from '@salesforce/schema/DMT_Line__c.RecordType.DeveloperName' // CIBGLOBALD-4811
 import previewCompareTasksFromCase from '@salesforce/apex/DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase'
 
 const EVENT_SET = 'Set'
@@ -34,6 +35,7 @@ export default class dmt_custom_path extends LightningElement {
   wonLostOptions = []
   isLoading = false
   dateToProposal
+  recordTypeDeveloperName // CIBGLOBALD-4811
 
   get isClosed () {
     return (
@@ -110,7 +112,8 @@ export default class dmt_custom_path extends LightningElement {
       STATUS_FIELD,
       GEOGRAPHY_FIELD,
       WON_LOST_FIELD,
-      DATETOPROPOSAL_FIELD
+      DATETOPROPOSAL_FIELD,
+      RECORD_TYPE_DEVELOPER_NAME_FIELD // CIBGLOBALD-4811
     ]
   })
   record ({ error, data }) {
@@ -120,9 +123,25 @@ export default class dmt_custom_path extends LightningElement {
       this.geography = data.fields.Booking_Geography__c.value
       this.wonLostValue = data.fields.Closed__c.value
       this.dateToProposal = data.fields.DMT_DateToProposal__c.value
+      this.recordTypeDeveloperName = data.fields.RecordType?.value?.fields?.DeveloperName?.value // CIBGLOBALD-4811
     } else if (error) {
       console.error(error)
     }
+  }
+
+  // CIBGLOBALD-4811 - the Case type the Line trigger checks at this stage change
+  // (DMT_Line_Helper.restartApprovalTasksOnLineResubmission), or null when nothing can reopen.
+  caseTypeToCheck (newStatus) {
+    if (this.recordTypeDeveloperName !== 'TreasurySettlement' && this.recordTypeDeveloperName !== 'OtherProducts') {
+      return null
+    }
+    if (this.status === 'Draft' && newStatus === 'Proposal' && this.dateToProposal) {
+      return 'passport'
+    }
+    if (this.status === 'Proposal' && newStatus === 'Approval') {
+      return 'approval'
+    }
+    return null
   }
 
   handleStageClick (event) {
@@ -162,8 +181,8 @@ export default class dmt_custom_path extends LightningElement {
       this.showModal = true
       this.isLoading = false
       return
-    } else if (nextStage === 'Proposal' && this.dateToProposal) {
-      previewCompareTasksFromCase({ recordId: this.recordId }).then(result => {
+    } else if (this.caseTypeToCheck(nextStage)) { // CIBGLOBALD-4811
+      previewCompareTasksFromCase({ recordId: this.recordId, caseTypeToCheck: this.caseTypeToCheck(nextStage) }).then(result => { // CIBGLOBALD-4811
         this.isLoading = false
         if (result.length == 0) {
           this.dispatchEvent(

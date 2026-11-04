@@ -2,13 +2,24 @@ import { LightningElement, api, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { getRecord, getRecordNotifyChange, updateRecord } from 'lightning/uiRecordApi';
 import checkEditPermission from '@salesforce/apex/DMT_LineController.checkEditPermission';
+// Changes been made for CIBGLOBALD-4741
+import setLineEditLock from '@salesforce/apex/DMT_LineController.setLineEditLock';
+import saveTreasuryLineInfo from '@salesforce/apex/DMT_LineController.saveTreasuryLineInfo';
+// Changes been made for CIBGLOBALD-4763 - Import approval-state UI edit eligibility for line info.
+import canEditLineInApprovalStateUi from '@salesforce/apex/DMT_LineController.canEditLineInApprovalStateUi';
 import getTypeOfRiskOptions from '@salesforce/apex/DMT_LineController.getTypeOfRiskOptions';
 import getCommitmentOptions from '@salesforce/apex/DMT_LineController.getCommitmentOptions';
 import getCurrencyOptions from '@salesforce/apex/DMT_LineController.getCurrencyOptions';
+// Changes been made for CIBGLOBALD-4741
+import getCurrencyLabel from '@salesforce/apex/DMT_Currency_Conversion_Utils.getCurrencyLabel';
 import getEntificDisplayValue from '@salesforce/apex/DMT_LineController.getEntificDisplayValue';
 import hasLineGodPermission from '@salesforce/customPermission/DMT_Line_God';
+import LightningConfirm from 'lightning/confirm'; // CIBGLOBALD-4811
+import previewCompareUnsavedChanges from '@salesforce/apex/DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges'; // CIBGLOBALD-4811
 import { otherProductsFields } from './dmt_lineInfo_otherProducts_fields.js';
 import { sanctionFields } from './dmt_lineInfo_sanction_fields.js';
+// Changes been made for CIBGLOBALD-4741
+import { treasuryFields } from './dmt_lineInfo_treasury_fields.js';
 
 import NAME_FIELD from '@salesforce/schema/DMT_Line__c.Name';
 import BOOKING_GEOGRAPHY_FIELD from '@salesforce/schema/DMT_Line__c.Booking_Geography__c';
@@ -29,6 +40,7 @@ import MIN_RORC_FIELD from '@salesforce/schema/DMT_Line__c.gf_min_rorc_wo_fcg_pe
 import COMMENTS_FIELD from '@salesforce/schema/DMT_Line__c.DMT_Comments__c';
 import STATUS_FIELD from '@salesforce/schema/DMT_Line__c.Status__c';
 
+// Changes been made for CIBGLOBALD-4741
 const RECORD_FIELDS = [
     NAME_FIELD, BOOKING_GEOGRAPHY_FIELD, RISK_APPROVAL_START_FIELD, RISK_APPROVAL_END_FIELD,
     AMOUNT_FIELD, CURRENCY_ISO_CODE_FIELD, LAST_LEVEL_ID_FIELD,
@@ -38,18 +50,26 @@ const RECORD_FIELDS = [
     'DMT_Line__c.RecordType.DeveloperName'
 ];
 
+// Changes been made for CIBGLOBALD-4741
 // RecordType.DeveloperName (not Name/label — labels are admin-editable) → the field config that
 // record type renders. Add an entry here, and its own dmt_lineInfo_<recordType>_fields.js module,
 // to give another record type its own field set. A record type with no entry renders nothing.
 const FIELDS_BY_RECORD_TYPE = new Map([
     ['Sanction', sanctionFields],
-    ['OtherProducts', otherProductsFields]
+    ['OtherProducts', otherProductsFields],
+    // Changes been made for CIBGLOBALD-4741
+    ['Treasury', treasuryFields],
+    ['TreasurySettlement', treasuryFields]
 ]);
+// Changes been made for CIBGLOBALD-4741
+const TREASURY_RECORD_TYPES = new Set(['Treasury', 'TreasurySettlement']);
+// CIBGLOBALD-4811 - record types the Line trigger checkpoint 3 takes part in (DMT_Line_Helper).
+const REOPEN_CHECK_RECORD_TYPES = new Set(['TreasurySettlement', 'OtherProducts']);
 
-// CIBGLOBALD-3779: native LWC replacement for the Line Info tab for OtherProducts and Sanction
-// ("Approval") lines. Placed either inside dmt_lines_tab (OtherProducts) or directly on the
-// Sanction_Line_RP flexipage (Sanction), so it resolves its own recordId/status rather than
-// depending on a parent.
+// Changes been made for CIBGLOBALD-4741
+// Native Line Info component for Treasury, OtherProducts, and Sanction lines. Placed inside
+// dmt_lines_tab or directly on the Sanction_Line_RP flexipage, so it resolves its own recordId
+// and status rather than depending on a parent.
 export default class Dmt_lineInfo extends LightningElement {
     // ─── Public API ───────────────────────────────────────────────────────────
     // recordId is auto-populated by Lightning App Builder on any Record Page, and passed
@@ -64,6 +84,8 @@ export default class Dmt_lineInfo extends LightningElement {
     _canEdit = false;
     _lineStatus;
     _geographyCode;
+    // Changes been made for CIBGLOBALD-4741
+    _recordTypeDeveloperName;
 
     // Empty until wiredRecord resolves the record type and picks a field set — nothing renders
     // for a record type with no entry in FIELDS_BY_RECORD_TYPE.
@@ -72,6 +94,7 @@ export default class Dmt_lineInfo extends LightningElement {
     // each field's correct per-record-type baseline isReadOnly.
     _baseFields = [];
     _snapshot = null;
+    _lockHeld = false;
     wiredRecordResult;
 
     // Cached separately from this.fields (which starts empty and is only built once wiredRecord
@@ -82,6 +105,11 @@ export default class Dmt_lineInfo extends LightningElement {
     _typeOfRiskOptions = [];
     _commitmentOptions = [];
     _currencyOptions = [];
+    // Changes been made for CIBGLOBALD-4741
+    _currencySuffixCode;
+    _currencyExtraText = '';
+    _currencyLabelRequests = new Map();
+    _currencyLabelRequestId = 0;
 
     // ─── Wire ─────────────────────────────────────────────────────────────────
     // Type of risk picklist's options — same catalog ('B444') the old FlexCard's combobox used.
@@ -188,13 +216,25 @@ export default class Dmt_lineInfo extends LightningElement {
                     }
                     const rawValue = data.fields[f.apiName] ? data.fields[f.apiName].value : null;
                     const emptyValue = f.type === 'checkbox' ? false : '';
-                    const placeholder = f.id === 'Amount__c' ? currencyCode : f.placeholder;
+                    // Changes been made for CIBGLOBALD-4741
+                    const value = f.isPercent
+                        ? this._toPercentagePoints(rawValue)
+                        : (rawValue != null ? rawValue : emptyValue);
+                    // Changes been made for CIBGLOBALD-4741
+                    const extraText = f.id === 'Amount__c'
+                        ? (this._currencySuffixCode === currencyCode ? this._currencyExtraText : currencyCode)
+                        : f.extraText;
                     const options = optionsByFieldId[f.id] ?? f.options;
-                    return { ...f, value: rawValue != null ? rawValue : emptyValue, placeholder, options };
+                    const minDate = f.id === 'End_Date__c' ? data.fields.Start_Date__c?.value || '' : f.minDate;
+                    return { ...f, value, extraText, options, minDate };
                 });
+                // Changes been made for CIBGLOBALD-4741
+                this._loadCurrencySuffix(currencyCode);
             }
             this._lineStatus = data.fields.Status__c?.value;
             this._geographyCode = data.fields.Booking_Geography__c?.value;
+            // Changes been made for CIBGLOBALD-4741
+            this._recordTypeDeveloperName = recordTypeDeveloperName;
             this._resolveEditPermission();
         } else if (error) {
             this.hasError = true;
@@ -204,12 +244,17 @@ export default class Dmt_lineInfo extends LightningElement {
 
     async _resolveEditPermission() {
         try {
-            if (hasLineGodPermission) {
+            if (hasLineGodPermission && this._lineStatus === 'Draft') {
                 this._canEdit = this._lineStatus === 'Draft';
                 return;
             }
-            const result = await checkEditPermission({ recordId: this.recordId });
-            this._canEdit = this._lineStatus === 'Draft' && !!result?.accessLevel_edit;
+            if (this._lineStatus === 'Draft') {
+                const result = await checkEditPermission({ recordId: this.recordId });
+                this._canEdit = !!result?.accessLevel_edit;
+            } else {
+                // Changes been made for CIBGLOBALD-4763 - Allow qualified line users to edit approval-state fields.
+                this._canEdit = await canEditLineInApprovalStateUi({ recordId: this.recordId });
+            }
         } catch (error) {
             this._canEdit = false;
         } finally {
@@ -241,18 +286,43 @@ export default class Dmt_lineInfo extends LightningElement {
         return !this._canEdit;
     }
 
+    // Changes been made for CIBGLOBALD-4741
+    get isTreasuryLine() {
+        return TREASURY_RECORD_TYPES.has(this._recordTypeDeveloperName);
+    }
+
     get formContainerClass() {
         return this.isEditMode ? 'slds-is-relative form-container--edit-mode' : 'slds-is-relative';
     }
 
     // ─── Edit mode ────────────────────────────────────────────────────────────
-    handleEditModeChange(event) {
-        if (!event.detail?.isEditMode || this.disableEdit) {
+    // Changes been made for CIBGLOBALD-4741
+    async handleEditModeChange(event) {
+        if (!event.detail?.isEditMode || this.disableEdit || this.isLoading) {
             return;
         }
-        this._snapshot = { fields: this.fields.map((f) => ({ ...f })) };
-        this.isEditMode = true;
-        this._notifyEditingTab(true);
+        this.isLoading = true;
+        this.hasError = false;
+        this.errorMessage = '';
+        this._notifyEditingTab(true, { lockManaged: true, lockPending: true });
+        try {
+            const acquired = await setLineEditLock({ recordId: this.recordId, acquireLock: true });
+            if (!acquired) {
+                this._notifyEditingTab(false, { lockManaged: true, lockDenied: true });
+                return;
+            }
+            this._lockHeld = true;
+            this._snapshot = { fields: this.fields.map((f) => ({ ...f })) };
+            this.isEditMode = true;
+            getRecordNotifyChange([{ recordId: this.recordId }]);
+            this._notifyEditingTab(true, { lockManaged: true });
+        } catch (error) {
+            this.hasError = true;
+            this.errorMessage = this._extractErrorMessage(error, 'Unable to acquire the line edit lock.');
+            this._notifyEditingTab(false, { lockManaged: true });
+        } finally {
+            this.isLoading = false;
+        }
     }
 
     handleFieldChange(event) {
@@ -264,6 +334,11 @@ export default class Dmt_lineInfo extends LightningElement {
         const updated = this.fields.slice();
         updated[idx] = { ...this.fields[idx], value };
         this.fields = updated;
+
+        // Changes been made for CIBGLOBALD-4741
+        if (fieldId === 'Start_Date__c' && this.isTreasuryLine) {
+            this._setFieldMinDate('End_Date__c', value || '');
+        }
 
         // Start/End Date/Term stay mutually consistent: editing Term recalculates End Date
         // (Start fixed); editing either date recalculates Term from the pair (matching what's
@@ -279,24 +354,44 @@ export default class Dmt_lineInfo extends LightningElement {
         } else if (fieldId === 'DMT_Business_Approved_End_Date__c') {
             this._recalculateTermFromDates('DMT_Bussiness_Approved_Date__c', 'DMT_Business_Approved_End_Date__c', 'DMT_Business_Approval_Term_n__c');
         } else if (fieldId === 'CurrencyIsoCode') {
-            // Amount's placeholder mirrors whatever currency is currently selected.
-            this._setFieldPlaceholder('Amount__c', value || '');
+            // Changes been made for CIBGLOBALD-4741
+            this._loadCurrencySuffix(value || '');
         }
     }
 
-    handleCancel() {
+    async handleCancel() {
         if (this._snapshot) {
             this.fields = this._snapshot.fields;
+            // Changes been made for CIBGLOBALD-4741
+            this._loadCurrencySuffix(this._getFieldValue('CurrencyIsoCode') || '');
         }
-        this._exitEditMode();
+        await this._exitEditMode();
     }
 
+    // Changes been made for CIBGLOBALD-4741
     async handleSave() {
         this.isLoading = true;
         this.hasError = false;
         this.errorMessage = '';
 
         try {
+            if (this._recordTypeDeveloperName !== 'Treasury') {
+                const ownsLock = await setLineEditLock({ recordId: this.recordId, acquireLock: true });
+                if (!ownsLock) {
+                    throw new Error('The line edit lock is no longer owned by this user.');
+                }
+            }
+
+            if (this.isTreasuryLine) {
+                const startDate = this._getFieldValue('Start_Date__c');
+                const endDate = this._getFieldValue('End_Date__c');
+                if (startDate && endDate && endDate < startDate) {
+                    this.hasError = true;
+                    this.errorMessage = 'End Date must be on or after Start Date.';
+                    return;
+                }
+            }
+
             const fieldValues = { Id: this.recordId };
             this.fields.forEach((f) => {
                 // Skip read-only fields (e.g. the Business Approval Start Date formula, sourced
@@ -305,14 +400,27 @@ export default class Dmt_lineInfo extends LightningElement {
                 if (f.isReadOnly) {
                     return;
                 }
-                fieldValues[f.apiName] = f.value === '' ? null : f.value;
+                // Changes been made for CIBGLOBALD-4741
+                fieldValues[f.apiName] = this._getPersistedFieldValue(f);
             });
 
-            await updateRecord({ fields: fieldValues });
+            // CIBGLOBALD-4811 - Cancel keeps the tab in edit mode with the typed values.
+            if (!(await this._confirmReopen())) {
+                return;
+            }
+
+            if (this.isTreasuryLine) {
+                const result = await saveTreasuryLineInfo({ recordId: this.recordId, fieldValues });
+                if (result?.error === 'KO' || result?.error === true || result?.success === false) {
+                    throw new Error(result?.message || 'The line information could not be saved.');
+                }
+            } else {
+                await updateRecord({ fields: fieldValues });
+            }
             getRecordNotifyChange([{ recordId: this.recordId }]);
 
             this._snapshot = null;
-            this._exitEditMode();
+            await this._exitEditMode();
             this.dispatchEvent(
                 new ShowToastEvent({ title: 'Success', message: 'Line info saved successfully.', variant: 'success' })
             );
@@ -344,6 +452,53 @@ export default class Dmt_lineInfo extends LightningElement {
     }
 
     // ─── Private ──────────────────────────────────────────────────────────────
+
+    /**
+     * CIBGLOBALD-4811 - Asks before a save that would reopen features. Same filter as the Line trigger
+     * checkpoint 3 (DMT_Line_Helper.restartApprovalTasksOnLineResubmission): record type TreasurySettlement
+     * or OtherProducts, status Ready to close before and after the save, Cases 'readytoclose'. Only the
+     * editable fields changed since edit mode started are sent, with the value the save stores
+     * (_getPersistedFieldValue), to DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges; none
+     * changed -> no call. A failed check returns true: the save goes ahead.
+     * @returns true to save, false when the user cancels
+     */
+    async _confirmReopen() {
+        if (this._lineStatus !== 'Ready to close' || !REOPEN_CHECK_RECORD_TYPES.has(this._recordTypeDeveloperName) || !this._snapshot) {
+            return true;
+        }
+
+        const unsavedValues = {};
+        for (const f of this.fields) {
+            const before = this._snapshot.fields.find((s) => s.id === f.id);
+            if (!f.isReadOnly && before && f.value !== before.value) {
+                unsavedValues[f.apiName] = this._getPersistedFieldValue(f);
+            }
+        }
+        if (Object.keys(unsavedValues).length === 0) {
+            return true;
+        }
+
+        try {
+            const features = await previewCompareUnsavedChanges({
+                recordId: this.recordId,
+                caseTypeToCheck: 'readytoclose',
+                unsavedValues
+            });
+            if (!features || features.length === 0) {
+                return true;
+            }
+        } catch (error) {
+            console.error('[dmt_lineInfo][_confirmReopen]', error);
+            return true;
+        }
+
+        return LightningConfirm.open({
+            label: 'Modify Line?',
+            message: 'The Line will be modified and the associated cases and tasks will be reopened.' +
+                '\n\nDo you want to modify the Line?',
+            theme: 'warning'
+        });
+    }
 
     // Recalculates End Date from the (fixed) Start Date + the edited term, in whole months.
     // Shared by Risk Approval (Start_Date__c/End_Date__c/DMT_Risk_Approval_Term__c) and Business
@@ -391,6 +546,26 @@ export default class Dmt_lineInfo extends LightningElement {
         return this.fields.find((f) => f.id === fieldId)?.value;
     }
 
+    // Changes been made for CIBGLOBALD-4741
+    _toPercentagePoints(value) {
+        return value == null || value === '' ? '' : Number((Number(value) * 100).toFixed(4));
+    }
+
+    // Changes been made for CIBGLOBALD-4741
+    _getPersistedFieldValue(field) {
+        if (field.value == null || field.value === '') {
+            return null;
+        }
+        if (!field.isPercent) {
+            return field.value;
+        }
+        const percentage = Number(field.value);
+        if (!Number.isFinite(percentage) || percentage < 0 || percentage > 100) {
+            throw new Error(`${field.label} must be a percentage between 0 and 100.`);
+        }
+        return Number((percentage / 100).toFixed(6));
+    }
+
     _setFieldValue(fieldId, value) {
         const idx = this.fields.findIndex((f) => f.id === fieldId);
         if (idx === -1) {
@@ -401,13 +576,50 @@ export default class Dmt_lineInfo extends LightningElement {
         this.fields = updated;
     }
 
-    _setFieldPlaceholder(fieldId, placeholder) {
+    // Changes been made for CIBGLOBALD-4741
+    async _loadCurrencySuffix(currencyCode) {
+        if (!this.fields.some((field) => field.id === 'Amount__c')
+            || currencyCode === this._currencySuffixCode) {
+            return;
+        }
+        this._currencySuffixCode = currencyCode;
+        const requestId = ++this._currencyLabelRequestId;
+        this._applyCurrencySuffix(currencyCode);
+        if (!currencyCode) {
+            return;
+        }
+
+        try {
+            if (!this._currencyLabelRequests.has(currencyCode)) {
+                this._currencyLabelRequests.set(currencyCode, getCurrencyLabel({ currencyIsoCode: currencyCode }));
+            }
+            const label = await this._currencyLabelRequests.get(currencyCode);
+            if (requestId === this._currencyLabelRequestId) {
+                this._applyCurrencySuffix(label || currencyCode);
+            }
+        } catch (error) {
+            this._currencyLabelRequests.delete(currencyCode);
+            if (requestId === this._currencyLabelRequestId) {
+                this._applyCurrencySuffix(currencyCode);
+            }
+        }
+    }
+
+    // Changes been made for CIBGLOBALD-4741
+    _applyCurrencySuffix(extraText) {
+        this._currencyExtraText = extraText;
+        this.fields = this.fields.map((field) => field.id === 'Amount__c'
+            ? { ...field, extraText }
+            : field);
+    }
+
+    _setFieldMinDate(fieldId, minDate) {
         const idx = this.fields.findIndex((f) => f.id === fieldId);
         if (idx === -1) {
             return;
         }
         const updated = this.fields.slice();
-        updated[idx] = { ...this.fields[idx], placeholder };
+        updated[idx] = { ...this.fields[idx], minDate };
         this.fields = updated;
     }
 
@@ -420,17 +632,34 @@ export default class Dmt_lineInfo extends LightningElement {
         return new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
     }
 
-    _exitEditMode() {
+    // Changes been made for CIBGLOBALD-4741
+    async _exitEditMode() {
         this._snapshot = null;
         this.isEditMode = false;
         this.hasError = false;
         this.errorMessage = '';
-        this._notifyEditingTab(false);
+        if (this._lockHeld) {
+            try {
+                const released = await setLineEditLock({ recordId: this.recordId, acquireLock: false });
+                if (!released) {
+                    throw new Error('The line edit lock could not be released.');
+                }
+                this._lockHeld = false;
+                getRecordNotifyChange([{ recordId: this.recordId }]);
+            } catch (error) {
+                this.dispatchEvent(new ShowToastEvent({
+                    title: 'Edit lock not released',
+                    message: this._extractErrorMessage(error, 'The line edit lock could not be released.'),
+                    variant: 'warning'
+                }));
+            }
+        }
+        this._notifyEditingTab(false, { lockManaged: true });
     }
 
-    _notifyEditingTab(isEditing) {
+    _notifyEditingTab(isEditing, extraDetail = {}) {
         this.dispatchEvent(new CustomEvent('editingtab', {
-            detail: { tab: isEditing ? 'lineinfo' : null },
+            detail: { tab: isEditing ? 'lineinfo' : null, ...extraDetail },
             bubbles: true,
             composed: true
         }));

@@ -72,8 +72,8 @@ public with sharing class DMT_Line_TriggerHandler_Test {
         TriggerBypass.setBypass();
         Case approvalCase = DMT_UTIL.createCaseRecord(
             groupApprover.Id,
-            DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
             new Map<Schema.SObjectField, Object>{
+                Case.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
                 Case.DMT_Line__c => frozenLine.Id,
                 Case.DMT_Passport_Sanction__c => passportSanction,
                 Case.Status => 'Pending',
@@ -83,9 +83,9 @@ public with sharing class DMT_Line_TriggerHandler_Test {
 
         Task openTask = DMT_UTIL.createTaskRecord(
             groupApprover.Id,
-            DMT_UtilTestClassConstants.DEFAULT_TASK_STEP_RECORD_TYPE_ID,
             approvalCase.Id,
             new Map<Schema.SObjectField, Object>{
+                Task.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_TASK_STEP_RECORD_TYPE_ID,
                 Task.Status => 'Not Started',
                 Task.Subject => 'Test Task'
             }
@@ -100,11 +100,10 @@ public with sharing class DMT_Line_TriggerHandler_Test {
         }
         snapshotJson += '}';
 
-        DMT_TaskStatusWhenCompleted__c snapshot = DMT_UTIL.buildTaskStatusWhenCompleted(
-            approvalCase.Id,
-            snapshotJson
-        );
-        insert snapshot;
+        DMT_TaskStatusWhenCompleted__c snapshot = DMT_UTIL.createTaskStatusWhenCompletedRecord(new Map<Schema.SObjectField, Object>{
+                DMT_TaskStatusWhenCompleted__c.Case__c => approvalCase.Id,
+                DMT_TaskStatusWhenCompleted__c.DMT_ViewFieldStatusAtClose__c => snapshotJson
+            });
 
         openTask.DMT_ViewStatusAtClose__c = snapshot.Id;
         update openTask;
@@ -344,5 +343,133 @@ public with sharing class DMT_Line_TriggerHandler_Test {
 
         Task staleTask = [SELECT Status FROM Task WHERE Id = :openTask.Id];
         Assert.areEqual(DMT_Constants.CANCELLED, staleTask.Status, 'Removing a Custom_Association_Client__c row must restart tasks (row-count mismatch).');
+    }
+
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareTasksFromCase_ChangedField_ListsFeature() {
+        DMT_Line__c line = queryLineWithTrackedFields();
+        line.Status__c = DMT_Constants.DRAFT;
+        line.DMT_DateToProposal__c = Datetime.now().addDays(-1);
+        update line;
+        setupApprovalTaskWithSnapshot(queryLineWithTrackedFields());
+
+        line.Name = 'Changed Name';
+        update line;
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(line.Id, 'passport');
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'The Case has a stale task, so one feature is listed');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareTasksFromCase_ChildRowChange_ListsFeature() {
+        DMT_Line__c line = queryLineWithTrackedFields();
+        Custom_Association__c ca = DMT_Test_DataFactory.generateCustomAssociation(line.Id, line.Client__c);
+        Custom_Association_Client__c cac = DMT_Test_DataFactory.generateCustomAssociationClient(ca.Id);
+
+        line = queryLineWithTrackedFields();
+        line.Status__c = DMT_Constants.DRAFT;
+        line.DMT_DateToProposal__c = Datetime.now().addDays(-1);
+        update line;
+        setupApprovalTaskWithSnapshot(queryLineWithTrackedFields());
+
+        cac.DMT_ClientRating__c = 'AA';
+        update cac;
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(line.Id, 'passport');
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'A saved child row change is found, as the trigger would find it');
+    }
+
+    // CIBGLOBALD-4811 - CIBGLOBALD-4098 case: a field null at the freeze has no key in the snapshot
+    // JSON, and must still count as changed once it is populated.
+    @isTest
+    public static void testPreviewCompareTasksFromCase_FieldNullAtFreezeNowPopulated_ListsFeature() {
+        DMT_Line__c line = queryLineWithTrackedFields();
+        line.Status__c = DMT_Constants.DRAFT;
+        line.DMT_DateToProposal__c = Datetime.now().addDays(-1);
+        line.DMT_Comments__c = null;
+        update line;
+        setupApprovalTaskWithSnapshot(queryLineWithTrackedFields());
+
+        line.DMT_Comments__c = 'Populated after the freeze';
+        update line;
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(line.Id, 'passport');
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'A field missing from the snapshot JSON is compared from the tracked-field list');
+    }
+
+    // CIBGLOBALD-4811 - a Line in Ready to close whose readytoclose task was closed on the current data.
+    private static DMT_Line__c setupReadyToCloseLine() {
+        DMT_Line__c line = queryLineWithTrackedFields();
+        line.Status__c = DMT_Constants.READYTOCLOSE;
+        update line;
+        DMT_Line__c frozenLine = queryLineWithTrackedFields();
+        setupApprovalTaskWithSnapshot(frozenLine, 'readytoclose');
+        return frozenLine;
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareUnsavedChanges_ChangedField_ListsFeatureAndSavesNothing() {
+        DMT_Line__c line = setupReadyToCloseLine();
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges(line.Id, 'readytoclose', new Map<String, Object>{
+                'Name' => 'Unsaved Name',
+                'End_Date__c' => '2030-01-15',
+                'gf_min_rorc_wo_fcg_per__c' => 0.125
+            }, null);
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'The unsaved Name differs from the snapshot, so the feature is listed');
+        Assert.areEqual(line.Name, [SELECT Name FROM DMT_Line__c WHERE Id = :line.Id].Name, 'The preview saves nothing');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareUnsavedChanges_SameValue_ReturnsNothing() {
+        DMT_Line__c line = setupReadyToCloseLine();
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges(line.Id, 'readytoclose', new Map<String, Object>{ 'Name' => line.Name }, null);
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'The value typed is the one frozen in the snapshot, so nothing reopens');
+    }
+
+    // CIBGLOBALD-4811 - Enhancement to existing process: taking the Line edit lock in Ready to close is not compared;
+    // releasing it is.
+    @isTest
+    public static void testReadyToCloseEditLock_AcquireSkipsReleaseRestarts() {
+        DMT_Line__c line = setupReadyToCloseLine();
+        Task openTask = [SELECT Id FROM Task WHERE What.Type = 'Case' AND Status != :DMT_Constants.CANCELLED LIMIT 1];
+        TriggerBypass.setBypass();
+        update new DMT_Line__c(Id = line.Id, Name = 'Changed without the trigger');
+        TriggerBypass.removeBypass();
+
+        Test.startTest();
+        update new DMT_Line__c(Id = line.Id, DMT_Line_Lock__c = UserInfo.getUserId());
+        String statusAfterAcquire = [SELECT Status FROM Task WHERE Id = :openTask.Id].Status;
+        update new DMT_Line__c(Id = line.Id, DMT_Line_Lock__c = null);
+        Test.stopTest();
+
+        Assert.areNotEqual(DMT_Constants.CANCELLED, statusAfterAcquire, 'Taking the lock alone does not run the restart check');
+        Assert.areEqual(DMT_Constants.CANCELLED, [SELECT Status FROM Task WHERE Id = :openTask.Id].Status, 'Releasing the lock runs the check and reopens the stale task');
     }
 }

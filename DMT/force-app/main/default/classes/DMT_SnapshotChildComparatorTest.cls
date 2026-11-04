@@ -12,13 +12,24 @@
 @IsTest
 private class DMT_SnapshotChildComparatorTest {
 
+    private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass();
+
     @IsTest
     static void testHasChangesDetectsAChangeThroughACrossObjectChildSection() {
         DMT_Line__c line = DMT_Test_DataFactory.generateTestOtherLines();
-        DMT_Risk_Line_Term__c risk = new DMT_Risk_Line_Term__c(DMT_Line__c = line.Id, CurrencyIsoCode = 'EUR');
-        insert risk;
-        DMT_Warranty__c warranty = new DMT_Warranty__c(DMT_Risk_Line_Term__c = risk.Id, Name = 'Original Warranty');
-        insert warranty;
+        DMT_Risk_Line_Term__c risk = DMT_UTIL.createRiskLineTermRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => line.Id,
+                DMT_Risk_Line_Term__c.CurrencyIsoCode => 'EUR'
+            }
+        );
+
+        DMT_Warranty__c warranty = DMT_UTIL.createWarrantyRecord(
+            risk.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Warranty__c.Name => 'Original Warranty'
+            }
+        );
 
         DMT_Line__c queriedLine = [SELECT Id, RecordTypeId, Custom_Association__c FROM DMT_Line__c WHERE Id = :line.Id];
         Map<Id, SObject> recordsById = new Map<Id, SObject>{ queriedLine.Id => queriedLine };
@@ -36,17 +47,26 @@ private class DMT_SnapshotChildComparatorTest {
         };
         Map<String, Object> snapshotJson = new Map<String, Object>{ 'warranties' => frozenWarranties };
 
-        Boolean changed = comparator.hasChanges(queriedLine.Id, snapshotJson);
+        Boolean changed = comparator.hasChanges(queriedLine.Id, snapshotJson, null); // CIBGLOBALD-4811
         Assert.isTrue(changed, 'A live Warranty.Name differing from the frozen value must be detected through the cross-object lookup.');
+        Assert.areEqual(1, comparator.changedComponents(queriedLine.Id, snapshotJson, null).size(), 'The component of the changed section is named'); // CIBGLOBALD-4811
+        // CIBGLOBALD-4811 - only the task's components count: warranties belong to Products.
+        Assert.areEqual(new List<String>{ 'Products' }, comparator.changedComponents(queriedLine.Id, snapshotJson, new List<String>{ 'Products', 'Line Info' }), 'The changed section is named by the task component that tracks it');
+        Assert.isFalse(comparator.hasChanges(queriedLine.Id, snapshotJson, new List<String>{ 'Line Info' }), 'A section of a component the task did not freeze is not compared');
+        Assert.isNull(DMT_SnapshotChildComparator.forRecords(recordsById, new List<String>{ 'Line Info' }), 'No child section is queried when the task components have none');
     }
 
     @IsTest
     static void testHasChangesReturnsFalseWhenCrossObjectRowsMatch() {
         DMT_Line__c line = DMT_Test_DataFactory.generateTestOtherLines();
-        DMT_Risk_Line_Term__c risk = new DMT_Risk_Line_Term__c(DMT_Line__c = line.Id, CurrencyIsoCode = 'EUR');
-        insert risk;
-        DMT_Warranty__c warranty = new DMT_Warranty__c(DMT_Risk_Line_Term__c = risk.Id);
-        insert warranty;
+        DMT_Risk_Line_Term__c risk = DMT_UTIL.createRiskLineTermRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => line.Id,
+                DMT_Risk_Line_Term__c.CurrencyIsoCode => 'EUR'
+            }
+        );
+
+        DMT_Warranty__c warranty = DMT_UTIL.createWarrantyRecord(risk.Id);
         // Name is an auto-number field on DMT_Warranty__c, not settable via DML - read back the
         // real generated value instead of assuming a literal one persisted.
         warranty = [SELECT Id, Name FROM DMT_Warranty__c WHERE Id = :warranty.Id];
@@ -61,7 +81,76 @@ private class DMT_SnapshotChildComparatorTest {
         };
         Map<String, Object> snapshotJson = new Map<String, Object>{ 'warranties' => frozenWarranties };
 
-        Boolean changed = comparator.hasChanges(queriedLine.Id, snapshotJson);
+        Boolean changed = comparator.hasChanges(queriedLine.Id, snapshotJson, null); // CIBGLOBALD-4811
         Assert.isFalse(changed, 'Identical frozen and live Warranty rows must not be flagged as changed.');
+        Assert.isTrue(comparator.changedComponents(queriedLine.Id, snapshotJson, null).isEmpty(), 'No component is named when the rows match'); // CIBGLOBALD-4811
+    }
+
+    // CIBGLOBALD-4811 - an unsaved value on a live row is compared as if it were saved; rows of
+    // another object are ignored.
+    @IsTest
+    static void testApplyUnsavedRowsComparesTheUnsavedValue() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestOtherLines();
+        DMT_Risk_Line_Term__c risk = DMT_UTIL.createRiskLineTermRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => line.Id,
+                DMT_Risk_Line_Term__c.CurrencyIsoCode => 'EUR'
+            }
+        );
+        DMT_Warranty__c warranty = DMT_UTIL.createWarrantyRecord(risk.Id);
+        warranty = [SELECT Id, Name FROM DMT_Warranty__c WHERE Id = :warranty.Id];
+
+        DMT_Line__c queriedLine = [SELECT Id, RecordTypeId, Custom_Association__c FROM DMT_Line__c WHERE Id = :line.Id];
+        Map<String, Object> snapshotJson = new Map<String, Object>{
+            'warranties' => new Map<String, Object>{ (String) warranty.Id => new Map<String, Object>{ 'Name' => warranty.Name } }
+        };
+
+        Test.startTest();
+        DMT_SnapshotChildComparator otherObject = DMT_SnapshotChildComparator.forRecords(new Map<Id, SObject>{ queriedLine.Id => queriedLine });
+        otherObject.applyUnsavedRows(queriedLine.Id, new List<Map<String, Object>>{
+            new Map<String, Object>{ 'objectApiName' => 'DMT_Line__c', 'rowId' => (String) warranty.Id, 'values' => new Map<String, Object>{ 'Name' => 'Unsaved' } }
+        });
+        DMT_SnapshotChildComparator sameObject = DMT_SnapshotChildComparator.forRecords(new Map<Id, SObject>{ queriedLine.Id => queriedLine });
+        sameObject.applyUnsavedRows(queriedLine.Id, new List<Map<String, Object>>{
+            new Map<String, Object>{ 'objectApiName' => 'DMT_Warranty__c', 'rowId' => (String) warranty.Id, 'values' => new Map<String, Object>{ 'Name' => 'Unsaved' } }
+        });
+        Test.stopTest();
+
+        Assert.isFalse(otherObject.hasChanges(queriedLine.Id, snapshotJson, null), 'A row of another object leaves the warranties section as stored');
+        Assert.isTrue(sameObject.hasChanges(queriedLine.Id, snapshotJson, null), 'The unsaved Warranty Name differs from the frozen one');
+        Assert.areEqual(warranty.Name, [SELECT Name FROM DMT_Warranty__c WHERE Id = :warranty.Id].Name, 'Nothing is saved');
+    }
+
+    // CIBGLOBALD-4811 - a row the save inserts or deletes changes the row count of the section.
+    @IsTest
+    static void testApplyUnsavedRowsAddedAndDeletedRowsAreChanges() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestOtherLines();
+        DMT_Risk_Line_Term__c risk = DMT_UTIL.createRiskLineTermRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => line.Id,
+                DMT_Risk_Line_Term__c.CurrencyIsoCode => 'EUR'
+            }
+        );
+        DMT_Warranty__c warranty = DMT_UTIL.createWarrantyRecord(risk.Id);
+        warranty = [SELECT Id, Name FROM DMT_Warranty__c WHERE Id = :warranty.Id];
+
+        DMT_Line__c queriedLine = [SELECT Id, RecordTypeId, Custom_Association__c FROM DMT_Line__c WHERE Id = :line.Id];
+        Map<String, Object> snapshotJson = new Map<String, Object>{
+            'warranties' => new Map<String, Object>{ (String) warranty.Id => new Map<String, Object>{ 'Name' => warranty.Name } }
+        };
+
+        Test.startTest();
+        DMT_SnapshotChildComparator added = DMT_SnapshotChildComparator.forRecords(new Map<Id, SObject>{ queriedLine.Id => queriedLine });
+        added.applyUnsavedRows(queriedLine.Id, new List<Map<String, Object>>{
+            new Map<String, Object>{ 'objectApiName' => 'DMT_Warranty__c', 'values' => new Map<String, Object>{ 'Name' => 'New warranty' } }
+        });
+        DMT_SnapshotChildComparator deleted = DMT_SnapshotChildComparator.forRecords(new Map<Id, SObject>{ queriedLine.Id => queriedLine });
+        deleted.applyUnsavedRows(queriedLine.Id, new List<Map<String, Object>>{
+            new Map<String, Object>{ 'objectApiName' => 'DMT_Warranty__c', 'rowId' => (String) warranty.Id, 'deleted' => true }
+        });
+        Test.stopTest();
+
+        Assert.isTrue(added.hasChanges(queriedLine.Id, snapshotJson, null), 'A row the save inserts is a change');
+        Assert.isTrue(deleted.hasChanges(queriedLine.Id, snapshotJson, null), 'A row the save deletes is a change');
     }
 }

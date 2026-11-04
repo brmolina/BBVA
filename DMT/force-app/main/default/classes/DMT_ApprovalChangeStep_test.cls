@@ -135,73 +135,7 @@ public with sharing class DMT_ApprovalChangeStep_test {
         Assert.isNotNull(refreshedTask.DMT_ViewStatusAtClose__c, 'Dispatching the deferred snapshot associates it with the Task');
     }
 
-
-@isTest
-    public static void testPreviewCompareTasksFromCase() {
-        TriggerBypass.setBypass();
-
-        Case lineCase = [SELECT Id, DMT_Line__c, DMT_Related_feature_name__c
-                         FROM Case
-                         WHERE DMT_Line__c != null
-                         LIMIT 1];
-        Task lineTask = [SELECT Id, DMT_ViewStatusAtClose__c
-                         FROM Task
-                         WHERE WhatId = :lineCase.Id
-                         LIMIT 1];
-
-        Test.startTest();
-        DMT_ApprovalChangeStep_Handler.updateTaskWithStatus(lineTask.Id, false);
-        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> previewResult =
-            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(lineCase.DMT_Line__c);
-        Test.stopTest();
-
-        Assert.isNotNull(previewResult, 'Preview result should not be null.');
-        Assert.isTrue(previewResult.size() > 0, 'Preview should return at least one feature.');
-
-        Boolean containsCaseFeature = false;
-        for (DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper featureWrapper : previewResult) {
-            if (featureWrapper.featureName == lineCase.DMT_Related_feature_name__c) {
-                containsCaseFeature = true;
-                break;
-            }
-        }
-
-        Assert.isTrue(containsCaseFeature, 'Preview should contain the related feature name from the case.');
-    }
-
-    @isTest
-    public static void testPreviewCompareTasksFromCaseOpportunity() {
-        TriggerBypass.setBypass();
-
-        Opportunity opp = [SELECT Id FROM Opportunity WHERE Name = 'Test Opp' LIMIT 1];
-        Case oppCase = [SELECT Id, opportunity_id__c, DMT_Related_feature_name__c
-                         FROM Case
-                         WHERE opportunity_id__c = :opp.Id
-                         LIMIT 1];
-        Task oppTask = [SELECT Id, DMT_ViewStatusAtClose__c
-                         FROM Task
-                         WHERE WhatId = :oppCase.Id
-                         LIMIT 1];
-
-        Test.startTest();
-        DMT_ApprovalChangeStep_Handler.updateTaskWithStatus(oppTask.Id, false);
-        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> previewResult =
-            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(oppCase.opportunity_id__c);
-        Test.stopTest();
-
-        Assert.isNotNull(previewResult, 'Preview result should not be null.');
-        Assert.isTrue(previewResult.size() > 0, 'Preview should return at least one feature.');
-
-        Boolean containsCaseFeature = false;
-        for (DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper featureWrapper : previewResult) {
-            if (featureWrapper.featureName == oppCase.DMT_Related_feature_name__c) {
-                containsCaseFeature = true;
-                break;
-            }
-        }
-
-        Assert.isTrue(containsCaseFeature, 'Preview should contain the related feature name from the case.');
-    }
+    // CIBGLOBALD-4811 - previewCompareTasksFromCase is tested in DMT_OpportunityTriggerHandler_Test and DMT_Line_TriggerHandler_Test.
 
     @isTest
     public static void testUpdateCase() {

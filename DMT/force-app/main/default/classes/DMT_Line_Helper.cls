@@ -3,7 +3,9 @@
  */
 public with sharing class DMT_Line_Helper{
 
-    private Map<Id, User> cachedUsersById = new Map<Id, User>();
+    // Changes been made for CIBGLOBALD-4709
+    // Share the user cache across helper instances to avoid repeated SOQL queries within the same transaction.
+    private static Map<Id, User> cachedUsersById = new Map<Id, User>();
     
     // Global Cache to prevent duplicate queries across helper methods
     private static Map<Id, List<DMT_Risk_Line_Term__c>> cachedRiskLineTerms = new Map<Id, List<DMT_Risk_Line_Term__c>>();
@@ -28,6 +30,7 @@ public with sharing class DMT_Line_Helper{
         getCachedUsersByIds(userIdsToFetch);
     }
 
+    @TestVisible
     private Map<Id, User> getCachedUsersByIds(Set<Id> userIds){
         if (userIds == null || userIds.isEmpty()){
             return new Map<Id, User>();
@@ -61,6 +64,102 @@ public with sharing class DMT_Line_Helper{
         }
         getCachedUsersByIds(new Set<Id>{ userId });
         return cachedUsersById.get(userId);
+    }
+
+    // Changes been made for CIBGLOBALD-4709
+    public void refreshSanctionConsolidatedLinesForRiskTerms(
+        List<DMT_Risk_Line_Term__c> riskTerms,
+        Map<Id, DMT_Risk_Line_Term__c> oldRiskTerms
+    ){
+        if (riskTerms == null || riskTerms.isEmpty()){
+            return;
+        }
+
+        Set<Id> affectedLineIds = new Set<Id>();
+        for (DMT_Risk_Line_Term__c riskTerm : riskTerms){
+            DMT_Risk_Line_Term__c oldRiskTerm = oldRiskTerms != null ? oldRiskTerms.get(riskTerm.Id) : null;
+            Boolean relevantChange = oldRiskTerm == null
+                || oldRiskTerm.DMT_Start_Date__c != riskTerm.DMT_Start_Date__c
+                || oldRiskTerm.DMT_End_Date__c != riskTerm.DMT_End_Date__c
+                || oldRiskTerm.DMT_Line__c != riskTerm.DMT_Line__c;
+            if (!relevantChange){
+                continue;
+            }
+
+            if (riskTerm.DMT_Line__c != null){
+                affectedLineIds.add(riskTerm.DMT_Line__c);
+            }
+            if (oldRiskTerm != null && oldRiskTerm.DMT_Line__c != null){
+                affectedLineIds.add(oldRiskTerm.DMT_Line__c);
+            }
+        }
+
+        refreshSanctionConsolidatedLines(affectedLineIds);
+    }
+
+    // Changes been made for CIBGLOBALD-4709
+    private void refreshSanctionConsolidatedLines(Set<Id> lineIds){
+        if (lineIds == null || lineIds.isEmpty()){
+            return;
+        }
+
+        for (Id lineId : lineIds){
+            cachedRiskLineTerms.remove(lineId);
+            fullyCachedLineIds.remove(lineId);
+        }
+
+        List<DMT_Line__c> linesToRefresh = new List<DMT_Line__c>();
+        for (DMT_Line__c line : [
+            SELECT Id, Name, Product__c, Start_Date__c, End_Date__c, Status__c, Closed__c,
+                   DMT_Update_Singular__c, DMT_Approval_Date__c, OwnerId, Line_Id__c,
+                   DMT_Comments__c, CurrencyIsoCode, DvP_Amount__c, FD_Amount__c,
+                   Repos_Limit__c, Repos_Limit_6M__c, DMT_SingularCon__c,
+                   DMT_Status_Completed__c, DMT_Approval_Validation__c, DMT_LastLevelId__c,
+                   Amount__c, gf_min_raroec_wo_fcg_per__c, gf_min_rorc_wo_fcg_per__c,
+                   Booking_Geography__c, DMT_Origin__c, DMT_ID_User__c, Client_Type__c,
+                   Client_Code__c, Client__c, Golden_Code__c, DMT_Entity__c,
+                   g_line_commitment_level_type__c, DMT_line_status_type__c,
+                   DMT_line_template_type__c, DMT_Additional_Restrictions__c,
+                   DMT_Parent_Code_Form__c, Waiver__c, Breakclause_Frequency__c,
+                   First_Breakclause_Date__c, DMT_Local_Risk_Analyst__c,
+                   DMT_Global_Risk_Analyst__c, DMT_GlobalBanker__c,
+                   DMT_Global_Risk_Analyst_User__c, DMT_Local_Risk_Analyst_User__c
+            FROM DMT_Line__c
+            WHERE Id IN :lineIds
+              AND Product__c = 'Sanction'
+        ]){
+            Boolean isConsolidatedStatus = line.Status__c == DMT_Constants.APPROVAL
+                || line.Status__c == DMT_Constants.READYTOCLOSE
+                || (line.Status__c == DMT_Constants.CLOSED && line.Closed__c == DMT_Constants.WON);
+            if (isConsolidatedStatus){
+                linesToRefresh.add(line);
+            }
+        }
+
+        if (linesToRefresh.isEmpty()){
+            return;
+        }
+
+        Map<Id, DMT_Line__c> linesById = new Map<Id, DMT_Line__c>(linesToRefresh);
+        createConsolidatedLine(linesToRefresh, linesById, linesById);
+    }
+
+    @TestVisible
+    private static Boolean hasIfiGoldenScopeChange(DMT_Line__c line, DMT_Line__c oldLine){
+        if (line == null || oldLine == null){
+            return false;
+        }
+        Map<String, Object> currentFields = line.getPopulatedFieldsAsMap();
+        Map<String, Object> previousFields = oldLine.getPopulatedFieldsAsMap();
+        if (currentFields.get('DMT_Is_IFI__c') != true || line.Product__c != 'Treasury Line'
+            || currentFields.get('Golden_Code__c') == previousFields.get('Golden_Code__c')){
+            return false;
+        }
+        return line.Status__c == DMT_Constants.APPROVAL
+            || line.Status__c == DMT_Constants.READYTOCLOSE
+            || (line.Status__c == DMT_Constants.CLOSED && line.Closed__c == DMT_Constants.WON)
+            || ((line.Status__c == DMT_Constants.DRAFT || line.Status__c == DMT_Constants.PROPOSAL)
+                && line.DMT_Approval_Date__c != null);
     }
 
     public void createConsolidatedLine(List<DMT_Line__c> newLines, Map<Id, DMT_Line__c> mapLines, Map<Id, DMT_Line__c> mapOldLines){
@@ -118,7 +217,8 @@ public with sharing class DMT_Line_Helper{
             //Integer for generate sub id for consolidated lines.
             Integer idPriorityLine = 1;
 
-            if ((line.Status__c == DMT_Constants.APPROVAL || (line.Status__c == DMT_Constants.CLOSED && line.Closed__c == DMT_Constants.WON) || (line.Status__c == DMT_Constants.CLOSED && line.Closed__c == 'Lost') || (line.Status__c == DMT_Constants.DRAFT && line.DMT_Approval_Date__c != null) || (line.Status__c == DMT_Constants.PROPOSAL && line.DMT_Approval_Date__c != null)) && mapOldLines.get(line.Id).Status__c != line.Status__c || mapOldLines.get(line.Id).DMT_Update_Singular__c != line.DMT_Update_Singular__c || (line.Status__c == DMT_Constants.CLOSED && line.Closed__c == DMT_Constants.WON) || (mapOldLines.get(line.Id).DMT_Approval_Date__c != null && mapOldLines.get(line.Id).DMT_Approval_Date__c != line.DMT_Approval_Date__c) || (line.Status__c == DMT_Constants.READYTOCLOSE && line.Product__c == 'Sanction') || (line.Status__c == DMT_Constants.APPROVAL && line.Product__c == 'Sanction')){
+            Boolean refreshIfiGoldenScope = hasIfiGoldenScopeChange(line, mapOldLines.get(line.Id));
+            if ((line.Status__c == DMT_Constants.APPROVAL || (line.Status__c == DMT_Constants.CLOSED && line.Closed__c == DMT_Constants.WON) || (line.Status__c == DMT_Constants.CLOSED && line.Closed__c == 'Lost') || (line.Status__c == DMT_Constants.DRAFT && line.DMT_Approval_Date__c != null) || (line.Status__c == DMT_Constants.PROPOSAL && line.DMT_Approval_Date__c != null)) && mapOldLines.get(line.Id).Status__c != line.Status__c || mapOldLines.get(line.Id).DMT_Update_Singular__c != line.DMT_Update_Singular__c || (line.Status__c == DMT_Constants.CLOSED && line.Closed__c == DMT_Constants.WON) || (mapOldLines.get(line.Id).DMT_Approval_Date__c != null && mapOldLines.get(line.Id).DMT_Approval_Date__c != line.DMT_Approval_Date__c) || (line.Status__c == DMT_Constants.READYTOCLOSE && line.Product__c == 'Sanction') || (line.Status__c == DMT_Constants.APPROVAL && line.Product__c == 'Sanction') || refreshIfiGoldenScope){
 
                 if (mapClines != null && mapClines.get(line.Line_Id__c) != null){
                     prevCLines.addAll(mapClines.get(line.Line_Id__c));
@@ -339,6 +439,10 @@ public with sharing class DMT_Line_Helper{
                                     DMT_Consolidated_Line__c initcLineRsk = mapCommonFields(line, mapCorporateUByIdLine.get(line.OwnerId).ID_User__c);
                                     if (line.Product__c == 'Sanction'){
                                         initcLineRsk.g_amortization_type__c = rsk.g_amortization_type__c;
+                                        // Changes been made for CIBGLOBALD-4709
+                                        // Preserve each sanction product's dates, including later manual Risk adjustments.
+                                        initcLineRsk.gf_from_date__c = rsk.DMT_Start_Date__c;
+                                        initcLineRsk.gf_to_date__c = rsk.DMT_End_Date__c;
                                     }
                                     initcLineRsk.g_global_product_family_id__c = rsk.g_global_product_family_id__c;
                                     initcLineRsk.g_line_name_desc__c = rsk.Name?.left(50);
@@ -654,6 +758,7 @@ public with sharing class DMT_Line_Helper{
         }
 
         if (!idsToQuery.isEmpty()) {
+            // Changes been made for CIBGLOBALD-4709
             List<DMT_Risk_Line_Term__c> rskltList = [
                 SELECT CurrencyIsoCode, g_amortization_type__c, DMT_Parent_Product__r.gf_group_priority_line_id__c, 
                        DMT_Comments__c, DMT_Amount__c, DMT_End_Term__c, DMT_Init_Term__c, DMT_Line__c, DMT_Risk_Type__c, 
@@ -665,7 +770,8 @@ public with sharing class DMT_Line_Helper{
                        gf_break_cl_days_number__c, g_multioperation_ind_type__c, gf_min_raroec_wo_fcg_per__c, 
                        gf_group_priority_line_id__c, g_line_cond_guarantee_ind_type__c, g_bullet_ind_type__c, 
                        g_smscl_internal_ratg_type__c, g_limit_sinds_ast_sctr_id__c, g_limit_sinds_ast_subsec_id__c, 
-                       g_branch_id__c, DMT_Parent_Product__c, DMT_Singular__c, DMT_Singular_Active__c, DMT_Max_Date__c, 
+                       g_branch_id__c, DMT_Parent_Product__c, DMT_Singular__c, DMT_Singular_Active__c, DMT_Max_Date__c,
+                       DMT_Start_Date__c, DMT_End_Date__c,
                        g_expert_criteria_risk_type__c, g_line_commitment_level_type__c, DMT_Singular_DvP__c, DMT_Singular_FD__c
                 FROM DMT_Risk_Line_Term__c
                 WHERE DMT_Line__c IN :idsToQuery
@@ -1135,6 +1241,7 @@ public with sharing class DMT_Line_Helper{
 
         // 1. Identificar qué líneas cambiaron DMT_Cancel__c a true
         Set<Id> dmtLineIdsCancelTrue = new Set<Id>();
+        Set<Id> closedLineIds = new Set<Id>();
 
         for (DMT_Line__c newLine : newLines) {
             DMT_Line__c oldLine = oldMap != null ? oldMap.get(newLine.Id) : null;
@@ -1142,9 +1249,17 @@ public with sharing class DMT_Line_Helper{
             // Si el campo cambió de false a true, o si antes era null y ahora es true
             if (newLine.DMT_Cancel__c == true &&
                 (oldLine == null || oldLine.DMT_Cancel__c == false)) {
-                dmtLineIdsCancelTrue.add(newLine.Id);
+                // Closed operations use the terminal-state-safe closure path.
+                // Preserve the existing cancellation behavior for open lines.
+                if (DMT_OperationClosureService.isClosedLine(newLine)) {
+                    closedLineIds.add(newLine.Id);
+                } else {
+                    dmtLineIdsCancelTrue.add(newLine.Id);
+                }
             }
         }
+
+        DMT_OperationClosureService.closeOperations(closedLineIds, new Set<Id>(), false);
 
         // 2. Si no hay cambios relevantes, salir
         if (dmtLineIdsCancelTrue.isEmpty()) {
@@ -1323,7 +1438,8 @@ public with sharing class DMT_Line_Helper{
                 if (oldLine.Status__c == DMT_Constants.PROPOSAL && line.Status__c == DMT_Constants.APPROVAL) {
                     approvalEntryLineIds.add(line.Id);
                 }
-                if (oldLine.Status__c == DMT_Constants.READYTOCLOSE && line.Status__c == DMT_Constants.READYTOCLOSE) {
+                if (oldLine.Status__c == DMT_Constants.READYTOCLOSE && line.Status__c == DMT_Constants.READYTOCLOSE
+                    && !DMT_ApprovalChangeStep_Helper.isOnlyEditLockAcquired(line, oldLine, 'DMT_Line_Lock__c')) { // CIBGLOBALD-4811 - Enhancement to existing process
                     readyToCloseEditLineIds.add(line.Id);
                 }
             }
@@ -1344,6 +1460,7 @@ public with sharing class DMT_Line_Helper{
      * CIBGLOBALD-4117: Shared by all three checkpoints - only the Line Ids and the sanction filter differ.
      * Called once per checkpoint, so each gets its own sync/async threshold.
      * Queries per call: 1 Case + 2 in the shared gate + 1 per child section.
+     * CIBGLOBALD-4811 - child sections only of the components frozen in the snapshots, none when no task can restart.
      */
     private void restartApprovalTasksForLines(Set<Id> qualifyingLineIds, String passportSanctionFilter, List<DMT_Line__c> newLines) {
         if (qualifyingLineIds.isEmpty()) {
@@ -1368,7 +1485,7 @@ public with sharing class DMT_Line_Helper{
                 caseIdToLineId,
                 newLines,
                 'line',
-                DMT_SnapshotChildComparator.forRecords(qualifyingLines),
+                qualifyingLines, // CIBGLOBALD-4811 - Enhancement fix to existing process: comparator built in the gate
                 'DMT_Line_Helper'
             );
         } catch (Exception e) {
@@ -1516,6 +1633,118 @@ public with sharing class DMT_Line_Helper{
             }
         }
      
+    }
+
+    // Changes been made for CIBGLOBALD-4709
+    // Rebase product dates only on a transition to Closed Won, including a new close after reopening.
+    public Set<Id> rebaseSanctionRiskTermsOnClosedWon(
+        List<DMT_Line__c> newLines,
+        Map<Id, DMT_Line__c> oldLinesMap
+    ){
+        Set<Id> sanctionLineIds = new Set<Id>();
+        for (DMT_Line__c line : newLines){
+            DMT_Line__c oldLine = oldLinesMap != null ? oldLinesMap.get(line.Id) : null;
+            Boolean isNewlyClosedWon = oldLine != null
+                && line.Status__c == DMT_Constants.CLOSED
+                && line.Closed__c == DMT_Constants.WON
+                && !(oldLine.Status__c == DMT_Constants.CLOSED && oldLine.Closed__c == DMT_Constants.WON);
+            if (isNewlyClosedWon && line.Product__c == 'Sanction'){
+                sanctionLineIds.add(line.Id);
+            }
+        }
+
+        if (sanctionLineIds.isEmpty()){
+            return new Set<Id>();
+        }
+
+        Date effectiveDate = Date.today();
+        List<DMT_Risk_Line_Term__c> riskTermsToUpdate = new List<DMT_Risk_Line_Term__c>();
+        Set<Id> linesWithUpdatedRiskTerms = new Set<Id>();
+        for (DMT_Risk_Line_Term__c riskTerm : [
+            SELECT Id, DMT_Line__c, DMT_Operation_Type__c, DMT_End_Term__c,
+                   DMT_Line_Tenor__c, DMT_Start_Date__c, DMT_End_Date__c
+            FROM DMT_Risk_Line_Term__c
+            WHERE DMT_Line__c IN :sanctionLineIds
+            WITH USER_MODE
+        ]){
+            // Changes been made for CIBGLOBALD-4709
+            // Keep the stored OPP tenor or LIN line tenor unchanged and use its duration in days.
+            String rawDuration;
+            if (riskTerm.DMT_Operation_Type__c == 'OPP'){
+                rawDuration = riskTerm.DMT_End_Term__c;
+            } else if (riskTerm.DMT_Operation_Type__c == 'LIN'){
+                rawDuration = String.valueOf(riskTerm.DMT_Line_Tenor__c);
+            } else{
+                continue;
+            }
+
+            if (String.isBlank(rawDuration)){
+                continue;
+            }
+
+            Decimal durationDays;
+            try{
+                durationDays = Decimal.valueOf(rawDuration.trim());
+            } catch (Exception e){
+                continue;
+            }
+            if (durationDays < 0 || durationDays != durationDays.setScale(0)){
+                continue;
+            }
+
+            Date newEndDate;
+            try{
+                newEndDate = effectiveDate.addDays(durationDays.intValue());
+            } catch (Exception e){
+                continue;
+            }
+
+            if (riskTerm.DMT_Start_Date__c == effectiveDate && riskTerm.DMT_End_Date__c == newEndDate){
+                continue;
+            }
+
+            riskTerm.DMT_Start_Date__c = effectiveDate;
+            riskTerm.DMT_End_Date__c = newEndDate;
+            riskTermsToUpdate.add(riskTerm);
+            linesWithUpdatedRiskTerms.add(riskTerm.DMT_Line__c);
+        }
+
+        if (!riskTermsToUpdate.isEmpty()){
+            update riskTermsToUpdate;
+        }
+        return linesWithUpdatedRiskTerms;
+    }
+
+    // Changes been made for CIBGLOBALD-4709
+    // Rebase before consolidation; risk-term triggers already rebuild lines whose product dates changed.
+    public void createConsolidatedLinesAfterUpdate(
+        List<DMT_Line__c> newLines,
+        Map<Id, DMT_Line__c> newLinesById,
+        Map<Id, DMT_Line__c> oldLinesById
+    ){
+        Set<Id> linesConsolidatedByRiskTermTrigger = rebaseSanctionRiskTermsOnClosedWon(newLines, oldLinesById);
+        if (linesConsolidatedByRiskTermTrigger.isEmpty()){
+            createConsolidatedLine(newLines, newLinesById, oldLinesById);
+            return;
+        }
+
+        List<DMT_Line__c> linesToConsolidate = new List<DMT_Line__c>();
+        Map<Id, DMT_Line__c> newLinesToConsolidate = new Map<Id, DMT_Line__c>();
+        Map<Id, DMT_Line__c> oldLinesToConsolidate = new Map<Id, DMT_Line__c>();
+        for (DMT_Line__c line : newLines){
+            if (linesConsolidatedByRiskTermTrigger.contains(line.Id)){
+                continue;
+            }
+            linesToConsolidate.add(line);
+            newLinesToConsolidate.put(line.Id, line);
+            if (oldLinesById != null && oldLinesById.containsKey(line.Id)){
+                oldLinesToConsolidate.put(line.Id, oldLinesById.get(line.Id));
+            }
+        }
+
+        if (!linesToConsolidate.isEmpty()){
+            createConsolidatedLine(linesToConsolidate, newLinesToConsolidate, oldLinesToConsolidate);
+        }
     }
 
     public void setDestinationSystemOnClosedWon(List<DMT_Line__c> newLines, Map<Id, DMT_Line__c> oldLinesMap){
