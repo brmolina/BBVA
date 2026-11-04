@@ -6,7 +6,7 @@ export default class Dmt_customtoast extends LightningElement {
     @track message = '';
     @track variant = 'info';
 
-    // Configuración por defecto
+    // Default settings // CIBGLOBALD-4811
     autoCloseTime = 5000;
 
     get toastClass() {
@@ -34,7 +34,7 @@ export default class Dmt_customtoast extends LightningElement {
         this.isShown = true;
 
         if (autoClose) {
-            // Limpiar timeout anterior si existe para evitar conflictos
+            // Clears a previous timeout, if any, to avoid conflicts // CIBGLOBALD-4811
             if(this.delayTimeout) clearTimeout(this.delayTimeout);
 
             this.delayTimeout = setTimeout(() => {

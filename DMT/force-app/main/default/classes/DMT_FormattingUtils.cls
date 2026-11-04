@@ -1,6 +1,21 @@
 public with sharing class DMT_FormattingUtils {
 
     // wrapper for new methods
+    // CIBGLOBALD-4811 - display label of each tracked field, filled as the renderers build their
+    // DisplayFields (getTrackedFields() builds them). Read by DMT_ApprovalChangeStep_Handler for the
+    // 'Features to Be Reopened' warning.
+    public static Map<String, String> labelByFieldApiName = new Map<String, String>();
+
+    // CIBGLOBALD-4811 - records the label of the fields behind one DisplayField.
+    private static void registerLabel(String label, List<String> fieldApiNames) {
+        if (fieldApiNames == null) {
+            return;
+        }
+        for (String fieldApiName : fieldApiNames) {
+            labelByFieldApiName.put(fieldApiName, label);
+        }
+    }
+
     public class DisplayField {
         public String label { get; set; }
         public String value { get; set; }
@@ -40,6 +55,7 @@ public with sharing class DMT_FormattingUtils {
             this.value = value;
             this.size = 'HALF';
             this.fieldApiNames = fieldApiNames;
+            registerLabel(label, fieldApiNames); // CIBGLOBALD-4811
         }
 
         public DisplayField(String label, Boolean value, List<String> fieldApiNames) {
@@ -47,6 +63,7 @@ public with sharing class DMT_FormattingUtils {
             this.boolValue = value;
             this.size = 'HALF';
             this.fieldApiNames = fieldApiNames;
+            registerLabel(label, fieldApiNames); // CIBGLOBALD-4811
         }
     }
 

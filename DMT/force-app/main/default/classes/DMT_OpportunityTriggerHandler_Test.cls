@@ -628,4 +628,286 @@ public with sharing class DMT_OpportunityTriggerHandler_Test {
         Opportunity updatedOpp = [SELECT DMT_DateToProposal__c FROM Opportunity WHERE Id = :opp.Id];
         Assert.isNull(updatedOpp.DMT_DateToProposal__c, 'DMT_DateToProposal__c should only be stamped specifically on a Draft->Proposal transition');
     }
+
+
+    // CIBGLOBALD-4811 - a change saved after the snapshot was frozen, reaching no checkpoint.
+    private static Task setupStaleOpportunity(String stage, String caseType) {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = stage;
+        opp.DMT_DateToProposal__c = Datetime.now().addDays(-1);
+        update opp;
+        Task openTask = setupApprovalTaskWithSnapshot(queryOppWithTrackedFields(), caseType);
+
+        opp.Name = 'Changed Name';
+        update opp;
+        return openTask;
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareTasksFromCase_ChangedField_ListsFeatureAndRestartsNothing() {
+        Task openTask = setupStaleOpportunity('Draft', 'passport');
+        Id oppId = queryOppWithTrackedFields().Id;
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(oppId, 'passport');
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'The Case has a stale task, so one feature is listed');
+        Assert.areEqual(openTask.OwnerId, features[0].taskToRecreate.OwnerId, 'The warning uses the task the restart clones');
+        Assert.isTrue(features[0].changedFields.containsKey('Name'), 'The changed field is listed by its display label');
+        Assert.areEqual('Not Started', [SELECT Status FROM Task WHERE Id = :openTask.Id].Status, 'The preview restarts nothing');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareTasksFromCase_OtherCaseType_ReturnsNothing() {
+        setupStaleOpportunity('Draft', 'passport');
+        Id oppId = queryOppWithTrackedFields().Id;
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(oppId, 'approval');
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'Only Cases of the type asked for are compared, as the trigger does');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareTasksFromCase_NoChange_ReturnsNothing() {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = 'Draft';
+        opp.DMT_DateToProposal__c = Datetime.now().addDays(-1);
+        update opp;
+        setupApprovalTaskWithSnapshot(queryOppWithTrackedFields(), 'passport');
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(opp.Id, 'passport');
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'Nothing changed against the snapshot, so nothing is listed');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareTasksFromCase_AlreadyReopened_ReturnsNothing() {
+        setupStaleOpportunity('Draft', 'passport');
+        Opportunity opp = queryOppWithTrackedFields();
+
+        Test.startTest();
+        opp.StageName = 'Proposal';
+        update opp;
+        Test.stopTest();
+
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(opp.Id, 'passport');
+
+        Assert.isTrue(features.isEmpty(), 'The replacement task has no snapshot, so there is no second warning');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareTasksFromCase_Failure_ReturnsNothing() {
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase('not-an-id', 'passport');
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'A failing check returns nothing, so the user is never stopped');
+    }
+
+    // CIBGLOBALD-4811 - one result per Case, even with the same feature name. The LWC hides identical lines.
+    @isTest
+    public static void testPreviewCompareTasksFromCase_SameFeatureOnTwoCases_ReturnsBoth() {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = 'Draft';
+        opp.DMT_DateToProposal__c = Datetime.now().addDays(-1);
+        update opp;
+        Opportunity frozenOpp = queryOppWithTrackedFields();
+        setupApprovalTaskWithSnapshot(frozenOpp, 'passport');
+        setupApprovalTaskWithSnapshot(frozenOpp, 'passport');
+
+        opp.Name = 'Changed Name';
+        update opp;
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(opp.Id, 'passport');
+        Test.stopTest();
+
+        Assert.areEqual(2, features.size(), 'Each Case is returned, with its own owner and changed fields');
+    }
+
+    // CIBGLOBALD-4811 - an Opportunity in Ready to close whose readytoclose task was closed on the current data.
+    private static Opportunity setupReadyToCloseOpportunity() {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = 'Ready to close';
+        update opp;
+        Opportunity frozenOpp = queryOppWithTrackedFields();
+        setupApprovalTaskWithSnapshot(frozenOpp, 'readytoclose');
+        return frozenOpp;
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareUnsavedChanges_ChangedField_ListsFeatureAndSavesNothing() {
+        Opportunity opp = setupReadyToCloseOpportunity();
+        Map<String, Object> unsavedValues = new Map<String, Object>{
+            'Name' => 'Unsaved Name',
+            'CloseDate' => '2030-01-15',
+            'Amount' => '1000',
+            'DMT_Confidential__c' => true,
+            'Not_A_Field__c' => 'ignored'
+        };
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges(opp.Id, 'readytoclose', unsavedValues, null);
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'The unsaved Name differs from the snapshot, so the feature is listed');
+        Assert.isTrue(features[0].changedFields.containsKey('Name'), 'The unsaved field is listed by its display label');
+        Assert.areEqual(opp.Name, [SELECT Name FROM Opportunity WHERE Id = :opp.Id].Name, 'The preview saves nothing');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareUnsavedChanges_SameValue_ReturnsNothing() {
+        Opportunity opp = setupReadyToCloseOpportunity();
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges(opp.Id, 'readytoclose', new Map<String, Object>{ 'Name' => opp.Name }, null);
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'The value typed is the one frozen in the snapshot, so nothing reopens');
+    }
+
+    // CIBGLOBALD-4811 - Ready to close Opportunity whose snapshot also froze its client row
+    // (section opportunityClient), as the Client component of the approver view does.
+    private static DMT_Opportunity_Client__c setupReadyToCloseOpportunityWithClientRow() {
+        Opportunity opp = setupReadyToCloseOpportunity();
+        List<String> clientFieldNames = new List<String>(DMT_Opportunity_Client__c.SObjectType.getDescribe().fields.getMap().keySet());
+        Id oppId = opp.Id;
+        DMT_Opportunity_Client__c clientRow = Database.query(
+            'SELECT ' + String.join(clientFieldNames, ',') + ' FROM DMT_Opportunity_Client__c WHERE DMT_MDE_Opportunity__c = :oppId LIMIT 1'
+        );
+        DMT_TaskStatusWhenCompleted__c snapshot = [SELECT Id FROM DMT_TaskStatusWhenCompleted__c WHERE Case__r.opportunity_id__c = :opp.Id LIMIT 1];
+        snapshot.DMT_ViewFieldStatusAtClose__c = '{"opportunity":' + JSON.serialize(queryOppWithTrackedFields())
+            + ',"opportunityClient":{"' + clientRow.Id + '":' + JSON.serialize(clientRow) + '}}';
+        update snapshot;
+        return clientRow;
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareUnsavedChanges_ClientRowChange_ListsFeatureAndSavesNothing() {
+        DMT_Opportunity_Client__c clientRow = setupReadyToCloseOpportunityWithClientRow();
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features = DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges(
+            clientRow.DMT_MDE_Opportunity__c, 'readytoclose', null,
+            new List<Map<String, Object>>{ new Map<String, Object>{
+                'objectApiName' => 'DMT_Opportunity_Client__c', 'rowId' => (String) clientRow.Id,
+                'values' => new Map<String, Object>{ 'Counterpart__c' => 'Banks' }
+            } }
+        );
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'The unsaved client row value differs from the snapshot, so the feature is listed');
+        Assert.areEqual('Corporates', [SELECT Counterpart__c FROM DMT_Opportunity_Client__c WHERE Id = :clientRow.Id].Counterpart__c, 'The preview saves nothing');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareUnsavedChanges_ClientRowSameValues_ReturnsNothing() {
+        DMT_Opportunity_Client__c clientRow = setupReadyToCloseOpportunityWithClientRow();
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features = DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges(
+            clientRow.DMT_MDE_Opportunity__c, 'readytoclose', null,
+            new List<Map<String, Object>>{ new Map<String, Object>{
+                'objectApiName' => 'DMT_Opportunity_Client__c', 'rowId' => (String) clientRow.Id,
+                'values' => new Map<String, Object>{ 'Counterpart__c' => 'Corporates' }
+            } }
+        );
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'The client row values are the frozen ones, so nothing reopens');
+    }
+
+    // CIBGLOBALD-4811 - Ready to close Opportunity whose snapshot also froze its product row
+    // (section opportunityLineItem), as the Products component of the approver view does.
+    private static OpportunityLineItem setupReadyToCloseOpportunityWithProductRow() {
+        Opportunity opp = setupReadyToCloseOpportunity();
+        List<String> productFieldNames = new List<String>(OpportunityLineItem.SObjectType.getDescribe().fields.getMap().keySet());
+        Id oppId = opp.Id;
+        OpportunityLineItem productRow = Database.query(
+            'SELECT ' + String.join(productFieldNames, ',') + ' FROM OpportunityLineItem WHERE OpportunityId = :oppId LIMIT 1'
+        );
+        DMT_TaskStatusWhenCompleted__c snapshot = [SELECT Id FROM DMT_TaskStatusWhenCompleted__c WHERE Case__r.opportunity_id__c = :opp.Id LIMIT 1];
+        snapshot.DMT_ViewFieldStatusAtClose__c = '{"opportunity":' + JSON.serialize(queryOppWithTrackedFields())
+            + ',"opportunityLineItem":{"' + productRow.Id + '":' + JSON.serialize(productRow) + '}}';
+        update snapshot;
+        return productRow;
+    }
+
+    // CIBGLOBALD-4811 - the Products tab save (DMT_OpportunityProductsController.previewOpportunityProductSave)
+    // lists the feature when the product row would change, and writes nothing.
+    @isTest
+    public static void testPreviewOpportunityProductSave_ProductChange_ListsFeatureAndSavesNothing() {
+        OpportunityLineItem productRow = setupReadyToCloseOpportunityWithProductRow();
+        Map<String, Object> recordFields = new Map<String, Object>{
+            'Id' => productRow.Id,
+            'loan_purpose_desc__c' => 'Unsaved purpose'
+        };
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features = DMT_OpportunityProductsController.previewOpportunityProductSave(
+            'readytoclose', recordFields, null, null, null, null, null, null,
+            System.today(), System.today().addDays(365), productRow.OpportunityId
+        );
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'The unsaved product value differs from the snapshot, so the feature is listed');
+        Assert.areEqual(productRow.loan_purpose_desc__c, [SELECT loan_purpose_desc__c FROM OpportunityLineItem WHERE Id = :productRow.Id].loan_purpose_desc__c, 'The preview saves nothing');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewOpportunityProductSave_SameValues_ReturnsNothing() {
+        OpportunityLineItem productRow = setupReadyToCloseOpportunityWithProductRow();
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features = DMT_OpportunityProductsController.previewOpportunityProductSave(
+            'readytoclose', new Map<String, Object>{ 'Id' => productRow.Id }, null, null, null, null, null, null,
+            System.today(), System.today().addDays(365), productRow.OpportunityId
+        );
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'Nothing changes on the product, so nothing reopens');
+    }
+
+    // CIBGLOBALD-4811 - Enhancement to existing process: taking the edit lock in Ready to close is not compared;
+    // releasing it is, so a change saved without updating the Opportunity still reopens at release.
+    @isTest
+    public static void testReadyToCloseEditLock_AcquireSkipsReleaseRestarts() {
+        Opportunity opp = setupReadyToCloseOpportunity();
+        Task openTask = [SELECT Id FROM Task WHERE What.Type = 'Case' AND Status != :DMT_Constants.CANCELLED LIMIT 1];
+        TriggerBypass.setBypass();
+        update new Opportunity(Id = opp.Id, Name = 'Changed without the trigger');
+        TriggerBypass.removeBypass();
+
+        Test.startTest();
+        update new Opportunity(Id = opp.Id, DMT_Opp_User_Lock__c = UserInfo.getUserId());
+        String statusAfterAcquire = [SELECT Status FROM Task WHERE Id = :openTask.Id].Status;
+        update new Opportunity(Id = opp.Id, DMT_Opp_User_Lock__c = null);
+        Test.stopTest();
+
+        Assert.areNotEqual(DMT_Constants.CANCELLED, statusAfterAcquire, 'Taking the lock alone does not run the restart check');
+        Assert.areEqual(DMT_Constants.CANCELLED, [SELECT Status FROM Task WHERE Id = :openTask.Id].Status, 'Releasing the lock runs the check and reopens the stale task');
+    }
 }

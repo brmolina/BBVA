@@ -1,0 +1,5 @@
+CIBGLOBALD-4630 - make the Guarantor HPG preload tests independent of the org HPG mock
+
+The release validation failed in testGetGuarantorHpgData_FoundMapsInternalRating and testGetGuarantorHpgData_InternalRatingNotInCatalogStaysEmpty with 'The Guarantor should be found in the HPG response'. In tests DMT_HPG_Utils.getMock answers with the iaso__Mock_LTA__c field of the custom metadata record DMT_HPG_GlobalPosition, which differs per org: DMT_TCM_DEV has four customers (ES0000000000001 among them) but the validation org has an empty data array, so the hardcoded customer was never found.
+
+- DMT_OpportunityProductsControllerTest: new getHpgMockCustomer reads that same custom metadata record. Both tests take the customer code (and the rating of the first test) from it and assert found according to whether the mock has customers. No change in the controller, the selector or the factory.

@@ -7,61 +7,6 @@
  **/
 global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
 
-    // CIBGLOBALD-4117 - section-to-object cache for getComparableFieldKeys, used by
-    // previewCompareTasksFromCase.
-    private static Map<String, String> compareTasksFromCaseSectionToObjectCache;
-
-    // CIBGLOBALD-4117 - section-to-object mapping for getComparableFieldKeys, derived from
-    // DMT_RendererFactory.getChildSections() against one representative record per record type.
-    private static Map<String, String> compareTasksFromCaseSectionToObject() {
-        if (compareTasksFromCaseSectionToObjectCache == null) {
-            Map<String, String> sectionToObject = new Map<String, String>{
-                'line' => 'DMT_Line__c',
-                'opportunity' => 'Opportunity'
-            };
-            Map<String, Schema.RecordTypeInfo> lineRtInfos = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName();
-            Map<String, Schema.RecordTypeInfo> oppRtInfos = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName();
-            List<SObject> representativeRecords = new List<SObject>{
-                new DMT_Line__c(RecordTypeId = lineRtInfos.get('TreasurySettlement')?.getRecordTypeId()),
-                new DMT_Line__c(RecordTypeId = lineRtInfos.get('OtherProducts')?.getRecordTypeId()),
-                new DMT_Line__c(RecordTypeId = lineRtInfos.get('Sanction')?.getRecordTypeId()),
-                new Opportunity(RecordTypeId = oppRtInfos.get('DMT_Opportunity')?.getRecordTypeId())
-            };
-            for (String componentName : DMT_RendererFactory.getTrackedComponentNames()) {
-                for (SObject representative : representativeRecords) {
-                    for (DMT_ApprovalChangeStep_Helper.ChildSection section : DMT_RendererFactory.getChildSections(componentName, representative)) {
-                        sectionToObject.put(section.snapshotSectionKey, section.childObjectApiName);
-                    }
-                }
-            }
-            compareTasksFromCaseSectionToObjectCache = sectionToObject;
-        }
-        return compareTasksFromCaseSectionToObjectCache;
-    }
-
-    /**
-     * The field keys to compare for a snapshot section, taken from the tracked-field config rather
-     * than from the stored snapshot's own keys.
-     *
-     * That matters because a field that was null when the snapshot was taken has no key in the
-     * JSON at all - iterating the snapshot's keySet() would skip it forever, even once populated
-     * (CIBGLOBALD-4098).
-     *
-     * Relationship fields ("Client__r.Name") reduce to their top-level key ("Client__r") to match
-     * how the JSON nests them. Falls back to the snapshot's own keys for an unrecognised section.
-     */
-    private static Set<String> getComparableFieldKeys(String sectionName, Map<String, List<String>> fieldMapFromObject, Set<String> fallbackKeys) {
-        String objectName = compareTasksFromCaseSectionToObject().get(sectionName);
-        if (objectName == null || !fieldMapFromObject.containsKey(objectName)) {
-            return fallbackKeys;
-        }
-        Set<String> keys = new Set<String>();
-        for (String trackedField : fieldMapFromObject.get(objectName)) {
-            keys.add(trackedField.contains('.') ? trackedField.substringBefore('.') : trackedField);
-        }
-        return keys;
-    }
-
     /**
      * @description First method that calls the Integration Procedure
      * @author Aníbal Cortés | 10-31-2024
@@ -210,8 +155,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
         Boolean isLineCase = relatedCase.DMT_LineOpportunity__c == 'L';
 
         // CIBGLOBALD-4117 - the Case's own Line or Opportunity record, via the same comprehensive
-        // query DMT_ViewController uses to build the rendering wrapper (same reasoning as
-        // previewCompareTasksFromCase) - every field any renderer's resolveRenderer()/
+        // query DMT_ViewController uses to build the rendering wrapper - every field any renderer's resolveRenderer()/ // CIBGLOBALD-4811
         // getTrackedFields() could ever need is already there, so this can never again drift out of
         // sync with a hand-maintained narrow SELECT.
         SObject lineOrOpportunityRecord = isLineCase
@@ -254,7 +198,7 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                 Id oppId = relatedCase.opportunity_id__c;
 
                 // Makes the query for the Opportunity object and stores it for the snapshot builder
-                if (fieldMapFromObject.containsKey('Opportunity')){// Añadido opportunity_id__r.StageName como test
+                if (fieldMapFromObject.containsKey('Opportunity')){
                     String query = 'SELECT Id,' + String.join(fieldMapFromObject.get('Opportunity'), ',') + ' FROM Opportunity WHERE ID = :oppId';
                     List<Opportunity> oppRetrieved = Database.query(String.escapeSingleQuotes(query));
                     if (!oppRetrieved.isEmpty()) {
@@ -357,313 +301,99 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
 
 
     /**
-     * @description Previews the task(s) that will be re-opened for every case on a Line or
-     * Opportunity - CIBGLOBALD-4117: works off whichever parent is populated on the Case.
-     * @author Aníbal Cortés | 10-02-2025
+     * @description CIBGLOBALD-4811 - The features that would reopen, for the 'Features to Be Reopened'
+     * warning (dmt_custom_path_line, dmt_custom_path_opp, dmt_custom_path_refactor). The LWC decides when to check; this
+     * reads the Cases of that checkpoint and asks DMT_ApprovalChangeStep_Helper.findTasksToRestart,
+     * the same comparison as the triggers. Restarts nothing. Empty when nothing reopens or the check
+     * fails: a failure is logged and never stops the user.
+     * Callout: only when the Salesforce data shows no change, the snapshot's callout-tracked
+     * components are fetched (DMT_CalloutTrackableRenderer.fetchLiveTrackedValues).
+     * @param recordId the DMT_Line__c or Opportunity
+     * @param caseTypeToCheck Case.DMT_Passport_Sanction__c value: passport, approval or readytoclose
      **/
     @AuraEnabled
-    public static List<FeatureChangeWrapper> previewCompareTasksFromCase(String recordId){
-        // CIBGLOBALD-4117 - the two RecordType.DeveloperName relationship fields ride along on this
-        // same query (no extra SOQL) so the DMT_View_Selector calls below can pass the real record
-        // type instead of guessing/hardcoding it.
-        List<Case> records = [SELECT Id, DMT_Related_feature_name__c, DMT_LineOpportunity__c, DMT_Line__c,
-                              DMT_Line__r.Custom_Association__c, DMT_Line__r.RecordType.DeveloperName,
-                              opportunity_id__c, opportunity_id__r.RecordType.DeveloperName
-                              FROM Case
-                              WHERE DMT_Line__c = :recordId OR opportunity_id__c = :recordId];
-        if (records.isEmpty()) {
-            return new List<FeatureChangeWrapper>();
-        }
-        Boolean isLine = records[0].DMT_LineOpportunity__c == 'L';
-        String parentSectionKey = isLine ? 'line' : 'opportunity';
-        String parentRecordTypeDeveloperName = isLine
-            ? records[0].DMT_Line__r.RecordType.DeveloperName
-            : records[0].opportunity_id__r.RecordType.DeveloperName;
+    public static List<FeatureChangeWrapper> previewCompareTasksFromCase(String recordId, String caseTypeToCheck){
+        return previewUnsavedChanges(recordId, caseTypeToCheck, null, null); // CIBGLOBALD-4811
+    }
 
-        // Map that contains each Object and a list of its field Names
-        Map<String, List<String>> fieldMapFromObject = new Map<String, List<String>>();
-        // CIBGLOBALD-4117 - reuses the same comprehensive query DMT_ViewController uses to build the
-        // rendering wrapper, instead of a hand-maintained narrow SELECT. Every field any renderer's
-        // resolveRenderer()/getTrackedFields() could ever need (DMT_Product_Area__c,
-        // DMT_Capital_Action__c, Custom_Association__c, etc.) is already there, so this can never again
-        // drift out of sync the way DMT_ApprovalChangeStep_Selector.getCaseById did. Both selector
-        // classes are now without sharing, so this carries no record-visibility regression.
-        SObject parentRecord = isLine
-            ? (SObject) DMT_View_Selector.getLineWithRelatedData(recordId, parentRecordTypeDeveloperName)
-            : (SObject) DMT_View_Selector.getOpportunityWithRelatedData(recordId, parentRecordTypeDeveloperName);
-        Id parentId = (Id) parentRecord.get('Id');
-        Map<Id, String> mapCasesFeatureName = new Map<Id, String>();
-        for (Case c : records){
-            mapCasesFeatureName.put(c.Id, c.DMT_Related_feature_name__c);
-        }
+    /**
+     * @description CIBGLOBALD-4811 - The same check as previewCompareTasksFromCase for a tab save: the values
+     * the user changed and has not saved yet are put on the stored record before the comparison, so the
+     * answer is what the trigger would do on that save (dmt_opp_info, dmt_lineInfo, dmt_opp_client: Ready to close). Restarts nothing,
+     * saves nothing. Empty when nothing reopens or the check fails (logged).
+     * @param recordId the DMT_Line__c or Opportunity
+     * @param caseTypeToCheck Case.DMT_Passport_Sanction__c value: passport, approval or readytoclose
+     * @param unsavedValues field API name -> value, only the fields changed in the tab
+     * @param unsavedRows child rows the tab saves, each {objectApiName, rowId, values}; null when the tab
+     * saves no child rows (dmt_opp_client sends the main borrower DMT_Opportunity_Client__c row)
+     **/
+    @AuraEnabled
+    public static List<FeatureChangeWrapper> previewCompareUnsavedChanges(String recordId, String caseTypeToCheck, Map<String, Object> unsavedValues, List<Map<String, Object>> unsavedRows){
+        return previewUnsavedChanges(recordId, caseTypeToCheck, unsavedValues, unsavedRows);
+    }
 
-        Map<Id, Task> tasksMap = new Map<Id, Task>([SELECT Id, OwnerId, Owner.Name, DMT_Task_Type__c, WhatId, Subject, DMT_ViewStatusAtClose__c, RecordTypeId, DMT_Not_Restart__c, Status
-                                                    FROM Task
-                                                    WHERE WhatId IN:mapCasesFeatureName.keySet() AND Status != :DMT_Constants.CANCELLED AND DMT_Not_Restart__c = false]);
-
-        Map<Id, Task> tasksStatusWithTaskMap = new Map<Id, Task>();
-        Map<Id, List<Task>> casesWithTasksToCancel = new Map<Id, List<Task>>();
-
-        for (Task task : tasksMap.values()){
-            tasksStatusWithTaskMap.put(task.DMT_ViewStatusAtClose__c, task);
-            List<Task> tasksList = new List<Task>();
-            if (casesWithTasksToCancel.containsKey(task.WhatId)){
-                tasksList = casesWithTasksToCancel.get(task.WhatId);
-            }
-            tasksList.add(task);
-            casesWithTasksToCancel.put(task.WhatId, tasksList);
-        }
-
-        Map<Id, DMT_TaskStatusWhenCompleted__c> mapTaskStatus = new Map<Id, DMT_TaskStatusWhenCompleted__c>([SELECT Id, DMT_ViewFieldStatusAtClose__c, DMT_AllFieldsInStatus__c, Case__c, Case__r.Status
-                                                                                                             FROM DMT_TaskStatusWhenCompleted__c
-                                                                                                             WHERE Id IN:tasksStatusWithTaskMap.keySet()
-                                                                                                             ORDER BY CreatedDate ASC]);
-        Map<Id, List<DMT_TaskStatusWhenCompleted__c>> mapCasesTaskStatus = new Map<Id, List<DMT_TaskStatusWhenCompleted__c>>();
-
-        for (DMT_TaskStatusWhenCompleted__c taskStatus : mapTaskStatus.values()){
-            if (taskStatus.DMT_AllFieldsInStatus__c != null){
-                List<DMT_TaskStatusWhenCompleted__c> taskStatusList = new List<DMT_TaskStatusWhenCompleted__c>();
-                if (mapCasesTaskStatus.containsKey(taskStatus.Case__c)){
-                    taskStatusList = mapCasesTaskStatus.get(taskStatus.Case__c);
-                }
-                taskStatusList.add(taskStatus);
-                mapCasesTaskStatus.put(taskStatus.Case__c, taskStatusList);
-            }
-        }
-
-        for (DMT_TaskStatusWhenCompleted__c taskStatus : mapTaskStatus.values()){
-            // We get a list of each Object.Field
-            if (taskStatus.DMT_AllFieldsInStatus__c != null){
-                List<String> fields = taskStatus.DMT_AllFieldsInStatus__c.split(';', 0);
-                //We obtain the Object Name and Field Name for each and store it in the Map
-                for (String field : fields){
-                    List<String> cadenaPartida = field.split('\\.', 2);
-                    String objectName = cadenaPartida.get(0);
-                    String fieldName = cadenaPartida.get(1);
-                    List<String> fieldsFromMap = new List<String>();
-                    if (fieldMapFromObject.containsKey(objectName)){
-                        fieldsFromMap = fieldMapFromObject.get(objectName);
-                    }
-                    // If the field is already on the list, we don't store it again to prevent duplicate fields on query
-                    if (!fieldsFromMap.contains(fieldName)){
-                        fieldsFromMap.add(fieldName);
-                        fieldMapFromObject.put(objectName, fieldsFromMap);
-                    }
-                }
-            }
-        }
-
-        // CIBGLOBALD-4117 - live snapshot, built the same way updateTaskWithStatus/DMT_Massive_Task_Closure_Service do.
-        Map<Id, SObject> lineMap = new Map<Id, SObject>();
-        Map<Id, SObject> oppMap = new Map<Id, SObject>();
-        String parentObjectApiName = isLine ? 'DMT_Line__c' : 'Opportunity';
-        if (fieldMapFromObject.containsKey(parentObjectApiName)) {
-            String query = 'SELECT Id, ' + String.join(fieldMapFromObject.get(parentObjectApiName), ',') + ' FROM ' + parentObjectApiName + ' WHERE ID = :recordId';
-            List<SObject> parentsRetrieved = Database.query(String.escapeSingleQuotes(query));
-            if (!parentsRetrieved.isEmpty()) {
-                if (isLine) {
-                    lineMap.put(parentId, parentsRetrieved.get(0));
-                } else {
-                    oppMap.put(parentId, parentsRetrieved.get(0));
-                }
-            }
-        }
-
-        Map<Id, List<SObject>> customAssocMap = new Map<Id, List<SObject>>();
-        if (isLine && fieldMapFromObject.containsKey('Custom_Association_Client__c')) {
-            Id customAssociationLine = (Id) parentRecord.get('Custom_Association__c');
-            String query = 'SELECT Id, ' + String.join(fieldMapFromObject.get('Custom_Association_Client__c'), ',') + ' FROM Custom_Association_Client__c WHERE Custom_Association__c = :customAssociationLine ORDER BY Name ASC';
-            customAssocMap.put(customAssociationLine, Database.query(String.escapeSingleQuotes(query)));
-        }
-
-        Map<String, DMT_ApprovalChangeStep_Helper.ChildSection> childSectionsByKey = new Map<String, DMT_ApprovalChangeStep_Helper.ChildSection>();
-        for (String componentName : DMT_RendererFactory.getTrackedComponentNames()) {
-            for (DMT_ApprovalChangeStep_Helper.ChildSection section : DMT_RendererFactory.getChildSections(componentName, parentRecord)) {
-                if (!childSectionsByKey.containsKey(section.snapshotSectionKey)) {
-                    childSectionsByKey.put(section.snapshotSectionKey, section);
-                }
-            }
-        }
-        Map<String, List<SObject>> genericChildSections = queryDirectChildSections(childSectionsByKey, fieldMapFromObject, parentId);
-        Map<String, Map<Id, List<SObject>>> childListsBySectionKey = new Map<String, Map<Id, List<SObject>>>();
-        for (String sectionKey : genericChildSections.keySet()) {
-            childListsBySectionKey.put(sectionKey, new Map<Id, List<SObject>>{ parentId => genericChildSections.get(sectionKey) });
-        }
-        Map<String, DMT_ApprovalChangeStep_Helper.ChildSection> lineChildSectionsByKey = isLine ? childSectionsByKey : new Map<String, DMT_ApprovalChangeStep_Helper.ChildSection>();
-        Map<String, DMT_ApprovalChangeStep_Helper.ChildSection> oppChildSectionsByKey = isLine ? new Map<String, DMT_ApprovalChangeStep_Helper.ChildSection>() : childSectionsByKey;
-
-        // CIBGLOBALD-4117 - live callout-tracked values for this preview. This method itself
-        // does no DML, but a defensive try/catch is kept anyway (matching updateTaskWithStatus) so
-        // an external-service failure can never break the preview, just omit the callout-tracked
-        // part of the comparison.
-        Map<String, Object> calloutTrackedValuesByComponent = new Map<String, Object>();
+    // CIBGLOBALD-4811 - shared body of previewCompareTasksFromCase and previewCompareUnsavedChanges, also called
+    // from Apex (DMT_OpportunityProductsController.previewOpportunityProductSave).
+    public static List<FeatureChangeWrapper> previewUnsavedChanges(String recordId, String caseTypeToCheck, Map<String, Object> unsavedValues, List<Map<String, Object>> unsavedRows){
+        List<FeatureChangeWrapper> features = new List<FeatureChangeWrapper>();
         try {
-            for (String componentName : DMT_RendererFactory.getTrackedComponentNames()) {
-                DMT_CalloutTrackableRenderer calloutRenderer = DMT_RendererFactory.getCalloutTrackableRenderer(componentName);
-                if (calloutRenderer != null) {
-                    calloutTrackedValuesByComponent.put(componentName, calloutRenderer.fetchLiveTrackedValues(parentRecord));
-                }
+            Id parentId = recordId;
+            Map<Id, Case> casesById = new Map<Id, Case>([
+                SELECT Id, DMT_Related_feature_name__c
+                FROM Case
+                WHERE (DMT_Line__c = :parentId OR opportunity_id__c = :parentId)
+                AND DMT_Passport_Sanction__c = :caseTypeToCheck
+            ]);
+            if (casesById.isEmpty()) {
+                return features;
             }
+            Map<Id, Id> caseIdToRecordId = new Map<Id, Id>();
+            for (Id caseId : casesById.keySet()) {
+                caseIdToRecordId.put(caseId, parentId);
+            }
+
+            String snapshotSectionKey = parentId.getSObjectType() == DMT_Line__c.SObjectType ? 'line' : 'opportunity';
+            Map<Id, List<String>> changesByTaskId = DMT_ApprovalChangeStep_Helper.findTasksToRestart(parentId, caseIdToRecordId, snapshotSectionKey, unsavedValues, unsavedRows);
+            features = buildFeatures(changesByTaskId, casesById, parentId.getSObjectType());
         } catch (Exception e) {
-            // Flushed immediately - this is an @AuraEnabled preview action, not a trigger, so
-            // nothing downstream is guaranteed to call DMT_AsyncOrchestrator.flush() for us.
             DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
                 e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
-                'DMT_ApprovalChangeStep_Handler', 'previewCompareTasksFromCase', 'DMT', 'DMT_CalloutTrackableRenderer'
+                'DMT_ApprovalChangeStep_Handler', 'previewUnsavedChanges', 'DMT', 'Task'
             ));
-            DMT_AsyncOrchestrator.flush();
-            calloutTrackedValuesByComponent.clear();
         }
+        DMT_AsyncOrchestrator.flush();
+        return features;
+    }
 
-        String jsonFinalSerialized = DMT_TaskSnapshotService.buildSnapshotJson(
-            records[0], fieldMapFromObject, lineMap, oppMap, customAssocMap,
-            lineChildSectionsByKey, oppChildSectionsByKey, childListsBySectionKey,
-            calloutTrackedValuesByComponent
-        );
-        Map<String, Object> mapJsonFinal = (Map<String, Object>)JSON.deserializeUntyped(jsonFinalSerialized);
-
-        List<FeatureChangeWrapper> listFeaturesToReturn = new List<FeatureChangeWrapper>();
-
-        Map<String, Map<String, WRAPPER_Response_NewField>> mapFeaturesWithDifferentField = new Map<String, Map<String, WRAPPER_Response_NewField>>();
-        Map<String, Task> mapFeatureWithTaskToCreate = new Map<String, Task>();
-
-        for (Id caseId : mapCasesTaskStatus.keySet()){
-            Boolean isDifferent = false;
-
-            for (Integer i = 0; i < mapCasesTaskStatus.get(caseId).size(); i++){
-                Map<String, Object> mapTaskStatusJson = (Map<String, Object>)JSON.deserializeUntyped(mapCasesTaskStatus.get(caseId)[i].DMT_ViewFieldStatusAtClose__c);
-                for (String fieldName : mapTaskStatusJson.keySet()){
-                    if (!fieldName.equalsIgnoreCase(parentSectionKey)){
-                        Map<String, Object> listFromTask = (Map<String, Object>)mapTaskStatusJson.get(fieldName);
-                        Map<String, Object> listFromJson = (Map<String, Object>)mapJsonFinal.get(fieldName);
-                        System.debug('listFromTask: ' + listFromTask);
-                        System.debug('listFromJson: ' + listFromJson);
-                        if (listFromTask != null && listFromJson != null && listFromTask.size() == listFromJson.size() && listFromTask.keySet().equals(listFromJson.keySet())){
-                            for (String item : listFromTask.keySet()){
-                                Map<String, Object> itemFromTask = (Map<String, Object>)listFromTask.get(item);
-                                Map<String, Object> itemFull = (Map<String, Object>)listFromJson.get(item);
-                                for (String fieldFromItem : getComparableFieldKeys(fieldName, fieldMapFromObject, itemFromTask.keySet())){
-                                    if (itemFull.get(fieldFromItem) != itemFromTask.get(fieldFromItem)){
-                                        if (!isDifferent){
-                                            String featureName = mapCasesFeatureName.get(caseId);
-                                            Map<String, WRAPPER_Response_NewField> fieldWithValues = new Map<String, WRAPPER_Response_NewField>();
-                                            WRAPPER_Response_NewField valuesFromField = new WRAPPER_Response_NewField();
-                                            valuesFromField.oldValue = (String)itemFull.get(fieldFromItem);
-                                            valuesFromField.newValue = (String)itemFromTask.get(fieldFromItem);
-                                            fieldWithValues.put(fieldFromItem, valuesFromField);
-                                            mapFeaturesWithDifferentField.put(featureName, fieldWithValues);
-                                            mapFeatureWithTaskToCreate.put(featureName, tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id));
-                                        } else{
-                                            String featureName = mapCasesFeatureName.get(caseId);
-                                            Map<String, WRAPPER_Response_NewField> fieldWithValues = mapFeaturesWithDifferentField.get(featureName);
-                                            WRAPPER_Response_NewField valuesFromField = new WRAPPER_Response_NewField();
-                                            valuesFromField.oldValue = (String)itemFull.get(fieldFromItem);
-                                            valuesFromField.newValue = (String)itemFromTask.get(fieldFromItem);
-                                            fieldWithValues.put(fieldFromItem, valuesFromField);
-                                            mapFeaturesWithDifferentField.put(featureName, fieldWithValues);
-                                        }
-                                        isDifferent = true;
-                                    }
-                                }
-                            }
-                        } else{
-
-                            tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).Status = DMT_Constants.CANCELLED;
-                            if (!isDifferent){
-                                String featureName = mapCasesFeatureName.get(caseId);
-                                Map<String, WRAPPER_Response_NewField> fieldWithValues = new Map<String, WRAPPER_Response_NewField>();
-                                WRAPPER_Response_NewField valuesFromField = new WRAPPER_Response_NewField();
-                                valuesFromField.message = 'The list of ' + fieldName + 'is different than before';
-                                fieldWithValues.put(fieldName, valuesFromField);
-                                mapFeaturesWithDifferentField.put(featureName, fieldWithValues);
-                                mapFeatureWithTaskToCreate.put(featureName, tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id));
-                            } else{
-                                String featureName = mapCasesFeatureName.get(caseId);
-                                Map<String, WRAPPER_Response_NewField> fieldWithValues = mapFeaturesWithDifferentField.get(featureName);
-                                WRAPPER_Response_NewField valuesFromField = new WRAPPER_Response_NewField();
-                                 valuesFromField.message = 'The list of ' + fieldName + 'is different than before';
-                                fieldWithValues.put(fieldName, valuesFromField);
-                                mapFeaturesWithDifferentField.put(featureName, fieldWithValues);
-                            }
-                            isDifferent = true;
-                        }
-                    } else{
-                        Map<String, Object> itemFromTask = (Map<String, Object>)mapTaskStatusJson.get(fieldName);
-                        Map<String, Object> itemFull = (Map<String, Object>)mapJsonFinal.get(fieldName);
-                        if (itemFromTask != null && !itemFromTask.isEmpty()){
-                            for (String fieldFromItem : getComparableFieldKeys(fieldName, fieldMapFromObject, itemFromTask.keySet())){
-                                if (itemFromTask.get(fieldFromItem) instanceof Map<String, Object>){
-                                    Map<String, Object> nestedFromTask = (Map<String, Object>)itemFromTask.get(fieldFromItem);
-                                    Map<String, Object> nestedFromJsonFull = (Map<String, Object>)itemFull.get(fieldFromItem);
-                                    for (String fieldFromNested : nestedFromTask.keySet()){
-                                        if (nestedFromJsonFull.get(fieldFromNested) != nestedFromTask.get(fieldFromNested)){
-                                            tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).Status = DMT_Constants.CANCELLED;
-                                            if (!isDifferent){
-                                                String featureName = mapCasesFeatureName.get(caseId);
-                                                Map<String, WRAPPER_Response_NewField> fieldWithValues = new Map<String, WRAPPER_Response_NewField>();
-                                                WRAPPER_Response_NewField valuesFromField = new WRAPPER_Response_NewField();
-                                                valuesFromField.oldValue = (String) itemFull.get(fieldFromItem);
-                                                valuesFromField.newValue = (String)itemFromTask.get(fieldFromItem);
-                                                fieldWithValues.put(fieldFromItem, valuesFromField);
-                                                mapFeaturesWithDifferentField.put(featureName, fieldWithValues);
-                                                mapFeatureWithTaskToCreate.put(featureName, tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id));
-                                            } else{
-                                                String featureName = mapCasesFeatureName.get(caseId);
-                                                Map<String, WRAPPER_Response_NewField> fieldWithValues = mapFeaturesWithDifferentField.get(featureName);
-                                                WRAPPER_Response_NewField valuesFromField = new WRAPPER_Response_NewField();
-                                                valuesFromField.oldValue = (String) itemFull.get(fieldFromItem);
-                                                valuesFromField.newValue = (String) itemFromTask.get(fieldFromItem);
-                                                fieldWithValues.put(fieldFromItem, valuesFromField);
-                                                mapFeaturesWithDifferentField.put(featureName, fieldWithValues);
-                                            }
-                                            isDifferent = true;
-                                        }
-                                    }
-                                } else if (itemFull.get(fieldFromItem) != itemFromTask.get(fieldFromItem)){
-
-                                    tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id).Status = DMT_Constants.CANCELLED;
-                                    if (!isDifferent){
-                                        String featureName = mapCasesFeatureName.get(caseId);
-                                        Map<String, WRAPPER_Response_NewField> fieldWithValues = new Map<String, WRAPPER_Response_NewField>();
-                                        WRAPPER_Response_NewField valuesFromField = new WRAPPER_Response_NewField();
-                                        valuesFromField.oldValue = (String) itemFull.get(fieldFromItem);
-                                        valuesFromField.newValue = (String) itemFromTask.get(fieldFromItem);
-                                        fieldWithValues.put(fieldFromItem, valuesFromField);
-                                        mapFeaturesWithDifferentField.put(featureName, fieldWithValues);
-                                        mapFeatureWithTaskToCreate.put(featureName, tasksStatusWithTaskMap.get(mapCasesTaskStatus.get(caseId)[i].Id));
-                                    } else{
-                                        String featureName = mapCasesFeatureName.get(caseId);
-                                        Map<String, WRAPPER_Response_NewField> fieldWithValues = mapFeaturesWithDifferentField.get(featureName);
-                                        WRAPPER_Response_NewField valuesFromField = new WRAPPER_Response_NewField();
-                                        valuesFromField.oldValue = (String) itemFull.get(fieldFromItem);
-                                        valuesFromField.newValue = (String) itemFromTask.get(fieldFromItem);
-                                        fieldWithValues.put(fieldFromItem, valuesFromField);
-                                        mapFeaturesWithDifferentField.put(featureName, fieldWithValues);
-                                    }
-                                    isDifferent = true;
-                                }
-                            }
-                        }
-                    }
-                }
+    // CIBGLOBALD-4811 - one wrapper per Case, with its oldest task: the one
+    // DMT_ApprovalChangeStep_Helper.restartTasksForRecord clones, and the changes of all its stale tasks.
+    private static List<FeatureChangeWrapper> buildFeatures(Map<Id, List<String>> changesByTaskId, Map<Id, Case> casesById, Schema.SObjectType parentType) {
+        Map<Id, FeatureChangeWrapper> featuresByCaseId = new Map<Id, FeatureChangeWrapper>();
+        Set<Id> taskIds = changesByTaskId.keySet();
+        for (Task task : [SELECT Id, WhatId, OwnerId, Owner.Name FROM Task WHERE Id IN :taskIds ORDER BY CreatedDate ASC]) {
+            if (!featuresByCaseId.containsKey(task.WhatId)) {
+                FeatureChangeWrapper feature = new FeatureChangeWrapper();
+                feature.featureName = casesById.get(task.WhatId).DMT_Related_feature_name__c;
+                feature.taskToRecreate = task;
+                feature.changedFields = new Map<String, WRAPPER_Response_NewField>();
+                featuresByCaseId.put(task.WhatId, feature);
             }
-
-            if (!isDifferent){
-                String featureName = mapCasesFeatureName.get(caseId);
-                mapFeaturesWithDifferentField.put(featureName, null);
+            for (String change : changesByTaskId.get(task.Id)) {
+                featuresByCaseId.get(task.WhatId).changedFields.put(displayLabel(change, parentType), new WRAPPER_Response_NewField());
             }
         }
+        return featuresByCaseId.values();
+    }
 
-        for (String featureName : mapFeaturesWithDifferentField.keySet()){
-            FeatureChangeWrapper feature = new FeatureChangeWrapper();
-            feature.featureName = featureName;
-            feature.changedFields = mapFeaturesWithDifferentField.get(featureName);
-            feature.taskToRecreate = mapFeatureWithTaskToCreate.get(featureName);
-
-            listFeaturesToReturn.add(feature);
+    // CIBGLOBALD-4811 - the label the approver sees: renderer DisplayField, then describe label.
+    // A component name (child rows, callout values) has neither and is shown as it is.
+    private static String displayLabel(String change, Schema.SObjectType parentType) {
+        String rendererLabel = DMT_FormattingUtils.labelByFieldApiName.get(change);
+        if (rendererLabel != null) {
+            return rendererLabel.removeEnd(':');
         }
-
-        return listFeaturesToReturn;
+        Schema.SObjectField field = parentType.getDescribe().fields.getMap().get(change);
+        return field != null ? field.getDescribe().getLabel() : change;
     }
 
     public class WRAPPER_Response_NewField{

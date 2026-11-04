@@ -1,4 +1,6 @@
 <template>
+    <!-- CIBGLOBALD-4811 -->
+    <c-dmt_customtoast></c-dmt_customtoast>
     <div class="slds-card slds-p-around_medium slds-m-bottom_small">
         <div class="slds-path">
             <div class="slds-grid slds-path__track">
@@ -26,7 +28,7 @@
                     </div>
                 </div>
 
-                <!-- Botón de acción del Path -->
+                <!-- Path action button --> <!-- CIBGLOBALD-4811 -->
                 <div class="slds-grid slds-path__action">
                     <div class="slds-is-relative action-button-wrapper">
                         <button class="slds-button slds-button_brand slds-path__mark-complete" disabled={isLoading}

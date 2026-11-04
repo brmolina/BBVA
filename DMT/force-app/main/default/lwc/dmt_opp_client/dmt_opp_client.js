@@ -13,12 +13,13 @@ import getAllTaxonomyCatalogValues from '@salesforce/apex/DMT_CatalogHelper.getA
 import getMainHolderData from '@salesforce/apex/DMT_OpportunityClientController.getMainHolderData';
 import saveMainBorrowerWithClients from '@salesforce/apex/DMT_OpportunityClientController.saveMainBorrowerWithClients';
 import saveMainBorrowerFields from '@salesforce/apex/DMT_OpportunityClientController.saveMainBorrowerFields';
-import getCasesByOpportunity from '@salesforce/apex/DMT_ModalSaveController.getCasesByOpportunity';
+import previewCompareUnsavedChanges from '@salesforce/apex/DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges'; // CIBGLOBALD-4811
 
 
 const DEFAULT_READONLY = new Map(clientFields.map(f => [f.id, f.isReadOnly]));
 const FIN_INST_VALUES = new Set(['Fin Inst-B', 'Fin Inst-I', 'Fin Inst']);
 const FIN_INST_DEPENDENT_FIELDS = ['SCRA__c', 'AVC_Check__c', 'European_Bank_Check__c'];
+const SCRA_OPTIONS = ['A+', 'A', 'B', 'C'].map(v => ({ label: v, value: v }));
 const DEFAULT_ERROR_MESSAGE = 'An unexpected error occurred. Please contact an administrator.';
 const PLACEHOLDER_MESSAGES = new Set([
     'script-thrown exception',
@@ -31,7 +32,6 @@ const WIRED_CATALOG_PICKLIST_FIELDS = new Set([
     'DMT_External_Rating_Moodys__c',
     'DMT_External_Rating_Fitch__c',
     'Counterpart__c',
-    'SCRA__c',
     'DMT_Sector__c',
     'DMT_Subsector__c',
     'DMT_Activity__c'
@@ -120,6 +120,7 @@ export default class Dmt_opp_client extends LightningElement {
     _previousMainBorrower = null;
     _currentMainBorrower = null;
     _currentMainBorrowerRecordId = null;
+    _recordTypeDeveloperName = null; // CIBGLOBALD-4811
     _currentSelectedClients = [];
     _dataLoaded = false;
     // Dedupe key for the last "field not found" toast shown, so the same unmatched
@@ -138,9 +139,10 @@ export default class Dmt_opp_client extends LightningElement {
 
     // ─── Wire ───────────────────────────────────────────────────────────────
 
-    @wire(getRecord, { recordId: '$recordId', fields: [PRODUCT_AREA_FIELD] })
+    @wire(getRecord, { recordId: '$recordId', fields: [PRODUCT_AREA_FIELD], optionalFields: ['Opportunity.RecordType.DeveloperName'] }) // CIBGLOBALD-4811
     wiredProductArea({ data }) {
         if (!data) return;
+        this._recordTypeDeveloperName = data.fields.RecordType?.value?.fields?.DeveloperName?.value; // CIBGLOBALD-4811
         const productArea = data.fields.DMT_Product_Area__c?.value;
         const isGtb = productArea === 'GTB';
         if (isGtb === this.isGtb) return;
@@ -236,7 +238,7 @@ export default class Dmt_opp_client extends LightningElement {
                 DMT_External_Rating_Moodys__c: data['C090'] || [],
                 DMT_External_Rating_Fitch__c: data['C087'] || [],
                 Counterpart__c: data['D971'] || [],
-                SCRA__c: data['C204'] || [],
+                SCRA__c: SCRA_OPTIONS,
                 DMT_Sector__c: data['C162'] || [],
                 DMT_Subsector__c: data['C164'] || [],
                 DMT_Activity__c: data['C039'] || [],
@@ -402,7 +404,7 @@ export default class Dmt_opp_client extends LightningElement {
         // (e.g. inline picklist). In that case we auto-save but ask for
         // confirmation first so the user is aware of what is happening.
         if (!this.isEditMode) {
-            const confirmed = await this._confirmReadyToCloseModify(true);
+            const confirmed = await this._confirmReopen(true); // CIBGLOBALD-4811
 
             if (confirmed) {
                 try {
@@ -455,8 +457,8 @@ export default class Dmt_opp_client extends LightningElement {
         this.errorMessage = '';
         const childCmp = this.refs.selectClients;
         try {
-            // ── Cases check when stage is 'Ready to close' ──────────────────────
-            if (!await this._confirmReadyToCloseModify()) return;
+            // ── Reopen check when stage is 'Ready to close' ──────────────────── // CIBGLOBALD-4811
+            if (!await this._confirmReopen(false)) return; // CIBGLOBALD-4811
 
             const selectionData = childCmp
                 ? childCmp.getSelectionData()
@@ -555,23 +557,36 @@ export default class Dmt_opp_client extends LightningElement {
 
     // ─── Ready-to-close guard ─────────────────────────────────────────────────
     /**
-     * @description When the stage is 'Ready to close' and there are open cases,
-     * shows a confirmation dialog warning the user that cases and tasks will be
-     * reopened. Returns true to proceed, false to abort.
+     * @description CIBGLOBALD-4811 - Asks before saving. The reopen text is used only when the save would
+     * reopen features: same filter as the Opportunity trigger checkpoint 3
+     * (DMT_OpportunityTriggerHandler.restartApprovalTasksOnOpportunityResubmission: record type
+     * DMT_Opportunity, stage Ready to close before and after the save, Cases 'readytoclose'), checked by
+     * DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges with the values this save writes
+     * (_unsavedValuesForCheck). Edit-mode Save with nothing changed: no call. Inline change: always asks,
+     * as before. A failed check counts as no reopen. Returns true to proceed, false to abort.
      */
-    async _confirmReadyToCloseModify(fromInline = false) {
-        let hasCases = false;
-        if (this.stageRecord === 'Ready to close') {
-            const cases = await getCasesByOpportunity({ opportunityId: this.recordId });
-            hasCases = !!(cases && cases.length > 0);
+    async _confirmReopen(fromInline = false) {
+        let reopens = false;
+        if (this.stageRecord === 'Ready to close' && this._recordTypeDeveloperName === 'DMT_Opportunity'
+            && (fromInline || this._hasUnsavedChanges())) {
+            try {
+                const features = await previewCompareUnsavedChanges({
+                    recordId: this.recordId,
+                    caseTypeToCheck: 'readytoclose',
+                    ...this._unsavedValuesForCheck()
+                });
+                reopens = !!(features && features.length > 0);
+            } catch (error) {
+                console.error('[dmt_opp_client][_confirmReopen]', error);
+            }
         }
 
-        // From handleSave: skip the dialog entirely when there are no open cases.
-        if (!fromInline && !hasCases) return true;
+        // From handleSave: skip the dialog entirely when nothing reopens.
+        if (!fromInline && !reopens) return true;
 
         const label = fromInline ? 'Save changes?' : 'Modify Opportunity?';
         const message = fromInline
-            ? hasCases
+            ? reopens
                 ? 'This field was changed inline and will be saved immediately to the record.' +
                   ' The Opportunity is in \'Ready to close\' stage: the associated cases and tasks will be reopened.' +
                   '\n\nDo you want to continue?'
@@ -580,6 +595,50 @@ export default class Dmt_opp_client extends LightningElement {
               '\n\nDo you want to modify the Opportunity?';
 
         return LightningConfirm.open({ label, message, theme: 'warning' });
+    }
+
+    // CIBGLOBALD-4811 - true when the form or the client selection differs from the edit-start copy.
+    _hasUnsavedChanges() {
+        if (!this._snapshot) return false;
+        const fieldChanged = this.fields.some(f => {
+            const before = this._snapshot.fields.find(s => s.id === f.id);
+            return before && before.value !== f.value;
+        });
+        const childCmp = this.refs.selectClients;
+        const selection = childCmp ? childCmp.getSelectionData() : { selectedClients: this._currentSelectedClients, mainHolder: this._currentMainBorrower };
+        const clientKey = clients => JSON.stringify((clients || []).map(c => c.customerId).sort());
+        return fieldChanged
+            || (selection.mainHolder || null) !== (this._snapshot.mainHolder || null)
+            || clientKey(selection.selectedClients) !== clientKey(this._snapshot.selectedClients);
+    }
+
+    /**
+     * CIBGLOBALD-4811 - What the save writes, in the previewCompareUnsavedChanges format
+     * (DMT_OpportunityClientController.saveMainBorrowerFields / saveMainBorrowerWithClients):
+     * Opportunity.DMT_Threshold_Type__c, and every form field on the main borrower DMT_Opportunity_Client__c
+     * row (applyFormFields writes all of them; a hidden field is not sent by the save, so it is written
+     * as null), plus Alpha_Code_Client__c when the main borrower changed. The financial fields copied
+     * from the previous main borrower (copyFinancialFields) are not included. With no main borrower row
+     * yet the save inserts one, sent without rowId (a new row).
+     */
+    _unsavedValuesForCheck() {
+        const valueOf = f => (f.isHidden ? null : (f.value ?? null));
+        const thresholdField = this.fields.find(f => f.id === 'DMT_Threshold_Type__c');
+        const rowValues = {};
+        for (const f of this.fields) {
+            if (f.id !== 'DMT_Threshold_Type__c') {
+                rowValues[f.id] = valueOf(f);
+            }
+        }
+        const childCmp = this.refs.selectClients;
+        const mainHolder = childCmp ? childCmp.getSelectionData().mainHolder : this._currentMainBorrower;
+        if (mainHolder && mainHolder !== this._previousMainBorrower) {
+            rowValues.Alpha_Code_Client__c = mainHolder;
+        }
+        return {
+            unsavedValues: { DMT_Threshold_Type__c: thresholdField ? valueOf(thresholdField) : null },
+            unsavedRows: [{ objectApiName: 'DMT_Opportunity_Client__c', rowId: this._currentMainBorrowerRecordId || null, values: rowValues }]
+        };
     }
 
     // ─── Cancel ─────────────────────────────────────────────────────────────────

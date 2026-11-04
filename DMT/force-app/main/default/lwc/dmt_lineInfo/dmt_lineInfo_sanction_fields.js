@@ -105,16 +105,17 @@ export const sanctionFields = [
         showCounterButtons: true
     },
     {
+        // Changes been made for CIBGLOBALD-4741
         id: 'gf_min_raroec_wo_fcg_per__c',
         label: 'Minimum RAROEC without financing',
         apiName: 'gf_min_raroec_wo_fcg_per__c',
         value: '',
         size: '1-of-2',
-        helpText: 'Rate per unity (e.g. 0.2 = 20%). Maximum 1.',
-        step: '0.000001',
+        helpText: 'Enter a percentage (e.g. 12 = 12%). Maximum 100%.',
+        step: '0.0001',
         min: 0,
-        max: 1,
-        isFractionPercent: true,
+        max: 100,
+        isPercent: true,
         percentFractionDigits: 4,
         type: 'number',
         isReadOnly: false,
@@ -122,16 +123,17 @@ export const sanctionFields = [
         isRequired: false
     },
     {
+        // Changes been made for CIBGLOBALD-4741
         id: 'gf_min_rorc_wo_fcg_per__c',
         label: 'Minimum RORC without financing',
         apiName: 'gf_min_rorc_wo_fcg_per__c',
         value: '',
         size: '1-of-2',
-        helpText: 'Rate per unity (e.g. 0.2 = 20%). Maximum 1.',
-        step: '0.000001',
+        helpText: 'Enter a percentage (e.g. 12 = 12%). Maximum 100%.',
+        step: '0.0001',
         min: 0,
-        max: 1,
-        isFractionPercent: true,
+        max: 100,
+        isPercent: true,
         percentFractionDigits: 4,
         type: 'number',
         isReadOnly: false,

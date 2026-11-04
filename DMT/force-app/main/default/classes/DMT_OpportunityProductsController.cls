@@ -62,6 +62,9 @@ public with sharing class DMT_OpportunityProductsController {
         private static final String DRAWN_ATTR_VALUE      = 'DRAWN';
         private static final String UNDRAWN_ATTR_VALUE    = 'UNDRAWN';
         @TestVisible private static final String MODE_UNDRAWN = 'UNDRAWN';
+        private static final String SECURITIZATION_MARKER_FIELD = 'gf_catalog_atrb_val13_name__c';
+        private static final String SECURITIZATION_MARKER_VALUE = 'TITULIZACION';
+        private static final String DOUBLE_MARKER_FIELD = 'gf_catalog_atrb_val13_name__c';
         
     // ─── Aura: Query methods ──────────────────────────────────────────────────
 
@@ -101,6 +104,62 @@ public with sharing class DMT_OpportunityProductsController {
         } catch (Exception e) {
             DES_Exception_Utils.logException(e,'DMT_OpportunityProductsController', 'getOpportunityLineItemDataFresh', 'DMT', '');
             throw new AuraHandledException('Error fetching fresh Opportunity Line Item data: ' + e.getMessage());
+        }
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static Boolean isSecuritizationProduct(Id opportunityLineItemId) {
+        if (opportunityLineItemId == null) {
+            throw new IllegalArgumentException('opportunityLineItemId is required');
+        }
+        try {
+            Map<String, Object> productContext = getUnderlyingSourceContext(opportunityLineItemId);
+            Id taxonomyValueId = (Id) productContext.get('taxonomyValueId');
+            if (taxonomyValueId == null) {
+                return false;
+            }
+
+            Map<String, Schema.SObjectField> taxonomyFields = DMT_Taxonomy_Values__c.SObjectType.getDescribe().fields.getMap();
+            if (!taxonomyFields.containsKey(SECURITIZATION_MARKER_FIELD.toLowerCase())) {
+                return false;
+            }
+
+            String soql = 'SELECT ' + SECURITIZATION_MARKER_FIELD +
+                          ' FROM DMT_Taxonomy_Values__c WHERE Id = :taxonomyValueId LIMIT 1';
+            DMT_Taxonomy_Values__c taxonomy = (DMT_Taxonomy_Values__c) Database.query(soql, AccessLevel.SYSTEM_MODE);
+            String marker = (String) taxonomy.get(SECURITIZATION_MARKER_FIELD);
+            return isSecuritizationMarker(marker);
+        } catch (Exception e) {
+            DES_Exception_Utils.logException(e,'DMT_OpportunityProductsController', 'isSecuritizationProduct', 'DMT', '');
+            throw new AuraHandledException('Error checking securitization product: ' + e.getMessage());
+        }
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static Boolean isDoubleProduct(Id opportunityLineItemId) {
+        if (opportunityLineItemId == null) {
+            throw new IllegalArgumentException('opportunityLineItemId is required');
+        }
+        try {
+            Map<String, Object> productContext = getUnderlyingSourceContext(opportunityLineItemId);
+            Id taxonomyValueId = (Id) productContext.get('taxonomyValueId');
+            if (taxonomyValueId == null) {
+                return false;
+            }
+
+            Map<String, Schema.SObjectField> taxonomyFields = DMT_Taxonomy_Values__c.SObjectType.getDescribe().fields.getMap();
+            if (!taxonomyFields.containsKey(DOUBLE_MARKER_FIELD.toLowerCase())) {
+                return false;
+            }
+
+            String soql = 'SELECT ' + DOUBLE_MARKER_FIELD +
+                          ' FROM DMT_Taxonomy_Values__c WHERE Id = :taxonomyValueId LIMIT 1';
+            DMT_Taxonomy_Values__c taxonomy = (DMT_Taxonomy_Values__c) Database.query(soql, AccessLevel.SYSTEM_MODE);
+            String marker = (String) taxonomy.get(DOUBLE_MARKER_FIELD);
+            return isDoubleMarker(marker);
+        } catch (Exception e) {
+            DES_Exception_Utils.logException(e,'DMT_OpportunityProductsController', 'isDoubleProduct', 'DMT', '');
+            throw new AuraHandledException('Error checking double product: ' + e.getMessage());
         }
     }
 
@@ -282,7 +341,7 @@ public with sharing class DMT_OpportunityProductsController {
                        DMT_Opportunity_Product__c
                 FROM DMT_Underlying__c
                 WHERE DMT_Opportunity_Product__c = :opportunityLineItemId
-                ORDER BY CreatedDate ASC
+                ORDER BY CreatedDate ASC, Id ASC
             ];
         } catch (Exception e) {
             DES_Exception_Utils.logException(e,'DMT_OpportunityProductsController', 'getUnderlyingsData', 'DMT', '');
@@ -866,258 +925,54 @@ public with sharing class DMT_OpportunityProductsController {
         Map<String, Object> result = new Map<String, Object>();
         Savepoint sp = Database.setSavepoint();
         try {
-
-            // Convert Aura's internal map type to proper Map<String,Object>
-            List<Map<String, Object>> tenorMaps = toTypedMaps(tenorsToUpsert);
-            List<Map<String, Object>> mitigantMaps = toTypedMaps(mitigantsToUpsert);
-
-            // 1. Validate tenors before any DML
-            if (!tenorMaps.isEmpty()) {
-                List<Object> rawTenors = new List<Object>();
-                for (Map<String, Object> m : tenorMaps) { rawTenors.add(m); }
-                Map<String, Object> validation = DMT_Opportunity_Utils.validateTenorsFromRaw(
-                    rawTenors, initialDate, maturityDate
-                );
-                if (validation.get('validationPassed') != true) {
-                    result.put('success', false);
-                    result.put('errorMessage', validation.get('errorMessage'));
-                    result.put('error', validation);
-                    result.put('stage', 'tenorValidation');
-                    return result;
-                }
-            }
-
-            // 2. Validate mitigants before any DML
-            if (!mitigantMaps.isEmpty()) {
-                List<Object> rawMitigants = new List<Object>();
-                for (Map<String, Object> m : mitigantMaps) { rawMitigants.add(m); }
-                Map<String, Object> mitigantValidation = DMT_Opportunity_Utils.validateRealGuaratorsFromRaw(
-                    rawMitigants
-                );
-                if (mitigantValidation.get('validationPassed') != true) {
-                    result.put('success', false);
-                    result.put('errorMessage', mitigantValidation.get('errorMessage'));
-                    result.put('error', mitigantValidation);
-                    result.put('stage', 'mitigantValidation');
-                    return result;
-                }
+            // CIBGLOBALD-4811 - validations and records to write are built by buildProductSave (shared with
+            // previewOpportunityProductSave); this method applies them in the same order as before.
+            ProductSave productSave = buildProductSave(
+                recordFields, tenorsToUpsert, tenorsToDelete, mitigantsToUpsert, mitigantsToDelete,
+                underlyingsToUpsert, underlyingsToDelete, initialDate, maturityDate
+            );
+            if (productSave.validationResult != null) {
+                return productSave.validationResult;
             }
 
             // 3. Update the main OLI record
-            if (recordFields != null && recordFields.containsKey('Id') && recordFields.size() > 1) {
-                Id recordId = (Id) recordFields.get('Id');
-                OpportunityLineItem oli = new OpportunityLineItem(Id = recordId);
-                OpportunityLineItem existingOli = [
-                    SELECT DMT_Commitment_Line_Amount__c, bbva_prtcp_tranche_amount__c, DMT_NewMoney_BBVA__c,
-                           g_currency_id__c, Opportunity.DMT_CurrencyText__c
-                    FROM OpportunityLineItem
-                    WHERE Id = :recordId
-                    LIMIT 1
-                ];
-                Map<String, Schema.DisplayType> oliTypes = buildTypeMap(OpportunityLineItem.SObjectType);
-                for (String key : recordFields.keySet()) {
-                    if (key == 'Id') continue;
-                    oli.put(key, castValue(oliTypes, key, recordFields.get(key)));
-                }
-                // Apply currency conversion to amount fields using the OLI currency.
-                String currency4Oli = null;
-                if (recordFields.containsKey('g_currency_id__c') && recordFields.get('g_currency_id__c') != null
-                    && String.isNotBlank(String.valueOf(recordFields.get('g_currency_id__c')))) {
-                    currency4Oli = String.valueOf(recordFields.get('g_currency_id__c'));
-                } else {
-                    OpportunityLineItem oliCur = [
-                        SELECT g_currency_id__c, Opportunity.DMT_CurrencyText__c
-                        FROM OpportunityLineItem WHERE Id = :recordId LIMIT 1
-                    ];
-                    currency4Oli = String.isNotBlank(oliCur.g_currency_id__c)
-                        ? oliCur.g_currency_id__c
-                        : oliCur.Opportunity.DMT_CurrencyText__c;
-                }
-                if (String.isNotBlank(currency4Oli)) {
-                    if (oli.DMT_Deal_amount__c != null) {
-                        oli.DMT_Deal_amount__c = DMT_Currency_Conversion_Utils.convertToStorage(currency4Oli, oli.DMT_Deal_amount__c);
-                    }
-                    if (oli.DMT_Commitment_Line_Amount__c != null) {
-                        oli.DMT_Commitment_Line_Amount__c = DMT_Currency_Conversion_Utils.convertToStorage(currency4Oli, oli.DMT_Commitment_Line_Amount__c);
-                    }
-                    if (oli.bbva_prtcp_tranche_amount__c != null) {
-                        oli.bbva_prtcp_tranche_amount__c = DMT_Currency_Conversion_Utils.convertToStorage(currency4Oli, oli.bbva_prtcp_tranche_amount__c);
-                    }
-                    if (oli.DMT_NewMoney_BBVA__c != null) {
-                        oli.DMT_NewMoney_BBVA__c = DMT_Currency_Conversion_Utils.convertToStorage(currency4Oli, oli.DMT_NewMoney_BBVA__c);
-                    }
-                    if (oli.syndicated_loan_drawn_amount__c != null) {
-                        oli.syndicated_loan_drawn_amount__c = DMT_Currency_Conversion_Utils.convertToStorage(currency4Oli, oli.syndicated_loan_drawn_amount__c);
-                    }
-
-                    Decimal bbvaCommitment = oli.bbva_prtcp_tranche_amount__c;
-                    if (bbvaCommitment == null) bbvaCommitment = existingOli.bbva_prtcp_tranche_amount__c;
-                    if (bbvaCommitment == null) bbvaCommitment = oli.DMT_Commitment_Line_Amount__c;
-                    if (bbvaCommitment == null) bbvaCommitment = existingOli.DMT_Commitment_Line_Amount__c;
-
-                    Decimal newMoney = oli.DMT_NewMoney_BBVA__c;
-                    if (newMoney == null) newMoney = existingOli.DMT_NewMoney_BBVA__c;
-                    if (newMoney == null) newMoney = bbvaCommitment;
-
-                    if (bbvaCommitment != null && newMoney != null) {
-                        oli.DMT_OldMoney_BBVA__c = DMT_Currency_Conversion_Utils.convertToStorage(currency4Oli, bbvaCommitment - newMoney);
-                    }
-                }
-                update oli;
+            if (productSave.oli != null) {
+                update productSave.oli;
             }
 
-            // 4. Upsert tenors
-            if (!tenorMaps.isEmpty()) {
-                // Get the OLI currency for amount conversion
-                String oliCurrency = null;
-                if (recordFields != null && recordFields.containsKey('Id')) {
-                    if (recordFields.containsKey('g_currency_id__c') && recordFields.get('g_currency_id__c') != null
-                        && String.isNotBlank(String.valueOf(recordFields.get('g_currency_id__c')))) {
-                        oliCurrency = String.valueOf(recordFields.get('g_currency_id__c'));
-                    } else {
-                        Id oliId = (Id) recordFields.get('Id');
-                        OpportunityLineItem oliForCurrency = [
-                            SELECT g_currency_id__c, Opportunity.DMT_CurrencyText__c
-                            FROM OpportunityLineItem WHERE Id = :oliId LIMIT 1
-                        ];
-                        oliCurrency = String.isNotBlank(oliForCurrency.g_currency_id__c)
-                            ? oliForCurrency.g_currency_id__c
-                            : oliForCurrency.Opportunity.DMT_CurrencyText__c;
-                    }
-                }
-
-                Id parentOliId = (Id) recordFields.get('Id');
-                List<DMT_Opportunity_Tenor__c> toUpsert = new List<DMT_Opportunity_Tenor__c>();
-                Map<String, Schema.DisplayType> tenorTypes = buildTypeMap(DMT_Opportunity_Tenor__c.SObjectType);
-                for (Map<String, Object> t : tenorMaps) {
-                    DMT_Opportunity_Tenor__c tenor = new DMT_Opportunity_Tenor__c();
-                    for (String key : t.keySet()) {
-                        if (key == 'Id') {
-                            if (t.get(key) != null && String.isNotBlank(String.valueOf(t.get(key)))) {
-                                tenor.Id = (Id) t.get(key);
-                            }
-                        } else {
-                            tenor.put(key, castValue(tenorTypes, key, t.get(key)));
-                        }
-                    }
-                    // Apply currency conversion to nominal amount fields
-                    if (String.isNotBlank(oliCurrency)) {
-                        if (tenor.gj_nominal_amount_db__c != null) {
-                            tenor.gj_nominal_amount_db__c = DMT_Currency_Conversion_Utils.convertToStorage(oliCurrency, tenor.gj_nominal_amount_db__c);
-                        }
-                        if (tenor.gf_nominal_amount_fb__c != null) {
-                            tenor.gf_nominal_amount_fb__c = DMT_Currency_Conversion_Utils.convertToStorage(oliCurrency, tenor.gf_nominal_amount_fb__c);
-                        }
-                    }
-                    if (parentOliId != null) {
-                        tenor.DMT_Opportunity_Product__c = parentOliId;
-                    }
-                    toUpsert.add(tenor);
-                }
-                upsert toUpsert;
-
-                if (recordFields != null && recordFields.containsKey('Id')) {
-                    Id oliId = (Id) recordFields.get('Id');
-                    OpportunityLineItem oliForRecalc = [
-                        SELECT g_currency_id__c, Opportunity.DMT_CurrencyText__c, DMT_NewMoney_BBVA__c
-                        FROM OpportunityLineItem
-                        WHERE Id = :oliId
-                        LIMIT 1
-                    ];
-
-                    Map<String, Object> tenorSource = tenorMaps[0];
-                    Decimal drawnAmount = 0;
-                    Decimal undrawnAmount = 0;
-
-                    if (tenorSource.get('gj_nominal_amount_db__c') != null && String.isNotBlank(String.valueOf(tenorSource.get('gj_nominal_amount_db__c')))) {
-                        drawnAmount = Decimal.valueOf(String.valueOf(tenorSource.get('gj_nominal_amount_db__c')));
-                    }
-                    if (tenorSource.get('gf_nominal_amount_fb__c') != null && String.isNotBlank(String.valueOf(tenorSource.get('gf_nominal_amount_fb__c')))) {
-                        undrawnAmount = Decimal.valueOf(String.valueOf(tenorSource.get('gf_nominal_amount_fb__c')));
-                    }
-
-                    String currency4Oli = String.isNotBlank(oliForRecalc.g_currency_id__c) ? oliForRecalc.g_currency_id__c : oliForRecalc.Opportunity.DMT_CurrencyText__c;
-                    Decimal bbvaCommitmentDisplay = drawnAmount + undrawnAmount;
-                    Decimal bbvaCommitmentStorage = String.isNotBlank(currency4Oli) ? DMT_Currency_Conversion_Utils.convertToStorage(currency4Oli, bbvaCommitmentDisplay) : bbvaCommitmentDisplay;
-                    Decimal newMoney = oliForRecalc.DMT_NewMoney_BBVA__c == null ? bbvaCommitmentStorage : oliForRecalc.DMT_NewMoney_BBVA__c;
-                    update new OpportunityLineItem(
-                        Id = oliId,
-                        bbva_prtcp_tranche_amount__c = bbvaCommitmentStorage,
-                        DMT_OldMoney_BBVA__c = bbvaCommitmentStorage - newMoney
-                    );
+            // 4. Upsert tenors, then the BBVA commitment recalculated from the first tenor
+            if (!productSave.tenorsToUpsert.isEmpty()) {
+                upsert productSave.tenorsToUpsert;
+                if (productSave.commitmentFromTenors != null) {
+                    update productSave.commitmentFromTenors;
                 }
             }
 
             // 5. Delete tenors
-            if (tenorsToDelete != null && !tenorsToDelete.isEmpty()) {
-                List<DMT_Opportunity_Tenor__c> tenorsForDelete = new List<DMT_Opportunity_Tenor__c>();
-                for (Id tId : tenorsToDelete) {
-                    tenorsForDelete.add(new DMT_Opportunity_Tenor__c(Id = tId));
-                }
-                delete tenorsForDelete;
+            if (!productSave.tenorsToDelete.isEmpty()) {
+                delete productSave.tenorsToDelete;
             }
 
             // 6. Upsert mitigants
-            if (!mitigantMaps.isEmpty()) {
-                List<DMT_Opportunity_Mitigant__c> toUpsert = new List<DMT_Opportunity_Mitigant__c>();
-                Map<String, Schema.DisplayType> mitTypes = buildTypeMap(DMT_Opportunity_Mitigant__c.SObjectType);
-                for (Map<String, Object> m : mitigantMaps) {
-                    DMT_Opportunity_Mitigant__c mit = new DMT_Opportunity_Mitigant__c();
-                    for (String key : m.keySet()) {
-                        if (key == 'Id') {
-                            if (m.get(key) != null && String.isNotBlank(String.valueOf(m.get(key)))) {
-                                mit.Id = (Id) m.get(key);
-                            }
-                        } else {
-                            mit.put(key, castValue(mitTypes, key, m.get(key)));
-                        }
-                    }
-                    toUpsert.add(mit);
-                }
-                upsert toUpsert;
+            if (!productSave.mitigantsToUpsert.isEmpty()) {
+                upsert productSave.mitigantsToUpsert;
             }
 
             // 7. Delete mitigants
-            if (mitigantsToDelete != null && !mitigantsToDelete.isEmpty()) {
-                List<DMT_Opportunity_Mitigant__c> mitigantsForDelete = new List<DMT_Opportunity_Mitigant__c>();
-                for (Id mId : mitigantsToDelete) {
-                    mitigantsForDelete.add(new DMT_Opportunity_Mitigant__c(Id = mId));
-                }
-                delete mitigantsForDelete;
+            if (!productSave.mitigantsToDelete.isEmpty()) {
+                delete productSave.mitigantsToDelete;
             }
-            
+
             // 8. Upsert underlyings
-            if (underlyingsToUpsert != null && !underlyingsToUpsert.isEmpty()) {
-                List<Map<String, Object>> underlyingMaps = toTypedMaps(underlyingsToUpsert);
-                List<DMT_Underlying__c> toUpsert = new List<DMT_Underlying__c>();
-                Map<String, Schema.DisplayType> underlyingTypes = buildTypeMap(DMT_Underlying__c.SObjectType);
-                for (Map<String, Object> u : underlyingMaps) {
-                    DMT_Underlying__c underlying = new DMT_Underlying__c();
-                    for (String key : u.keySet()) {
-                        if (key == 'Id') {
-                            if (u.get(key) != null && String.isNotBlank(String.valueOf(u.get(key)))) {
-                                underlying.Id = (Id) u.get(key);
-                            }
-                        } else if (key == 'Name') {
-                            underlying.Name = String.valueOf(u.get(key));
-                        } else {
-                            underlying.put(key, castValue(underlyingTypes, key, u.get(key)));
-                        }
-                    }
-                    toUpsert.add(underlying);
-                }
-                upsert toUpsert;
+            if (!productSave.underlyingsToUpsert.isEmpty()) {
+                upsert productSave.underlyingsToUpsert;
             }
 
             // 9. Delete underlyings
-            if (underlyingsToDelete != null && !underlyingsToDelete.isEmpty()) {
-                List<DMT_Underlying__c> underlyingsForDelete = new List<DMT_Underlying__c>();
-                for (Id uId : underlyingsToDelete) {
-                    underlyingsForDelete.add(new DMT_Underlying__c(Id = uId));
-                }
-                delete underlyingsForDelete;
+            if (!productSave.underlyingsToDelete.isEmpty()) {
+                delete productSave.underlyingsToDelete;
             }
-            
+
             // 10. update passport
             if(oppId != null && oppId != '') {
                 List<Passport__c> passports = [SELECT Id, DMT_Is_Obsoleted_Passport_Save__c FROM Passport__c WHERE Opportunity__c =:oppId LIMIT 1];
@@ -1133,12 +988,357 @@ public with sharing class DMT_OpportunityProductsController {
         } catch (Exception e) {
 
             Database.rollback(sp);
-            
+
             System.debug('ERROR MESSAGE: ' + e.getMessage());
             System.debug('STACK TRACE: ' + e.getStackTraceString());
             DES_Exception_Utils.logException(e,'DMT_OpportunityProductsController', 'saveOpportunityProduct', 'DMT', '');
             throw new AuraHandledException('Error saving record: ' + e.getMessage());
-            
+
+        }
+    }
+
+    /**
+     * @description CIBGLOBALD-4811 - The features a product save would reopen in Ready to close, nothing saved.
+     * buildProductSave builds the same records saveOpportunityProduct writes (amounts converted to storage, BBVA
+     * commitment recalculated from the first tenor), and they are compared with the open tasks' snapshots by
+     * DMT_ApprovalChangeStep_Handler.previewUnsavedChanges, the same comparison as the Opportunity trigger. Called by
+     * dmt_opp_product_details and dmt_opp_product_details_line before saveOpportunityProduct. Empty when nothing
+     * reopens, when the save would stop at its own validations, or when the check fails (logged).
+     * @param caseTypeToCheck Case.DMT_Passport_Sanction__c value of the checkpoint: readytoclose
+     * The other parameters are the saveOpportunityProduct ones.
+     */
+    @AuraEnabled
+    public static List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> previewOpportunityProductSave(
+        String               caseTypeToCheck,
+        Map<String, Object>  recordFields,
+        List<Object>         tenorsToUpsert,
+        List<Id>             tenorsToDelete,
+        List<Object>         mitigantsToUpsert,
+        List<Id>             mitigantsToDelete,
+        List<Object>         underlyingsToUpsert,
+        List<Id>             underlyingsToDelete,
+        Date                 initialDate,
+        Date                 maturityDate,
+        String               oppId
+    ) {
+        try {
+            ProductSave productSave = buildProductSave(
+                recordFields, tenorsToUpsert, tenorsToDelete, mitigantsToUpsert, mitigantsToDelete,
+                underlyingsToUpsert, underlyingsToDelete, initialDate, maturityDate
+            );
+            if (productSave.validationResult != null || String.isBlank(oppId)) {
+                return new List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper>();
+            }
+            return DMT_ApprovalChangeStep_Handler.previewUnsavedChanges(oppId, caseTypeToCheck, null, productSave.toUnsavedRows());
+        } catch (Exception e) {
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
+                e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
+                'DMT_OpportunityProductsController', 'previewOpportunityProductSave', 'DMT', 'OpportunityLineItem'
+            ));
+            DMT_AsyncOrchestrator.flush();
+            return new List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper>();
+        }
+    }
+
+    /**
+     * CIBGLOBALD-4811 - Everything saveOpportunityProduct writes, built in memory without DML: the tenor and
+     * mitigant validations (validationResult when they fail), the product with its amounts converted to storage
+     * (DMT_Currency_Conversion_Utils.convertToStorage) and its old money, the tenors, mitigants and underlyings to
+     * upsert or delete, and the BBVA commitment recalculated from the first tenor.
+     * Enhancement to existing process: the product row is read once here for its currency and amounts (before,
+     * saveOpportunityProduct read the same row up to 4 times: existingOli, oliCur, oliForCurrency, oliForRecalc).
+     */
+    private static ProductSave buildProductSave(
+        Map<String, Object>  recordFields,
+        List<Object>         tenorsToUpsert,
+        List<Id>             tenorsToDelete,
+        List<Object>         mitigantsToUpsert,
+        List<Id>             mitigantsToDelete,
+        List<Object>         underlyingsToUpsert,
+        List<Id>             underlyingsToDelete,
+        Date                 initialDate,
+        Date                 maturityDate
+    ) {
+        ProductSave productSave = new ProductSave();
+
+        // Convert Aura's internal map type to proper Map<String,Object>
+        List<Map<String, Object>> tenorMaps = toTypedMaps(tenorsToUpsert);
+        List<Map<String, Object>> mitigantMaps = toTypedMaps(mitigantsToUpsert);
+
+        // 1. Validate tenors before any DML
+        if (!tenorMaps.isEmpty()) {
+            List<Object> rawTenors = new List<Object>();
+            for (Map<String, Object> m : tenorMaps) { rawTenors.add(m); }
+            Map<String, Object> validation = DMT_Opportunity_Utils.validateTenorsFromRaw(
+                rawTenors, initialDate, maturityDate
+            );
+            if (validation.get('validationPassed') != true) {
+                productSave.validationResult = new Map<String, Object>{
+                    'success' => false,
+                    'errorMessage' => validation.get('errorMessage'),
+                    'error' => validation,
+                    'stage' => 'tenorValidation'
+                };
+                return productSave;
+            }
+        }
+
+        // 2. Validate mitigants before any DML
+        if (!mitigantMaps.isEmpty()) {
+            List<Object> rawMitigants = new List<Object>();
+            for (Map<String, Object> m : mitigantMaps) { rawMitigants.add(m); }
+            Map<String, Object> mitigantValidation = DMT_Opportunity_Utils.validateRealGuaratorsFromRaw(
+                rawMitigants
+            );
+            if (mitigantValidation.get('validationPassed') != true) {
+                productSave.validationResult = new Map<String, Object>{
+                    'success' => false,
+                    'errorMessage' => mitigantValidation.get('errorMessage'),
+                    'error' => mitigantValidation,
+                    'stage' => 'mitigantValidation'
+                };
+                return productSave;
+            }
+        }
+
+        Id oliId = recordFields != null && recordFields.containsKey('Id') ? (Id) recordFields.get('Id') : null;
+        Boolean updatesOli = oliId != null && recordFields.size() > 1;
+        OpportunityLineItem storedOli = (updatesOli || (oliId != null && !tenorMaps.isEmpty()))
+            ? [
+                SELECT DMT_Commitment_Line_Amount__c, bbva_prtcp_tranche_amount__c, DMT_NewMoney_BBVA__c,
+                       g_currency_id__c, Opportunity.DMT_CurrencyText__c
+                FROM OpportunityLineItem
+                WHERE Id = :oliId
+                LIMIT 1
+            ]
+            : null;
+        // Currency used to convert amounts: the one sent by the form, else the product's, else the Opportunity's.
+        String oliCurrency = storedOli == null ? null
+            : (recordFields.get('g_currency_id__c') != null && String.isNotBlank(String.valueOf(recordFields.get('g_currency_id__c'))))
+                ? String.valueOf(recordFields.get('g_currency_id__c'))
+                : currencyOrOpportunityCurrency(storedOli.g_currency_id__c, storedOli);
+
+        // 3. The main OLI record
+        if (updatesOli) {
+            OpportunityLineItem oli = new OpportunityLineItem(Id = oliId);
+            Map<String, Schema.DisplayType> oliTypes = buildTypeMap(OpportunityLineItem.SObjectType);
+            for (String key : recordFields.keySet()) {
+                if (key == 'Id') continue;
+                oli.put(key, castValue(oliTypes, key, recordFields.get(key)));
+            }
+            // Apply currency conversion to amount fields using the OLI currency.
+            if (String.isNotBlank(oliCurrency)) {
+                if (oli.DMT_Deal_amount__c != null) {
+                    oli.DMT_Deal_amount__c = DMT_Currency_Conversion_Utils.convertToStorage(oliCurrency, oli.DMT_Deal_amount__c);
+                }
+                if (oli.DMT_Commitment_Line_Amount__c != null) {
+                    oli.DMT_Commitment_Line_Amount__c = DMT_Currency_Conversion_Utils.convertToStorage(oliCurrency, oli.DMT_Commitment_Line_Amount__c);
+                }
+                if (oli.bbva_prtcp_tranche_amount__c != null) {
+                    oli.bbva_prtcp_tranche_amount__c = DMT_Currency_Conversion_Utils.convertToStorage(oliCurrency, oli.bbva_prtcp_tranche_amount__c);
+                }
+                if (oli.DMT_NewMoney_BBVA__c != null) {
+                    oli.DMT_NewMoney_BBVA__c = DMT_Currency_Conversion_Utils.convertToStorage(oliCurrency, oli.DMT_NewMoney_BBVA__c);
+                }
+                if (oli.syndicated_loan_drawn_amount__c != null) {
+                    oli.syndicated_loan_drawn_amount__c = DMT_Currency_Conversion_Utils.convertToStorage(oliCurrency, oli.syndicated_loan_drawn_amount__c);
+                }
+
+                Decimal bbvaCommitment = oli.bbva_prtcp_tranche_amount__c;
+                if (bbvaCommitment == null) bbvaCommitment = storedOli.bbva_prtcp_tranche_amount__c;
+                if (bbvaCommitment == null) bbvaCommitment = oli.DMT_Commitment_Line_Amount__c;
+                if (bbvaCommitment == null) bbvaCommitment = storedOli.DMT_Commitment_Line_Amount__c;
+
+                Decimal newMoney = oli.DMT_NewMoney_BBVA__c;
+                if (newMoney == null) newMoney = storedOli.DMT_NewMoney_BBVA__c;
+                if (newMoney == null) newMoney = bbvaCommitment;
+
+                if (bbvaCommitment != null && newMoney != null) {
+                    oli.DMT_OldMoney_BBVA__c = DMT_Currency_Conversion_Utils.convertToStorage(oliCurrency, bbvaCommitment - newMoney);
+                }
+            }
+            productSave.oli = oli;
+        }
+
+        // 4. Tenors, with their nominal amounts converted to storage
+        if (!tenorMaps.isEmpty()) {
+            Map<String, Schema.DisplayType> tenorTypes = buildTypeMap(DMT_Opportunity_Tenor__c.SObjectType);
+            for (Map<String, Object> t : tenorMaps) {
+                DMT_Opportunity_Tenor__c tenor = new DMT_Opportunity_Tenor__c();
+                for (String key : t.keySet()) {
+                    if (key == 'Id') {
+                        if (t.get(key) != null && String.isNotBlank(String.valueOf(t.get(key)))) {
+                            tenor.Id = (Id) t.get(key);
+                        }
+                    } else {
+                        tenor.put(key, castValue(tenorTypes, key, t.get(key)));
+                    }
+                }
+                // Apply currency conversion to nominal amount fields
+                if (String.isNotBlank(oliCurrency)) {
+                    if (tenor.gj_nominal_amount_db__c != null) {
+                        tenor.gj_nominal_amount_db__c = DMT_Currency_Conversion_Utils.convertToStorage(oliCurrency, tenor.gj_nominal_amount_db__c);
+                    }
+                    if (tenor.gf_nominal_amount_fb__c != null) {
+                        tenor.gf_nominal_amount_fb__c = DMT_Currency_Conversion_Utils.convertToStorage(oliCurrency, tenor.gf_nominal_amount_fb__c);
+                    }
+                }
+                if (oliId != null) {
+                    tenor.DMT_Opportunity_Product__c = oliId;
+                }
+                productSave.tenorsToUpsert.add(tenor);
+            }
+
+            // BBVA commitment = drawn + undrawn nominal of the first tenor, as the product reads after step 3.
+            if (oliId != null) {
+                Map<String, Object> tenorSource = tenorMaps[0];
+                Decimal drawnAmount = 0;
+                Decimal undrawnAmount = 0;
+
+                if (tenorSource.get('gj_nominal_amount_db__c') != null && String.isNotBlank(String.valueOf(tenorSource.get('gj_nominal_amount_db__c')))) {
+                    drawnAmount = Decimal.valueOf(String.valueOf(tenorSource.get('gj_nominal_amount_db__c')));
+                }
+                if (tenorSource.get('gf_nominal_amount_fb__c') != null && String.isNotBlank(String.valueOf(tenorSource.get('gf_nominal_amount_fb__c')))) {
+                    undrawnAmount = Decimal.valueOf(String.valueOf(tenorSource.get('gf_nominal_amount_fb__c')));
+                }
+
+                Boolean formSetsCurrency = updatesOli && recordFields.containsKey('g_currency_id__c');
+                Boolean formSetsNewMoney = updatesOli && recordFields.containsKey('DMT_NewMoney_BBVA__c');
+                String currencyAfterSave = currencyOrOpportunityCurrency(
+                    formSetsCurrency ? productSave.oli.g_currency_id__c : storedOli.g_currency_id__c, storedOli
+                );
+                Decimal newMoneyAfterSave = formSetsNewMoney ? productSave.oli.DMT_NewMoney_BBVA__c : storedOli.DMT_NewMoney_BBVA__c;
+
+                Decimal bbvaCommitmentDisplay = drawnAmount + undrawnAmount;
+                Decimal bbvaCommitmentStorage = String.isNotBlank(currencyAfterSave) ? DMT_Currency_Conversion_Utils.convertToStorage(currencyAfterSave, bbvaCommitmentDisplay) : bbvaCommitmentDisplay;
+                Decimal newMoney = newMoneyAfterSave == null ? bbvaCommitmentStorage : newMoneyAfterSave;
+                productSave.commitmentFromTenors = new OpportunityLineItem(
+                    Id = oliId,
+                    bbva_prtcp_tranche_amount__c = bbvaCommitmentStorage,
+                    DMT_OldMoney_BBVA__c = bbvaCommitmentStorage - newMoney
+                );
+            }
+        }
+
+        // 5. Tenors to delete
+        if (tenorsToDelete != null) {
+            for (Id tId : tenorsToDelete) {
+                productSave.tenorsToDelete.add(new DMT_Opportunity_Tenor__c(Id = tId));
+            }
+        }
+
+        // 6. Mitigants
+        if (!mitigantMaps.isEmpty()) {
+            Map<String, Schema.DisplayType> mitTypes = buildTypeMap(DMT_Opportunity_Mitigant__c.SObjectType);
+            for (Map<String, Object> m : mitigantMaps) {
+                DMT_Opportunity_Mitigant__c mit = new DMT_Opportunity_Mitigant__c();
+                for (String key : m.keySet()) {
+                    if (key == 'Id') {
+                        if (m.get(key) != null && String.isNotBlank(String.valueOf(m.get(key)))) {
+                            mit.Id = (Id) m.get(key);
+                        }
+                    } else {
+                        mit.put(key, castValue(mitTypes, key, m.get(key)));
+                    }
+                }
+                productSave.mitigantsToUpsert.add(mit);
+            }
+        }
+
+        // 7. Mitigants to delete
+        if (mitigantsToDelete != null) {
+            for (Id mId : mitigantsToDelete) {
+                productSave.mitigantsToDelete.add(new DMT_Opportunity_Mitigant__c(Id = mId));
+            }
+        }
+
+        // 8. Underlyings
+        if (underlyingsToUpsert != null && !underlyingsToUpsert.isEmpty()) {
+            List<Map<String, Object>> underlyingMaps = toTypedMaps(underlyingsToUpsert);
+            Map<String, Schema.DisplayType> underlyingTypes = buildTypeMap(DMT_Underlying__c.SObjectType);
+            for (Map<String, Object> u : underlyingMaps) {
+                DMT_Underlying__c underlying = new DMT_Underlying__c();
+                for (String key : u.keySet()) {
+                    if (key == 'Id') {
+                        if (u.get(key) != null && String.isNotBlank(String.valueOf(u.get(key)))) {
+                            underlying.Id = (Id) u.get(key);
+                        }
+                    } else if (key == 'Name') {
+                        underlying.Name = String.valueOf(u.get(key));
+                    } else {
+                        underlying.put(key, castValue(underlyingTypes, key, u.get(key)));
+                    }
+                }
+                productSave.underlyingsToUpsert.add(underlying);
+            }
+        }
+
+        // 9. Underlyings to delete
+        if (underlyingsToDelete != null) {
+            for (Id uId : underlyingsToDelete) {
+                productSave.underlyingsToDelete.add(new DMT_Underlying__c(Id = uId));
+            }
+        }
+        return productSave;
+    }
+
+    // CIBGLOBALD-4811 - a product currency, or the Opportunity's when the product has none.
+    private static String currencyOrOpportunityCurrency(String productCurrency, OpportunityLineItem storedOli) {
+        return String.isNotBlank(productCurrency) ? productCurrency : storedOli.Opportunity.DMT_CurrencyText__c;
+    }
+
+    // CIBGLOBALD-4811 - what one saveOpportunityProduct call writes (buildProductSave).
+    private class ProductSave {
+        Map<String, Object> validationResult;
+        OpportunityLineItem oli;
+        OpportunityLineItem commitmentFromTenors;
+        List<DMT_Opportunity_Tenor__c> tenorsToUpsert = new List<DMT_Opportunity_Tenor__c>();
+        List<DMT_Opportunity_Tenor__c> tenorsToDelete = new List<DMT_Opportunity_Tenor__c>();
+        List<DMT_Opportunity_Mitigant__c> mitigantsToUpsert = new List<DMT_Opportunity_Mitigant__c>();
+        List<DMT_Opportunity_Mitigant__c> mitigantsToDelete = new List<DMT_Opportunity_Mitigant__c>();
+        List<DMT_Underlying__c> underlyingsToUpsert = new List<DMT_Underlying__c>();
+        List<DMT_Underlying__c> underlyingsToDelete = new List<DMT_Underlying__c>();
+
+        // The records in the DMT_ApprovalChangeStep_Handler.previewUnsavedChanges format: one row per record,
+        // {objectApiName, rowId, values}; a new record has no rowId, a deleted one has deleted = true. The product
+        // row carries its final values (the form's, then the BBVA commitment recalculated from the tenors).
+        List<Map<String, Object>> toUnsavedRows() {
+            List<Map<String, Object>> rows = new List<Map<String, Object>>();
+            if (oli != null || commitmentFromTenors != null) {
+                Map<String, Object> productValues = new Map<String, Object>();
+                for (SObject source : new List<SObject>{ oli, commitmentFromTenors }) {
+                    if (source != null) {
+                        productValues.putAll(source.getPopulatedFieldsAsMap());
+                    }
+                }
+                productValues.remove('Id');
+                rows.add(new Map<String, Object>{
+                    'objectApiName' => 'OpportunityLineItem',
+                    'rowId' => (String) (oli != null ? oli.Id : commitmentFromTenors.Id),
+                    'values' => productValues
+                });
+            }
+            for (List<SObject> records : new List<List<SObject>>{ tenorsToUpsert, mitigantsToUpsert, underlyingsToUpsert }) {
+                for (SObject record : records) {
+                    Map<String, Object> values = new Map<String, Object>(record.getPopulatedFieldsAsMap());
+                    values.remove('Id');
+                    rows.add(new Map<String, Object>{
+                        'objectApiName' => String.valueOf(record.getSObjectType()),
+                        'rowId' => (String) record.Id,
+                        'values' => values
+                    });
+                }
+            }
+            for (List<SObject> records : new List<List<SObject>>{ tenorsToDelete, mitigantsToDelete, underlyingsToDelete }) {
+                for (SObject record : records) {
+                    rows.add(new Map<String, Object>{
+                        'objectApiName' => String.valueOf(record.getSObjectType()),
+                        'rowId' => (String) record.Id,
+                        'deleted' => true
+                    });
+                }
+            }
+            return rows;
         }
     }
 
@@ -1182,6 +1382,7 @@ public with sharing class DMT_OpportunityProductsController {
                    gf_initial_date__c, gf_maturity_date__c, DMT_Risk_Type__c,
                    DMT_Line_Type__c, DMT_Line_Tenor__c, DMT_Use_of_Proceeds__c,
                    DMT_TXT_Comentarios__c, DMT_Line_Oneoffdeal__c, DMT_Line_LC_LNC__c, g_line_commitment_level_type__c,
+                   DMT_Validity_Date__c,
                    loan_purpose_desc__c, gf_amortization_type__c, gf_payment_frequency__c,
                    DMT_RateType__c, DMT_bullet_amortization_indicator__c,
                    DMT_PricingGrid_OR_StepUps__c, DMT_balloon_amortization_indicator__c,
@@ -1207,7 +1408,7 @@ public with sharing class DMT_OpportunityProductsController {
                    Opportunity.DMT_Parent_Opportunity__c,
                    (SELECT Id, Name, CurrencyIsoCode, gf_spread_db__c, gf_spread_fb__c,
                            gj_nominal_amount_db__c, gf_nominal_amount_fb__c, gf_tenor_date__c,
-                           gf_accrual_fees_bp__c, gf_non_accrual_fees_bp__c
+                       gf_accrual_fees_bp__c, gf_non_accrual_fees_bp__c, DMT_Manual_RW__c
                     FROM Opportunity_Tenors__r
                     ORDER BY CreatedDate ASC)
             FROM OpportunityLineItem
@@ -1280,7 +1481,7 @@ public with sharing class DMT_OpportunityProductsController {
         List<DMT_Opportunity_Tenor__c> sourceTenors = [
             SELECT Name, CurrencyIsoCode, gf_spread_db__c, gf_spread_fb__c,
                    gj_nominal_amount_db__c, gf_nominal_amount_fb__c, gf_tenor_date__c,
-                   gf_accrual_fees_bp__c, gf_non_accrual_fees_bp__c
+                   gf_accrual_fees_bp__c, gf_non_accrual_fees_bp__c, DMT_Manual_RW__c
             FROM DMT_Opportunity_Tenor__c
             WHERE DMT_Opportunity_Product__c = :sourceLineItemId
         ];
@@ -1514,6 +1715,37 @@ public with sharing class DMT_OpportunityProductsController {
             return MODE_UNDRAWN;
         }
         return '';
+    }
+
+    @TestVisible
+    private static Boolean isSecuritizationMarker(String rawValue) {
+        if (String.isBlank(rawValue)) {
+            return false;
+        }
+        String normalized = String.valueOf(rawValue).toUpperCase()
+            .replace('Á', 'A')
+            .replace('É', 'E')
+            .replace('Í', 'I')
+            .replace('Ó', 'O')
+            .replace('Ú', 'U');
+        return normalized.contains(SECURITIZATION_MARKER_VALUE);
+    }
+
+
+
+
+    @TestVisible
+    private static Boolean isDoubleMarker(String rawValue) {
+        if (String.isBlank(rawValue)) {
+            return false;
+        }
+        String normalized = String.valueOf(rawValue).toUpperCase()
+            .replace('Á', 'A')
+            .replace('É', 'E')
+            .replace('Í', 'I')
+            .replace('Ó', 'O')
+            .replace('Ú', 'U');
+        return normalized.contains('DOBLES');
     }
 
     // ─── Taxonomy sort comparator ─────────────────────────────────────────────

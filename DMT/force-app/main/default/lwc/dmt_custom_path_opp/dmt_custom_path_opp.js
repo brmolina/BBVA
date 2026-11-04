@@ -9,11 +9,14 @@ import STAGENAME_FIELD from '@salesforce/schema/Opportunity.StageName'
 import ID_FIELD from '@salesforce/schema/Opportunity.Id'
 import RECORDTYPEID_FIELD from '@salesforce/schema/Opportunity.RecordTypeId'
 import REASONLOST_FIELD from '@salesforce/schema/Opportunity.DES_Reasons_Lost__c'
+import DATETOPROPOSAL_FIELD from '@salesforce/schema/Opportunity.DMT_DateToProposal__c' // CIBGLOBALD-4811
+import RECORD_TYPE_DEVELOPER_NAME_FIELD from '@salesforce/schema/Opportunity.RecordType.DeveloperName' // CIBGLOBALD-4811
 const ERROR_TITLE = 'You encountered some errors when trying to save this record'
 const ERROR_PERMISSION =
     'Unable to create/update fields: StageName. Please check the security settings of this field and verify that it is read/write for your profile or permission set.'
 const SUCCESS_UPDATING = 'Status changed successfully.'
 import getOppLockUser from '@salesforce/apex/DMT_Opportunity_Utils.getOppLockUser';
+import previewCompareTasksFromCase from '@salesforce/apex/DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase'; // CIBGLOBALD-4811
 import USER_ID from '@salesforce/user/Id';
 import ClosingFlowModal from 'c/hvsc_oppClosingFlow';
 
@@ -24,7 +27,7 @@ import DMT_LABEL_BTN_KEEP_EDITING            from '@salesforce/label/c.DMT_Label
 
 
 
-/** Normaliza cualquier stage Closed Won/Lost a "Closed" */
+/** Normalizes any Closed Won/Lost stage to "Closed" */ // CIBGLOBALD-4811
 const normalize = (stage) => stage?.includes('Closed') ? 'Closed' : stage
 
 export default class Dmt_custom_path_opp extends LightningElement {
@@ -38,19 +41,21 @@ export default class Dmt_custom_path_opp extends LightningElement {
     btnKeepEditing           : DMT_LABEL_BTN_KEEP_EDITING
 };
 
-    /* ── Estado interno ─────────────────────────────────────────────────────── */
+    /* ── Internal state ─────────────────────────────────────────────────────── */ // CIBGLOBALD-4811
 
-    _currentStage       // Stage real guardada en SF (ej: "Closed Won")
-    _selectedStage      // Stage seleccionada visualmente (puede ser "Closed")
-    _recordTypeId       // RecordTypeId para cargar picklist
-    _rawStages = []     // Valores originales del picklist [{value, label}]
-    reasonsLostOptions = []    // Valores del picklist de razones perdidas [{value, label}]
+    _currentStage       // Real stage saved in Salesforce (e.g. "Closed Won") // CIBGLOBALD-4811
+    _selectedStage      // Visually selected stage (can be "Closed") // CIBGLOBALD-4811
+    _recordTypeId       // RecordTypeId to load the picklists // CIBGLOBALD-4811
+    _dateToProposal     // CIBGLOBALD-4811
+    _recordTypeDeveloperName // CIBGLOBALD-4811
+    _rawStages = []     // Original picklist values [{value, label}] // CIBGLOBALD-4811
+    reasonsLostOptions = []    // Lost reasons picklist values [{value, label}] // CIBGLOBALD-4811
     _isEditing = false; // Tracks the current editing state of the Opportunity record
     _showPendingChangesModal = false; // Controls visibility of the pending changes modal
-    closedStageSelected = '' // Valor elegido en el select del modal
-    reasonsLostSelected = '' // Valor elegido en el select de razones perdidas (si aplica)
-    isLoading = false   // Spinner mientras se actualiza
-    isClosedLost = false // Flag para saber que es Closed Lost y poder sacar las razones
+    closedStageSelected = '' // Value chosen in the modal select // CIBGLOBALD-4811
+    reasonsLostSelected = '' // Value chosen in the lost reasons select (if any) // CIBGLOBALD-4811
+    isLoading = false   // Spinner during the update // CIBGLOBALD-4811
+    isClosedLost = false // True for Closed Lost, to show the reasons // CIBGLOBALD-4811
    
     @api
     set isEditing(value) {
@@ -75,21 +80,23 @@ export default class Dmt_custom_path_opp extends LightningElement {
         }
     }
 
-    /* ── Wire: datos del registro ────────────────────────────────────────────── */
+    /* ── Wire: record data ───────────────────────────────────────────────────── */ // CIBGLOBALD-4811
 
     @wire(getRecord, {
         recordId: '$recordId',
-        fields: [STAGENAME_FIELD, RECORDTYPEID_FIELD]
+        fields: [STAGENAME_FIELD, RECORDTYPEID_FIELD, DATETOPROPOSAL_FIELD, RECORD_TYPE_DEVELOPER_NAME_FIELD] // CIBGLOBALD-4811
     })
     record({ data }) {
         if (data) {
             this._currentStage = data.fields.StageName.value
             this._selectedStage = normalize(this._currentStage)
             this._recordTypeId = data.fields.RecordTypeId.value
+            this._dateToProposal = data.fields.DMT_DateToProposal__c.value // CIBGLOBALD-4811
+            this._recordTypeDeveloperName = data.fields.RecordType?.value?.fields?.DeveloperName?.value // CIBGLOBALD-4811
         }
     }
 
-    /* ── Wire: valores del picklist según RecordType ─────────────────────────── */
+    /* ── Wire: picklist values by RecordType ─────────────────────────────────── */ // CIBGLOBALD-4811
 
     @wire(getPicklistValues, {
         recordTypeId: '$_recordTypeId',
@@ -101,7 +108,7 @@ export default class Dmt_custom_path_opp extends LightningElement {
         }
     }
 
-    /* ── Wire: valores del picklist según RecordType ─────────────────────────── */
+    /* ── Wire: picklist values by RecordType ─────────────────────────────────── */ // CIBGLOBALD-4811
 
     @wire(getPicklistValues, {
         recordTypeId: '$_recordTypeId',
@@ -115,7 +122,7 @@ export default class Dmt_custom_path_opp extends LightningElement {
     }
 
 
-    /* ── Stages visibles: unifica Closed Won/Lost en un solo "Closed" ──────── */
+    /* ── Visible stages: Closed Won/Lost become one "Closed" ───────────────── */ // CIBGLOBALD-4811
 
     get _displayStages() {
         if (!this._rawStages.length) return []
@@ -130,7 +137,7 @@ export default class Dmt_custom_path_opp extends LightningElement {
         }, [])
     }
 
-    /* ── Lista de items para el template (clases SLDS según estado) ────────── */
+    /* ── Items for the template (SLDS classes by state) ──────────────────── */ // CIBGLOBALD-4811
 
     get stageItems() {
         const stages = this._displayStages
@@ -146,7 +153,7 @@ export default class Dmt_custom_path_opp extends LightningElement {
         return stages.map((stage, idx) => {
             let cssClass = 'slds-path__item'
 
-            // Estado base según SLDS
+            // Base state per SLDS // CIBGLOBALD-4811
             if (stage.value === 'Closed' && isClosed) {
                 cssClass += isWon ? ' slds-is-won slds-is-current' : ' slds-is-lost slds-is-current'
             } else if (stage.value === 'Closed') {
@@ -161,7 +168,7 @@ export default class Dmt_custom_path_opp extends LightningElement {
                 cssClass += ' slds-is-incomplete'
             }
 
-            // Stage visualmente seleccionado
+            // Visually selected stage // CIBGLOBALD-4811
             if (stage.value === selected) {
                 cssClass += ' slds-is-active'
             }
@@ -175,7 +182,7 @@ export default class Dmt_custom_path_opp extends LightningElement {
         })
     }
 
-    /* ── Getters para el template ─────────────────────────────────────────── */
+    /* ── Template getters ─────────────────────────────────────────────────── */ // CIBGLOBALD-4811
 
     get isCurrentSelected() {
         return this._selectedStage === normalize(this._currentStage)
@@ -185,7 +192,7 @@ export default class Dmt_custom_path_opp extends LightningElement {
         return this._currentStage?.includes('Closed') ?? false
     }
 
-    /** Texto del botón según SLDS */
+    /** Button text per SLDS */ // CIBGLOBALD-4811
     get actionButtonLabel() {
         if (this.isLoading) return 'Saving...'
         if (this._selectedStage === 'Closed') return 'Change Closed State'
@@ -194,7 +201,7 @@ export default class Dmt_custom_path_opp extends LightningElement {
         return 'Mark as Current Stage'
     }
 
-    /** Opciones del select en el modal (valores reales: Closed Won, Closed Lost) */
+    /** Options of the modal select (real values: Closed Won, Closed Lost) */ // CIBGLOBALD-4811
     get closedStageOptions() {
         return this._rawStages.filter(s => s.value.includes('Closed')).map(s => s.value)
     }
@@ -204,7 +211,7 @@ export default class Dmt_custom_path_opp extends LightningElement {
         return !this.closedStageSelected
     }
 
-    /** Siguiente stage lineal (excluyendo Closed) */
+    /** Next linear stage (excluding Closed) */ // CIBGLOBALD-4811
     get nextStage() {
         const linear = this._displayStages.filter(s => s.value !== 'Closed')
         const idx = linear.findIndex(s => s.value === this._currentStage)
@@ -219,15 +226,15 @@ export default class Dmt_custom_path_opp extends LightningElement {
     }
 
 async handleMarkAsCurrent() {
-    // Si hay cambios sin guardar → mostrar modal y salir
+    // Unsaved changes: show the modal and stop // CIBGLOBALD-4811
     if (this._isEditing) {
         this._showPendingChangesModal = true;
         return;
     }
-    // Verifica lock antes de continuar
+    // Checks the lock before going on // CIBGLOBALD-4811
     const isBlocked = await this.isEditingRecord();
     if (isBlocked) {
-        // Ya muestra el toast adentro
+        // The toast is shown inside // CIBGLOBALD-4811
         return;
     }
     await this.executeMarkAsCurrent();
@@ -246,24 +253,24 @@ async isEditingRecord() {
                 variant: 'warning',
                 mode: 'dismissable'
             }));
-            return true; // Está bloqueado por otro
+            return true; // Locked by someone else // CIBGLOBALD-4811
         }
-        return false; // No bloqueado, o bloqueado por ti mismo
+        return false; // Not locked, or locked by the current user // CIBGLOBALD-4811
     } catch (error) {
-        // Opcional: puedes mostrar un mensaje aquí si hay error en Apex
+        // Apex error // CIBGLOBALD-4811
         this.dispatchEvent(new ShowToastEvent({
             title: 'Error',
-            message: error?.body?.message || 'Error al verificar el bloqueo.',
+            message: error?.body?.message || 'Error checking the record lock.', // CIBGLOBALD-4811
             variant: 'error',
             mode: 'dismissable'
         }));
-        return true; // Por seguridad, asume bloqueado si hay error
+        return true; // Assumes locked on error, for safety // CIBGLOBALD-4811
     }
 }
 
 
     async executeMarkAsCurrent() {
-       // Stage "Closed" seleccionado → siempre modal
+       // "Closed" selected: always the modal // CIBGLOBALD-4811
         if (this._selectedStage === 'Closed') {
             this.closedStageSelected = ''
             ClosingFlowModal.open({
@@ -273,19 +280,19 @@ async isEditingRecord() {
             return
         }
 
-        // Opp cerrada pero seleccionó un stage no-closed → volver a ese stage
+        // Closed Opportunity with a non-closed stage selected: back to that stage // CIBGLOBALD-4811
         if (this.isClosed) {
-            const isValid = await this.validateSemaphoreForStage(this._selectedStage)
+            const isValid = await this.validateTrafficLightForStage(this._selectedStage) // CIBGLOBALD-4811
             if (!isValid) return
             this.updateStatus(this._selectedStage)
             return
         }
 
-        // Current seleccionado → avanzar al siguiente
+        // Current selected: move to the next // CIBGLOBALD-4811
         if (this.isCurrentSelected) {
             const next = this.nextStage
             if (!next) {
-                // Último stage lineal → abrir modal de Closed
+                // Last linear stage: open the Closed modal // CIBGLOBALD-4811
                 this.closedStageSelected = ''
                 ClosingFlowModal.open({
                     size: 'small',
@@ -293,13 +300,13 @@ async isEditingRecord() {
                 });
                 return
             }
-            const isValid = await this.validateSemaphoreForStage(next)
+            const isValid = await this.validateTrafficLightForStage(next) // CIBGLOBALD-4811
             if (!isValid) return
             this.updateStatus(next)
             return
         }
 
-        const isValid = await this.validateSemaphoreForStage(this._selectedStage)
+        const isValid = await this.validateTrafficLightForStage(this._selectedStage) // CIBGLOBALD-4811
         if (!isValid) return
         this.updateStatus(this._selectedStage)
     }
@@ -313,9 +320,9 @@ async isEditingRecord() {
     }
 
     /**
-     * Valida las reglas de semáforo (Capability + Workflow, AND/OR) para el stage destino.
+     * Validates the traffic light rules (Capability + Workflow, AND/OR) for the target stage. // CIBGLOBALD-4811
      */
-    async validateSemaphoreForStage(targetStage) {
+    async validateTrafficLightForStage(targetStage) { // CIBGLOBALD-4811
         try {
             const result = await validateSemaphoreRulesForStageChange({
                 opportunityId: this.recordId,
@@ -347,7 +354,7 @@ async isEditingRecord() {
         } catch (error) {
             this.dispatchEvent(new ShowToastEvent({
                 title: 'Validation Error',
-                message: error?.body?.message || 'Error validating semaphore rules.',
+                message: error?.body?.message || 'Error validating traffic light rules.', // CIBGLOBALD-4811
                 variant: 'error',
                 mode: 'dismissable'
             }))
@@ -385,7 +392,7 @@ async isEditingRecord() {
         }
     }*/
 
-        /* ── Handlers del modal "Pending Changes" ─────────────────────────────── */
+        /* ── "Pending Changes" modal handlers ───────────────────────────────── */ // CIBGLOBALD-4811
 
 
     handleCloseModal() {
@@ -393,7 +400,7 @@ async isEditingRecord() {
     }
 
     async handleExitWithoutSaving() {
-        // Notifica al padre que el usuario aceptó salir sin guardar
+        // Tells the parent that the user accepted leaving without saving // CIBGLOBALD-4811
         await this.dispatchEvent(new CustomEvent('reloadeditmode', {
             bubbles: true,
             composed: true
@@ -403,10 +410,50 @@ async isEditingRecord() {
 
     }
 
-    /* ── Actualización en Salesforce ──────────────────────────────────────── */
+    /* ── Salesforce update ───────────────────────────────────────────────── */ // CIBGLOBALD-4811
 
-    updateStatus(newStatus) {
+    // CIBGLOBALD-4811 - the Case type the Opportunity trigger checks at this stage change
+    // (DMT_OpportunityTriggerHandler.restartApprovalTasksOnOpportunityResubmission), or null when
+    // nothing can reopen.
+    caseTypeToCheck(newStatus) {
+        if (this._recordTypeDeveloperName !== 'DMT_Opportunity') {
+            return null
+        }
+        if (this._currentStage === 'Draft' && newStatus === 'Proposal' && this._dateToProposal) {
+            return 'passport'
+        }
+        if (this._currentStage === 'Proposal' && newStatus === 'Approval') {
+            return 'approval'
+        }
+        return null
+    }
+
+    // CIBGLOBALD-4811 - runs before the stage update, while the snapshot comparison still finds the
+    // stale tasks. A failing check never stops the stage change.
+    async showReopenWarning(newStatus) {
+        const caseTypeToCheck = this.caseTypeToCheck(newStatus)
+        if (!caseTypeToCheck) {
+            return
+        }
+        try {
+            const features = await previewCompareTasksFromCase({ recordId: this.recordId, caseTypeToCheck })
+            if (features && features.length > 0) {
+                // CIBGLOBALD-4811 - Cases with the same feature, owner and fields give the same line: shown once.
+                const message = [...new Set(features
+                    .map(feature => 'The feature  ' + feature.featureName + ' should be reopened with Owner: <b>' + (feature.taskToRecreate?.Owner?.Name || 'N/A') +
+                        '</b> due to changes in the following fields: <ul class="slds-list_dotted">' +
+                        Object.keys(feature.changedFields || {}).sort().map(field => '<li>' + field + '</li>').join('') + '</ul><br/>'))]
+                    .join('')
+                this.template.querySelector('c-dmt_customtoast')?.showToast('Features to Be Reopened', message, 'info', false)
+            }
+        } catch (error) {
+            console.error('Error previewing the features to reopen', error)
+        }
+    }
+
+    async updateStatus(newStatus) { // CIBGLOBALD-4811
         this.isLoading = true
+        await this.showReopenWarning(newStatus) // CIBGLOBALD-4811
         const fields = {
             [ID_FIELD.fieldApiName]: this.recordId,
             [STAGENAME_FIELD.fieldApiName]: newStatus,

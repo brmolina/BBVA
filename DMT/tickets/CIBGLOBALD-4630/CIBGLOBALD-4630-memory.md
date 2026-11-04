@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: eb35ce4e-2d3b-473c-9de7-c6c1d36b558e
-  modified: 2026-10-15T16:31:44.947Z
+  modified: 2026-11-03T09:43:18.549Z
 ---
 
 # CIBGLOBALD-4630 - Guarantor data preload from HPG
@@ -64,7 +64,7 @@ Start from dmt_opp_tab LWC -> child product LWC -> find which table is the Guara
 - DMT_Test_DataFactory: added generateTaxonomyValue(catalog, value). DMT_OpportunityProductsControllerTest: 5 new tests + System.assert* -> Assert.* rename (135, verified).
 - manifest/package.xml: the 3 classes + the LWC bundle. The deployed LWC bundle also carries other devs' org changes (Mitigant_Type E895 catalog, dmt_mitigant_utils) because retrieve was fresh.
 - Test gotcha: Account.DES_Group_Code__c and g_customer_id__c are unique; factory default group code collides with @TestSetup account.
-- Not yet done: user QA in UI; commit (needs user go-ahead); ticket folder tickets/CIBGLOBALD-4630.
+- Not yet done: user QA in UI; commit (needs user go-ahead); ticket folder DMT/tickets/CIBGLOBALD-4630.
 
 ## Browser test (2026-10-15, Chrome, DMT_TCM_DEV, Opp 006KE000003QulXYAS 'Opportunity clone from Iber Inmo...' Products tab -> Guarantors +)
 - Modal opens empty, lookup lists GRIFOLS VIAJES S.A.; on select the warning toast 'HPG data not available' appeared, fields stayed blank (failure path works).
@@ -80,13 +80,29 @@ Start from dmt_opp_tab LWC -> child product LWC -> find which table is the Guara
 - Pending: commit message (needs user go-ahead), ticket technical note (Spanish), QA by user, tech lead reply optional now.
 
 ## HANDOVER (2026-10-15 evening) - ticket considered finished
-- Full handover, commit message and Spanish ticket note live in `D:\AI\brmolina-BBVA\tickets\CIBGLOBALD-4630\` (CIBGLOBALD-4630-HANDOVER.md, -commit-message.txt, -nota-tecnica-ticket.txt). Read HANDOVER first.
+- Full handover, commit message and Spanish ticket note live in `D:\AI\brmolina-BBVA\DMT\tickets\CIBGLOBALD-4630\` (CIBGLOBALD-4630-HANDOVER.md, -commit-message.txt, -nota-tecnica-ticket.txt). Read HANDOVER first.
 - Added after the earlier notes: DMT_Passport_Selector overload getTaxonomyValuesByValueAndCatalog(value, catalog, System.AccessLevel) (lines 325-335); Account read and taxonomy validation in SYSTEM_MODE; manifest has 5 components.
 - Org check: all components identical to local; factory in org is Jimmy's 15:06 UTC version and contains generateTaxonomyValue. User deployed controller + selector by hand (my deploy ended Status: Failed on the 75% coverage gate of DMT_Passport_Selector with RunSpecifiedTests).
 - Still not committed (needs user go-ahead). User will do wrap-up (review staged, commit) in another session.
 
+## Release validation failure + fix (2026-10-29)
+- Release error: testGetGuarantorHpgData_FoundMapsInternalRating and ..._InternalRatingNotInCatalogStaysEmpty failed with 'The Guarantor should be found in the HPG response' (success true, found false).
+- Cause: org data, not code. HPG mock = CMDT iaso__GBL_integration_service DMT_HPG_GlobalPosition, field iaso__Mock_LTA__c: DMT_TCM_DEV has 4 customers (ES0000000000001, ...02, PE...01, MX...01); DMTPRE2 has "data": [] (empty). Our tests hardcoded ES0000000000001.
+- Verified in the org (DMT_TCM_DEV): our guarantor block in DMT_OpportunityProductsController, the DMT_Passport_Selector overload and the test class were identical to commit 135402b0 (nothing overwritten). Others changed the controller elsewhere (Adrian Benavent Serena 2026-10-26, 97 lines outside our block) and the factory (526 lines; generateTaxonomyValue still there). All 64 tests passed in DEV before the fix.
+- Fix: test class only. New private getHpgMockCustomer() reads the same CMDT record; both tests derive customer code (and rating) from it and assert found == (mock has customers). Validated and deployed to DMT_TCM_DEV (Status Succeeded, 64/64); org copy == file. Empty-mock branch not runnable in DEV; covered by equivalence with the passing not-found test.
+- Deploy note: from a minimal scratch SFDX project (repo paths too long for a worktree); needed --ignore-conflicts after comparing org vs base.
+- Files: DMT/tickets/CIBGLOBALD-4630/CIBGLOBALD-4630-fix-tests-manifest.xml and -fix-tests-commit-message.txt. Rule added to global CLAUDE.md (tests must not assume integration mock content).
+
+## DMTPRE2 verification (2026-11-03) - PASSED
+- Metadata: retrieved the 4 classes + LWC bundle from DMTPRE2 (read-only). Our getGuarantorHpgData, resolveActiveCatalogValue, selector overload and the LWC HPG code are identical to ours; PRE2 LWC js also carries another ticket's hideEndDate code. Test class in PRE2 has getHpgMockCustomer. DMTPRE2 HPG mock CMDT now has 4 customers (earlier note of an empty array was stale/different).
+- Read-only Apex probe of getGuarantorHpgData (no DML): real HPG answers in PRE2. Examples: ROCHESTER GAS AND ELECTRIC CORP (001KI00000MH6egYAD, ES0182034124902) -> 3.81 / A- / external BBB+; GRIFOLS INTERNATIONAL S.A. (001KI00000MH40JYAT) -> 8.12 / B+1 / no external; GOLDEN BAR (001KI00000MH592YAD) found but no values; ELECTRICIDAD INDUSTRIAL BLASCO and VIAJES INTERNACIONAL GAVA -> not found (toast). Probe more than ~3 accounts per anonymous run hits 'Too many SOQL queries: 101'.
+- Browser (Opp 006KI000005et0sYAA, One-Off Corporate Lending + Line Leasing): preload OK in both; changing Guarantor clears old values (BBB+ cleared when switching to Grifols); not-found shows warning toast 'HPG data not available' (dismisses in ~2s, capture right after the click); Political/Commercial stay blank (new) / keep saved 34 (edit). Opening Edit does not call HPG. Save via Edit persisted A-/3.81/BBB+ (SOQL verified).
+- Restored mitigant a6sKK00000005RLYAY to original (Golden Bar, AA+, scoring null, external null, 34/34) via sf update + one-record anonymous Apex; LastModifiedDate changed. No records created, nothing to delete.
+- Side finding (not ours): in DMTPRE2 the Mitigant Type and Guarantor Type picklists of the New Guarantor modal do not open (empty listbox), so a new record could not be created from the UI; E895 has 24 active values in PRE2.
+- Evidence: DMT/tickets/CIBGLOBALD-4630/CIBGLOBALD-4630-DMTPRE2-*.png (5 files), not committed.
+
 ## Status
-- Research done; waiting on tech lead answer about External Rating field.
+- Delivered to DMTPRE2 and tested OK 2026-11-03.
 
 ## Components touched
 (none yet)

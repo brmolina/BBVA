@@ -7,7 +7,7 @@ import DMT_LINE_OBJECT from '@salesforce/schema/DMT_Line__c'
 import STATUS_FIELD from '@salesforce/schema/DMT_Line__c.Status__c'
 import CLIENT_TYPE_FIELD from '@salesforce/schema/DMT_Line__c.Client_Type__c'
 import CLIENT_ID_FIELD from '@salesforce/schema/DMT_Line__c.Client__c'
-import RECORD_TYPE_FIELD from '@salesforce/schema/DMT_Line__c.RecordTypeId'
+import RECORD_TYPE_DEVELOPER_NAME_FIELD from '@salesforce/schema/DMT_Line__c.RecordType.DeveloperName' // CIBGLOBALD-4811
 import ID_FIELD from '@salesforce/schema/DMT_Line__c.Id'
 import WON_LOST_FIELD from '@salesforce/schema/DMT_Line__c.Closed__c'
 import GEOGRAPHY_FIELD from '@salesforce/schema/DMT_Line__c.Booking_Geography__c'
@@ -41,6 +41,7 @@ export default class Dmt_custom_path_line extends LightningElement {
   geography
   wonLostValue
   dateToProposal
+  recordTypeDeveloperName // CIBGLOBALD-4811
   lineTemplate
   @wire(getObjectInfo, { objectApiName: DMT_LINE_OBJECT })
   objectInfo
@@ -49,7 +50,6 @@ export default class Dmt_custom_path_line extends LightningElement {
   showModal = false
   _rawStages
   showNotApprovalModal = false;
-  draftProposalMessage = '';
   showTreasuryToExpire = false;
   showTreasuryToExpireMessage;
   isReadOnly = false;
@@ -101,7 +101,8 @@ export default class Dmt_custom_path_line extends LightningElement {
       GEOGRAPHY_FIELD,
       WON_LOST_FIELD,
       DATETOPROPOSAL_FIELD,
-      LINE_TEMPLATE
+      LINE_TEMPLATE,
+      RECORD_TYPE_DEVELOPER_NAME_FIELD // CIBGLOBALD-4811
     ]
   })
   record ({ error, data }) {
@@ -113,6 +114,7 @@ export default class Dmt_custom_path_line extends LightningElement {
       this.wonLostValue = data.fields.Closed__c.value
       this.dateToProposal = data.fields.DMT_DateToProposal__c.value
       this.lineTemplate = data.fields.DMT_line_template_type__c.value
+      this.recordTypeDeveloperName = data.fields.RecordType?.value?.fields?.DeveloperName?.value // CIBGLOBALD-4811
       this.selectedStage = this.status
       this.stagesToDisable = data.recordTypeInfo.name == STAGE_APPROVAL ? STAGES_DISABLED_FOR_APPROVAL : [];
       this.isReadOnly = data.recordTypeInfo.name == STAGE_APPROVAL;
@@ -138,12 +140,12 @@ export default class Dmt_custom_path_line extends LightningElement {
         this.wonLostValue = 'Won';
         this.selectedStage = this.status;
       }
-      // Si hasProspect=true, mantener "Ready to close"
+      // hasProspect = true: stays in "Ready to close" // CIBGLOBALD-4811
     } catch (error) {
       console.error('Error checking Prospect - blocking auto-change to Close Won for safety:', error);
-      // SEGURIDAD: Si falla validación, NO auto-change
-      // Mantener "Ready to close" para revisión manual
-      // Esto evita cerrar líneas con Prospect por errores técnicos
+      // SAFETY: no auto-change when the validation fails // CIBGLOBALD-4811
+      // Keeps "Ready to close" for manual review // CIBGLOBALD-4811
+      // Avoids closing Lines with a Prospect because of technical errors // CIBGLOBALD-4811
     } finally {
       this.calculateStages();
     }
@@ -220,7 +222,6 @@ export default class Dmt_custom_path_line extends LightningElement {
       (this.status && this.status.includes('Closed') && !this.selectedStage) ||
       (this.status && this.status.includes('Closed') && this.selectedStage && this.selectedStage.includes('Closed'))) {
         const childComponent = this.template.querySelector('.childCustomPath')
-        console.log('JACG Entro aqui ' + childComponent);
         if (childComponent) {
           childComponent.setIsDisabled(true)
         }
@@ -239,7 +240,6 @@ export default class Dmt_custom_path_line extends LightningElement {
       return;
     }
     let nextStage = event.detail.nextStage
-    console.log('nextStage: '+nextStage);
     const childComponent = this.template.querySelector('.childCustomPath')
     if((nextStage == 'Closed'  ||
       nextStage == 'Ready to close') &&
@@ -260,55 +260,7 @@ export default class Dmt_custom_path_line extends LightningElement {
       return
     }
 
-    if (this.status == 'Draft' && nextStage != 'Draft' && this.dateToProposal) {
-      // CIBGLOBALD-4117 - the actual restart (cancel/recreate the Task) runs from
-      // DMT_Line_TriggerHandler on save. previewCompareTasksFromCase is read-only, only feeds
-      // the toast message below.
-      previewCompareTasksFromCase({ recordId: this.recordId}).then(result => {
-        console.log('result JACG: '+JSON.stringify(result));
-        if (result && result.length === 0) {
-          this.draftProposalMessage = 'There is no task or case created, so the draft-proposal logic won\'t be operating';
-        }
-        else if (result && result.length === 1 && !result[0].hasOwnProperty("changedFields")) {
-          this.draftProposalMessage = 'There has been no changes in the line, so the last feature will continue to be open: ' + result[0].featureName;
-        } else {
-          for (let i = 0; i < result.length; i++) {
-            const ownerName =
-              result[i] &&
-              result[i].taskToRecreate &&
-              result[i].taskToRecreate.Owner &&
-              result[i].taskToRecreate.Owner.Name
-                ? result[i].taskToRecreate.Owner.Name
-                : 'N/A'
-            this.draftProposalMessage += 'The feature  ' + result[i].featureName + ' should be reopened with Owner: <b>' + ownerName + '</b> due to changes in the following fields: <ul class="slds-list_dotted">';
-            for (let key in result[i].changedFields) {
-              this.draftProposalMessage += '<li>' + key + '</li>'
-            }
-            //this.draftProposalMessage = this.draftProposalMessage.slice(0, -2);
-            this.draftProposalMessage += '</ul><br/>'
-          }
-
-           /*this.dispatchEvent(
-          new ShowToastEvent({
-            title: 'Features to Be Reopened',
-            message: this.draftProposalMessage,
-            variant: 'info',
-            mode: 'sticky'
-          }));*/
-          const toastComponent = this.template.querySelector('c-dmt_customtoast');
-          if (toastComponent) {
-              // CIBGLOBALD-4117 - previewCompareTasksFromCase is read-only; the actual
-              // cancel/recreate runs later from DMT_Line_TriggerHandler on save, so the title must
-              // not read as already done.
-              toastComponent.showToast('Features to Be Reopened', this.draftProposalMessage, 'info', false);
-          } else {
-              console.error('dmt_customtoast component not found in the DOM');
-          }
-        }
-      })
-
-    }
-
+    // CIBGLOBALD-4811 - the reopen warning is shown by showReopenWarning, called from updateStatus before the save.
     if (this.status == 'Draft' && nextStage != 'Draft' && this.lineTemplate == 'TL') {
       getRelatedTRSRLinesByLineId({ recordId: this.recordId })
         .then((relatedLines) => {
@@ -413,7 +365,46 @@ export default class Dmt_custom_path_line extends LightningElement {
   }
   }
 
-  updateStatus (newStatus) {
+  // CIBGLOBALD-4811 - the Case type the Line trigger checks at this stage change
+  // (DMT_Line_Helper.restartApprovalTasksOnLineResubmission), or null when nothing can reopen.
+  caseTypeToCheck (newStatus) {
+    if (this.recordTypeDeveloperName !== 'TreasurySettlement' && this.recordTypeDeveloperName !== 'OtherProducts') {
+      return null
+    }
+    if (this.status === 'Draft' && newStatus === 'Proposal' && this.dateToProposal) {
+      return 'passport'
+    }
+    if (this.status === 'Proposal' && newStatus === 'Approval') {
+      return 'approval'
+    }
+    return null
+  }
+
+  // CIBGLOBALD-4811 - runs before the stage update, while the snapshot comparison still finds the
+  // stale tasks. A failing check never stops the stage change.
+  async showReopenWarning (newStatus) {
+    const caseTypeToCheck = this.caseTypeToCheck(newStatus)
+    if (!caseTypeToCheck) {
+      return
+    }
+    try {
+      const features = await previewCompareTasksFromCase({ recordId: this.recordId, caseTypeToCheck })
+      if (features && features.length > 0) {
+        // CIBGLOBALD-4811 - Cases with the same feature, owner and fields give the same line: shown once.
+        const message = [...new Set(features
+          .map(feature => 'The feature  ' + feature.featureName + ' should be reopened with Owner: <b>' + (feature.taskToRecreate?.Owner?.Name || 'N/A') +
+            '</b> due to changes in the following fields: <ul class="slds-list_dotted">' +
+            Object.keys(feature.changedFields || {}).sort().map(field => '<li>' + field + '</li>').join('') + '</ul><br/>'))]
+          .join('')
+        this.template.querySelector('c-dmt_customtoast')?.showToast('Features to Be Reopened', message, 'info', false)
+      }
+    } catch (error) {
+      console.error('Error previewing the features to reopen', error)
+    }
+  }
+
+  async updateStatus (newStatus) { // CIBGLOBALD-4811
+    await this.showReopenWarning(newStatus) // CIBGLOBALD-4811
     const fields = {}
     fields[ID_FIELD.fieldApiName] = this.recordId
     fields[STATUS_FIELD.fieldApiName] = newStatus

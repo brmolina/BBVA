@@ -370,38 +370,38 @@ public without sharing class DMT_OpportunityTriggerHandler {
     /**
      * CIBGLOBALD-3748 Executed After Update. Dynamically verify that the opportunity fields
      * meet the necessary requirements to be submitted to Clan.
-     */
-    public void checkReadyToCloseIBF(List<Opportunity> newList, Map<Id, Opportunity> oldMap) {
-        System.debug('checkReadyToCloseIBF newList: ' + newList);
-        Id dmtRecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
-        for (Opportunity opp : newList) {
-            Opportunity oldOpp = oldMap.get(opp.Id);
-            Boolean shouldSend = false;
-            System.debug('checkReadyToCloseIBF opp: ' + opp);
-            System.debug('checkReadyToCloseIBF dmtRecordTypeId: ' + dmtRecordTypeId);
-            System.debug('checkReadyToCloseIBF oldOpp.StageName: ' + oldOpp.StageName);
-            System.debug('checkReadyToCloseIBF shouldSend: ' + shouldSend);
-            if (opp.RecordTypeId == dmtRecordTypeId && opp.StageName == 'Ready to close' && opp.StageName != oldOpp.StageName && opp.DMT_Product_Area__c == 'IB&F') {
-                shouldSend = true;
-                System.debug('checkReadyToCloseIBF shouldSend 2: ' + shouldSend);
-            }else if (opp.RecordTypeId == dmtRecordTypeId && opp.StageName == 'Ready to close' && hasChangedFields(opp, oldOpp) && opp.DMT_Product_Area__c == 'IB&F'){
-                shouldSend = true;
-                System.debug('checkReadyToCloseIBF shouldSend 3: ' + shouldSend);
-            }
+     * Se comenta para unificar logica de IB&F con GTB en el metodo processOpportunityIntegrations /
+    // public void checkReadyToCloseIBF(List<Opportunity> newList, Map<Id, Opportunity> oldMap) {
+    //     System.debug('checkReadyToCloseIBF newList: ' + newList);
+    //     Id dmtRecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
+    //     for (Opportunity opp : newList) {
+    //         Opportunity oldOpp = oldMap.get(opp.Id);
+    //         Boolean shouldSend = false;
+    //         System.debug('checkReadyToCloseIBF opp: ' + opp);
+    //         System.debug('checkReadyToCloseIBF dmtRecordTypeId: ' + dmtRecordTypeId);
+    //         System.debug('checkReadyToCloseIBF oldOpp.StageName: ' + oldOpp.StageName);
+    //         System.debug('checkReadyToCloseIBF shouldSend: ' + shouldSend);
+    //         if (opp.RecordTypeId == dmtRecordTypeId && opp.StageName == 'Ready to close' && opp.StageName != oldOpp.StageName && opp.DMT_Product_Area__c == 'IB&F') {
+    //             shouldSend = true;
+    //             System.debug('checkReadyToCloseIBF shouldSend 2: ' + shouldSend);
+    //         }else if (opp.RecordTypeId == dmtRecordTypeId && opp.StageName == 'Ready to close' && hasChangedFields(opp, oldOpp) && opp.DMT_Product_Area__c == 'IB&F'){
+    //             shouldSend = true;
+    //             System.debug('checkReadyToCloseIBF shouldSend 3: ' + shouldSend);
+    //         }
 
-            if (shouldSend) {
-                System.debug('checkReadyToCloseIBF opp shouldSend: ' + opp.Id);
-                DMT_AsyncOrchestrator.enqueue(
-                    new DMT_DynamicMapperPayload(
-                        opp.Id,
-                        'DMT_Opportunity_RTC_To_Clan',
-                        opp.StageName
-                    )
-                );
-            }
-        }
-        DMT_AsyncOrchestrator.flush();
-    }
+    //         if (shouldSend) {
+    //             System.debug('checkReadyToCloseIBF opp shouldSend: ' + opp.Id);
+    //             DMT_AsyncOrchestrator.enqueue(
+    //                 new DMT_DynamicMapperPayload(
+    //                     opp.Id,
+    //                     'DMT_Opportunity_RTC_To_Clan',
+    //                     opp.StageName
+    //                 )
+    //             );
+    //         }
+    //     }
+    //     DMT_AsyncOrchestrator.flush();
+    // }
     /**
      * CIBGLOBALD-3748 Executed After Update. Dynamically verify that the opportunity fields
      * change to be submitted to Clan.
@@ -440,25 +440,26 @@ public without sharing class DMT_OpportunityTriggerHandler {
     }
     /**
      * CIBGLOBALD-3757 Dynamically Verify that the opportunities meet the necessary requirements to be submitted to GTB.
+     * Se comenta para unificar logica de IB&F con GTB en el metodo processOpportunityIntegrations
      */
-    public void checkOppGTB(List<Opportunity> newList, Map<Id, Opportunity> oldMap) {
-        Id dmtRecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
-        for (Opportunity opp : newList) {
-            Opportunity oldOpp = oldMap.get(opp.Id);
-            Boolean shouldSend = false;
-            if (opp.RecordTypeId == dmtRecordTypeId && opp.StageName != 'Draft' && opp.StageName != oldOpp.StageName && opp.DMT_Product_Area__c == 'GTB') {
-                System.debug('checkOppGTB opp: ' + opp.Id);
-                DMT_AsyncOrchestrator.enqueue(
-                    new DMT_DynamicMapperPayload(
-                        opp.Id,
-                        'DMT_Opportunity_GTB',
-                        opp.StageName
-                    )
-                );
-            }
-        }
-        DMT_AsyncOrchestrator.flush();
-    }
+    // public void checkOppGTB(List<Opportunity> newList, Map<Id, Opportunity> oldMap) {
+    //     Id dmtRecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
+    //     for (Opportunity opp : newList) {
+    //         Opportunity oldOpp = oldMap.get(opp.Id);
+    //         Boolean shouldSend = false;
+    //         if (opp.RecordTypeId == dmtRecordTypeId && opp.StageName != 'Draft' && opp.StageName != oldOpp.StageName && opp.DMT_Product_Area__c == 'GTB') {
+    //             System.debug('checkOppGTB opp: ' + opp.Id);
+    //             DMT_AsyncOrchestrator.enqueue(
+    //                 new DMT_DynamicMapperPayload(
+    //                     opp.Id,
+    //                     'DMT_Opportunity_GTB',
+    //                     opp.StageName
+    //                 )
+    //             );
+    //         }
+    //     }
+    //     DMT_AsyncOrchestrator.flush();
+    // }
     /**
      * @description metodo de prueba para enviar opportunities a GTB sin tener que cumplir la logica del metodo checkOppGTB.
      */
@@ -481,6 +482,36 @@ public without sharing class DMT_OpportunityTriggerHandler {
         );
         DMT_AsyncOrchestrator.flush();
 
+    }
+
+/**
+     * CIBGLOBALD-3757 y CIBGLOBALD-3748 Dynamically Verify that the opportunities meet the necessary requirements to be submitted to GTB or IB&F.
+     */
+    public void processOpportunityIntegrations(List<Opportunity> newList, Map<Id, Opportunity> oldMap) {
+        Id dmtRecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
+        
+        for (Opportunity opp : newList) {
+            Opportunity oldOpp = oldMap.get(opp.Id);
+            // Validar que sea del RecordType requerido
+            if (opp.RecordTypeId != dmtRecordTypeId) {
+                continue;
+            }
+
+            Boolean isStageChangedNonDraft = (opp.StageName != oldOpp.StageName && opp.StageName != 'Draft');
+            Boolean isReadyToCloseFieldsChanged = (opp.StageName == 'Ready to close' && hasChangedFields(opp, oldOpp));
+            // Si cumple cualquiera de las dos condiciones
+            if (isStageChangedNonDraft || isReadyToCloseFieldsChanged) {
+                System.debug('processOpportunityIntegrations opp: ' + opp.Id);
+                DMT_AsyncOrchestrator.enqueue(
+                    new DMT_DynamicMapperPayload(
+                        opp.Id,
+                        'DMT_Opportunity_Integrations',
+                        opp.StageName
+                    )
+                );
+            }
+        }
+        DMT_AsyncOrchestrator.flush();
     }
 
     /**
@@ -537,7 +568,8 @@ public without sharing class DMT_OpportunityTriggerHandler {
                 if (oldOpp.StageName == DMT_Constants.PROPOSAL && opp.StageName == DMT_Constants.APPROVAL) {
                     approvalEntryOppIds.add(opp.Id);
                 }
-                if (oldOpp.StageName == DMT_Constants.READYTOCLOSE && opp.StageName == DMT_Constants.READYTOCLOSE) {
+                if (oldOpp.StageName == DMT_Constants.READYTOCLOSE && opp.StageName == DMT_Constants.READYTOCLOSE
+                    && !DMT_ApprovalChangeStep_Helper.isOnlyEditLockAcquired(opp, oldOpp, 'DMT_Opp_User_Lock__c')) { // CIBGLOBALD-4811 - Enhancement to existing process
                     readyToCloseEditOppIds.add(opp.Id);
                 }
             }
@@ -563,6 +595,7 @@ public without sharing class DMT_OpportunityTriggerHandler {
      *
      * Called once per checkpoint, so each gets its own sync/async threshold.
      * Queries per call: 1 Case + 2 in the shared gate + 1 per child section.
+     * CIBGLOBALD-4811 - child sections only of the components frozen in the snapshots, none when no task can restart.
      */
     private void restartApprovalTasksForOpportunities(Set<Id> qualifyingOppIds, String passportSanctionFilter, Map<Id, Opportunity> newOppsById) {
         if (qualifyingOppIds.isEmpty()) {
@@ -594,7 +627,7 @@ public without sharing class DMT_OpportunityTriggerHandler {
                 caseIdToOppId,
                 newOppsById.values(),
                 'opportunity',
-                DMT_SnapshotChildComparator.forRecords(qualifyingOpps),
+                qualifyingOpps, // CIBGLOBALD-4811 - Enhancement fix to existing process: comparator built in the gate
                 'DMT_OpportunityTriggerHandler'
             );
         } catch (Exception e) {

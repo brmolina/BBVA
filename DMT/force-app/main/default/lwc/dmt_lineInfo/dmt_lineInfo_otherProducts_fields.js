@@ -12,7 +12,7 @@
 //
 // The two "Minimum ... without financing" fields reuse the pre-existing gf_min_raroec_wo_fcg_per__c/
 // gf_min_rorc_wo_fcg_per__c fields. They store a rate per unity (0 to 1), so they are shown as a
-// percentage (isFractionPercent) and the edit input is capped at 1, same as the Sanction field set
+// percentage (isPercent) and the edit input is capped at 100, same as the Sanction field set
 // (see dmt_lineInfo_sanction_fields.js).
 export const otherProductsFields = [
     {
@@ -90,18 +90,19 @@ export const otherProductsFields = [
         options: []
     },
     {
-        // placeholder is kept in sync with CurrencyIsoCode at runtime — see dmt_lineInfo.js.
+        // Changes been made for CIBGLOBALD-4741
         id: 'Amount__c',
         label: 'Amount',
         apiName: 'Amount__c',
         value: '',
         size: '1-of-2',
         step: '0.01',
-        type: 'number',
+        type: 'numberWithSuffix',
+        extraText: '',
+        showCounterButtons: false,
         isReadOnly: false,
         isHidden: false,
-        isRequired: true,
-        placeholder: ''
+        isRequired: true
     },
     {
         // Options populated at runtime — see file header note.
@@ -158,16 +159,17 @@ export const otherProductsFields = [
         options: []
     },
     {
+        // Changes been made for CIBGLOBALD-4741
         id: 'gf_min_raroec_wo_fcg_per__c',
         label: 'Minimum RAROEC without financing',
         apiName: 'gf_min_raroec_wo_fcg_per__c',
         value: '',
         size: '1-of-2',
-        helpText: 'Rate per unity (e.g. 0.2 = 20%). Maximum 1.',
-        step: '0.000001',
+        helpText: 'Enter a percentage (e.g. 12 = 12%). Maximum 100%.',
+        step: '0.0001',
         min: 0,
-        max: 1,
-        isFractionPercent: true,
+        max: 100,
+        isPercent: true,
         percentFractionDigits: 4,
         type: 'number',
         isReadOnly: false,
@@ -175,16 +177,17 @@ export const otherProductsFields = [
         isRequired: false
     },
     {
+        // Changes been made for CIBGLOBALD-4741
         id: 'gf_min_rorc_wo_fcg_per__c',
         label: 'Minimum RORC without financing',
         apiName: 'gf_min_rorc_wo_fcg_per__c',
         value: '',
         size: '1-of-2',
-        helpText: 'Rate per unity (e.g. 0.2 = 20%). Maximum 1.',
-        step: '0.000001',
+        helpText: 'Enter a percentage (e.g. 12 = 12%). Maximum 100%.',
+        step: '0.0001',
         min: 0,
-        max: 1,
-        isFractionPercent: true,
+        max: 100,
+        isPercent: true,
         percentFractionDigits: 4,
         type: 'number',
         isReadOnly: false,
