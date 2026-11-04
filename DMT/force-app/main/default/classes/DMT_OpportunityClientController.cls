@@ -49,6 +49,8 @@ public with sharing class DMT_OpportunityClientController {
     private static final String KEY_SUBSECTOR = 'DMT_Subsector__c';
     private static final String KEY_DMT_ACTIVITY = 'DMT_Activity__c';
     private static final String KEY_CAMN = 'DMT_CAMN__c';
+    // CIBGLOBALD-4806 - Industry key in the current/original record maps
+    private static final String KEY_INDUSTRY = 'DMT_Industry__c';
 
     private static final String CAMN_CATALOG_CODE = 'A521';
 
@@ -358,8 +360,9 @@ public with sharing class DMT_OpportunityClientController {
                 return resolved;
             }
         }
+        // CIBGLOBALD-4806 - Industry added: original value of Client Data Industry (buildOriginalRecord)
         List<Account> accounts = [
-            SELECT Id, g_customer_id__c, DES_Segment__c
+            SELECT Id, g_customer_id__c, DES_Segment__c, Industry
             FROM Account
             WHERE g_customer_id__c = :alphaCode
             WITH USER_MODE
@@ -499,6 +502,16 @@ public with sharing class DMT_OpportunityClientController {
             Account referenceAccount = clientId != null ? mainHolderAccountsById.get((Id) clientId) : null;
             String referenceSegment = referenceAccount != null ? referenceAccount.DES_Segment__c : opp?.Account.DES_Segment__c;
             original.put(KEY_COUNTERPART, hpgClientType != null ? hpgClientType : SEGMENT_TO_COUNTERPART.get(referenceSegment));
+            // CIBGLOBALD-4806 - Industry original value: Account.Industry of the same client, the source creation copies into
+            // DMT_Industry__c (DMT_CreateOpportunityService.getClientValues); without it Industry never showed the warning
+            String referenceIndustry = referenceAccount != null ? referenceAccount.Industry : opp?.Account.Industry;
+            // CIBGLOBALD-4806 - {value, label} so the warning tooltip shows the Industry name, not its code (same shape as Sector)
+            original.put(
+                KEY_INDUSTRY,
+                String.isBlank(referenceIndustry)
+                    ? null
+                    : new Map<String, Object>{ 'value' => referenceIndustry, 'label' => getIndustryLabel(referenceIndustry) }
+            );
             original.put(
                 KEY_SECTOR,
                 String.isBlank(customerHpg?.assetAllocationSectorType)
@@ -550,6 +563,19 @@ public with sharing class DMT_OpportunityClientController {
             'serviceErrorMessage' => serviceErrorMessage,
             'searchDate' => lastDate
         };
+    }
+
+    /**
+     * @description CIBGLOBALD-4806 - Label of an Account.Industry picklist code (e.g. '1' -> 'INDUSTRIALS & TRANSPORTATION');
+     * the code itself when it is not a picklist value.
+     */
+    private static String getIndustryLabel(String industryCode) {
+        for (Schema.PicklistEntry entry : Account.Industry.getDescribe().getPicklistValues()) {
+            if (entry.getValue() == industryCode) {
+                return entry.getLabel();
+            }
+        }
+        return industryCode;
     }
 
     // CAMBIO A521: nuevo — busca el name de HPG dentro del catálogo A521 y devuelve {value,label} del catálogo, o null si no hay match..
@@ -683,6 +709,7 @@ public with sharing class DMT_OpportunityClientController {
     }
 
     private static Opportunity findOpportunityById(Id opportunityId) {
+        // CIBGLOBALD-4806 - Account.Industry added: original Industry for Customer/Subsidiary Opportunities (buildOriginalRecord)
         List<Opportunity> results = [
             SELECT
                 Id,
@@ -693,7 +720,8 @@ public with sharing class DMT_OpportunityClientController {
                 Account.DES_Group_Code__c,
                 Account.RecordType.DeveloperName,
                 Account.g_customer_id__c,
-                Account.DES_Segment__c
+                Account.DES_Segment__c,
+                Account.Industry
             FROM Opportunity
             WHERE Id = :opportunityId
             WITH USER_MODE
