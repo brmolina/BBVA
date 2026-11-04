@@ -1,0 +1,17 @@
+CIBGLOBALD-4806 - Nota técnica (2) - Aviso de valor original en Rating e Industry
+
+1. Industry
+- Antes: Client Data (LWC dmt_opp_client) solo muestra el aviso de valor original (triángulo con tooltip 'Original value: ...' y flecha para recuperar) cuando el campo tiene valor original. DMT_OpportunityClientController.buildOriginalRecord nunca calculaba valor original para DMT_Opportunity_Client__c.DMT_Industry__c (label 'Industry'), así que al cambiar Industry no salía aviso.
+- Ahora: valor original de Industry = Account.Industry del cliente comparado: el Account del Main Holder en Opportunities de nivel Group (Account.g_customer_id__c = Custom_Association_Opportunity__c.g_customer_id__c) y Opportunity.AccountId en nivel Customer/Subsidiary. Es la misma fuente que usa la creación para informar DMT_Industry__c (DMT_CreateOpportunityService.getClientValues). Valores en código: 1 Industrials & Transportation, 2 Infra & Construction, 3 Consumer & Retail, etc. El valor original se envía con value + label (label del picklist Account.Industry, p. ej. INDUSTRIALS & TRANSPORTATION), igual que Sector, para que el tooltip muestre el nombre y no el código.
+- Si Account.Industry está vacío, no hay valor original y no se muestra aviso.
+
+2. Internal Rating
+- El valor original ya existía (HPG, atributo updLmsclInternalRatgType). El aviso no salía en las Opportunities cuyo Client Data se cargaba vacío o sin la fila HPG del cliente: clones al mismo Group y Opportunities de nivel Group consultadas con el Group en lugar del Main Holder. Queda resuelto con los cambios de la nota anterior (Main Holder y clone).
+
+3. Cómo probar (QA)
+- Buscar una Opportunity de nivel Group cuyo Main Holder tenga Industry:
+  SELECT g_customer_id__c, Industry FROM Account WHERE g_customer_id__c != null AND Industry != null
+  SELECT Opportunity__c, g_customer_id__c FROM Custom_Association_Opportunity__c WHERE g_customer_id__c IN ('<alpha codes de la consulta anterior>')
+- Abrir la Opportunity, pestaña Client, editar y cambiar Industry: aparece el triángulo con 'Original value: <Industry del Main Holder>' y la flecha para recuperarlo. Cancelar.
+- Cambiar Internal Rating a otro valor: aparece el triángulo con 'Original value: <rating de HPG>'. Cancelar.
+- Repetir en el clon al mismo Group de esa Opportunity: mismo comportamiento.

@@ -1,0 +1,3 @@
+CIBGLOBALD-4806 - Client Data shows the original-value warning when Industry is changed
+
+- DMT_OpportunityClientController: buildOriginalRecord now sets the original value of DMT_Industry__c from Account.Industry of the compared client (the Main Holder Account in Group flows, the Opportunity Account otherwise), the same source creation copies into the field (DMT_CreateOpportunityService.getClientValues). Industry never had an original value, so changing it showed no warning and no way to restore it. The original is sent as value + label (new getIndustryLabel, Account.Industry picklist label), the same shape as Sector, so the warning tooltip shows the Industry name instead of its code. findMainHolderAccount and findOpportunityById also read Industry.

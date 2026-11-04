@@ -21,7 +21,7 @@ c) Clone de una Opportunity al mismo Group
 
 2. Consumo de límites
 - Creación y clones que reconstruyen el cliente: +1 SOQL (consulta al catálogo D971, solo si HPG devuelve Rating Tool).
-- Carga de Client Data en Opportunities de nivel Group: +2 SOQL (Account del Main Holder y catálogo D971). Mismo número de callouts a HPG. Antes se recuperaba la posición de todo el Group (cientos o miles de filas) y se filtraba el Main Holder; ahora la consulta es del Main Holder, con mucho menos heap y CPU.
+- Carga de Client Data en Opportunities de nivel Group: +2 SOQL (Account del Main Holder y catálogo D971). Mismo número de callouts a HPG.
 - Ninguna consulta dentro de bucles.
 
 3. Registros existentes
