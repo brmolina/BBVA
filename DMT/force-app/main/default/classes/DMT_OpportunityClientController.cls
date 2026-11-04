@@ -142,8 +142,8 @@ public with sharing class DMT_OpportunityClientController {
             Alpha_Code_Client__c = alphaCode,
             DMT_MDE_Opportunity__c = opportunityId,
             Custom_Association__c = associationId,
-            Counterpart__c = SEGMENT_TO_COUNTERPART.containsKey(segmentCode)
-                ? SEGMENT_TO_COUNTERPART.get(segmentCode)
+            Counterpart__c = originalRecord.get(KEY_COUNTERPART) != null // CIBGLOBALD-4806
+                ? (String) originalRecord.get(KEY_COUNTERPART) // CIBGLOBALD-4806
                 : '',
             g_upd_lmscl_internal_ratg_type__c = (String) originalRecord.get(KEY_INTERNAL_RATING_TYPE),
             External_Rating__c = (String) originalRecord.get(KEY_EXTERNAL_RATING_TYPE),
@@ -333,9 +333,43 @@ public with sharing class DMT_OpportunityClientController {
     /**
      * @description Resolves the clientId for an association-based account (group flows).
      * Both prospect and standard groups use the Account Id directly.
+     * CIBGLOBALD-4806 - Returns the Main Holder Account (Account.g_customer_id__c = Main Holder alpha code stored in
+     * Custom_Association_Opportunity__c.g_customer_id__c), the client whose data DMT_CreateOpportunityService and
+     * DMT_OpportunityCloneUtil saved; the Opportunity Account (Group) only when no Account has that alpha code.
      */
     private static String resolveClientId(Opportunity opp, String alphaCode) {
-        return opp.AccountId;
+        Account mainHolder = findMainHolderAccount(alphaCode); // CIBGLOBALD-4806
+        return mainHolder != null ? mainHolder.Id : opp.AccountId; // CIBGLOBALD-4806
+    }
+
+    // CIBGLOBALD-4806 - Main Holder Accounts resolved in this transaction, by Id (buildOriginalRecord reads their Segment)
+    private static Map<Id, Account> mainHolderAccountsById = new Map<Id, Account>();
+
+    /**
+     * @description CIBGLOBALD-4806 - Main Holder Account for an alpha code (Account.g_customer_id__c is unique), or null.
+     * Reuses an Account already resolved in this transaction instead of querying it again.
+     */
+    private static Account findMainHolderAccount(String alphaCode) {
+        if (String.isBlank(alphaCode)) {
+            return null;
+        }
+        for (Account resolved : mainHolderAccountsById.values()) {
+            if (resolved.g_customer_id__c == alphaCode) {
+                return resolved;
+            }
+        }
+        List<Account> accounts = [
+            SELECT Id, g_customer_id__c, DES_Segment__c
+            FROM Account
+            WHERE g_customer_id__c = :alphaCode
+            WITH USER_MODE
+            LIMIT 1
+        ];
+        if (accounts.isEmpty()) {
+            return null;
+        }
+        mainHolderAccountsById.put(accounts[0].Id, accounts[0]);
+        return accounts[0];
     }
 
     /**
@@ -458,7 +492,13 @@ public with sharing class DMT_OpportunityClientController {
             original.put(KEY_INTERNAL_RATING_TYPE, customerHpg?.updLmsclInternalRatgType);
             original.put('currentRatingToolDate', customerHpg?.currentRatingToolDate);
             original.put(KEY_EXTERNAL_RATING_TYPE, customerHpg?.unifiedExtRatgLtFcType);
-            original.put(KEY_COUNTERPART, SEGMENT_TO_COUNTERPART.get(opp?.Account.DES_Segment__c));
+            // CIBGLOBALD-4806 - Client Type from the HPG Rating Tool (ratingSystemId) of the compared client (Main Holder in
+            // group flows), same rule as creation (DMT_CreateOpportunityService.resolveClientTypeFromHpg); when HPG has no
+            // valid value, the Segment of that same client (the Opportunity Account when it is not a resolved Main Holder)
+            String hpgClientType = DMT_CreateOpportunityService.resolveClientTypeFromHpg(customerHpg);
+            Account referenceAccount = clientId != null ? mainHolderAccountsById.get((Id) clientId) : null;
+            String referenceSegment = referenceAccount != null ? referenceAccount.DES_Segment__c : opp?.Account.DES_Segment__c;
+            original.put(KEY_COUNTERPART, hpgClientType != null ? hpgClientType : SEGMENT_TO_COUNTERPART.get(referenceSegment));
             original.put(
                 KEY_SECTOR,
                 String.isBlank(customerHpg?.assetAllocationSectorType)
@@ -910,18 +950,20 @@ public with sharing class DMT_OpportunityClientController {
 
         // Capture the previous main borrower BEFORE overwriting it.
         String previousMainBorrower = association.isEmpty() ? null : association[0].g_customer_id__c;
+        Custom_Association_Opportunity__c currentAssociation;
 
         if (!association.isEmpty()) {
-            if (association[0].g_customer_id__c != mainBorrower) {
-                association[0].g_customer_id__c = mainBorrower;
-                update as user association[0];
+            currentAssociation = association[0];
+            if (currentAssociation.g_customer_id__c != mainBorrower) {
+                currentAssociation.g_customer_id__c = mainBorrower;
+                update as user currentAssociation;
             }
         } else {
-            Custom_Association_Opportunity__c newAssoc = new Custom_Association_Opportunity__c(
+            currentAssociation = new Custom_Association_Opportunity__c(
                 Opportunity__c = opportunityId,
                 g_customer_id__c = mainBorrower
             );
-            insert as user newAssoc;
+            insert as user currentAssociation;
         }
 
         List<DMT_Opportunity_Client__c> existingRecords = [
@@ -931,12 +973,12 @@ public with sharing class DMT_OpportunityClientController {
             WITH USER_MODE
         ];
 
-        Id associationId = association.isEmpty() ? null : association[0].Id;
+        Id associationId = currentAssociation.Id;
 
         List<DMT_Custom_Association_ClientOpportunity__c> existingSecondaries = associationId == null
             ? new List<DMT_Custom_Association_ClientOpportunity__c>()
             : [
-                SELECT Id, DMT_g_customer_id__c, DMT_gf_customer_group_id__c, DMT_g_entific_id__c
+                SELECT Id, DMT_g_customer_id__c, DMT_gf_customer_group_id__c, DMT_g_entific_id__c, DMT_Client__c
                 FROM DMT_Custom_Association_ClientOpportunity__c
                 WHERE DMT_Custom_Association_Opportunity__c = :associationId
                 WITH USER_MODE
@@ -962,20 +1004,43 @@ public with sharing class DMT_OpportunityClientController {
                 ? queryClientFinancials(opportunityId, previousMainBorrower)
                 : null;
 
-        // Alpha codes present in selectedClients (to detect which ones are removed).
+        // 1. Pre-procesar selectedClients y recopilar todos los alphaCodes para buscar sus Accounts
+        List<Map<String, Object>> parsedClients = new List<Map<String, Object>>();
         Set<String> selectedAlphaCodes = new Set<String>();
+
+        if (selectedClients != null) {
+            for (Object obj : selectedClients) {
+                Map<String, Object> clientMap = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(obj));
+                String alphaCode = (String) clientMap.get('customerId');
+                if (String.isBlank(alphaCode)) continue;
+
+                selectedAlphaCodes.add(alphaCode);
+                parsedClients.add(clientMap);
+            }
+        }
+
+        // 2. Consultar Accounts por su campo de Alpha Code (ajusta Alpha_Code__c si el API Name en Account es otro, ej. g_customer_id__c)
+        Map<String, Id> accountIdByAlphaCode = new Map<String, Id>();
+        if (!selectedAlphaCodes.isEmpty()) {
+            for (Account acc : [
+                SELECT Id, g_customer_id__c
+                FROM Account
+                WHERE g_customer_id__c IN :selectedAlphaCodes
+                WITH USER_MODE
+            ]) {
+                accountIdByAlphaCode.put(acc.g_customer_id__c, acc.Id);
+            }
+        }
+
         List<DMT_Opportunity_Client__c> toUpsert = new List<DMT_Opportunity_Client__c>();
         List<DMT_Custom_Association_ClientOpportunity__c> toInsertSecondary = new List<DMT_Custom_Association_ClientOpportunity__c>();
         List<DMT_Custom_Association_ClientOpportunity__c> toUpdateSecondary = new List<DMT_Custom_Association_ClientOpportunity__c>();
 
         Savepoint sp = Database.setSavepoint();
         try {
-            for (Object obj : selectedClients) {
-                Map<String, Object> clientMap = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(obj));
+            for (Map<String, Object> clientMap : parsedClients) {
                 String alphaCode = (String) clientMap.get('customerId');
-                if (String.isBlank(alphaCode)) continue;
-                selectedAlphaCodes.add(alphaCode);
-
+                Id clientAccountId = accountIdByAlphaCode.get(alphaCode);
                 Boolean isMainBorrower = alphaCode.equals(mainBorrower);
 
                 if (isMainBorrower) {
@@ -987,19 +1052,22 @@ public with sharing class DMT_OpportunityClientController {
                     copyFinancialFields(previousMainBorrowerData, dmtClient);
                     dmtClient.Alpha_Code_Client__c = alphaCode;
                     toUpsert.add(dmtClient);
+
                     // Main Borrower también en DMT_Custom_Association_ClientOpportunity__c (igual que en Lines)
                     if (!existingSecondaryAlphaCodes.contains(alphaCode)) {
                         DMT_Custom_Association_ClientOpportunity__c mainAsParticipant = new DMT_Custom_Association_ClientOpportunity__c();
                         mainAsParticipant.DMT_Custom_Association_Opportunity__c = associationId;
                         mainAsParticipant.DMT_g_customer_id__c = alphaCode;
-                        mainAsParticipant.DMT_gf_customer_group_id__c = association[0].gf_customer_group_id__c;
+                        mainAsParticipant.DMT_Client__c = clientAccountId;
+                        mainAsParticipant.DMT_gf_customer_group_id__c = currentAssociation.gf_customer_group_id__c;
                         mainAsParticipant.DMT_g_entific_id__c = (String) clientMap.get('countryIfoId');
                         toInsertSecondary.add(mainAsParticipant);
                     } else {
                         DMT_Custom_Association_ClientOpportunity__c existing = existingSecondaryByAlpha.get(alphaCode);
-                        if (existing != null && existing.DMT_g_entific_id__c == null) {
-                            existing.DMT_gf_customer_group_id__c = association[0].gf_customer_group_id__c;
+                        if (existing != null && (existing.DMT_g_entific_id__c == null || existing.DMT_Client__c == null)) {
+                            existing.DMT_gf_customer_group_id__c = currentAssociation.gf_customer_group_id__c;
                             existing.DMT_g_entific_id__c = (String) clientMap.get('countryIfoId');
+                            existing.DMT_Client__c = clientAccountId;
                             toUpdateSecondary.add(existing);
                         }
                     }
@@ -1007,14 +1075,16 @@ public with sharing class DMT_OpportunityClientController {
                     DMT_Custom_Association_ClientOpportunity__c secClient = new DMT_Custom_Association_ClientOpportunity__c();
                     secClient.DMT_Custom_Association_Opportunity__c = associationId;
                     secClient.DMT_g_customer_id__c = alphaCode;
-                    secClient.DMT_gf_customer_group_id__c = association[0].gf_customer_group_id__c;
+                    secClient.DMT_Client__c = clientAccountId;
+                    secClient.DMT_gf_customer_group_id__c = currentAssociation.gf_customer_group_id__c;
                     secClient.DMT_g_entific_id__c = (String) clientMap.get('countryIfoId');
                     toInsertSecondary.add(secClient);
                 } else {
                     DMT_Custom_Association_ClientOpportunity__c existing = existingSecondaryByAlpha.get(alphaCode);
-                    if (existing != null && existing.DMT_g_entific_id__c == null) {
-                        existing.DMT_gf_customer_group_id__c = association[0].gf_customer_group_id__c;
+                    if (existing != null && (existing.DMT_g_entific_id__c == null || existing.DMT_Client__c == null)) {
+                        existing.DMT_gf_customer_group_id__c = currentAssociation.gf_customer_group_id__c;
                         existing.DMT_g_entific_id__c = (String) clientMap.get('countryIfoId');
+                        existing.DMT_Client__c = clientAccountId;
                         toUpdateSecondary.add(existing);
                     }
                 }

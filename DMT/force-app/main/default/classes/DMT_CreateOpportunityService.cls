@@ -25,7 +25,7 @@
  *                step is therefore intentionally not replicated here.
  */
 public with sharing class DMT_CreateOpportunityService {
-
+    
     private static final String TAXONOMY_ENTITY_CATALOG = 'h006';
     private static final String ENTITY_BY_ENTIFIC_CATALOG = 'H287';
     private static final String OPPORTUNITY_CODE_ORIGIN = 'ESCD';
@@ -36,6 +36,8 @@ public with sharing class DMT_CreateOpportunityService {
     private static final String NON_DISCLOSED_ACCOUNT_NAME = 'non - disclosed';
     private static final String SUBSIDIARY_CLIENT_TYPE = 'Subsidiary';
     private static final String RATING_TAXONOMY_CATALOG = 'C204';
+    // CIBGLOBALD-4806 - Client Type catalog (options of Counterpart__c in LWC dmt_opp_client)
+    private static final String CLIENT_TYPE_TAXONOMY_CATALOG = 'D971';
 
     // Fields copied 1:1 (same API name on both objects) from the comparison Account
     // onto DMT_Opportunity_Client__c.
@@ -77,7 +79,7 @@ public with sharing class DMT_CreateOpportunityService {
         'Revenues_Current_Year_number__c', 'Revenues_Last_Year_number__c', 'Revenues_Next_Year_1_number__c',
         'Revenues_Next_Year_2_number__c', 'Revenues_Next_Year_number__c'
     };
-
+    
     // cstk__ (Customer Sustainability Toolkit) source field -> DMT_Opportunity_Client__c target field.
     private static final Map<String, String> CSTK_FIELD_TARGET_MAP = new Map<String, String>{
         'cstk__controversy__c' => 'DMT_reputational_risk__c',
@@ -88,7 +90,7 @@ public with sharing class DMT_CreateOpportunityService {
         'cstk__gf_thermal_coal_prod_wg_per__c' => 'DMT_Capacity_Weight__c',
         'cstk__company_affected_by_framework__c' => 'DMT_Enviromental_Social_Framework__c'
     };
-
+    
     // =========================================================
     // BOOTSTRAP (GET_OPPORTUNITY_INFO -> Dmt_IPCreateOpp)
     // =========================================================
@@ -109,16 +111,16 @@ public with sharing class DMT_CreateOpportunityService {
             base.put('RecordTypeName', recordTypeName);
             String bookingGeography = (String) base.get('BookingGeography');
             Boolean isSubsidiary = base.get('DES_Client_Type__c') == SUBSIDIARY_CLIENT_TYPE;
-
+            
             List<Map<String, Object>> entityOptions = getEntityOptionsByEntific(bookingGeography);
-
+            
             String initialEntity;
             if (isSubsidiary) {
                 initialEntity = new DMT_GetCreationParameters().getEntityValues(TAXONOMY_ENTITY_CATALOG, bookingGeography);
             } else if (!entityOptions.isEmpty()) {
                 initialEntity = (String) entityOptions[0].get('value');
             }
-
+            
             base.put('entityOptions', entityOptions);
             base.put('oppEntity', initialEntity);
             base.put('entityDisabled', isSubsidiary);
@@ -148,7 +150,7 @@ public with sharing class DMT_CreateOpportunityService {
             throw new AuraHandledException('Error loading opportunity creation parameters: ' + e.getMessage());
         }
     }
-
+    
     @AuraEnabled(cacheable=false)
     public static List<Map<String, Object>> refreshEntityOptions(String entific) {
         try {
@@ -158,40 +160,40 @@ public with sharing class DMT_CreateOpportunityService {
             throw new AuraHandledException('Error refreshing entity options: ' + e.getMessage());
         }
     }
-
+    
     // =========================================================
     // CREATE (CREATE_NEW_OPPORTUNITY -> DealManagement_Screen, isOpportunity=true)
     // =========================================================
     @AuraEnabled(cacheable=false)
     public static Map<String, Object> createOpportunity(
         String recordTypeName,
-        String name,
-        Date startDate,
-        Date endDate,
-        Id clientId,
-        String clientType,
-        String bookingGeography,
-        String oppEntity,
-        Decimal marginPb,
-        Decimal notionalAmount,
-        Decimal timeLimit,
-        Id approverId,
-        Boolean isDummyOpp,
-        String segment,
-        String groupCode,
-        List<Map<String, Object>> clientsByGroup
+    String name,
+    Date startDate,
+    Date endDate,
+    Id clientId,
+    String clientType,
+    String bookingGeography,
+    String oppEntity,
+    Decimal marginPb,
+    Decimal notionalAmount,
+    Decimal timeLimit,
+    Id approverId,
+    Boolean isDummyOpp,
+    String segment,
+    String groupCode,
+    List<Map<String, Object>> clientsByGroup
     ) {
         try {
             if (String.isBlank(recordTypeName) || clientId == null) {
                 throw new AuraHandledException('recordTypeName and clientId are required');
             }
-
+            
             Boolean isSubsidiaryFlow = clientType == SUBSIDIARY_CLIENT_TYPE;
-
+            
             System.debug('DMT_DEBUG createOpportunity INPUT: clientId=' + clientId + ' clientType=' + clientType
                 + ' bookingGeography=' + bookingGeography + ' groupCode=' + groupCode
                 + ' clientsByGroup=' + JSON.serialize(clientsByGroup));
-
+            
             // Group flow: resolve the actual per-country client using the group's client list
             // (mirrors the DmTransformGetClientByEntific DataRaptor).
             Id resolvedClientId = clientId;
@@ -203,7 +205,7 @@ public with sharing class DMT_CreateOpportunityService {
             }
             System.debug('DMT_DEBUG createOpportunity: isSubsidiaryFlow=' + isSubsidiaryFlow
                 + ' resolvedClientId=' + resolvedClientId + ' (raw clientId=' + clientId + ')');
-
+            
             // RAGetComparisonAccount: for the Group flow the ancestor walk starts from the
             // ORIGINAL (group) client id; for Subsidiary it starts from the resolved client id.
             Map<String, Object> comparisonInput = new Map<String, Object>{
@@ -211,12 +213,12 @@ public with sharing class DMT_CreateOpportunityService {
             };
             Map<String, Object> comparisonResult = DMT_Opportunity_Utils.getComparisonAccount(
                 comparisonInput, new Map<String, Object>(), new Map<String, Object>()
-            );
-           
+                );
+            
             Id comparisonAccountId = (Id) comparisonResult.get('comparisonAccountId');
             System.debug('DMT_DEBUG createOpportunity: comparisonResult=' + comparisonAccountId);
             ClientValues clientValues = getClientValues(resolvedClientId, comparisonAccountId);
-
+            
             // DmtDrtGetOppClient2 (original DataRaptor) resolves both RemoteAction1.clientId and
             // RemoteAction1.customerId from the actual local client account: resolvedClientId
             // (for Subsidiary it IS clientId; for Group it's the per-country client resolved via
@@ -232,13 +234,13 @@ public with sharing class DMT_CreateOpportunityService {
             String customerId = (clientValues.groupCode == NON_DISCLOSED_GROUP_CODE)
                 ? NON_DISCLOSED_CUSTOMER_ID
                 : resolveHpgCustomerId(resolvedClientId);
-
+            
             System.debug('DMT_DEBUG createOpportunity: clientValues.groupCode=' + clientValues.groupCode
                 + ' clientValues.clientGCustomerId=' + clientValues.clientGCustomerId
                 + ' clientValues.industry=' + clientValues.industry + ' customerId=' + customerId);
-
+            
             String lastDate = DMT_HPG_Utils.lastDate();
-
+            
             Map<String, Object> hpgsInput = new Map<String, Object>{
                 'clientId' => resolvedClientId,
                 'customerId' => customerId,
@@ -246,21 +248,21 @@ public with sharing class DMT_CreateOpportunityService {
             };
             Map<String, Object> hpgsOutput = DMT_HPG_Utils.getCustomerHPGS(
                 hpgsInput, new Map<String, Object>(), new Map<String, Object>()
-            );
+                );
             DMT_HPG_GlobalPosition.Data customerHPG = (DMT_HPG_GlobalPosition.Data) hpgsOutput.get('CustomerHPG');
             System.debug('DMT_DEBUG createOpportunity: customerHPG is ' + (customerHPG == null ? 'NULL (no HPG match)' : 'FOUND'));
-
+            
             Map<String, Object> leveragedLendingOutput = DMT_Callout_LeveragedLending.callLeveragedLendingService(
                 clientValues.groupCode, lastDate, new Map<String, Object>()
-            );
+                );
             String leveragedLendingIndType = (leveragedLendingOutput != null) ? (String) leveragedLendingOutput.get('leveragedLendingIndType') : null;
-
+            
             String divisaOpp = resolveCurrencyForEntity(oppEntity);
             String lineId = getOpportunityCode(bookingGeography);
             String branchId = (String.isBlank(oppEntity) || String.isBlank(bookingGeography))
                 ? null
                 : oppEntity + '-' + bookingGeography;
-
+            
             Opportunity newOpp = new Opportunity();
             newOpp.RecordTypeId = getOpportunityRecordTypeId(recordTypeName);
             newOpp.Name = name;
@@ -281,39 +283,41 @@ public with sharing class DMT_CreateOpportunityService {
             newOpp.DMT_NUM_Version__c = 1;
             newOpp.DMT_Opp_Id__c = lineId;
             newOpp.Entific__c = bookingGeography;
-
+            
             Database.insert(newOpp, AccessLevel.USER_MODE);
-
+            
             DMT_Opportunity_Client__c oppClient = buildOpportunityClient(
                 newOpp.Id, clientValues, customerHPG, leveragedLendingIndType, segment
-            );
-
+                );
+            
             if (isSubsidiaryFlow) {
                 Database.insert(oppClient, AccessLevel.USER_MODE);
             } else {
                 Custom_Association_Opportunity__c assoc = new Custom_Association_Opportunity__c(
                     Opportunity__c = newOpp.Id,
-                    Group__c = clientId,
-                    CurrencyIsoCode = divisaOpp,
-                    g_customer_id__c = clientValues.clientGCustomerId,
-                    g_group_id__c = groupCode,
-                    gf_customer_group_id__c = lineId
-                );
+                Group__c = clientId,
+                CurrencyIsoCode = divisaOpp,
+                g_customer_id__c = clientValues.clientGCustomerId,
+                g_group_id__c = groupCode,
+                gf_customer_group_id__c = lineId
+                    );
                 Database.insert(assoc, AccessLevel.USER_MODE);
-
+                
                 DMT_Custom_Association_ClientOpportunity__c clientOppAssoc = new DMT_Custom_Association_ClientOpportunity__c(
                     DMT_Custom_Association_Opportunity__c = assoc.Id,
-                    DMT_g_entific_id__c = bookingGeography,
-                    DMT_g_customer_id__c = clientValues.clientGCustomerId,
-                    DMT_gf_customer_group_id__c = lineId
-                );
-                Database.insert(clientOppAssoc, AccessLevel.USER_MODE);
+                DMT_g_entific_id__c = bookingGeography,
+                DMT_Client__c = resolvedClientId,
 
+                DMT_g_customer_id__c = clientValues.clientGCustomerId,
+                DMT_gf_customer_group_id__c = lineId
+                    );
+                Database.insert(clientOppAssoc, AccessLevel.USER_MODE);
+                
                 oppClient.Custom_Association__c = assoc.Id;
                 oppClient.Alpha_Code_Client__c = clientValues.clientGCustomerId;
                 Database.insert(oppClient, AccessLevel.USER_MODE);
             }
-
+            
             return new Map<String, Object>{
                 'createdId' => newOpp.Id,
                 'createdName' => newOpp.Name,
@@ -324,7 +328,7 @@ public with sharing class DMT_CreateOpportunityService {
             throw new AuraHandledException('Error creating opportunity: ' + e.getMessage());
         }
     }
-
+    
     // =========================================================
     // Helpers
     // =========================================================
@@ -335,7 +339,7 @@ public with sharing class DMT_CreateOpportunityService {
         List<Account> accounts = [SELECT Name FROM Account WHERE Id = :clientId WITH USER_MODE LIMIT 1];
         return accounts.isEmpty() ? '' : accounts[0].Name;
     }
-
+    
     /**
      * @description Resolves one representative Salesforce client Account per country for the
      *              Group, using the SAME HPG "client positions" service and country-resolution
@@ -356,13 +360,13 @@ public with sharing class DMT_CreateOpportunityService {
             System.debug('DMT_DEBUG getClientsByGroup: groupClientId is null, returning empty list');
             return result;
         }
-
+        
         // HPG only has data for its last computed snapshot date, not for the literal current
         // calendar date - Date.today() reliably returns 0 rows (success=true, totalElements=0).
         // Same lastDate() used elsewhere in this class (createOpportunity) and by
         // dmt_MainClientSelectionTable's parent page for its searchDate prop.
         Date searchDate = Date.valueOf(DMT_HPG_Utils.lastDate());
-
+        
         // "With Exposure" (Y) first; if that comes back empty, fall back to all positions (Y/N) -
         // same two-step strategy as dmt_MainClientSelectionTable.fetchClientsForCountryMapping().
         List<String> customerIds = fetchGroupCustomerIds(groupClientId, 'Y', searchDate);
@@ -378,12 +382,12 @@ public with sharing class DMT_CreateOpportunityService {
         if (customerIds.isEmpty()) {
             return result;
         }
-
+        
         Map<String, Id> accountIdsByCustomerId = DMT_HPG_MainTableCustomController.getSalesforceAccountIdsByCustomerIds(customerIds);
         System.debug('DMT_DEBUG getClientsByGroup: getSalesforceAccountIdsByCustomerIds resolved '
             + accountIdsByCustomerId.size() + ' of ' + customerIds.size() + ' customerId(s): '
             + JSON.serialize(accountIdsByCustomerId));
-
+        
         Map<String, List<String>> customerIdsByCountry = new Map<String, List<String>>();
         for (String custId : customerIds) {
             if (String.isBlank(custId) || custId.length() < 2) {
@@ -395,7 +399,7 @@ public with sharing class DMT_CreateOpportunityService {
             }
             customerIdsByCountry.get(country).add(custId);
         }
-
+        
         // One representative Salesforce client per country: the first customerId of that
         // country that resolves to a real Account (mirrors sendGroupEvent()'s
         // `externalIds.find(id => resultMap[id])`).
@@ -410,7 +414,7 @@ public with sharing class DMT_CreateOpportunityService {
         System.debug('DMT_DEBUG getClientsByGroup: result=' + JSON.serialize(result));
         return result;
     }
-
+    
     /**
      * @description Fetches every HPG client-position row for the Group (paginating through all
      *              pages, same as dmt_MainClientSelectionTable's fetchMore loop) and returns the
@@ -423,17 +427,17 @@ public with sharing class DMT_CreateOpportunityService {
         Integer page = 1;
         Integer totalPages = 1;
         Integer maxPages = 20;
-
+        
         do {
             DMT_HPG_GlobalPosition.Wrapper response = DMT_HPG_MainTableCustomController.fetchClientDataFromService(
                 groupClientId, String.valueOf(page), '500', new List<String>(), searchDate, clientPositionsType, ''
-            );
+                );
             System.debug('DMT_DEBUG fetchGroupCustomerIds: groupClientId=' + groupClientId
                 + ' clientPositionsType=' + clientPositionsType + ' page=' + page
                 + ' response=' + (response == null ? 'NULL' : ('success=' + response.success
-                    + ' errorMessage=' + response.errorMessage
-                    + ' data.size=' + (response.data == null ? 'NULL' : String.valueOf(response.data.size()))
-                    + ' pagination=' + (response.pagination == null ? 'NULL' : JSON.serialize(response.pagination)))));
+                + ' errorMessage=' + response.errorMessage
+                + ' data.size=' + (response.data == null ? 'NULL' : String.valueOf(response.data.size()))
+                + ' pagination=' + (response.pagination == null ? 'NULL' : JSON.serialize(response.pagination)))));
             if (response == null || response.success != true || response.data == null) {
                 break;
             }
@@ -447,10 +451,10 @@ public with sharing class DMT_CreateOpportunityService {
                 : 1;
             page++;
         } while (page <= totalPages && page <= maxPages);
-
+        
         return customerIds;
     }
-
+    
     private static List<Map<String, Object>> getEntityOptionsByEntific(String entific) {
         List<Map<String, Object>> options = new List<Map<String, Object>>();
         if (String.isBlank(entific)) {
@@ -481,7 +485,7 @@ public with sharing class DMT_CreateOpportunityService {
         }
         return options;
     }
-
+    
     private static String resolveCurrencyForEntity(String entity) {
         if (String.isBlank(entity)) {
             return null;
@@ -495,7 +499,7 @@ public with sharing class DMT_CreateOpportunityService {
         ];
         return rows.isEmpty() ? null : rows[0].CurrencyIsoCode;
     }
-
+    
     /**
      * @description Replicates DmtDrtGetOppClient2's customerId formula:
      *              IF(ProspectSubsidiary != null, ProspectSubsidiary.g_customer_id__c, Local_Client__c.Alpha_code__c)
@@ -529,17 +533,17 @@ public with sharing class DMT_CreateOpportunityService {
         ];
         return localClients.isEmpty() ? null : localClients[0].Alpha_code__c;
     }
-
+    
     private static String getOpportunityCode(String bookingGeography) {
         Map<String, Object> request = new Map<String, Object>();
         request.put('origin', OPPORTUNITY_CODE_ORIGIN);
         request.put('operationType', OPPORTUNITY_CODE_OPERATION_TYPE);
         request.put('entific', String.isNotBlank(bookingGeography) ? bookingGeography : DEFAULT_ENTIFIC);
-
+        
         DMT_OpportunityCodes.Wrapper response = DMT_OpportunityCodes.getOpportunityCode(request);
         return (response != null && response.data != null) ? response.data.opportunityId : null;
     }
-
+    
     private static Id getOpportunityRecordTypeId(String recordTypeName) {
         Schema.RecordTypeInfo rtInfo = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get(recordTypeName);
         if (rtInfo == null) {
@@ -547,7 +551,7 @@ public with sharing class DMT_CreateOpportunityService {
         }
         return rtInfo.getRecordTypeId();
     }
-
+    
     private static Id resolveClientByEntific(List<Map<String, Object>> clientsByGroup, String bookingGeography) {
         System.debug('DMT_DEBUG resolveClientByEntific: bookingGeography=' + bookingGeography
             + ' clientsByGroup=' + JSON.serialize(clientsByGroup));
@@ -570,7 +574,7 @@ public with sharing class DMT_CreateOpportunityService {
     @TestVisible
     public static ClientValues getClientValues(Id resolvedClientId, Id comparisonAccountId) {
         ClientValues cv = new ClientValues();
-
+        
         if (resolvedClientId != null) {
             List<Account> clientRows = [
                 SELECT Name, Industry, DES_Group_Code__c, DES_Main_Parent__r.DES_Group_Code__c,
@@ -595,7 +599,7 @@ public with sharing class DMT_CreateOpportunityService {
                 }
             }
         }
-
+        
         if (comparisonAccountId != null) {
             // Some CLIENT_GROUP_COPY_FIELDS entries may exist in local metadata but not yet be
             // deployed to this org. Filter against the live Account describe so a missing/
@@ -608,7 +612,7 @@ public with sharing class DMT_CreateOpportunityService {
                     queryableFields.add(fieldName);
                 }
             }
-
+            
             String fieldList = 'Id, Name' + (queryableFields.isEmpty() ? '' : ', ' + String.join(new List<String>(queryableFields), ', '));
             String soql = 'SELECT ' + fieldList + ' FROM Account WHERE Id = :comparisonAccountId LIMIT 1';
             List<Account> groupRows = Database.query(soql, AccessLevel.USER_MODE);
@@ -621,7 +625,7 @@ public with sharing class DMT_CreateOpportunityService {
                     cv.financialFields.put(fieldName, groupAccount.get(fieldName));
                 }
             }
-
+            
             // cstk__ (Customer Sustainability Toolkit) chain: Account -> cstk__Toolkit__c ->
             // cstk__General_Data__c / cstk__Strategy__c (latest cstk__year__c).
             List<cstk__Toolkit__c> toolkits = [
@@ -634,7 +638,7 @@ public with sharing class DMT_CreateOpportunityService {
             ];
             if (!toolkits.isEmpty()) {
                 Id toolkitId = toolkits[0].Id;
-
+                
                 List<cstk__General_Data__c> generalData = [
                     SELECT cstk__controversy__c, cstk__gf_tri_final_score_number__c
                     FROM cstk__General_Data__c
@@ -647,7 +651,7 @@ public with sharing class DMT_CreateOpportunityService {
                     cv.financialFields.put('cstk__controversy__c', generalData[0].cstk__controversy__c);
                     cv.financialFields.put('cstk__gf_tri_final_score_number__c', generalData[0].cstk__gf_tri_final_score_number__c);
                 }
-
+                
                 List<cstk__Strategy__c> strategyData = [
                     SELECT cstk__company_affected_by_framework__c, cstk__engagement_plan__c,
                            cstk__g_coal_prgrsv_red_pl_ind_type__c, cstk__g_thermal_coal_exps_ind_type__c,
@@ -667,29 +671,100 @@ public with sharing class DMT_CreateOpportunityService {
                 }
             }
         }
-
+        
         return cv;
     }
     
+    //sobrecargado
     public static DMT_Opportunity_Client__c buildOpportunityClient(
         Id opportunityId,
-        ClientValues clientValues,
-        DMT_HPG_GlobalPosition.Data customerHPG,
-        String leveragedLendingIndType,
-        String segment
+    ClientValues clientValues,
+    DMT_HPG_GlobalPosition.Data customerHPG,
+    String leveragedLendingIndType,
+    String segment,
+    DMT_Opportunity_Client__c oppCloneClient,
+    Boolean isCloningProcess
+    ){
+        
+        DMT_Opportunity_Client__c oppClient = buildOpportunityClient(
+            opportunityId, clientValues, customerHPG, leveragedLendingIndType, segment);
+        try{
+            if(isCloningProcess){
+                //mapeo de campos
+                oppClient.DMT_Commitment_Deadline__c = oppCloneClient.DMT_Commitment_Deadline__c;
+                oppClient.DMT_Description_Issues__c = oppCloneClient.DMT_Description_Issues__c;
+                oppClient.DMT_Purpose__c = oppCloneClient.DMT_Purpose__c;
+                oppClient.DMT_Opp_Threats_Related_Deal__c = oppCloneClient.DMT_Opp_Threats_Related_Deal__c;
+                oppClient.DMT_History_Deal__c = oppCloneClient.DMT_History_Deal__c;
+                oppClient.DMT_Tiering_Action__c = oppCloneClient.DMT_Tiering_Action__c;
+                oppClient.DMT_Current__c = oppCloneClient.DMT_Current__c;
+                oppClient.DMT_Target__c = oppCloneClient.DMT_Target__c;
+                oppClient.DMT_Competition_Deal__c = oppCloneClient.DMT_Competition_Deal__c;
+                oppClient.DMT_Applicable_Jurisdiction__c = oppCloneClient.DMT_Applicable_Jurisdiction__c;
+                oppClient.DMT_Security_Package__c = oppCloneClient.DMT_Security_Package__c;
+                oppClient.DMT_Other_Relevant_Issues__c = oppCloneClient.DMT_Other_Relevant_Issues__c;
+                oppClient.DMT_Asset_Allocation_limit__c = oppCloneClient.DMT_Asset_Allocation_limit__c;
+                oppClient.DMT_Financial_Program_limit__c = oppCloneClient.DMT_Financial_Program_limit__c;
+                oppClient.DMT_Top_3_Active_Facilities__c = oppCloneClient.DMT_Top_3_Active_Facilities__c;
+                oppClient.DMT_Sustainable_Deal__c = oppCloneClient.DMT_Sustainable_Deal__c;
+                oppClient.DMT_equator_Principles__c = oppCloneClient.DMT_equator_Principles__c;
+                oppClient.DMT_Equator_Principles_Category__c = oppCloneClient.DMT_Equator_Principles_Category__c;
+                oppClient.DMT_Infrastructure_Supporting_Factor__c = oppCloneClient.DMT_Infrastructure_Supporting_Factor__c;
+                oppClient.DMT_KPI_Margin_Adjustment__c = oppCloneClient.DMT_KPI_Margin_Adjustment__c;
+                oppClient.DMT_comments__c = oppCloneClient.DMT_comments__c;
+                oppClient.DMT_Rating_Scenarios__c = oppCloneClient.DMT_Rating_Scenarios__c;
+                oppClient.Geographical_Footprint_desc__c = oppCloneClient.Geographical_Footprint_desc__c;
+                oppClient.Relationship_Status_desc__c = oppCloneClient.Relationship_Status_desc__c;
+                oppClient.Industry_Overview_desc__c = oppCloneClient.Industry_Overview_desc__c;
+                oppClient.Other_Relevant_Ratios_desc__c = oppCloneClient.Other_Relevant_Ratios_desc__c;
+                oppClient.cstk_sust_indicators_comments__c = oppCloneClient.cstk_sust_indicators_comments__c;
+                oppClient.DMT_Currency__c = oppCloneClient.DMT_Currency__c;
+                oppClient.DMT_Clients_Global_RORC_CIB_Past_FY__c = oppCloneClient.DMT_Clients_Global_RORC_CIB_Past_FY__c;
+                oppClient.DMT_CDD_Clients_Global_Rorc_Last_FY__c = oppCloneClient.DMT_CDD_Clients_Global_Rorc_Last_FY__c;
+                oppClient.DMT_Client_RORC_YTD__c = oppCloneClient.DMT_Client_RORC_YTD__c;
+                oppClient.DMT_Client_Net_Incomes__c = oppCloneClient.DMT_Client_Net_Incomes__c;
+                oppClient.DMT_Client_RWA__c = oppCloneClient.DMT_Client_RWA__c;
+                oppClient.DMT_Exception_Pool__c = oppCloneClient.DMT_Exception_Pool__c;
+                oppClient.DMT_Xsell_Cost_to_Income__c = oppCloneClient.DMT_Xsell_Cost_to_Income__c;
+                oppClient.DMT_SourceAndUses__c = oppCloneClient.DMT_SourceAndUses__c;
+
+               
+            }
+            
+            System.debug('OPPCLIENT MAPPING=>'+oppClient);
+
+        }catch(Exception e){
+
+            System.debug('ERROR =>'+e.getMessage()+'// Trace: '+e.getStackTraceString()+' // Cause: '+e.getCause());
+        }
+        
+        
+        return oppClient;
+    }
+    
+    //original
+    public static DMT_Opportunity_Client__c buildOpportunityClient(
+        Id opportunityId,
+    ClientValues clientValues,
+    DMT_HPG_GlobalPosition.Data customerHPG,
+    String leveragedLendingIndType,
+    String segment
     ) {
         DMT_Opportunity_Client__c oppClient = new DMT_Opportunity_Client__c();
         oppClient.DMT_MDE_Opportunity__c = opportunityId;
-        oppClient.Counterpart__c = clientValues.segmentLabel;
+        // CIBGLOBALD-4806 - Client Type from the HPG Rating Tool of the client whose HPG row is passed (Main Holder in group
+        // flows, the Customer itself in subsidiary flows); Account Segment label only when HPG has no valid value
+        String hpgClientType = resolveClientTypeFromHpg(customerHPG);
+        oppClient.Counterpart__c = hpgClientType != null ? hpgClientType : clientValues.segmentLabel;
         oppClient.DMT_Industry__c = clientValues.industry;
-
+        
         for (String fieldName : CLIENT_GROUP_COPY_FIELDS) {
             oppClient.put(fieldName, clientValues.financialFields.get(fieldName));
         }
         for (String cstkField : CSTK_FIELD_TARGET_MAP.keySet()) {
             oppClient.put(CSTK_FIELD_TARGET_MAP.get(cstkField), clientValues.financialFields.get(cstkField));
         }
-
+        
         if (customerHPG != null) {
             oppClient.DMT_Activity__c = customerHPG.assetAllocationActvyType;
             oppClient.DMT_CAMN__c = customerHPG.activityMinimumLevelCodeId;
@@ -704,7 +779,7 @@ public with sharing class DMT_CreateOpportunityService {
             }
             oppClient.g_upd_lmscl_internal_ratg_type__c = resolveRatingValueIfExists(customerHPG.updLmsclInternalRatgType);
         }
-
+        
         String leveragedLending;
         if (leveragedLendingIndType == 'YES') {
             leveragedLending = 'Yes';
@@ -714,10 +789,36 @@ public with sharing class DMT_CreateOpportunityService {
             leveragedLending = 'N/A';
         }
         oppClient.DMT_Leveraged_Lending__c = leveragedLending;
-
+        
         return oppClient;
     }
     
+    /**
+     * @description CIBGLOBALD-4806 - Client Type (DMT_Opportunity_Client__c.Counterpart__c, label 'Client Type' in LWC
+     * dmt_opp_client) inferred from the HPG Rating Tool: DMT_HPG_GlobalPosition.Data.ratingSystemId (backend field
+     * gf_rating_system_id), service DMT_HPG_GlobalPosition. HPG sends 'Fin Inst B' / 'Fin Inst I' where catalog D971 holds
+     * 'Fin Inst-B' / 'Fin Inst-I'; every other value is the same text as in D971. Shared by creation, clone
+     * (DMT_OpportunityCloneUtil) and the Client Data comparison (DMT_OpportunityClientController.buildOriginalRecord).
+     * @param customerHpg HPG row of the client (Main Holder in group flows)
+     * @return the D971 value, or null when HPG sends no value or one that is not in D971
+     */
+    public static String resolveClientTypeFromHpg(DMT_HPG_GlobalPosition.Data customerHpg) {
+        if (customerHpg == null || String.isBlank(customerHpg.ratingSystemId)) {
+            return null;
+        }
+        String hpgValue = customerHpg.ratingSystemId.trim();
+        String hyphenatedValue = hpgValue.replaceFirst('^Fin Inst ', 'Fin Inst-');
+        String resolved;
+        for (DMT_Taxonomy_Values__c clientType : DMT_Passport_Selector.getTaxonomyValuesByCatalogAndValues(
+            CLIENT_TYPE_TAXONOMY_CATALOG, new Set<String>{ hpgValue, hyphenatedValue }
+        )) {
+            if (resolved == null || clientType.DMT_Value__c == hpgValue) {
+                resolved = clientType.DMT_Value__c;
+            }
+        }
+        return resolved;
+    }
+
     @TestVisible
     private static String resolveRatingValueIfExists(String ratingValue) {
         if (String.isBlank(ratingValue)) {
@@ -732,7 +833,7 @@ public with sharing class DMT_CreateOpportunityService {
         ];
         return matches.isEmpty() ? '' : ratingValue;
     }
-
+    
     @TestVisible
     public class ClientValues {
         public String groupCode;
@@ -742,7 +843,7 @@ public with sharing class DMT_CreateOpportunityService {
         public Boolean isNonDisclosedClient = false;
         public Map<String, Object> financialFields = new Map<String, Object>();
     }
-
+    
     // Mirrors the legacy DmtDrGetClientFields DataMapper's Segment formula chain
     // (Account.DES_Segment__c code -> friendly label), which fed GetClientValues:Segment ->
     // Counterpart__c in both DmtDpOpportunity_1 and DmtDpOpportunityGroup_1.

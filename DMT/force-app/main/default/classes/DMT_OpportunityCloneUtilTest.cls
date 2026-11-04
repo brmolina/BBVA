@@ -1,350 +1,370 @@
-@isTest
+@IsTest
 public with sharing class DMT_OpportunityCloneUtilTest {
-    
+
+    private static final String SAME_ACCOUNT_OPPORTUNITY = 'Clone Same Account';
+    private static final String SUBSIDIARY_TO_GROUP_OPPORTUNITY = 'Clone Subsidiary To Group';
+    private static final String GROUP_TO_GROUP_OPPORTUNITY = 'Clone Group To Group';
+    private static final String MOCK_MAIN_HOLDER_CUSTOMER_ID = 'ES0000000000001';
+
     @TestSetup
     static void loadTestData() {
         TriggerBypass.setBypass();
-        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
-        DMT_Test_DataFactory.generateOpportunityClient(opp.Id);
-        Product2 product2 = DMT_Test_DataFactory.generateProduct2();
-        PricebookEntry pricebookEntry = DMT_Test_DataFactory.generatePricebookEntry(product2);
-        OpportunityLineItem opportunityLineItem = DMT_Test_DataFactory.generateOpportunityLineItem(product2, pricebookEntry, opp);
+
+        insert new List<iaso__GBL_Rest_Services_Url__c>{
+            DMT_Test_DataFactory.setIasoCustomSetting('DMTO_Endpoint_INT', 'https://service.ok', 'ServicesPartition', false),
+            DMT_Test_DataFactory.setIasoCustomSetting('DMT_GrantingTicket_INT', 'https://validation.ok', 'ServicesPartition', false),
+            DMT_Test_DataFactory.setIasoCustomSetting('DMT_HPG_CommonEndPoint', 'https://group-position.ok', 'ServicesPartition', false),
+            DMT_Test_DataFactory.setIasoCustomSetting('DMT_HPGR_Endpoint_AUS', 'https://leveraged-lending.ok', 'ServicesPartition', false),
+            DMT_Test_DataFactory.setIasoCustomSetting('DMT_GrantingTicket_AUS', 'https://validation.ok', 'ServicesPartition', false)
+        };
+
+        //Creamos grupos 
+        Account targetGroup = DMT_Test_DataFactory.generateGroupAccount(
+            'Clone Target Group',
+            null,
+            null
+        );
+        targetGroup.DES_Group_Code__c = 'GCLONETARGET001';
+        update targetGroup;
+
         
-        opp = [SELECT Id, AccountId FROM Opportunity WHERE Id = :opp.Id];
-        opportunityLineItem = [SELECT Id, UnitPrice, TotalPrice FROM OpportunityLineItem WHERE Id = :opportunityLineItem.Id];
+        Account sourceGroup = DMT_Test_DataFactory.generateGroupAccount(
+            'Clone Source Group',
+            null,
+            null
+        );
+        sourceGroup.DES_Group_Code__c = 'GCLONESOURCE002';
+        update sourceGroup;
+
+        //Creamos subsidiarias para cada grupo
+
+        Account targetGroupSubsidiary = DMT_Test_DataFactory.generateSubsidiaryForGroup((Id)targetGroup.Id, new Map<Schema.SObjectField, Object>
+        {
+            Account.Name => 'Mock Main Holder Subsidiary',
+            Account.g_customer_id__c => MOCK_MAIN_HOLDER_CUSTOMER_ID
+        } );
+
+        Account sourceGroupSubsidiary = DMT_Test_DataFactory.generateSubsidiaryForGroup((Id)sourceGroup.Id, new Map<Schema.SObjectField, Object>{
+            Account.Name => 'Clone Source Group Subsidiary',
+            Account.g_customer_id__c => 'ES0000000000004'
+        });
+        
+        createOpportunityData(
+            sourceGroupSubsidiary.Id,
+            new Map<String, String>{
+                'Name' => SAME_ACCOUNT_OPPORTUNITY,
+                'Entific__c' => 'ES'
+            }
+        );
+        
+
+        Opportunity subsidiaryOpportunity = createOpportunityData(
+            sourceGroupSubsidiary.Id,
+            new Map<String, String>{
+                'Name' => SUBSIDIARY_TO_GROUP_OPPORTUNITY,
+                'Entific__c' => 'ES',
+                'DMT_Opp_Id__c' => 'ESCD26OPP00001112ES'
+            }
+        );
+        //createMultiholderAssociations(subsidiaryOpportunity.Id, sourceGroupSubsidiary);
+
+
+        Opportunity groupOpportunity = createOpportunityData(
+            sourceGroup.Id,
+            new Map<String, String>{
+                'Name' => GROUP_TO_GROUP_OPPORTUNITY,
+                'Entific__c' => 'ES',
+                'DMT_Opp_Id__c' => 'ESCD26OPP00001114ES'
+            }
+        );
+        createMultiholderAssociations(groupOpportunity.Id, sourceGroupSubsidiary);
+
+        TriggerBypass.removeBypass();
+    }
+
+    @IsTest
+    static void clonesSingleHolderOpportunityToSameSubsidiary() {
+        Opportunity originalOpportunity = getOpportunity(SAME_ACCOUNT_OPPORTUNITY);
+        Account targetAccount = getAccount(originalOpportunity.AccountId);
+
+        DMT_OpportunityCloneUtil.CloneResult result = cloneWithMock(
+            originalOpportunity,
+            targetAccount
+        );
+
+        Assert.isTrue(result.success, 'The same-account clone should succeed. Error: ' + result.errorMessage);
+        Assert.isNotNull(result.newOpportunityId, 'The clone must return its Opportunity Id.');
+
+        Opportunity clonedOpportunity = [
+            SELECT Id, AccountId, StageName
+            FROM Opportunity
+            WHERE Id = :result.newOpportunityId
+        ];
+        Assert.areEqual(targetAccount.Id, clonedOpportunity.AccountId, 'The clone must keep the subsidiary account.');
+        Assert.areEqual(System.Label.Draft_Status, clonedOpportunity.StageName, 'The clone must start in Draft status.');
+        assertRelatedRecordsWereCloned(originalOpportunity.Id, clonedOpportunity.Id, true);
+    }
+
+    @IsTest
+    static void clonesSubsidiaryOpportunityToGroupUsingMockMainHolder() {
+        Opportunity originalOpportunity = getOpportunity(SUBSIDIARY_TO_GROUP_OPPORTUNITY);
+        Account targetGroup = getAccountByName('Clone Target Group');
+        Account expectedMainHolder = getAccountByCustomerId(MOCK_MAIN_HOLDER_CUSTOMER_ID);
+
+        DMT_OpportunityCloneUtil.CloneResult result = cloneWithMock(
+            originalOpportunity,
+            targetGroup
+        );
+
+        Assert.isTrue(result.success, 'The subsidiary-to-group clone should succeed. Error: ' + result.errorMessage);
+        Assert.isNotNull(result.newOpportunityId, 'The clone must return its Opportunity Id.');
+
+        Opportunity clonedOpportunity = [SELECT Id, AccountId FROM Opportunity WHERE Id = :result.newOpportunityId];
+        Assert.areEqual(targetGroup.Id, clonedOpportunity.AccountId, 'The clone must belong to the destination group.');
+        assertMainHolderAssociations(result.newOpportunityId, expectedMainHolder);
+        assertRelatedRecordsWereCloned(originalOpportunity.Id, result.newOpportunityId, false);
+    }
+
+    @IsTest
+    static void clonesGroupOpportunityToDifferentGroupUsingTargetSubsidiary() {
+        Opportunity originalOpportunity = getOpportunity(GROUP_TO_GROUP_OPPORTUNITY);
+        Account targetGroup = getAccountByName('Clone Target Group');
+        Account expectedMainHolder = getAccountByCustomerId(MOCK_MAIN_HOLDER_CUSTOMER_ID);
+
+        DMT_OpportunityCloneUtil.CloneResult result = cloneWithMock(
+            originalOpportunity,
+            targetGroup
+        );
+
+        Assert.isTrue(result.success, 'The group-to-group clone should succeed. Error: ' + result.errorMessage);
+        Assert.isNotNull(result.newOpportunityId, 'The clone must return its Opportunity Id.');
+
+        Opportunity clonedOpportunity = [SELECT Id, AccountId FROM Opportunity WHERE Id = :result.newOpportunityId];
+        Assert.areEqual(targetGroup.Id, clonedOpportunity.AccountId, 'The clone must belong to the new group.');
+        assertMainHolderAssociations(result.newOpportunityId, expectedMainHolder);
+        assertRelatedRecordsWereCloned(originalOpportunity.Id, result.newOpportunityId, false);
+    }
+
+    @IsTest
+    static void clonesGroupOpportunityToSameGroup() {
+        Opportunity originalOpportunity = getOpportunity(GROUP_TO_GROUP_OPPORTUNITY);
+        Account sourceGroup = getAccountByName('Clone Source Group');
+        Account expectedMainHolder = getAccountByCustomerId('ES0000000000004');
+
+        DMT_OpportunityCloneUtil.CloneResult result = cloneWithMock(
+            originalOpportunity,
+            sourceGroup
+        );
+
+        Assert.isNotNull(result.newOpportunityId, 'The clone must return its Opportunity Id.');
+
+        Opportunity clonedOpportunity = [SELECT Id, AccountId FROM Opportunity WHERE Id = :result.newOpportunityId];
+        Assert.areEqual(sourceGroup.Id, clonedOpportunity.AccountId, 'The clone must belong to the same group.');
+        assertMainHolderAssociations(result.newOpportunityId, expectedMainHolder);
+        assertRelatedRecordsWereCloned(originalOpportunity.Id, result.newOpportunityId, true);
+
+        // CIBGLOBALD-4806 - the cloned Opportunity Client points to the clone's own Main Holder association
+        Custom_Association_Opportunity__c clonedAssociation = [
+            SELECT Id FROM Custom_Association_Opportunity__c WHERE Opportunity__c = :result.newOpportunityId LIMIT 1
+        ];
+        DMT_Opportunity_Client__c clonedClient = [
+            SELECT Custom_Association__c FROM DMT_Opportunity_Client__c WHERE DMT_MDE_Opportunity__c = :result.newOpportunityId LIMIT 1
+        ];
+        Assert.areEqual(clonedAssociation.Id, clonedClient.Custom_Association__c, 'The cloned Opportunity Client must point to the cloned association.');
+    }
+
+    private static Opportunity createOpportunityData(Id accountId, Map<String,String> opportunityOverrides) {
+        Opportunity opportunity = DMT_Test_DataFactory.generateOpportunityForAccount(
+            accountId,
+            new Map<Schema.SObjectField, Object>{
+                Opportunity.Name => opportunityOverrides.get('Name'),
+                Opportunity.Entific__c => opportunityOverrides.get('Entific__c'),
+                Opportunity.DMT_Opp_Id__c => opportunityOverrides.get('DMT_Opp_Id__c')
+            }
+        );
+        DMT_Test_DataFactory.generateOpportunityClient(opportunity.Id);
+
+        OpportunityLineItem opportunityLineItem = DMT_Test_DataFactory.generateOpportunityLineItem(opportunity);
+        opportunityLineItem = [
+            SELECT Id, UnitPrice
+            FROM OpportunityLineItem
+            WHERE Id = :opportunityLineItem.Id
+        ];
         opportunityLineItem.UnitPrice = 200;
         update opportunityLineItem;
-        
+
         DMT_Test_DataFactory.generateOpportunityTenor(opportunityLineItem);
         DMT_Test_DataFactory.generateOpportunityMitigant(opportunityLineItem);
         DMT_Test_DataFactory.generateUnderlyingRestriction(opportunityLineItem);
-        // DMT_Test_DataFactory.generatexSell(opp);
-        DMT_Test_DataFactory.generateOpportunityClient(opp.Id);
-        DMT_TeamMember__c participants = new DMT_TeamMember__c(Opportunity__c = opp.Id, User__c = UserInfo.getUserId(), AccessLevel__c = 'Read');
-        insert participants;
-        
-        
+        insert new DMT_TeamMember__c(
+            Opportunity__c = opportunity.Id,
+            User__c = UserInfo.getUserId(),
+            AccessLevel__c = 'Read'
+        );
+        return opportunity;
     }
-    
-    /* @IsTest
-    static void testCloneSuccess() {
-        Opportunity originalOpp = [SELECT Id, Name, Entific__c,AccountId,RecordTypeId,gf_opportunity_product_desc__c, StageName, closedate FROM Opportunity LIMIT 1];
-        List<OpportunityLineItem> olis = [SELECT Id, OpportunityId, PricebookEntryId, Quantity, UnitPrice, TotalPrice, DMT_Line_Amount__c, DMT_Commitment_Line_Amount__c, DMT_NewMoney_BBVA__c, DMT_OldMoney_BBVA__c, DMT_ExpectedFinal_Take__c, DMT_Expected_Drawn__c, DMT_Liquidity_Fee__c, DES_Commitment_Fees__c, DMT_Extension_Duration_Fees__c, DES_Other_Fees__c, DMT_Reference_Upfront_Fees__c, DMT_Line_Currency__c, entity_role_type__c, DMT_Sub_Limit__c, bbva_prtcp_tranche_amount__c, syndicated_loan_drawn_amount__c, DMT_Deal_amount__c, g_currency_id__c, DMT_TXT_Commitment_Fees__c, DMT_TXT_Extension_Duration_Fees__c, DMT_TXT_Other_Fees_Accrual__c, DMT_TXT_Other_Fees_NonAccrual__c 
-                                            FROM OpportunityLineItem WHERE OpportunityId=:originalOpp.Id];
-        List<DMT_Opportunity_Tenor__c> tenors = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Opportunity_Tenor__c ];
-        List<DMT_Opportunity_Mitigant__c> mitigants = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Opportunity_Mitigant__c];
-        List<DMT_Underlying__c> underlyings = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Underlying__c WHERE DMT_Opportunity_Product__r.OpportunityId =:originalOpp.Id];
-        List<DMT_X_Sell__c> xSells = [SELECT Id, Opportunity__c FROM DMT_X_Sell__c];
-        DMT_Opportunity_Client__c oppClient = [SELECT Id, DMT_MDE_Opportunity__c FROM DMT_Opportunity_Client__c LIMIT 1];
-        Account localClient = [SELECT Id FROM Account WHERE Id = :originalOpp.AccountId];
-        List<DMT_TeamMember__c> participants = [SELECT Id, Opportunity__c, AccessLevel__c, User__c FROM DMT_TeamMember__c];
-        
-        Integer originalUnderlyingsCount = underlyings.size();
-        
-        Test.startTest();
-        DMT_OpportunityCloneUtil.CloneInput input = new DMT_OpportunityCloneUtil.CloneInput();
-        input.originalOpportunity = originalOpp;
-        input.opportunityLineItems = olis;
-        input.tenors = tenors;
-        input.mitigants = mitigants;
-        input.opportunityClient = oppClient;
-        input.localClient = localClient;
-        input.participants = participants;
-        
-        List<DMT_OpportunityCloneUtil.CloneResult> results = DMT_OpportunityCloneUtil.clone(new List<DMT_OpportunityCloneUtil.CloneInput>{input});
-        Test.stopTest();
-        
-        Assert.isNotNull(results[0].newOpportunityId, 'The Id of the new opportunity should not be null');
-        Assert.isTrue(results[0].success, 'Clone should be successful');
-        
-        // Verify that Underlyings were cloned
-        List<DMT_Underlying__c> clonedUnderlyings = [
-            SELECT Id, DMT_Opportunity_Product__c 
-            FROM DMT_Underlying__c 
-            WHERE DMT_Opportunity_Product__c IN (
-                SELECT Id FROM OpportunityLineItem WHERE OpportunityId = :results[0].newOpportunityId
-            )
-            ];
-        Assert.areEqual(originalUnderlyingsCount, clonedUnderlyings.size(), 'All underlyings should be cloned');
-    }
-    
-    @IsTest
-    static void testCloneWithUnderlyings() {
-        Opportunity originalOpp = [SELECT Id, Name, Entific__c,AccountId,RecordTypeId,gf_opportunity_product_desc__c, StageName, closedate FROM Opportunity LIMIT 1];
-        List<OpportunityLineItem> olis = [SELECT Id, OpportunityId, PricebookEntryId, Quantity, UnitPrice, TotalPrice, DMT_Line_Amount__c, DMT_Commitment_Line_Amount__c, DMT_NewMoney_BBVA__c, DMT_OldMoney_BBVA__c, DMT_ExpectedFinal_Take__c, DMT_Expected_Drawn__c, DMT_Liquidity_Fee__c, DES_Commitment_Fees__c, DMT_Extension_Duration_Fees__c, DES_Other_Fees__c, DMT_Reference_Upfront_Fees__c, DMT_Line_Currency__c, entity_role_type__c, DMT_Sub_Limit__c, bbva_prtcp_tranche_amount__c, syndicated_loan_drawn_amount__c, DMT_Deal_amount__c, g_currency_id__c, DMT_TXT_Commitment_Fees__c, DMT_TXT_Extension_Duration_Fees__c, DMT_TXT_Other_Fees_Accrual__c, DMT_TXT_Other_Fees_NonAccrual__c FROM OpportunityLineItem];
-        List<DMT_Underlying__c> originalUnderlyings = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Underlying__c];
-        DMT_Opportunity_Client__c oppClient = [SELECT Id, DMT_MDE_Opportunity__c FROM DMT_Opportunity_Client__c LIMIT 1];
-        Account localClient = [SELECT Id FROM Account WHERE Id = :originalOpp.AccountId];
-        
-        Assert.isTrue(originalUnderlyings.size() > 0, 'Test data should have underlyings');
-        
-        Test.startTest();
-        DMT_OpportunityCloneUtil.CloneInput input = new DMT_OpportunityCloneUtil.CloneInput();
-        input.originalOpportunity = originalOpp;
-        input.opportunityLineItems = olis;
-        input.opportunityClient = oppClient;
-        input.localClient = localClient;
-        
-        List<DMT_OpportunityCloneUtil.CloneResult> results = DMT_OpportunityCloneUtil.clone(new List<DMT_OpportunityCloneUtil.CloneInput>{input});
-        Test.stopTest();
-        
-        Assert.isTrue(results[0].success, 'Clone with underlyings should be successful');
-        
-        // Verify that the cloned opportunity exists
-        Opportunity clonedOpp = [SELECT Id FROM Opportunity WHERE Id = :results[0].newOpportunityId];
-        Assert.isNotNull(clonedOpp, 'Cloned opportunity should exist');
-        
-        // Verify underlyings were cloned with correct data
-        List<DMT_Underlying__c> clonedUnderlyings = [
-            SELECT Id, Name, DMT_Max_Amount__c, DMT_Currency__c
-            FROM DMT_Underlying__c 
-            WHERE DMT_Opportunity_Product__c IN (
-                SELECT Id FROM OpportunityLineItem WHERE OpportunityId = :results[0].newOpportunityId
-            )
-            ];
-        Assert.isTrue(clonedUnderlyings.size() > 0, 'Cloned underlyings should exist');
-        Assert.areEqual(originalUnderlyings.size(), clonedUnderlyings.size(), 'Should clone all underlyings');
-        Assert.areEqual('Test Underlying Restriction', clonedUnderlyings[0].Name, 'Cloned underlying should have correct name');
-    } */
-    
-    @IsTest
-    static void testDifferentClient(){
-         Opportunity originalOpp = [SELECT Id, Name, Entific__c,AccountId,RecordTypeId,gf_opportunity_product_desc__c, StageName, closedate FROM Opportunity LIMIT 1];
-        
-        
-        Account localCli = [SELECT Id,DES_Client_Type__c FROM Account WHERE Id = :originalOpp.AccountId];
-        localCli.DES_Structure_Type__c = 'Subsidiary';
-        
-        update localCli;
-        Account subDiffAccount = new Account();
-        subDiffAccount.account_client__c='Y';
-        subDiffAccount.Advising__c=false;
-        subDiffAccount.BBVA_Entity__c='BBVA SA';
-        subDiffAccount.BillingCity='MADRID';
-        subDiffAccount.BillingCountry='ES';
-        subDiffAccount.BillingPostalCode='28033';
-        subDiffAccount.BillingState='MADRID';
-        subDiffAccount.BillingStreet='AV GRAN Test DE HORTALEZA 0321';
-        subDiffAccount.CurrencyIsoCode='EUR';
-        subDiffAccount.cust_first_income_country_amount__c=45088445;
-        subDiffAccount.cust_first_income_country_name__c='ESPAÑA (2222815.0 EUR)';
-        subDiffAccount.DES_Activity__c='NDA';
-        subDiffAccount.Name='sub Acc';
-        //subDiffAccount.Past2_FY_Corp_Synd_Lending_amount__c = 13;
-        subDiffAccount.Revenues_Last_Year_number__c = 13;
-        insert subDiffAccount;
-        
-        List<OpportunityLineItem> olis = [SELECT Id, OpportunityId, PricebookEntryId, Quantity, UnitPrice, TotalPrice, DMT_Line_Amount__c, DMT_Commitment_Line_Amount__c, DMT_NewMoney_BBVA__c, DMT_OldMoney_BBVA__c, DMT_ExpectedFinal_Take__c, DMT_Expected_Drawn__c, DMT_Liquidity_Fee__c, DES_Commitment_Fees__c, DMT_Extension_Duration_Fees__c, DES_Other_Fees__c, DMT_Reference_Upfront_Fees__c, DMT_Line_Currency__c, entity_role_type__c, DMT_Sub_Limit__c, bbva_prtcp_tranche_amount__c, syndicated_loan_drawn_amount__c, DMT_Deal_amount__c, g_currency_id__c, DMT_TXT_Commitment_Fees__c, DMT_TXT_Extension_Duration_Fees__c, DMT_TXT_Other_Fees_Accrual__c, DMT_TXT_Other_Fees_NonAccrual__c 
-                                            FROM OpportunityLineItem WHERE OpportunityId=:originalOpp.Id];
-        List<DMT_Opportunity_Tenor__c> tenors = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Opportunity_Tenor__c ];
-        List<DMT_Opportunity_Mitigant__c> mitigants = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Opportunity_Mitigant__c];
-        List<DMT_Underlying__c> underlyings = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Underlying__c WHERE DMT_Opportunity_Product__r.OpportunityId =:originalOpp.Id];
-        DMT_Opportunity_Client__c oppClient = [SELECT Id, DMT_MDE_Opportunity__c FROM DMT_Opportunity_Client__c LIMIT 1];
-        List<DMT_TeamMember__c> participants = [SELECT Id, Opportunity__c, AccessLevel__c, User__c FROM DMT_TeamMember__c];
-        
-        Integer originalUnderlyingsCount = underlyings.size();
-        
-        Test.startTest();
-        
-        DMT_OpportunityCloneUtil.CloneInput input = new DMT_OpportunityCloneUtil.CloneInput();
-        input.originalOpportunity = originalOpp;
-        input.opportunityLineItems = olis;
-        input.tenors = tenors;
-        input.mitigants = mitigants;
-        input.opportunityClient = oppClient;
-        input.localClient = subDiffAccount;
-        input.participants = participants;
-        
-        List<DMT_OpportunityCloneUtil.CloneResult> results = DMT_OpportunityCloneUtil.clone(new List<DMT_OpportunityCloneUtil.CloneInput>{input});
-        Test.stopTest();
-        
-        //Assert.isNotNull(results[0].newOpportunityId, 'The Id of the new opportunity should not be null');
-        //Assert.isTrue(results[0].success, 'Clone should be successful');
-        
-        // Verify that Underlyings were cloned
-        List<DMT_Underlying__c> clonedUnderlyings = [
-            SELECT Id, DMT_Opportunity_Product__c 
-            FROM DMT_Underlying__c 
-            WHERE DMT_Opportunity_Product__c IN (
-                SELECT Id FROM OpportunityLineItem WHERE OpportunityId = :results[0].newOpportunityId
-            )
-            ];
-//Assert.areEqual(originalUnderlyingsCount, clonedUnderlyings.size(), 'All underlyings should be cloned');
-    }
-    @IsTest
-    static void cloneGroupToDiffGRoup(){
-        
-        Opportunity originalOpp = [SELECT Id, Name, Entific__c,AccountId,RecordTypeId,gf_opportunity_product_desc__c, StageName, closedate FROM Opportunity LIMIT 1];
-        
-        //Custom Associations Opportunity
-        Custom_Association_Opportunity__c customAssoOpp = new Custom_Association_Opportunity__c(Opportunity__c = originalOpp.Id, g_customer_id__c = 'ESMAIN0000001',
-        gf_customer_group_id__c = 'GRPM-' + originalOpp.Id);
-        insert customAssoOpp;
-        //Custom Associations Client
-         DMT_Custom_Association_ClientOpportunity__c customAssoClientOpp = new DMT_Custom_Association_ClientOpportunity__c();
-                    customAssoClientOpp.DMT_Custom_Association_Opportunity__c = customAssoOpp.Id;
-                    customAssoClientOpp.DMT_g_customer_id__c = 'ESMAIN0000001';
-                    customAssoClientOpp.DMT_gf_customer_group_id__c = customAssoOpp.gf_customer_group_id__c;
-                    customAssoClientOpp.DMT_g_entific_id__c = originalOpp.Entific__c;
-                    insert customAssoClientOpp;
-            System.debug('******original OPP=> '+originalOpp);
-            System.debug('******customAssoOpp OPP=> '+customAssoOpp);
-            System.debug('******customAssoClientOpp OPP=> '+customAssoClientOpp);
 
-          Account groupAccount = new Account();
-        groupAccount.account_client__c='N';
-        groupAccount.Advising__c=false;
-        groupAccount.BBVA_Entity__c='BBVA SA';
-        groupAccount.BillingCity='MADRID';
-        groupAccount.BillingCountry='ES';
-        groupAccount.BillingPostalCode='28033';
-        groupAccount.BillingState='MADRID';
-        groupAccount.BillingStreet='AV GRAN Test DE HORTALEZA 0321';
-        groupAccount.CurrencyIsoCode='EUR';
-        groupAccount.cust_first_income_country_amount__c=45088445;
-        groupAccount.cust_first_income_country_name__c='ESPAÑA (2222815.0 EUR)';
-        groupAccount.DES_Activity__c='NDA';
-        groupAccount.Name='Group Acc';
-        //groupAccount.Past2_FY_Corp_Synd_Lending_amount__c = 13;
-        groupAccount.Revenues_Last_Year_number__c = 13;
-        groupAccount.DES_Group_Code__c = 'G20180109100997';
-        groupAccount.DES_Structure_Type__c ='Group';
-        insert groupAccount;
-        
-
-        List<OpportunityLineItem> olis = [SELECT Id, OpportunityId, PricebookEntryId, Quantity, UnitPrice, TotalPrice, DMT_Line_Amount__c, DMT_Commitment_Line_Amount__c, DMT_NewMoney_BBVA__c, DMT_OldMoney_BBVA__c, DMT_ExpectedFinal_Take__c, DMT_Expected_Drawn__c, DMT_Liquidity_Fee__c, DES_Commitment_Fees__c, DMT_Extension_Duration_Fees__c, DES_Other_Fees__c, DMT_Reference_Upfront_Fees__c, DMT_Line_Currency__c, entity_role_type__c, DMT_Sub_Limit__c, bbva_prtcp_tranche_amount__c, syndicated_loan_drawn_amount__c, DMT_Deal_amount__c, g_currency_id__c, DMT_TXT_Commitment_Fees__c, DMT_TXT_Extension_Duration_Fees__c, DMT_TXT_Other_Fees_Accrual__c, DMT_TXT_Other_Fees_NonAccrual__c 
-                                            FROM OpportunityLineItem WHERE OpportunityId=:originalOpp.Id];
-        List<DMT_Opportunity_Tenor__c> tenors = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Opportunity_Tenor__c ];
-        List<DMT_Opportunity_Mitigant__c> mitigants = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Opportunity_Mitigant__c];
-        List<DMT_Underlying__c> underlyings = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Underlying__c WHERE DMT_Opportunity_Product__r.OpportunityId =:originalOpp.Id];
-        DMT_Opportunity_Client__c oppClient = [SELECT Id, DMT_MDE_Opportunity__c FROM DMT_Opportunity_Client__c LIMIT 1];
-        List<DMT_TeamMember__c> participants = [SELECT Id, Opportunity__c, AccessLevel__c, User__c FROM DMT_TeamMember__c];
-        
-        Integer originalUnderlyingsCount = underlyings.size();
-        
-        Test.startTest();
-        
-        DMT_OpportunityCloneUtil.CloneInput input = new DMT_OpportunityCloneUtil.CloneInput();
-        input.originalOpportunity = originalOpp;
-        input.opportunityLineItems = olis;
-        input.tenors = tenors;
-        input.mitigants = mitigants;
-        input.opportunityClient = oppClient;
-        input.localClient = groupAccount;
-        input.participants = participants;
-        
-        List<DMT_OpportunityCloneUtil.CloneResult> results = DMT_OpportunityCloneUtil.clone(new List<DMT_OpportunityCloneUtil.CloneInput>{input});
-        Test.stopTest();
-        
-        
-    }
-    @IsTest
-    static void sameClientTest(){
-        
-        Opportunity originalOpp = [SELECT Id, Name, Entific__c,AccountId,RecordTypeId,gf_opportunity_product_desc__c, StageName, closedate FROM Opportunity LIMIT 1];
-        
-        
-        Account localCli = [SELECT Id,DES_Client_Type__c FROM Account WHERE Id = :originalOpp.AccountId];
-        localCli.DES_Structure_Type__c = 'Subsidiary';
-        
-        update localCli;
-        
-        
-        List<OpportunityLineItem> olis = [SELECT Id, OpportunityId, PricebookEntryId, Quantity, UnitPrice, TotalPrice, DMT_Line_Amount__c, DMT_Commitment_Line_Amount__c, DMT_NewMoney_BBVA__c, DMT_OldMoney_BBVA__c, DMT_ExpectedFinal_Take__c, DMT_Expected_Drawn__c, DMT_Liquidity_Fee__c, DES_Commitment_Fees__c, DMT_Extension_Duration_Fees__c, DES_Other_Fees__c, DMT_Reference_Upfront_Fees__c, DMT_Line_Currency__c, entity_role_type__c, DMT_Sub_Limit__c, bbva_prtcp_tranche_amount__c, syndicated_loan_drawn_amount__c, DMT_Deal_amount__c, g_currency_id__c, DMT_TXT_Commitment_Fees__c, DMT_TXT_Extension_Duration_Fees__c, DMT_TXT_Other_Fees_Accrual__c, DMT_TXT_Other_Fees_NonAccrual__c 
-                                            FROM OpportunityLineItem WHERE OpportunityId=:originalOpp.Id];
-        List<DMT_Opportunity_Tenor__c> tenors = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Opportunity_Tenor__c ];
-        List<DMT_Opportunity_Mitigant__c> mitigants = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Opportunity_Mitigant__c];
-        List<DMT_Underlying__c> underlyings = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Underlying__c WHERE DMT_Opportunity_Product__r.OpportunityId =:originalOpp.Id];
-        DMT_Opportunity_Client__c oppClient = [SELECT Id, DMT_MDE_Opportunity__c FROM DMT_Opportunity_Client__c LIMIT 1];
-        List<DMT_TeamMember__c> participants = [SELECT Id, Opportunity__c, AccessLevel__c, User__c FROM DMT_TeamMember__c];
-        
-        Integer originalUnderlyingsCount = underlyings.size();
-        
-        Test.startTest();
-        
-        DMT_OpportunityCloneUtil.CloneInput input = new DMT_OpportunityCloneUtil.CloneInput();
-        input.originalOpportunity = originalOpp;
-        input.opportunityLineItems = olis;
-        input.tenors = tenors;
-        input.mitigants = mitigants;
-        input.opportunityClient = oppClient;
-        input.localClient = localCli;
-        input.participants = participants;
-        
-        List<DMT_OpportunityCloneUtil.CloneResult> results = DMT_OpportunityCloneUtil.clone(new List<DMT_OpportunityCloneUtil.CloneInput>{input});
-        Test.stopTest();
-        
-        Assert.isNotNull(results[0].newOpportunityId, 'The Id of the new opportunity should not be null');
-        Assert.isTrue(results[0].success, 'Clone should be successful');
-        
-        // Verify that Underlyings were cloned
-        List<DMT_Underlying__c> clonedUnderlyings = [
-            SELECT Id, DMT_Opportunity_Product__c 
-            FROM DMT_Underlying__c 
-            WHERE DMT_Opportunity_Product__c IN (
-                SELECT Id FROM OpportunityLineItem WHERE OpportunityId = :results[0].newOpportunityId
-            )
-            ];
-        Assert.areEqual(originalUnderlyingsCount, clonedUnderlyings.size(), 'All underlyings should be cloned');
-    }
-    @IsTest
-    static void resolveMainHolder(){
-        
-        Date lastDate;
-        String lastDatetxt;
-        lastDatetxt = DMT_HPG_Utils.lastDate();
-        lastDate = Date.valueOf(lastDatetxt);
-        
-        Opportunity originalOpp = [SELECT Id, Name, Entific__c,AccountId,RecordTypeId,gf_opportunity_product_desc__c, StageName, closedate FROM Opportunity LIMIT 1];
-        originalOpp.Entific__c ='ES';
-        List<OpportunityLineItem> olis = [SELECT Id, OpportunityId, PricebookEntryId, Quantity, UnitPrice, TotalPrice, DMT_Line_Amount__c, DMT_Commitment_Line_Amount__c, DMT_NewMoney_BBVA__c, DMT_OldMoney_BBVA__c, DMT_ExpectedFinal_Take__c, DMT_Expected_Drawn__c, DMT_Liquidity_Fee__c, DES_Commitment_Fees__c, DMT_Extension_Duration_Fees__c, DES_Other_Fees__c, DMT_Reference_Upfront_Fees__c, DMT_Line_Currency__c, entity_role_type__c, DMT_Sub_Limit__c, bbva_prtcp_tranche_amount__c, syndicated_loan_drawn_amount__c, DMT_Deal_amount__c, g_currency_id__c, DMT_TXT_Commitment_Fees__c, DMT_TXT_Extension_Duration_Fees__c, DMT_TXT_Other_Fees_Accrual__c, DMT_TXT_Other_Fees_NonAccrual__c 
-                                            FROM OpportunityLineItem WHERE OpportunityId=:originalOpp.Id];
-        List<DMT_Opportunity_Tenor__c> tenors = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Opportunity_Tenor__c ];
-        List<DMT_Opportunity_Mitigant__c> mitigants = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Opportunity_Mitigant__c];
-        List<DMT_Underlying__c> underlyings = [SELECT Id, DMT_Opportunity_Product__c FROM DMT_Underlying__c WHERE DMT_Opportunity_Product__r.OpportunityId =:originalOpp.Id];
-        DMT_Opportunity_Client__c oppClient = [SELECT Id, DMT_MDE_Opportunity__c FROM DMT_Opportunity_Client__c LIMIT 1];
-        List<DMT_TeamMember__c> participants = [SELECT Id, Opportunity__c, AccessLevel__c, User__c FROM DMT_TeamMember__c];
-        
-        Account localCli = [SELECT Id,DES_Client_Type__c,DMT_Entific__c FROM Account WHERE Id = :originalOpp.AccountId];
-        localCli.DES_Structure_Type__c = 'Subsidiary';
-        System.debug('+++ENtific'+localCli.DMT_Entific__c);
-        /* localCli.DMT_Entific__c='ES'; */
-        
-        DMT_OpportunityCloneUtil.CloneInput input = new DMT_OpportunityCloneUtil.CloneInput();
-        input.originalOpportunity = originalOpp;
-        input.opportunityLineItems = olis;
-        input.tenors = tenors;
-        input.mitigants = mitigants;
-        input.opportunityClient = oppClient;
-        input.localClient = localCli;
-        input.participants = participants;
-        
-        
-        List<DMT_OpportunityCloneUtil.CloneResult> results = DMT_OpportunityCloneUtil.clone(new List<DMT_OpportunityCloneUtil.CloneInput>{input});
-        Id newOppId = results[0].newOpportunityId;
-        Opportunity newOpp = [SELECT Id from Opportunity WHERE Id=:newOppId];
-        DMT_Opportunity_Client__c newOppClient =[SELECT Id FROM DMT_Opportunity_Client__c WHERE DMT_MDE_Opportunity__c =:newOppId];
-        
-        DMT_OpportunityCloneUtil.MainHolderSelection selection = DMT_OpportunityCloneUtil.resolveMainHolderSelection(localCli.Id, originalOpp.Entific__c,lastDate);
-        
-        Map<String, Object> comparisonResult = DMT_Opportunity_Utils.getComparisonAccount(
-        new Map<String, Object>{ 'oppAccountId' => localCli.Id }, new Map<String, Object>(), null);
-        Id comparisonAccountId = (Id) comparisonResult.get('comparisonAccountId');
-        
-        DMT_CreateOpportunityService.ClientValues clientValues = DMT_CreateOpportunityService.getClientValues(localCli.Id, comparisonAccountId);
-        
-        Map<String, Object> leveragedLendingOutput = DMT_Callout_LeveragedLending.callLeveragedLendingService(
-            clientValues.groupCode, lastDatetxt, new Map<String, Object>()
+    private static void createMultiholderAssociations(Id opportunityId, Account subsidiary) {
+        Custom_Association_Opportunity__c association =
+            DMT_Test_DataFactory.generateCustomAssociationOpportunity(
+                opportunityId,
+                new Map<Schema.SObjectField, Object>{
+                    Custom_Association_Opportunity__c.Group__c => subsidiary.Id,
+                    Custom_Association_Opportunity__c.g_customer_id__c => subsidiary.g_customer_id__c,
+                    Custom_Association_Opportunity__c.g_group_id__c => subsidiary.DES_Group_Code__c,
+                    Custom_Association_Opportunity__c.gf_customer_group_id__c => 'SOURCE-' + opportunityId
+                }
             );
-        
-        String leveragedLendingIndType = leveragedLendingOutput != null ? (String) leveragedLendingOutput.get('leveragedLendingIndType'): null;
-        
-        
-        
-        DMT_OpportunityCloneUtil.createMainHolderAssociations(newOpp,
-        selection,
-        clientValues,
-        leveragedLendingIndType,
-        newOppClient );
+        DMT_Test_DataFactory.generateCustomAssociationClientOpportunity(
+            association.Id,
+            subsidiary.Id,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Custom_Association_ClientOpportunity__c.DMT_g_customer_id__c => subsidiary.g_customer_id__c,
+                DMT_Custom_Association_ClientOpportunity__c.DMT_gf_customer_group_id__c => 'SOURCE-' + opportunityId,
+                DMT_Custom_Association_ClientOpportunity__c.DMT_g_entific_id__c => 'ES'
+            }
+        );
+    }
+
+    private static DMT_OpportunityCloneUtil.CloneResult cloneWithMock(
+        Opportunity originalOpportunity,
+        Account targetAccount
+    ) {
+        List<OpportunityLineItem> opportunityLineItems = [
+            SELECT Id, OpportunityId, PricebookEntryId, Quantity, UnitPrice, TotalPrice,
+                   DMT_Line_Amount__c, DMT_Commitment_Line_Amount__c, DMT_NewMoney_BBVA__c,
+                   DMT_OldMoney_BBVA__c, DMT_ExpectedFinal_Take__c, DMT_Expected_Drawn__c,
+                   DMT_Liquidity_Fee__c, DES_Commitment_Fees__c, DMT_Extension_Duration_Fees__c,
+                   DES_Other_Fees__c, DMT_Reference_Upfront_Fees__c, DMT_Line_Currency__c,
+                   entity_role_type__c, DMT_Sub_Limit__c, bbva_prtcp_tranche_amount__c,
+                   syndicated_loan_drawn_amount__c, DMT_Deal_amount__c, g_currency_id__c,
+                   DMT_TXT_Commitment_Fees__c, DMT_TXT_Extension_Duration_Fees__c,
+                   DMT_TXT_Other_Fees_Accrual__c, DMT_TXT_Other_Fees_NonAccrual__c
+            FROM OpportunityLineItem
+            WHERE OpportunityId = :originalOpportunity.Id
+        ];
+        List<DMT_Opportunity_Tenor__c> tenors = [
+            SELECT Id, DMT_Opportunity_Product__c
+            FROM DMT_Opportunity_Tenor__c
+            WHERE DMT_Opportunity_Product__c IN :opportunityLineItems
+        ];
+        List<DMT_Opportunity_Mitigant__c> mitigants = [
+            SELECT Id, DMT_Opportunity_Product__c
+            FROM DMT_Opportunity_Mitigant__c
+            WHERE DMT_Opportunity_Product__c IN :opportunityLineItems
+        ];
+
+        DMT_OpportunityCloneUtil.CloneInput input = new DMT_OpportunityCloneUtil.CloneInput();
+        input.originalOpportunity = originalOpportunity;
+        input.opportunityLineItems = opportunityLineItems;
+        input.tenors = tenors;
+        input.mitigants = mitigants;
+        input.opportunityClient = [
+            SELECT Id, DMT_MDE_Opportunity__c
+            FROM DMT_Opportunity_Client__c
+            WHERE DMT_MDE_Opportunity__c = :originalOpportunity.Id
+            LIMIT 1
+        ];
+        input.localClient = targetAccount;
+        input.participants = [
+            SELECT Id, Opportunity__c, AccessLevel__c, User__c
+            FROM DMT_TeamMember__c
+            WHERE Opportunity__c = :originalOpportunity.Id
+        ];
+
+        Test.setMock(HttpCalloutMock.class, new DMT_Integration_MockGenerator());
+        Test.startTest();
+        List<DMT_OpportunityCloneUtil.CloneResult> results =
+            DMT_OpportunityCloneUtil.clone(new List<DMT_OpportunityCloneUtil.CloneInput>{ input });
+        Test.stopTest();
+
+        Assert.areEqual(1, results.size(), 'The clone invocation must return one result.');
+        return results[0];
+    }
+
+    private static Opportunity getOpportunity(String opportunityName) {
+        return [
+            SELECT Id, Name, Entific__c, AccountId, RecordTypeId, gf_opportunity_product_desc__c,
+                   StageName, CloseDate
+            FROM Opportunity
+            WHERE Name = :opportunityName
+            LIMIT 1
+        ];
+    }
+
+    private static Account getAccount(Id accountId) {
+        return [
+            SELECT Id, Name, DES_Structure_Type__c, DES_Client_Type__c, DES_Group_Code__c,
+                   g_customer_id__c
+            FROM Account
+            WHERE Id = :accountId
+        ];
+    }
+
+    private static Account getAccountByName(String accountName) {
+        return [
+            SELECT Id, Name, DES_Structure_Type__c, DES_Client_Type__c, DES_Group_Code__c,
+                   g_customer_id__c
+            FROM Account
+            WHERE Name = :accountName
+            LIMIT 1
+        ];
+    }
+
+    private static Account getAccountByCustomerId(String customerId) {
+        return [
+            SELECT Id, Name, DES_Structure_Type__c, g_customer_id__c
+            FROM Account
+            WHERE g_customer_id__c = :customerId
+            LIMIT 1
+        ];
+    }
+
+    private static void assertMainHolderAssociations(Id opportunityId, Account expectedMainHolder) {
+        Custom_Association_Opportunity__c association = [
+            SELECT Id, Opportunity__c, Group__c, g_customer_id__c, gf_customer_group_id__c
+            FROM Custom_Association_Opportunity__c
+            WHERE Opportunity__c = :opportunityId
+            LIMIT 1
+        ];
+        Assert.areEqual(expectedMainHolder.Id, association.Group__c, 'The association must use the resolved target subsidiary.');
+        Assert.areEqual(expectedMainHolder.g_customer_id__c, association.g_customer_id__c, 'The main holder customer Id must come from the HPG response.');
+        Assert.isNotNull(association.gf_customer_group_id__c, 'The association must reference the cloned opportunity external Id.');
+
+        DMT_Custom_Association_ClientOpportunity__c clientAssociation = [
+            SELECT DMT_Custom_Association_Opportunity__c, DMT_g_customer_id__c,
+                   DMT_gf_customer_group_id__c, DMT_g_entific_id__c
+            FROM DMT_Custom_Association_ClientOpportunity__c
+            WHERE DMT_Custom_Association_Opportunity__c = :association.Id
+            LIMIT 1
+        ];
+        Assert.areEqual(association.Id, clientAssociation.DMT_Custom_Association_Opportunity__c, 'The client association must be linked to the cloned association.');
+        Assert.areEqual(expectedMainHolder.g_customer_id__c, clientAssociation.DMT_g_customer_id__c, 'The client association must use the resolved subsidiary.');
+        Assert.areEqual('ES', clientAssociation.DMT_g_entific_id__c, 'The client association must retain the HPG country.');
+    }
+
+    private static void assertRelatedRecordsWereCloned(
+        Id originalOpportunityId,
+        Id clonedOpportunityId,
+        Boolean shouldCloneParticipants
+    ) {
+        List<OpportunityLineItem> originalLineItems = [SELECT Id FROM OpportunityLineItem WHERE OpportunityId = :originalOpportunityId];
+        List<OpportunityLineItem> clonedLineItems = [SELECT Id FROM OpportunityLineItem WHERE OpportunityId = :clonedOpportunityId];
+        Assert.areEqual(originalLineItems.size(), clonedLineItems.size(), 'All opportunity line items must be cloned.');
+
+        Integer originalTenors = [SELECT COUNT() FROM DMT_Opportunity_Tenor__c WHERE DMT_Opportunity_Product__c IN :originalLineItems];
+        Integer clonedTenors = [SELECT COUNT() FROM DMT_Opportunity_Tenor__c WHERE DMT_Opportunity_Product__c IN :clonedLineItems];
+        Assert.areEqual(originalTenors, clonedTenors, 'All tenors must be cloned.');
+
+        Integer originalMitigants = [SELECT COUNT() FROM DMT_Opportunity_Mitigant__c WHERE DMT_Opportunity_Product__c IN :originalLineItems];
+        Integer clonedMitigants = [SELECT COUNT() FROM DMT_Opportunity_Mitigant__c WHERE DMT_Opportunity_Product__c IN :clonedLineItems];
+        Assert.areEqual(originalMitigants, clonedMitigants, 'All mitigants must be cloned.');
+
+        Integer originalUnderlyings = [SELECT COUNT() FROM DMT_Underlying__c WHERE DMT_Opportunity_Product__c IN :originalLineItems];
+        Integer clonedUnderlyings = [SELECT COUNT() FROM DMT_Underlying__c WHERE DMT_Opportunity_Product__c IN :clonedLineItems];
+        Assert.areEqual(originalUnderlyings, clonedUnderlyings, 'All underlyings must be cloned.');
+
+        Integer clonedParticipants = [SELECT COUNT() FROM DMT_TeamMember__c WHERE Opportunity__c = :clonedOpportunityId];
+        Assert.areEqual(shouldCloneParticipants ? 1 : 0, clonedParticipants, 'Participants must only be cloned when the target account is unchanged.');
     }
 }

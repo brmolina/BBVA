@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- Order arbitrary: Apex classes only, no new fields. -->
+    <types>
+        <members>DMT_CreateOpportunityService</members>
+        <members>DMT_OpportunityClientController</members>
+        <members>DMT_OpportunityCloneUtil</members>
+        <members>DMT_CreateOpportunityServiceTest</members>
+        <members>DMT_OpportunityCloneUtilTest</members>
+        <name>ApexClass</name>
+    </types>
+    <version>65.0</version>
+</Package>
