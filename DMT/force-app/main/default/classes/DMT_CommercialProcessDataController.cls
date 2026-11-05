@@ -21,36 +21,17 @@ public with sharing class DMT_CommercialProcessDataController {
     public static void saveCommercialProcessData(Id opportunityId, Map<String, Object> fieldValues, List<Map<String, Object>> lineItems) {
         Savepoint sp = Database.setSavepoint();
         try {
+            // CIBGLOBALD-4811 - the records come from buildCommercialProcessSave, shared with
+            // previewCommercialProcessDataSave; the DML keeps the previous order.
+            CommercialProcessSave processSave = buildCommercialProcessSave(opportunityId, fieldValues, lineItems);
+
             // 1. Save line items first
-            if (lineItems != null && !lineItems.isEmpty()) {
-                List<OpportunityLineItem> toUpdate = new List<OpportunityLineItem>();
-                for (Map<String, Object> item : lineItems) {
-                    Id itemId = (Id) item.get('Id');
-                    if (itemId == null) continue;
-                    OpportunityLineItem oli      = new OpportunityLineItem(Id = itemId);
-                    oli.deferred_fee_amount__c                = (Decimal) item.get('deferred_fee_amount__c');
-                    oli.no_deferred_fee_amount__c             = (Decimal) item.get('no_deferred_fee_amount__c');
-                    oli.undrawn_fee_next_12m_amount__c        = (Decimal) item.get('undrawn_fee_next_12m_amount__c');
-                    oli.pre_net_margin_next_12m_amount__c     = (Decimal) item.get('pre_net_margin_next_12m_amount__c');
-                    oli.periodic_fee_amount__c                = (Decimal) item.get('periodic_fee_amount__c');
-                    oli.fee_next_12m_amount__c                = (Decimal) item.get('fee_next_12m_amount__c');
-                    oli.pre_oppy_revenue_next_12m_amount__c   = (Decimal) item.get('pre_oppy_revenue_next_12m_amount__c');
-                    oli.funding_cost_per__c                   = (Decimal) item.get('funding_cost_per__c');
-                    oli.credit_drawn_next_12m_per__c          = (Decimal) item.get('credit_drawn_next_12m_per__c');
-                    oli.pre_gross_margin_next_12m_per__c      = (Decimal) item.get('pre_gross_margin_next_12m_per__c');
-                    toUpdate.add(oli);
-                }
-                if (!toUpdate.isEmpty()) {
-                    update toUpdate;
-                }
+            if (!processSave.lineItems.isEmpty()) { // CIBGLOBALD-4811
+                update processSave.lineItems; // CIBGLOBALD-4811
             }
 
             // 2. Save opportunity fields
-            Opportunity opp = new Opportunity(Id = opportunityId);
-            for (String fieldName : fieldValues.keySet()) {
-                putFieldValue(opp, fieldName, fieldValues.get(fieldName));
-            }
-            update opp;
+            update processSave.opportunity; // CIBGLOBALD-4811
 
             List<Passport__c> passports = [
                 SELECT Id
@@ -69,6 +50,90 @@ public with sharing class DMT_CommercialProcessDataController {
         } catch (Exception e) {
             Database.rollback(sp);
             throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    /**
+     * @description CIBGLOBALD-4811 - The Ready to close reopen check of an IB&F Pipeline save
+     * (dmt_opp_commercial_process_data): builds exactly what saveCommercialProcessData writes
+     * (buildCommercialProcessSave), without DML, and compares it with the snapshots of the Cases of that type
+     * (DMT_ApprovalChangeStep_Handler.previewUnsavedChanges). Saves nothing. Empty when nothing reopens or the
+     * check fails (logged).
+     * @param caseTypeToCheck Case.DMT_Passport_Sanction__c value: readytoclose from the tab
+     */
+    @AuraEnabled
+    public static List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> previewCommercialProcessDataSave(
+        String caseTypeToCheck, Id opportunityId, Map<String, Object> fieldValues, List<Map<String, Object>> lineItems
+    ) {
+        try {
+            CommercialProcessSave processSave = buildCommercialProcessSave(opportunityId, fieldValues, lineItems);
+            return DMT_ApprovalChangeStep_Handler.previewUnsavedChanges(
+                opportunityId, caseTypeToCheck, valuesToWrite(processSave.opportunity), processSave.toUnsavedRows()
+            );
+        } catch (Exception e) {
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
+                e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
+                'DMT_CommercialProcessDataController', 'previewCommercialProcessDataSave', 'DMT', 'Opportunity'
+            ));
+            DMT_AsyncOrchestrator.flush();
+            return new List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper>();
+        }
+    }
+
+    /**
+     * @description CIBGLOBALD-4811 - Everything saveCommercialProcessData writes, built without DML: the product
+     * fee rows of the table (rows without Id are skipped) and the Opportunity with the tab fields (putFieldValue).
+     */
+    private static CommercialProcessSave buildCommercialProcessSave(Id opportunityId, Map<String, Object> fieldValues, List<Map<String, Object>> lineItems) {
+        CommercialProcessSave processSave = new CommercialProcessSave();
+        if (lineItems != null) {
+            for (Map<String, Object> item : lineItems) {
+                Id itemId = (Id) item.get('Id');
+                if (itemId == null) continue;
+                OpportunityLineItem oli      = new OpportunityLineItem(Id = itemId);
+                oli.deferred_fee_amount__c                = (Decimal) item.get('deferred_fee_amount__c');
+                oli.no_deferred_fee_amount__c             = (Decimal) item.get('no_deferred_fee_amount__c');
+                oli.undrawn_fee_next_12m_amount__c        = (Decimal) item.get('undrawn_fee_next_12m_amount__c');
+                oli.pre_net_margin_next_12m_amount__c     = (Decimal) item.get('pre_net_margin_next_12m_amount__c');
+                oli.periodic_fee_amount__c                = (Decimal) item.get('periodic_fee_amount__c');
+                oli.fee_next_12m_amount__c                = (Decimal) item.get('fee_next_12m_amount__c');
+                oli.pre_oppy_revenue_next_12m_amount__c   = (Decimal) item.get('pre_oppy_revenue_next_12m_amount__c');
+                oli.funding_cost_per__c                   = (Decimal) item.get('funding_cost_per__c');
+                oli.credit_drawn_next_12m_per__c          = (Decimal) item.get('credit_drawn_next_12m_per__c');
+                oli.pre_gross_margin_next_12m_per__c      = (Decimal) item.get('pre_gross_margin_next_12m_per__c');
+                processSave.lineItems.add(oli);
+            }
+        }
+        processSave.opportunity = new Opportunity(Id = opportunityId);
+        for (String fieldName : fieldValues.keySet()) {
+            putFieldValue(processSave.opportunity, fieldName, fieldValues.get(fieldName));
+        }
+        return processSave;
+    }
+
+    // CIBGLOBALD-4811 - the field values a built record writes, without its Id.
+    private static Map<String, Object> valuesToWrite(SObject record) {
+        Map<String, Object> values = new Map<String, Object>(record.getPopulatedFieldsAsMap());
+        values.remove('Id');
+        return values;
+    }
+
+    // CIBGLOBALD-4811 - the records an IB&F Pipeline save writes (buildCommercialProcessSave).
+    private class CommercialProcessSave {
+        Opportunity opportunity;
+        List<OpportunityLineItem> lineItems = new List<OpportunityLineItem>();
+
+        // The product rows in the DMT_ApprovalChangeStep_Handler.previewUnsavedChanges format.
+        List<Map<String, Object>> toUnsavedRows() {
+            List<Map<String, Object>> rows = new List<Map<String, Object>>();
+            for (OpportunityLineItem oli : lineItems) {
+                rows.add(new Map<String, Object>{
+                    'objectApiName' => 'OpportunityLineItem',
+                    'rowId' => (String) oli.Id,
+                    'values' => valuesToWrite(oli)
+                });
+            }
+            return rows;
         }
     }
 

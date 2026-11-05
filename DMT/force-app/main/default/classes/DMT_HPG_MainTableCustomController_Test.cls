@@ -56,7 +56,7 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
       Test.startTest();
         DMT_HPG_GlobalPosition.Wrapper wrapper = DMT_HPG_MainTableCustomController.fetchClientDataFromService(supraGroupAccount.Id, '1', '10', New List<String>{'ES','MX'}, Date.newInstance(2023,09,11), 'N', null);
         Test.stopTest();
-        System.assertEquals(true, wrapper.success, 'fetchClientDataFromServiceTest - Not passed - success');
+        Assert.areEqual(true, wrapper.success, 'fetchClientDataFromServiceTest - Not passed - success');
       }
   }
 
@@ -71,7 +71,7 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
     Test.startTest();
       String alphaCode = DMT_HPG_MainTableCustomController.getClientId(account.Id);
       Test.stopTest();
-      System.assertEquals(account.DES_Group_Code__c, alphaCode, 'getClientIdTest1 - Not passed - alphaCode');
+      Assert.areEqual(account.DES_Group_Code__c, alphaCode, 'getClientIdTest1 - Not passed - alphaCode');
   }
   @isTest
   static void getClientIdTest2() {
@@ -81,7 +81,7 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
     Test.startTest();
             String alphaCode = DMT_HPG_MainTableCustomController.getClientId(clientAccount.Id);
       Test.stopTest();
-            System.assertEquals(clientAccount.g_customer_id__c, alphaCode, 'getClientIdTest2 - Not passed - alphaCode');
+            Assert.areEqual(clientAccount.g_customer_id__c, alphaCode, 'getClientIdTest2 - Not passed - alphaCode');
   }
   @isTest
   static void fetchUsedTablesDataFromServiceTest() {
@@ -93,7 +93,7 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
     System.runAs(testUser) {
       Test.startTest();
         DMT_HPG_UsedTables.Wrapper wrapper = DMT_HPG_MainTableCustomController.fetchUsedTablesDataFromService(Date.newInstance(2023,09,11), '1', '10');
-        System.assertEquals(true, wrapper.success, 'fetchUsedTablesDataFromServiceTest - Not passed - success');
+        Assert.areEqual(true, wrapper.success, 'fetchUsedTablesDataFromServiceTest - Not passed - success');
       Test.stopTest();
     }
   }
@@ -106,7 +106,7 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
     Test.startTest();
       System.runAs(testUser) {
         String userIsAdmin = DMT_HPG_MainTableCustomController.userIsAdmin();
-        System.assertEquals('false', userIsAdmin, 'userIsAdminTest - Not passed - userIsAdmin');
+        Assert.areEqual('false', userIsAdmin, 'userIsAdminTest - Not passed - userIsAdmin');
       }
     Test.stopTest();
   }
@@ -128,7 +128,7 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
         Object res = DMT_HPG_MainTableCustomController.fetchData('', supraGroupAccount.Id, New List<String>{'ES','MX'}, '2023-09-11', 'N', '1', '10', null);
         Test.stopTest();
         DMT_HPG_GlobalPosition.Wrapper wrapper = (DMT_HPG_GlobalPosition.Wrapper) JSON.deserialize(JSON.serialize(res), DMT_HPG_GlobalPosition.Wrapper.class);
-        System.assertEquals(true, wrapper.success, 'fetchDataDataReportTest - Not passed - success');
+        Assert.areEqual(true, wrapper.success, 'fetchDataDataReportTest - Not passed - success');
       }
   }
 
@@ -140,7 +140,7 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
     account.DES_Group_Code__c = 'ES7202';
     insert account;
     final Id accountId = DMT_HPG_MainTableCustomController.getAccountIdFromRecordId(account.Id);
-    System.assertEquals(account.Id, accountId, 'getAccountIdFromRecordIdTest - Not passed');
+    Assert.areEqual(account.Id, accountId, 'getAccountIdFromRecordIdTest - Not passed');
   }
 
   @IsTest
@@ -148,25 +148,25 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
     Account account = [Select Id FROM Account WHERE Name='Test company 1' LIMIT 1];
     Opportunity oppTest = [Select Id FROM Opportunity WHERE Name='Test Opp' AND AccountId=:account.Id LIMIT 1];
     final Id accountId = DMT_HPG_MainTableCustomController.getAccountIdFromRecordId(oppTest.Id);
-    System.assertEquals(account.Id, accountId, 'getAccountIdFromRecordIdTest - Not passed');
+    Assert.areEqual(account.Id, accountId, 'getAccountIdFromRecordIdTest - Not passed');
   }
 
   @isTest
     static void calculateSegmentTest() {
         String res1 = DMT_HPG_MainTableCustomController.calculateSegment('00006');
-        System.assertEquals('Fin Inst-B', res1, 'Segment 00006 no coincide');
+        Assert.areEqual('Fin Inst-B', res1, 'Segment 00006 no coincide');
 
         String res2 = DMT_HPG_MainTableCustomController.calculateSegment('00001');
-        System.assertEquals('Sov', res2, 'Segment 00001 no coincide');
+        Assert.areEqual('Sov', res2, 'Segment 00001 no coincide');
 
         String res3 = DMT_HPG_MainTableCustomController.calculateSegment('00002');
-        System.assertEquals('Pub Inst', res3, 'Segment 00002 no coincide');
+        Assert.areEqual('Pub Inst', res3, 'Segment 00002 no coincide');
 
         String res4 = DMT_HPG_MainTableCustomController.calculateSegment('00003');
-        System.assertEquals('FINS', res4, 'Segment 00003 no coincide');
+        Assert.areEqual('FINS', res4, 'Segment 00003 no coincide');
 
         String res5 = DMT_HPG_MainTableCustomController.calculateSegment('XXXX');
-        System.assertEquals('', res5, 'Segment default no coincide');
+        Assert.areEqual('', res5, 'Segment default no coincide');
     }
 
   @isTest
@@ -240,8 +240,8 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
             FROM DMT_Opportunity_Client__c
             WHERE DMT_MDE_Opportunity__c = :opp.Id];
 
-        System.assertEquals(1, records.size(), 'The result is 1');
-        System.assertEquals('NEW_ALPHA', records[0].Alpha_Code_Client__c, 'The result is NEW_ALPHA');
+        Assert.areEqual(1, records.size(), 'The result is 1');
+        Assert.areEqual('NEW_ALPHA', records[0].Alpha_Code_Client__c, 'The result is NEW_ALPHA');
 
         // Verifica el backfill sobre el registro existente de DMT_Custom_Association_ClientOpportunity__c
         List<DMT_Custom_Association_ClientOpportunity__c> multiholders = [
@@ -249,9 +249,9 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
             FROM DMT_Custom_Association_ClientOpportunity__c
             WHERE DMT_Custom_Association_Opportunity__c = :assoc.Id
         ];
-        System.assertEquals(1, multiholders.size(), 'No debe crearse un duplicado, solo el registro existente');
-        System.assertEquals('ES', multiholders[0].DMT_g_entific_id__c, 'g_entific_id__c debe rellenarse en el backfill');
-        System.assertEquals('OLD_GROUP', multiholders[0].DMT_gf_customer_group_id__c, 'gf_customer_group_id__c debe rellenarse desde la asociación');
+        Assert.areEqual(1, multiholders.size(), 'No debe crearse un duplicado, solo el registro existente');
+        Assert.areEqual('ES', multiholders[0].DMT_g_entific_id__c, 'g_entific_id__c debe rellenarse en el backfill');
+        Assert.areEqual('OLD_GROUP', multiholders[0].DMT_gf_customer_group_id__c, 'gf_customer_group_id__c debe rellenarse desde la asociación');
         
     }
 
@@ -293,7 +293,7 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
           WHERE Id = :assoc.Id
       ];
 
-      System.assertEquals('NEW_MAIN', assoc.g_customer_id__c, 'The result is NEW_MAIN');
+      Assert.areEqual('NEW_MAIN', assoc.g_customer_id__c, 'The result is NEW_MAIN');
   }
 
 
@@ -351,13 +351,13 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
             WHERE Id = :oppClientNew.Id
         ];
 
-        System.assertEquals(
+        Assert.areEqual(
             'Old Comment',
             oppClientNew.DMT_comments__c,
             'The result is Old Comment'
         );
 
-        System.assertEquals(
+        Assert.areEqual(
             100,
             oppClientNew.Current_FY_Cash_Management_amount__c,
             'The result is 100'
@@ -381,7 +381,7 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
             Test.startTest();
                 DMT_HPG_GlobalPosition.Wrapper wrapper = DMT_HPG_MainTableCustomController.fetchClientDataFromServiceLine(supraGroupAccount.Id, '1', '10', New List<String>{'ES','MX'}, Date.newInstance(2023,09,11), 'N', null);
             Test.stopTest();
-            System.assertEquals(true, wrapper.success, 'fetchClientDataFromServiceLineTest - Not passed - success');
+            Assert.areEqual(true, wrapper.success, 'fetchClientDataFromServiceLineTest - Not passed - success');
         }
     }
 
@@ -402,7 +402,7 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
                 Object res = DMT_HPG_MainTableCustomController.fetchClientInitialData('', supraGroupAccount.Id, New List<String>{'ES','MX'}, '2023-09-11', 'N', '1', '10', null);
             Test.stopTest();
             DMT_HPG_GlobalPosition.Wrapper wrapper = (DMT_HPG_GlobalPosition.Wrapper) JSON.deserialize(JSON.serialize(res), DMT_HPG_GlobalPosition.Wrapper.class);
-            System.assertEquals(true, wrapper.success, 'fetchClientInitialDataTest - Not passed - success');
+            Assert.areEqual(true, wrapper.success, 'fetchClientInitialDataTest - Not passed - success');
         }
     }
 
@@ -445,9 +445,9 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
             FROM Custom_Association_Client__c
             WHERE Custom_Association__c = :assoc.Id
         ];
-        System.assertEquals(1, clients.size(), 'Debe haberse creado 1 Custom_Association_Client__c');
-        System.assertEquals('ALPHA_NEW', clients[0].Alpha_Code_Client__c, 'El alpha code debe ser ALPHA_NEW');
-        System.assertEquals('12M', clients[0].DMT_Term__c, 'El term debe ser 12M');
+        Assert.areEqual(1, clients.size(), 'Debe haberse creado 1 Custom_Association_Client__c');
+        Assert.areEqual('ALPHA_NEW', clients[0].Alpha_Code_Client__c, 'El alpha code debe ser ALPHA_NEW');
+        Assert.areEqual('12M', clients[0].DMT_Term__c, 'El term debe ser 12M');
     }
 
     @isTest
@@ -490,13 +490,13 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
             FROM Custom_Association_Client__c
             WHERE Custom_Association__c = :assoc.Id
         ];
-        System.assertEquals(1, remaining.size(), 'Solo debe quedar 1 cliente');
-        System.assertEquals('NEW_ALPHA', remaining[0].Alpha_Code_Client__c, 'El cliente restante debe ser NEW_ALPHA');
+        Assert.areEqual(1, remaining.size(), 'Solo debe quedar 1 cliente');
+        Assert.areEqual('NEW_ALPHA', remaining[0].Alpha_Code_Client__c, 'El cliente restante debe ser NEW_ALPHA');
 
         List<Custom_Association_Client__c> deleted = [
             SELECT Id FROM Custom_Association_Client__c WHERE Id = :oldClient.Id
         ];
-        System.assertEquals(0, deleted.size(), 'OLD_ALPHA debe haberse eliminado');
+        Assert.areEqual(0, deleted.size(), 'OLD_ALPHA debe haberse eliminado');
     }
 
     @isTest
@@ -538,7 +538,7 @@ public with sharing class DMT_HPG_MainTableCustomController_Test {
             SELECT Id FROM Custom_Association_Client__c
             WHERE Custom_Association__c = :assoc.Id
         ];
-        System.assertEquals(1, clients.size(), 'No debe haber duplicados, solo 1 cliente');
+        Assert.areEqual(1, clients.size(), 'No debe haber duplicados, solo 1 cliente');
     }
 
 
@@ -566,13 +566,13 @@ static void saveCustomAssociationInsertTest() {
         FROM Custom_Association__c
         WHERE DMT_Line__c = :line.Id
     ];
-    System.assertEquals(1, assocList.size(), 'Debe haberse creado 1 Custom_Association__c');
-    System.assertEquals('ALPHA_MAIN', assocList[0].g_customer_id__c, 'El alpha code debe ser ALPHA_MAIN');
-    System.assertEquals('GROUP_ID_01', assocList[0].g_group_Id__c, 'El group id debe ser GROUP_ID_01');
-    System.assertEquals('EXT_LINE_001', assocList[0].gf_customer_group_Id__c, 'El external line id debe ser EXT_LINE_001');
+    Assert.areEqual(1, assocList.size(), 'Debe haberse creado 1 Custom_Association__c');
+    Assert.areEqual('ALPHA_MAIN', assocList[0].g_customer_id__c, 'El alpha code debe ser ALPHA_MAIN');
+    Assert.areEqual('GROUP_ID_01', assocList[0].g_group_Id__c, 'El group id debe ser GROUP_ID_01');
+    Assert.areEqual('EXT_LINE_001', assocList[0].gf_customer_group_Id__c, 'El external line id debe ser EXT_LINE_001');
 
     DMT_Line__c updatedLine = [SELECT Custom_Association__c FROM DMT_Line__c WHERE Id = :line.Id];
-    System.assertEquals(assocList[0].Id, updatedLine.Custom_Association__c, 'La línea debe apuntar a la nueva asociación');
+    Assert.areEqual(assocList[0].Id, updatedLine.Custom_Association__c, 'La línea debe apuntar a la nueva asociación');
 }
 
 @isTest
@@ -598,7 +598,7 @@ static void saveCustomAssociationUpdateTest() {
     Custom_Association__c updatedAssoc = [
         SELECT g_customer_id__c FROM Custom_Association__c WHERE Id = :existingAssoc.Id
     ];
-    System.assertEquals('NEW_ALPHA', updatedAssoc.g_customer_id__c, 'El alpha code debe haberse actualizado a NEW_ALPHA');
+    Assert.areEqual('NEW_ALPHA', updatedAssoc.g_customer_id__c, 'El alpha code debe haberse actualizado a NEW_ALPHA');
 }
 
 @isTest
@@ -641,10 +641,10 @@ static void saveLineClientFieldsTest() {
         FROM Custom_Association_Client__c
         WHERE Id = :client.Id
     ];
-    System.assertEquals('12M', updated.DMT_Term__c,      'El term debe ser 12M');
-    System.assertEquals(5000,  updated.DMT_Amount__c,    'El amount debe ser 5000');
-    System.assertEquals(1000,  updated.DMT_FDAmount__c,  'El FD amount debe ser 1000');
-    System.assertEquals(2000,  updated.DMT_DVPAmount__c, 'El DVP amount debe ser 2000');
+    Assert.areEqual('12M', updated.DMT_Term__c,      'El term debe ser 12M');
+    Assert.areEqual(5000,  updated.DMT_Amount__c,    'El amount debe ser 5000');
+    Assert.areEqual(1000,  updated.DMT_FDAmount__c,  'El FD amount debe ser 1000');
+    Assert.areEqual(2000,  updated.DMT_DVPAmount__c, 'El DVP amount debe ser 2000');
 }
 
 @isTest
@@ -666,7 +666,7 @@ static void saveLineClientFieldsNoAssociationTest() {
     );
     Test.stopTest();
 
-    System.assert(true, 'No debe lanzar excepción si no hay Custom_Association__c');
+    Assert.isTrue(true, 'No debe lanzar excepción si no hay Custom_Association__c');
 }
 
 

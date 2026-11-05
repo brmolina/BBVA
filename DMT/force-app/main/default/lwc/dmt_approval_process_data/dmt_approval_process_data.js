@@ -33,6 +33,11 @@ import APPROVER_GB_NAME from '@salesforce/schema/DMT_Line__c.DMT_ApproverGlobalB
 import CLIENT_USE_FIELD from '@salesforce/schema/DMT_Line__c.DMT_Client_Use__c';
 // Changes been made for CIBGLOBALD-4763 - Import approval-state UI edit eligibility for approval data.
 import canEditLineInApprovalStateUi from '@salesforce/apex/DMT_LineController.canEditLineInApprovalStateUi';
+import previewCompareUnsavedChanges from '@salesforce/apex/DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges'; // CIBGLOBALD-4811
+import LightningConfirm from 'lightning/confirm'; // CIBGLOBALD-4811
+
+// CIBGLOBALD-4811 - record types whose Ready to close saves the Line trigger compares (DMT_Line_Helper)
+const REOPEN_CHECK_RECORD_TYPES = new Set(['TreasurySettlement', 'OtherProducts']);
 
 
 export default class Dmt_approval_process_data extends LightningElement {
@@ -102,7 +107,8 @@ export default class Dmt_approval_process_data extends LightningElement {
                 BOOKING_RISK_ID, BOOKING_RISK_NAME,
                 APPROVER_ID, APPROVER_NAME,
             APPROVER_GB_ID, APPROVER_GB_NAME,
-            CLIENT_USE_FIELD]
+            CLIENT_USE_FIELD],
+        optionalFields: ['DMT_Line__c.RecordType.DeveloperName'] // CIBGLOBALD-4811
     })
     // Changes been made for CIBGLOBALD-4763 - Resolve UI edit permission when line status data loads.
     async wiredRecordLine(result) {
@@ -117,6 +123,7 @@ export default class Dmt_approval_process_data extends LightningElement {
         } else if (data) {
             this.lineType = getFieldValue(data, LINE_TYPE);
             this.lineStatus = getFieldValue(data, LINE_STATUS);
+            this._recordTypeDeveloperName = data.fields.RecordType?.value?.fields?.DeveloperName?.value; // CIBGLOBALD-4811
             this.lineLock = getFieldValue(data, LINE_LOCK);
             this.bookingRiskId = getFieldValue(data, BOOKING_RISK_ID);
             this.bookingRiskName = getFieldValue(data, BOOKING_RISK_NAME);
@@ -321,6 +328,40 @@ export default class Dmt_approval_process_data extends LightningElement {
         this.draftValues = { ...this.draftValues, [field]: value };
     }
 
+    /**
+     * CIBGLOBALD-4811 - Asks before a save that would reopen approval tasks. Same filter as the Line trigger
+     * checkpoint 3 (DMT_Line_Helper): record type TreasurySettlement or OtherProducts, status Ready to close
+     * before and after the save, Cases 'readytoclose'. The values this save writes (draftValues, the fields of
+     * the template the user changed) go to DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges, which
+     * compares them with the snapshots without saving. A failed check counts as no reopen.
+     * @returns true to save, false when the user cancels
+     */
+    async _confirmReopen() {
+        if (this.lineStatus !== 'Ready to close' || !REOPEN_CHECK_RECORD_TYPES.has(this._recordTypeDeveloperName)) {
+            return true;
+        }
+        try {
+            const features = await previewCompareUnsavedChanges({
+                recordId: this.recordId,
+                caseTypeToCheck: 'readytoclose',
+                unsavedValues: { ...this.draftValues },
+                unsavedRows: null
+            });
+            if (!features || features.length === 0) {
+                return true;
+            }
+        } catch (error) {
+            console.error('[dmt_approval_process_data][_confirmReopen]', error);
+            return true;
+        }
+        return LightningConfirm.open({
+            label: 'Modify Line?',
+            message: 'The Line will be modified and the associated cases and tasks will be reopened.' +
+                '\n\nDo you want to modify the Line?',
+            theme: 'warning'
+        });
+    }
+
     async handleSaveClick() {
         this.isLoading = true;
         // Solo procedemos si hay algo que actualizar
@@ -340,10 +381,15 @@ export default class Dmt_approval_process_data extends LightningElement {
             Id: this.recordId
         };
 
+        // CIBGLOBALD-4811 - Ready to close: ask before a save that would reopen tasks; Cancel keeps edit mode
+        if (!await this._confirmReopen()) {
+            this.isLoading = false;
+            return;
+        }
+
         try {
-            await updateRecord({
-                fields
-            });
+            // Changes been made for CIBGLOBALD-4763 - Keep LDS save and let the before-save flow set the validation-rule permission flag.
+            await updateRecord({ fields });
             this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Success',
@@ -366,11 +412,13 @@ export default class Dmt_approval_process_data extends LightningElement {
         } catch (error) {
             console.log('JACG error ' + JSON.stringify(error))
             this.isLoading = false;
-            if (error.body.output.hasOwnProperty('fieldErrors')) {
-                console.log('JACG error entro aquí ' + JSON.stringify(Object.entries(error.body.output.fieldErrors)[0][1]))
+            // Changes been made for CIBGLOBALD-4763 - Display Apex permission and save errors without masking the original failure.
+            const fieldErrors = error?.body?.output?.fieldErrors;
+            if (fieldErrors && Object.keys(fieldErrors).length > 0) {
+                console.log('JACG error entro aquí ' + JSON.stringify(Object.entries(fieldErrors)[0][1]))
                 let message = '';
-                for (let i = 0; i < Object.entries(error.body.output.fieldErrors).length; i++) {
-                    message += Object.entries(error.body.output.fieldErrors)[i][0] + ': ' + Object.entries(error.body.output.fieldErrors)[i][1][0].message + '/';
+                for (const [fieldName, errors] of Object.entries(fieldErrors)) {
+                    message += fieldName + ': ' + errors[0].message + '/';
                 }
 
                 this.dispatchEvent(
@@ -384,7 +432,7 @@ export default class Dmt_approval_process_data extends LightningElement {
                 this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Error updating record',
-                    message: error.body.message,
+                    message: error?.body?.message || error?.message || 'Unable to update the record.',
                     variant: 'error'
                 })
             );

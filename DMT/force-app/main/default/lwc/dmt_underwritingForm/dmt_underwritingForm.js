@@ -1,6 +1,8 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import getUnderwritingData from '@salesforce/apex/DMT_UnderwritingFormController.getUnderwritingData';
 import saveUnderwritingData from '@salesforce/apex/DMT_UnderwritingFormController.saveUnderwritingData';
+import previewUnderwritingSave from '@salesforce/apex/DMT_UnderwritingFormController.previewUnderwritingSave'; // CIBGLOBALD-4811
+import LightningConfirm from 'lightning/confirm'; // CIBGLOBALD-4811
 import getFormattedAmountsForCurrency
     from '@salesforce/apex/DMT_OppInfoController.getFormattedAmountsForCurrency';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
@@ -216,10 +218,13 @@ normalizeValue(field, value) {
         loadStyle(this, dataTableStyle);
     }
 
-    @wire(getRecord, { recordId: '$recordId', fields: [SYSTEMMODSTAMP_FIELD, HAS_GUMS_FIELD, STAGE_FIELD] })
+    _recordTypeDeveloperName = null; // CIBGLOBALD-4811
+
+    @wire(getRecord, { recordId: '$recordId', fields: [SYSTEMMODSTAMP_FIELD, HAS_GUMS_FIELD, STAGE_FIELD], optionalFields: ['Opportunity.RecordType.DeveloperName'] }) // CIBGLOBALD-4811
     wiredOpp(value) {
         const { data, error } = value || {};
         if (data) {
+            this._recordTypeDeveloperName = data.fields.RecordType?.value?.fields?.DeveloperName?.value; // CIBGLOBALD-4811
             const stage = getFieldValue(data, STAGE_FIELD);
             const modstamp = getFieldValue(data, SYSTEMMODSTAMP_FIELD);
             this.stageName = stage;
@@ -509,6 +514,9 @@ normalizeValue(field, value) {
                 return;
             }
 
+            // CIBGLOBALD-4811 - Ready to close: ask before a save that would reopen tasks; Cancel keeps edit mode
+            if (!await this._confirmReopen(cleanedFields)) return;
+
             await saveUnderwritingData({
                 recordId: this.recordId,
                 updatedFields: cleanedFields,
@@ -535,6 +543,37 @@ normalizeValue(field, value) {
         } finally {
             this.isSaving = false;
         }
+    }
+
+    /**
+     * @description CIBGLOBALD-4811 - Asks before saving when the save would reopen approval tasks. Same filter as the
+     * Opportunity trigger checkpoint 3 (DMT_OpportunityTriggerHandler: record type DMT_Opportunity, stage Ready to
+     * close before and after, Cases 'readytoclose'). DMT_UnderwritingFormController.previewUnderwritingSave gets the
+     * same changed fields as the save, builds what the save writes and compares it with the snapshots, without
+     * saving. A failed check counts as no reopen. Returns true to save, false to stay in edit mode.
+     */
+    async _confirmReopen(updatedFields) {
+        if (this.stageName !== 'Ready to close' || this._recordTypeDeveloperName !== 'DMT_Opportunity') {
+            return true;
+        }
+        let reopens = false;
+        try {
+            const features = await previewUnderwritingSave({
+                caseTypeToCheck: 'readytoclose',
+                recordId: this.recordId,
+                updatedFields
+            });
+            reopens = !!(features && features.length > 0);
+        } catch (error) {
+            console.error('[dmt_underwritingForm][_confirmReopen]', error);
+        }
+        if (!reopens) return true;
+        return LightningConfirm.open({
+            label: 'Modify Opportunity?',
+            message: 'The Opportunity will be modified and the associated cases and tasks will be reopened.' +
+                '\n\nDo you want to modify the Opportunity?',
+            theme: 'warning'
+        });
     }
 
     async handleCancel() {

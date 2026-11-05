@@ -116,11 +116,39 @@ public with sharing class DMT_UnderwritingFormController_test {
     static void searchClientsFromLocalTest() {
         Account account = [SELECT Id FROM Account WHERE Name = 'Test Counterparty' LIMIT 1];
         Test.setFixedSearchResults(new List<Id>{ account.Id });
+        // CIBGLOBALD-4811 - Enhancement fix to existing process: searchClientsFromLocal reads Local_Client__c by name (SOQL)
+        new DMT_UtilTestClass().createLocalClientRecord(account.Id, 'ES0182000000999', new Map<Schema.SObjectField, Object>{ Local_Client__c.Name => 'Test Counterparty Local' });
 
         Test.startTest();
         List<DMT_UnderwritingFormController.LookupOption> results = DMT_UnderwritingFormController.searchClientsFromLocal('Counterparty');
         Test.stopTest();
         Assert.isFalse(results.isEmpty(), 'Results should not be empty');
+    }
+
+    // CIBGLOBALD-4811 - the reopen check builds what the save writes (recalculated fee included) and saves nothing;
+    // without a Ready to close Case nothing reopens, and a failing check answers nothing.
+    @IsTest
+    static void previewUnderwritingSave_NoCaseOrFailure_ReturnsNothingAndSavesNothing() {
+        Opportunity opp = getTestOpp();
+        Map<String, Object> updatedFields = new Map<String, Object>{
+            'operation_underwriting_per__c' => 200,
+            'clan_syndicated_loan_id__c' => 'CLAN4811',
+            'risk_effective_date__c' => '2030-01-15'
+        };
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> noCase =
+            DMT_UnderwritingFormController.previewUnderwritingSave('readytoclose', opp.Id, updatedFields);
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> nothingToWrite =
+            DMT_UnderwritingFormController.previewUnderwritingSave('readytoclose', opp.Id, null);
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> invalidDate =
+            DMT_UnderwritingFormController.previewUnderwritingSave('readytoclose', opp.Id, new Map<String, Object>{ 'risk_effective_date__c' => 'not-a-date' });
+        Test.stopTest();
+
+        Assert.isTrue(noCase.isEmpty(), 'Without a Ready to close Case nothing reopens');
+        Assert.isTrue(nothingToWrite.isEmpty(), 'Nothing to write, nothing to check');
+        Assert.isTrue(invalidDate.isEmpty(), 'A failing check returns nothing');
+        Assert.areNotEqual('CLAN4811', [SELECT clan_syndicated_loan_id__c FROM Opportunity WHERE Id = :opp.Id].clan_syndicated_loan_id__c, 'The preview saves nothing');
     }
 
     @IsTest

@@ -7,6 +7,8 @@ import { clientNeedFields, clientSolutionFields } from './dmt_opp_commercial_pro
 import getCommercialProcessData  from '@salesforce/apex/DMT_CommercialProcessDataController.getCommercialProcessData';
 import saveCommercialProcessData from '@salesforce/apex/DMT_CommercialProcessDataController.saveCommercialProcessData';
 import getOppLineItems           from '@salesforce/apex/DMT_CommercialProcessDataController.getOppLineItems';
+import previewCommercialProcessDataSave from '@salesforce/apex/DMT_CommercialProcessDataController.previewCommercialProcessDataSave'; // CIBGLOBALD-4811
+import LightningConfirm from 'lightning/confirm'; // CIBGLOBALD-4811
 
 const DEFAULT_READONLY_NEED     = new Map(clientNeedFields.map(f => [f.id, f.isReadOnly]));
 const DEFAULT_READONLY_SOLUTION = new Map(clientSolutionFields.map(f => [f.id, f.isReadOnly]));
@@ -58,10 +60,12 @@ export default class DmtOppCommercialProcessData extends LightningElement {
     // dmt_opp_commercial_process_data_fields.js. No field currently sets nbcScope
     // on this tab — this wiring is dormant until one does.
     isGtb = false;
+    _recordTypeDeveloperName = null; // CIBGLOBALD-4811
 
-    @wire(getRecord, { recordId: '$recordId', fields: [PRODUCT_AREA_FIELD] })
+    @wire(getRecord, { recordId: '$recordId', fields: [PRODUCT_AREA_FIELD], optionalFields: ['Opportunity.RecordType.DeveloperName'] }) // CIBGLOBALD-4811
     wiredProductArea({ data }) {
         if (!data) return;
+        this._recordTypeDeveloperName = data.fields.RecordType?.value?.fields?.DeveloperName?.value; // CIBGLOBALD-4811
         const productArea = data.fields.DMT_Product_Area__c?.value;
         const isGtb = productArea === 'GTB';
         if (isGtb === this.isGtb) return;
@@ -135,6 +139,9 @@ export default class DmtOppCommercialProcessData extends LightningElement {
             const tableRef  = this.refs.tableCommercialProcess;
             const lineItems = tableRef ? tableRef.getTableData() : [];
             console.log('[dmt_opp_commercial_process_data][lineItems]', JSON.stringify(lineItems));
+
+            // CIBGLOBALD-4811 - Ready to close: ask before a save that would reopen tasks; Cancel keeps edit mode
+            if (!await this._confirmReopen(lineItems)) return;
 
             await saveCommercialProcessData({
                 opportunityId: this._recordId,
@@ -246,6 +253,57 @@ export default class DmtOppCommercialProcessData extends LightningElement {
             ...toEntries(this.fieldsClientNeed),
             ...toEntries(this.fieldsClientSolution)
         ]);
+    }
+
+    // ─── Ready-to-close guard ─────────────────────────────────────────────────
+    /**
+     * @description CIBGLOBALD-4811 - Asks before saving when the save would reopen approval tasks. Same filter as
+     * the Opportunity trigger checkpoint 3 (DMT_OpportunityTriggerHandler: record type DMT_Opportunity, stage
+     * Ready to close before and after, Cases 'readytoclose'). DMT_CommercialProcessDataController.previewCommercialProcessDataSave
+     * gets the same payload as the save, builds what the save writes and compares it with the snapshots, without
+     * saving. Nothing changed since edit mode started: no call. A failed check counts as no reopen. Returns true to
+     * save, false to stay in edit mode.
+     */
+    async _confirmReopen(lineItems) {
+        if (this._stageRecord !== 'Ready to close' || this._recordTypeDeveloperName !== 'DMT_Opportunity'
+            || !this._hasUnsavedChanges(lineItems)) {
+            return true;
+        }
+        let reopens = false;
+        try {
+            const features = await previewCommercialProcessDataSave({
+                caseTypeToCheck: 'readytoclose',
+                opportunityId: this._recordId,
+                fieldValues: this._buildPayload(),
+                lineItems
+            });
+            reopens = !!(features && features.length > 0);
+        } catch (error) {
+            console.error('[dmt_opp_commercial_process_data][_confirmReopen]', error);
+        }
+        if (!reopens) return true;
+        return LightningConfirm.open({
+            label: 'Modify Opportunity?',
+            message: 'The Opportunity will be modified and the associated cases and tasks will be reopened.' +
+                '\n\nDo you want to modify the Opportunity?',
+            theme: 'warning'
+        });
+    }
+
+    // CIBGLOBALD-4811 - true when a form field or a fees table value differs from the edit-start copy.
+    _hasUnsavedChanges(lineItems) {
+        if (!this._snapshot) return false;
+        const sameValue = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null)
+            || String(a ?? '') === String(b ?? '');
+        const before = new Map([...this._snapshot.fieldsClientNeed, ...this._snapshot.fieldsClientSolution].map(f => [f.id, f.value]));
+        const fieldChanged = [...this.fieldsClientNeed, ...this.fieldsClientSolution]
+            .some(f => !f.isHidden && !sameValue(f.value, before.get(f.id)));
+        const rowsBefore = new Map((this._tableLineItemsSnapshot || []).map(row => [row.Id, row]));
+        const rowChanged = (lineItems || []).some(row => {
+            const old = rowsBefore.get(row.Id);
+            return !old || Object.keys(old).some(field => !sameValue(row[field], old[field]));
+        });
+        return fieldChanged || rowChanged;
     }
 
     _notifyEditMode(value) {

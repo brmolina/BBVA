@@ -839,6 +839,55 @@ public with sharing class DMT_OpportunityTriggerHandler_Test {
         Assert.isTrue(features.isEmpty(), 'The client row values are the frozen ones, so nothing reopens');
     }
 
+    // CIBGLOBALD-4811 - the Client tab form values as the stored main borrower row holds them (the fields
+    // DMT_OpportunityClientController.applyFormFields writes) plus the Opportunity threshold.
+    private static Map<String, Object> clientFormValues(DMT_Opportunity_Client__c clientRow) {
+        Map<String, Object> values = new Map<String, Object>();
+        for (String fieldName : new List<String>{
+            'g_upd_lmscl_internal_ratg_type__c', 'DMT_Scoring__c', 'External_Rating__c', 'DMT_External_Rating_SP__c',
+            'DMT_External_Rating_Moodys__c', 'DMT_External_Rating_Fitch__c', 'DMT_Industry__c', 'DMT_Leveraged_Lending__c',
+            'DMT_CAMN__c', 'Counterpart__c', 'SCRA__c', 'AVC_Check__c', 'European_Bank_Check__c', 'DMT_Sector__c',
+            'DMT_Subsector__c', 'DMT_Activity__c', 'DMT_Sector_Head__c', 'DMT_Guarantor_Name_Fiscal_ID__c'
+        }) {
+            values.put(fieldName, clientRow.get(fieldName));
+        }
+        Id oppId = clientRow.DMT_MDE_Opportunity__c;
+        values.put('DMT_Threshold_Type__c', [SELECT DMT_Threshold_Type__c FROM Opportunity WHERE Id = :oppId].DMT_Threshold_Type__c);
+        return values;
+    }
+
+    // CIBGLOBALD-4811 - the Client tab check builds what the save writes (DMT_OpportunityClientController
+    // .previewMainBorrowerSave): a changed client value lists the feature and saves nothing.
+    @isTest
+    public static void testPreviewMainBorrowerSave_ClientRowChange_ListsFeatureAndSavesNothing() {
+        DMT_Opportunity_Client__c clientRow = setupReadyToCloseOpportunityWithClientRow();
+        Map<String, Object> fieldValues = clientFormValues(clientRow);
+        fieldValues.put('Counterpart__c', 'Banks');
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features = DMT_OpportunityClientController.previewMainBorrowerSave(
+            'readytoclose', clientRow.DMT_MDE_Opportunity__c, clientRow.Id, 'Ready to close', fieldValues, false, null, null
+        );
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'The changed client value differs from the snapshot, so the feature is listed');
+        Assert.areEqual('Corporates', [SELECT Counterpart__c FROM DMT_Opportunity_Client__c WHERE Id = :clientRow.Id].Counterpart__c, 'The preview saves nothing');
+    }
+
+    // CIBGLOBALD-4811 - the stored values sent back through the save build are not a change.
+    @isTest
+    public static void testPreviewMainBorrowerSave_SameValues_ReturnsNothing() {
+        DMT_Opportunity_Client__c clientRow = setupReadyToCloseOpportunityWithClientRow();
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features = DMT_OpportunityClientController.previewMainBorrowerSave(
+            'readytoclose', clientRow.DMT_MDE_Opportunity__c, clientRow.Id, 'Ready to close', clientFormValues(clientRow), false, null, null
+        );
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'The values the save would write are the frozen ones, so nothing reopens');
+    }
+
     // CIBGLOBALD-4811 - Ready to close Opportunity whose snapshot also froze its product row
     // (section opportunityLineItem), as the Products component of the approver view does.
     private static OpportunityLineItem setupReadyToCloseOpportunityWithProductRow() {
@@ -889,6 +938,31 @@ public with sharing class DMT_OpportunityTriggerHandler_Test {
         Test.stopTest();
 
         Assert.isTrue(features.isEmpty(), 'Nothing changes on the product, so nothing reopens');
+    }
+
+    // CIBGLOBALD-4811 - a multi-select value sent as a list (dmt_opp_commercial_process_data) is typed as the
+    // value the save stores: joined with ';' in the order sent.
+    @isTest
+    public static void testApplyUnsavedValues_MultiPicklistList_MatchesStoredValue() {
+        List<Schema.PicklistEntry> entries = Opportunity.DES_Countries__c.getDescribe().getPicklistValues();
+        Assert.isTrue(entries.size() >= 2, 'DES_Countries__c needs two picklist values for this test');
+        String first = entries[0].getValue();
+        String second = entries[1].getValue();
+        Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
+        TriggerBypass.setBypass();
+        update new Opportunity(Id = opp.Id, DES_Countries__c = second + ';' + first);
+        TriggerBypass.removeBypass();
+        Opportunity stored = [SELECT DES_Countries__c FROM Opportunity WHERE Id = :opp.Id];
+
+        Test.startTest();
+        Opportunity typed = new Opportunity(Id = opp.Id);
+        DMT_ApprovalChangeStep_Helper.applyUnsavedValues(typed, new Map<String, Object>{ 'DES_Countries__c' => new List<Object>{ second, first } });
+        Opportunity cleared = new Opportunity(Id = opp.Id);
+        DMT_ApprovalChangeStep_Helper.applyUnsavedValues(cleared, new Map<String, Object>{ 'DES_Countries__c' => new List<Object>() });
+        Test.stopTest();
+
+        Assert.areEqual(stored.DES_Countries__c, typed.DES_Countries__c, 'The list is typed as the stored multi-select value');
+        Assert.isNull(cleared.DES_Countries__c, 'An empty selection is stored as blank');
     }
 
     // CIBGLOBALD-4811 - Enhancement to existing process: taking the edit lock in Ready to close is not compared;

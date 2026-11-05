@@ -55,6 +55,51 @@
                 <div class="slds-backdrop slds-backdrop_open line-versions-backdrop"></div>
             </template>
 
+            <template lwc:if={showModeChangeWarning}>
+                <section class="slds-modal slds-fade-in-open" role="dialog" aria-modal="true" aria-label="Confirm mode change">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <lightning-button-icon
+                                icon-name="utility:close"
+                                variant="bare-inverse"
+                                alternative-text="Close"
+                                class="slds-modal__close"
+                                onclick={handleCancelModeChange}
+                            ></lightning-button-icon>
+                            <h2 class="slds-text-heading_medium">Confirm change</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <p>{modeChangeWarningMessage}</p>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning-button
+                                label="Cancel"
+                                onclick={handleCancelModeChange}
+                            ></lightning-button>
+                            <lightning-button
+                                label="Continue"
+                                variant="brand"
+                                class="slds-m-left_x-small"
+                                onclick={handleConfirmModeChange}
+                            ></lightning-button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+            <template lwc:if={showViewModeToggle}>
+                <div class="view-mode-toggle">
+                    <lightning-radio-group
+                        name="viewMode"
+                        label="Client Selection Mode"
+                        options={viewModeOptions}
+                        value={viewMode}
+                        type="button"
+                        disabled={isViewModeToggleDisabled}
+                        onchange={handleViewModeChange}
+                    ></lightning-radio-group>
+                </div>
+            </template>
             <div class="toolbar">
                 <div class="table-summary">
                     <template lwc:if={showSelectionSummary}>
@@ -67,6 +112,7 @@
 
                 <div class="toolbar-right">
                     <template lwc:if={showToolbarFilters}>
+                        <template lwc:if={isMultiholderMode}>
                     <lightning-combobox
                         class="filter-combobox"
                         name="filterClients"
@@ -75,6 +121,7 @@
                         options={filterOptions}
                         onchange={handleFilterChange}
                     ></lightning-combobox>
+                       </template>
 
                     <div class="search-wrap">
                         <lightning-input
@@ -133,6 +180,9 @@
                         <thead>
                             <tr>
                                 <th scope="col">{tableLabelName}</th>
+                                <template lwc:if={showGoldenColumn}>
+                                    <th scope="col">Golden Code</th>
+                                </template>
                                 <template lwc:if={showStarCode}>
                                     <th scope="col">Star Code</th>
                                 </template>
@@ -188,6 +238,7 @@
                                                     <div class="secondary-text">{client.countryIfoId} - {client.customerId}</div>
                                                 </div>
                                                 <template lwc:if={client.isSelected}>
+                                                    <template lwc:if={showMainHolderToggle}>
                                                     <div class={client.mainHolderToggleClass}>
                                                         <span class="main-holder-label">{mainToggleLabel}</span>
                                                         <label class="slds-checkbox_toggle tiny-toggle">
@@ -203,10 +254,14 @@
                                                             </span>
                                                         </label>
                                                     </div>
+                                                    </template>
                                                 </template>
                                             </div>
                                         </td>
 
+                                        <template lwc:if={showGoldenColumn}>
+                                            <td>{client.goldenCustomerId}</td>
+                                        </template>
                                         <template lwc:if={showStarCode}>
                                             <td>{client.customerCounterpartiesCodesDesc}</td>
                                         </template>

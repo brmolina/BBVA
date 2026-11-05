@@ -77,12 +77,14 @@
             <!-- ═══════════════════════════════════════════════════════════════
                  SECTION: DERIVATIVES MESSAGE
                  ═══════════════════════════════════════════════════════════════ -->
-            <div class="slds-col slds-size_12-of-12 slds-p-around_x-small">
-                <h5 class="pageDescription"><strong>{derivativesMessage}</strong></h5>
-            </div>
+            <template lwc:if={showDerivativesMessage}>
+                <div class="slds-col slds-size_12-of-12 slds-p-around_x-small">
+                    <h5 class="pageDescription"><strong>{derivativesMessage}</strong></h5>
+                </div>
+            </template>
 
             <!-- ═══════════════════════════════════════════════════════════════
-                 SECTION: SINGULAR TREASURY (geography rule: singularTreasury)  → Show only for CO, AR
+                 SECTION: SINGULAR TREASURY → CO, AR; hidden for the common IFI template
                  ═════════════════════════════════════════════════════════════ -->
             <template lwc:if={showSingularTreasury}>
                 <div class="slds-col slds-size_12-of-12 slds-p-around_x-small slds-m-vertical_small">
@@ -106,6 +108,7 @@
                     <template lwc:if={showRiskTables}>
                         <c-product-restric-table
                             table-data-name={tableRestric}
+                            is-ifi-products-enabled={isIfiTemplateEnabled}
                             max-tenor-options-name={maxTenorOptions}
                             fd-amount={fdAmountRestric}
                             dvp-amount={dvpAmountRestric}
@@ -151,18 +154,20 @@
             <!-- ═══════════════════════════════════════════════════════════════
                  SECTION: TEXT FIELDS (Additional Restrictions / Comments)
                  ═══════════════════════════════════════════════════════════════ -->
-            <div class="slds-col slds-size_12-of-12 slds-p-horizontal_medium slds-m-vertical_medium">
-                <c-dmt_textfield
-                    record-id={recordId}
-                    field-type="textarea"
-                    field-name="DMT_Additional_Restrictions__c"
-                    label="Additional Products (those not included in the table above)"
-                    max-length="500"
-                    object-api-name="DMT_Line__c"
-                    disabled={isEditDisabled}
-                    ontextfieldchange={handleTextfieldChange}>
-                </c-dmt_textfield>
-            </div>
+            <template lwc:if={showAdditionalProducts}>
+                <div class="slds-col slds-size_12-of-12 slds-p-horizontal_medium slds-m-vertical_medium">
+                    <c-dmt_textfield
+                        record-id={recordId}
+                        field-type="textarea"
+                        field-name="DMT_Additional_Restrictions__c"
+                        label="Additional Products (those not included in the table above)"
+                        max-length="500"
+                        object-api-name="DMT_Line__c"
+                        disabled={isEditDisabled}
+                        ontextfieldchange={handleTextfieldChange}>
+                    </c-dmt_textfield>
+                </div>
+            </template>
 
             <div class="slds-col slds-size_12-of-12 slds-p-horizontal_medium slds-m-vertical_medium">
                 <c-dmt_textfield
@@ -208,13 +213,12 @@
                         </div>
                     </div>
                 </div>
-            </template>
+                 <!-- Spacer belongs to the visible Depos section. -->
+                 <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
+              </template>
 
-            <!-- Spacer -->
-            <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
-
-            <!-- ═══════════════════════════════════════════════════════════════
-                 SECTION: DEPOS RESTRICTIONS TABLE (geography rule: Only for MX)
+              <!-- ═══════════════════════════════════════════════════════════════
+                  SECTION: DEPOS RESTRICTIONS TABLE (geography rule: Only for MX)
                  ═════════════════════════════════════════════════════════════ -->
             <template lwc:if={showDerivativesRestrictions}>
                 <div class="slds-col slds-size_12-of-12">
@@ -235,13 +239,12 @@
                         </c-product-restric-table>
                     </template>
                 </div>
-            </template>
+                 <!-- Spacer belongs to the visible Depos restrictions section. -->
+                 <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
+              </template>
 
-            <!-- Spacer -->
-            <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
-
-            <!-- ═════════════════════════════════════════════════════════════
-                 SECTION: EQUITIES TABLE (geography rule: equitiesTable → hidden for CO, PE, AR, MX)
+              <!-- ═════════════════════════════════════════════════════════════
+                  SECTION: EQUITIES TABLE (geography rule: equitiesTable → hidden for CO, PE, AR, MX)
                  ═══════════════════════════════════════════════════════════════ -->
             <template lwc:if={showEquitiesTable}>
                 <div class="slds-col slds-size_12-of-12 slds-p-around_x-small">
@@ -270,15 +273,12 @@
                         </div>
                     </div>
                 </div>
-            </template>
+                 <!-- Spacer belongs to the visible Equities section. -->
+                 <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
+              </template>
 
-
-             <!-- Spacer -->
-            <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
-
-
-            <!-- ═══════════════════════════════════════════════════════════════
-                 SECTION: REPOS RISK TABLE (geography rule: ONLY FOR MX)
+              <!-- ═══════════════════════════════════════════════════════════════
+                  SECTION: REPOS RISK TABLE (geography rule: ONLY FOR MX)
                  ═══════════════════════════════════════════════════════════════ -->
            <template lwc:if={showReposTable}>
                 <div class="slds-col slds-size_12-of-12 slds-p-around_x-small">
@@ -307,10 +307,9 @@
                         </div>
                     </div>
                 </div>
+                <!-- Spacer belongs to the visible Repos section. -->
+                <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
             </template>
-
-            <!-- Spacer -->
-            <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
 
              <!-- ═══════════════════════════════════════════════════════════════
                  SECTION: REPOS RESTRICTIONS TABLE (geography rule: Only for MX)
@@ -334,13 +333,12 @@
                         </c-product-restric-table>
                     </template>
                 </div>
-            </template>
+                 <!-- Spacer belongs to the visible Repos restrictions section. -->
+                 <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
+              </template>
 
-            <!-- Spacer -->
-            <div class="slds-col slds-size_12-of-12" style="height: 3rem;"></div>
-
-            <!-- ═══════════════════════════════════════════════════════════════
-                 SECTION: FOOTER (Save / Cancel) — conditional on editMode
+              <!-- ═══════════════════════════════════════════════════════════════
+                  SECTION: FOOTER (Save / Cancel) — conditional on editMode
                  ═══════════════════════════════════════════════════════════════ -->
             <template lwc:if={editMode}>
                 <!-- Error popover -->

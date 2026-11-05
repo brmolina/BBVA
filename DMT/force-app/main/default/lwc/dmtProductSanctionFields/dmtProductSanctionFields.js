@@ -10,6 +10,17 @@ const CURRENCY_FIELD = `${OBJECT_API}.CurrencyIsoCode`;
 const WARRANTY_FIELD_KEY = 'DMT_Warranty__c.g_limits_grid_guarantee_type__c';
 const CURRENCY_PROVISION_FIELD_KEY = 'DMT_Currency_Provision__c.g_currency_id__c';
 
+// Changes been made for CIBGLOBALD-4709 - Load optional inputs for the non-blocking sanction tenor warning.
+const TENOR_WARNING_FIELDS = [
+    'DMT_Start_Date__c',
+    'DMT_End_Date__c',
+    'DMT_Operation_Type__c',
+    'DMT_End_Term__c',
+    'DMT_Line_Tenor__c'
+].map((field) => `${OBJECT_API}.${field}`);
+const TENOR_WARNING_TOLERANCE_PERCENT = 5;
+const MILLISECONDS_PER_DAY = 86400000;
+
 export default class DmtProductSanctionFields extends LightningElement {
     _riskId;
     _fieldConfigs = [];
@@ -147,7 +158,58 @@ export default class DmtProductSanctionFields extends LightningElement {
         return this._getRecordValue('CurrencyIsoCode') || 'USD';
     }
 
-    @wire(getRecord, { recordId: '$riskId', fields: '$recordFields' })
+    // Changes been made for CIBGLOBALD-4709 - Restrict the warning to sanction products without requiring extra field permissions.
+    get isSanctionLine() {
+        const lineType = String(this.lineType || '').trim().toLowerCase();
+        return lineType === 'approval' || lineType === 'sanction';
+    }
+
+    get tenorWarningFields() {
+        return this.isSanctionLine ? TENOR_WARNING_FIELDS : [];
+    }
+
+    // Changes been made for CIBGLOBALD-4709 - Compare draft or saved dates against the corresponding stored tenor in days.
+    get tenorWarningMessage() {
+        if (!this.isSanctionLine) {
+            return '';
+        }
+
+        const operationType = String(this._getRecordValue('DMT_Operation_Type__c') || '').trim().toUpperCase();
+        if (operationType !== 'OPP' && operationType !== 'LIN') {
+            return '';
+        }
+
+        const tenorField = operationType === 'LIN' ? 'DMT_Line_Tenor__c' : 'DMT_End_Term__c';
+        const tenorDays = Number(this._getRecordValue(tenorField));
+        const startDay = this._getUtcDateDay(this._getRecordValue('DMT_Start_Date__c'));
+        const endDay = this._getUtcDateDay(this._getRecordValue('DMT_End_Date__c'));
+        if (!Number.isFinite(tenorDays) || tenorDays <= 0 || startDay === null || endDay === null) {
+            return '';
+        }
+
+        const durationDays = endDay - startDay;
+        if (Math.abs(durationDays - tenorDays) * 100 <= tenorDays * TENOR_WARNING_TOLERANCE_PERCENT) {
+            return '';
+        }
+
+        const tenorLabel = operationType === 'LIN' ? 'Line Tenor' : 'Tenor';
+        return `The duration between Start Date and End Date differs from the selected ${tenorLabel}.`;
+    }
+
+    // Changes been made for CIBGLOBALD-4709 - Validate calendar dates and count UTC days independently of daylight saving changes.
+    _getUtcDateDay(value) {
+        if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+            return null;
+        }
+        const timestamp = Date.parse(`${value}T00:00:00.000Z`);
+        if (!Number.isFinite(timestamp) || new Date(timestamp).toISOString().slice(0, 10) !== value) {
+            return null;
+        }
+        return timestamp / MILLISECONDS_PER_DAY;
+    }
+
+    // Changes been made for CIBGLOBALD-4709 - Fetch warning inputs through the existing LDS request, respecting field access.
+    @wire(getRecord, { recordId: '$riskId', fields: '$recordFields', optionalFields: '$tenorWarningFields' })
     wiredRecord(result) {
         this.wiredRecordResult = result;
         const { data, error } = result;
@@ -386,6 +448,9 @@ export default class DmtProductSanctionFields extends LightningElement {
             label: cfg.displayLabel || cfg.fieldLabel || recordApiName,
             type,
             isPercent,
+            // Changes been made for CIBGLOBALD-4709 - Show the tenor mismatch as a warning tooltip beside End Date.
+            hasWarning: fieldKey === 'DMT_End_Date__c' && !!this.tenorWarningMessage,
+            warningText: fieldKey === 'DMT_End_Date__c' ? this.tenorWarningMessage : '',
             percentFractionDigits: inputAttributes.fractionDigits,
             value,
             options,

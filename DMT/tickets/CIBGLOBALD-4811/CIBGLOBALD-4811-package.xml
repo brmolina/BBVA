@@ -9,11 +9,24 @@
         <members>DMT_OpportunityTriggerHandler</members>
         <members>DMT_Line_Helper</members>
         <members>DMT_OpportunityProductsController</members>
+        <members>DMT_CommercialProcessDataController</members>
+        <members>DMT_UnderwritingFormController</members>
+        <members>DMT_OpportunityClientController</members>
+        <members>DMT_RiskTablesLineController</members>
+        <members>DMT_HPG_MainTableCustomController</members>
+        <members>DMT_SelectClientsInLineService</members>
         <members>DMT_ApprovalChangeStep_test</members>
         <members>DMT_OpportunityTriggerHandler_Test</members>
         <members>DMT_Line_TriggerHandler_Test</members>
         <members>DMT_SnapshotChildComparatorTest</members>
         <members>DMT_OpportunityProductsControllerTest</members>
+        <members>DMT_ApprovalChangeStep_HelperTest</members>
+        <members>DMT_CommercialProcessDataController_Test</members>
+        <members>DMT_UnderwritingFormController_test</members>
+        <members>DMT_OpportunityClientControllerTest</members>
+        <members>DMT_RiskTablesLineController_Test</members>
+        <members>DMT_HPG_MainTableCustomController_Test</members>
+        <members>DMT_SelectClientsInLineService_Test</members>
         <name>ApexClass</name>
     </types>
     <types>
@@ -24,6 +37,14 @@
         <members>dmt_opp_info</members>
         <members>dmt_lineInfo</members>
         <members>dmt_opp_client</members>
+        <members>dmt_opp_products</members>
+        <members>dmt_opp_product_details</members>
+        <members>dmt_opp_product_details_line</members>
+        <members>dmt_opp_commercial_process_data</members>
+        <members>dmt_underwritingForm</members>
+        <members>dmt_approval_process_data</members>
+        <members>dmtRiskTablesLine</members>
+        <members>dmtSelectClientsInLineMigrated</members>
         <name>LightningComponentBundle</name>
     </types>
     <version>65.0</version>

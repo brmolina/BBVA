@@ -1,10 +1,16 @@
 import { LightningElement, api, track } from 'lwc';
-import loadDatasource from '@salesforce/apex/DMT_SelectClientsInLineService.loadDatasource';
+import { notifyRecordUpdateAvailable } from 'lightning/uiRecordApi';
+import loadDatasourceForMode from '@salesforce/apex/DMT_SelectClientsInLineService.loadDatasourceForMode';
 import getAvailableClientsPage from '@salesforce/apex/DMT_SelectClientsInLineService.getAvailableClientsPage';
+import getAvailableClientsPageForLine from '@salesforce/apex/DMT_SelectClientsInLineService.getAvailableClientsPageForLine';
 import saveSelection from '@salesforce/apex/DMT_SelectClientsInLineService.saveSelection';
 import saveGoldenSelection from '@salesforce/apex/DMT_SelectClientsInLineService.saveGoldenSelection';
 import clearGoldenSelection from '@salesforce/apex/DMT_SelectClientsInLineService.clearGoldenSelection';
 import deleteCustomAssociation from '@salesforce/apex/DMT_SelectClientsInLineService.deleteCustomAssociation';
+// Changes been made for CIBGLOBALD-4763 - Import approval-state UI edit eligibility for clients.
+import canEditLineInApprovalStateUi from '@salesforce/apex/DMT_LineController.canEditLineInApprovalStateUi';
+import previewLineClientSave from '@salesforce/apex/DMT_SelectClientsInLineService.previewLineClientSave'; // CIBGLOBALD-4811
+import LightningConfirm from 'lightning/confirm'; // CIBGLOBALD-4811
 import pubsub from 'omnistudio/pubsub';
 
 export default class DmtSelectClientsInLineMigrated extends LightningElement {
@@ -24,6 +30,8 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
 
     @track availableClients = [];
     @track allAvailableClients = [];
+    // Changes been made for CIBGLOBALD-4687
+    @track availableClientsAccountId;
     @track searchText = '';
     @track isSaving = false;
     @track groupId;
@@ -40,8 +48,13 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
     @track isDirty = false;
     @track hasLoadedOnce = false;
     @track lineClientType = '';
+    // Changes been made for CIBGLOBALD-4687
+    @track lineAccountClientType = '';
     @track lineTemplateType = '';
     @track hasCustomAssociation = false;
+    // Changes been made for CIBGLOBALD-4687
+    @track savedGoldenCode = '';
+    isIfiLine = false;
     @track isSelectionLocked = false;
     @track canEditByBusinessRule = true;
     @track showLineVersionsModal = false;
@@ -79,6 +92,19 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         const nextValue = value || null;
         const changed = this._recordId !== nextValue;
         this._recordId = nextValue;
+
+        if (changed) {
+            this.isIfiLine = false;
+            this.savedGoldenCode = '';
+            this._pendingViewMode = null;
+            this.showModeChangeWarning = false;
+            this.hasLoadedOnce = false;
+            this.viewMode = 'multiholder';
+            this.isSaving = false;
+            this.isFetchingPage = false;
+            this.isFetchingAllForSearch = false;
+            this.isApplyingDatasource = false;
+        }
 
         if (changed && this._recordId) {
             // CIBGLOBALD-4344 - A new Line context resets the With-Exposure-empty fallback so it
@@ -181,7 +207,7 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         }
 
         const sourceRows = this.filterClients === 'true'
-            ? this.mergeByCustomerId(this.allAvailableClients, this.selectedRows)
+            ? this.mergeRowsForSelectedFilter(this.allAvailableClients, this.selectedRows)
             : this.allAvailableClients;
 
         const query = String(this.searchText || '').trim().toLowerCase();
@@ -196,7 +222,7 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
                     return false;
                 }    
 
-                const geoMatch = this.matchesBookingGeography(row.customerId);
+                const geoMatch = this.matchesClientContext(row.customerId);
                 if (!geoMatch) {
                     return false;
                 }
@@ -224,11 +250,28 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
                     || assetAllocationSector.includes(query);
             });
 
-        const limited = query ? filtered : filtered.slice(0, this.visibleRowLimit);
+        // Changes been made for CIBGLOBALD-4687
+        const rowsByGoldenCode = new Map();
+        for (const row of filtered) {
+            const goldenCode = this.normalizeGoldenCode(row.goldenCustomerId);
+            const current = rowsByGoldenCode.get(goldenCode);
+            if (!current || selectedById.has(row.customerId)) {
+                rowsByGoldenCode.set(goldenCode, row);
+            }
+        }
+        const rowsForMode = this.viewMode === 'global'
+            ? [...rowsByGoldenCode.values()]
+            : filtered;
+        const rowsForDisplay = rowsForMode;
+        const limited = query
+            ? rowsForMode
+            : rowsForDisplay.slice(0, this.visibleRowLimit);
         return limited
             .map((row) => {
                 const selected = selectedById.get(row.customerId);
-                const merged = selected ? { ...row, ...selected } : { ...row };
+                const merged = selected
+                    ? this.mergeServiceRowWithSelectedEditableFields(row, selected)
+                    : { ...row };
                 // Always prefer service identity data to avoid showing stale custom-association names.
                 merged.customerName = row.customerName || merged.customerName || '';
                 merged.isSelected = Boolean(selected);
@@ -421,8 +464,10 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         return this.visibleClients.length > 0;
     }
 
+    // Changes been made for CIBGLOBALD-4687
     get canSelectClients() {
-        return !this.isSelectionLocked && !this.isSelectionReadOnlyByStatus;
+        return this.hasLoadedOnce && !this.showLoading && !this.isSaving
+            && (!this.isSelectionLocked || this.isGlobalMode) && !this.isSelectionReadOnlyByStatus;
     }
 
     get isClientSelectionDisabled() {
@@ -493,19 +538,26 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         return this.selectedRows.length;
     }
 
+    // Changes been made for CIBGLOBALD-4687
     get showFooter() {
-        return this.isDirty && !this.isSelectionLocked && !this.isSelectionReadOnlyByStatus;
+        return this.isDirty && this.canSelectClients;
     }
 
     get selectionSummary() {
         return `Selected records: ${this.selectedCount}`;
     }
 
+    // Changes been made for CIBGLOBALD-4687
     get viewModeOptions() {
         return [
-            { label: 'Multiholder', value: 'multiholder' },
+            { label: this.isCustomerProvTitleLine ? 'Customer' : 'Multiholder', value: 'multiholder' },
             { label: 'Global Clients', value: 'global' }
         ];
+    }
+
+    // Changes been made for CIBGLOBALD-4687
+    get isCustomerProvTitleLine() {
+        return this.isCustomerLevelLine || this.lineAccountClientType === 'subsidiary';
     }
 
     get isGlobalMode() {
@@ -516,12 +568,16 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         return this.viewMode === 'multiholder';
     }
 
+    // Changes been made for CIBGLOBALD-4687
     get showViewModeToggle() {
-        if (this.lineTemplateType !== 'OL') {
+        if (this.lineTemplateType !== 'OL' && this.lineTemplateType !== 'TL') {
             return false;
          }
+        if (this.hasGoldenCode) {
+            return true;
+        }
         const clientType = String(this.lineClientType || '').toLowerCase();
-        return clientType === 'group' || clientType === 'golden' || clientType === 'custom';
+        return clientType === 'group' || clientType === 'golden' || clientType === 'custom' || clientType === 'customer';
     }
 
 
@@ -529,23 +585,26 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         return this.viewMode === 'global';
     }
 
+    // Changes been made for CIBGLOBALD-4687
     get hasGoldenCode() {
-        return String(this.lineClientType || '').toLowerCase() === 'golden';
+        return Boolean(this.normalizeGoldenCode(this.savedGoldenCode));
     }
 
+    // Changes been made for CIBGLOBALD-4687
     get modeChangeWarningMessage() {
         if (this._pendingViewMode === 'global') {
-            return 'Switching to Global Clients will remove the existing Multiholder custom association for this line. Do you want to continue?';
+            return 'Switching to Global Clients will remove the existing Customer or custom association selection. Continue?';
         }
-        return 'Switching to Multiholder will remove the saved Golden Code for this line. Do you want to continue?';
+        return 'Switching to Customer will clear the saved Golden Code. Continue?';
     }
 
     get showMainHolderToggle() {
         return this.isMultiholderMode;
     }
 
+    // Changes been made for CIBGLOBALD-4687
     get isViewModeToggleDisabled() {
-        return this.isClientSelectionDisabled;
+        return !this.hasLoadedOnce || this.isSelectionReadOnlyByStatus || this.isSaving || this.showLoading;
     }
 
 
@@ -629,31 +688,49 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         }, 0);
     }
 
-    async loadDatasource() {
+    async loadDatasource(viewModeForDatasource = this.viewMode) {
         if (!this.recordId) {
             return;
         }
+        const requestedRecordId = this.recordId;
 
         try {
             this.showLoading = true;
             this.errorMessage = '';
             this.visibleRowLimit = this.batchSize;
             const fetchClientPosition = this.isCustomerLevelLine || this.filterClients === 'true' ? 'Y/N' : this.clientPosition;
-            const response = await loadDatasource({
-                recordId: this.recordId,
-                clientPosition: fetchClientPosition
-            });
+            // Changes been made for CIBGLOBALD-4763 - Resolve client data and approval-state UI access together.
+            const [response, canEditApprovalStateUi] = await Promise.all([
+                loadDatasourceForMode({
+                    recordId: this.recordId,
+                    clientPosition: fetchClientPosition,
+                    viewMode: viewModeForDatasource
+                }),
+                canEditLineInApprovalStateUi({ recordId: this.recordId }).catch(() => false)
+            ]);
 
+            if (this.recordId !== requestedRecordId) {
+                return;
+            }
             this.isApplyingDatasource = true;
-            this.accountId = this.accountId || response.accountId;
-            this.lineId = this.lineId || response.lineId;
-            this.externallineId = this.externallineId || response.externallineId;
+            this.isIfiLine = response.isIfiLine === true;
+            this.accountId = response.accountId || this.accountId;
+            this.lineId = response.lineId || this.lineId;
+            // Changes been made for CIBGLOBALD-4687
+            this.availableClientsAccountId = response.availableClientsAccountId || response.accountId || this.accountId;
+            this.externallineId = response.externallineId || this.externallineId;
             this._lineStatus = response.lineStatus || this._lineStatus;
-            this.booking = this.booking || response.booking;
+            this.booking = response.booking || this.booking;
             this._currency = response.currency || this._currency;
-            this.canEditByBusinessRule = response.canEditSelection !== false;
+            // Changes been made for CIBGLOBALD-4763 - Enable client edit controls for qualified approval-state users.
+            this.canEditByBusinessRule = response.canEditSelection !== false || canEditApprovalStateUi === true;
             this.returnedDate = this.returnedDate || response.returnedDate;
+            // Changes been made for CIBGLOBALD-4687
             this.lineClientType = String(response.lineclienttype || this.lineClientType || '').toLowerCase();
+            // Changes been made for CIBGLOBALD-4687
+            this.lineAccountClientType = String(response.clientAccountType || '').toLowerCase();
+            // Changes been made for CIBGLOBALD-4687
+            this.savedGoldenCode = this.normalizeGoldenCode(response.goldenCode);
             this.clientPosition = this.filterClients === 'true'
                 ? 'true'
                 : (response.clientPosition || this.clientPosition);
@@ -661,12 +738,14 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
             this.groupSfId = response.groupSfId || this.groupSfId;
             this.currentPage = Number(response.page || 1);
             this.totalPages = Number(response.totalPages || 1);
-            this.lineClientType = response.lineclienttype;
             this.lineTemplateType = response.lineTemplateType;   
             this.hasCustomAssociation = response.hasCustomAssociation === true;
 
-            if (String(this.lineClientType || '').toLowerCase() === 'golden') {
+            // Changes been made for CIBGLOBALD-4687
+            if (this.hasGoldenCode) {
                 this.viewMode = 'global';
+            } else {
+                this.viewMode = viewModeForDatasource === 'global' ? 'global' : 'multiholder';
             }
 
             if (!this.selectedTab || this.selectedTab === 'tcm') {
@@ -675,12 +754,12 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
             }
 
             this.allAvailableClients = this.applyRatingExpiration(response.availableClients || [])
-                .filter((row) => this.matchesBookingGeography(row.customerId));
+                .filter((row) => this.matchesClientContext(row.customerId));
             this.availableClients = this.allAvailableClients;
             this.priorselectedRows = response.priorselectedRows || [];
             this.selectedRows = this.normalizeSelectedRowsFromService(
                 this.applyRatingExpiration((response.selectedRows || []).map((row) => ({ ...row })))
-                    .filter((row) => this.matchesBookingGeography(row.customerId)),
+                    .filter((row) => this.matchesClientContext(row.customerId)),
                 this.allAvailableClients
             );
             this.priorselectedRows = this.normalizeSelectedRowsFromService(
@@ -693,12 +772,13 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
                 this.priorselectedRows = [];
                 this.selectedRows = [];
             }
-                    
+
             // Reconstruir la selección Golden al cargar (modo Global no persiste selectedRows, solo el Golden_Code__c)
-            const goldenCode = response.goldenCode;
-            if (String(this.lineClientType || '').toLowerCase() === 'golden' && goldenCode) {
+            // Changes been made for CIBGLOBALD-4687
+            if (this.savedGoldenCode) {
                 this.selectedRows = this.allAvailableClients
-                    .filter((row) => row.goldenCustomerId === goldenCode)
+                    .filter((row) => this.normalizeGoldenCode(row.goldenCustomerId) === this.savedGoldenCode)
+                    .slice(0, 1)
                     .map((row) => ({ ...row }));
                 this.mainHolder = '';
             } else {
@@ -706,20 +786,36 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
                 this.mainHolder = sourceMainHolder;
             }
             
-            this.snapshotBaseline();
             this.hasEditSession = false;
             this.hasLoadedOnce = true;
 
             await this.ensureInitialGeographyRows();
+            if (this.recordId !== requestedRecordId) {
+                return;
+            }
+            await this.ensureServiceRowsForSelectedClients();
+            if (this.recordId !== requestedRecordId) {
+                return;
+            }
+            // Changes been made for CIBGLOBALD-4687
+            await this.ensureSavedGoldenRowLoaded();
+            if (this.recordId === requestedRecordId) {
+                this.snapshotBaseline();
+            }
         } catch (error) {
-            this.errorMessage = this.resolveUserMessage('load', error);
+            if (this.recordId === requestedRecordId) {
+                this.errorMessage = this.resolveUserMessage('load', error);
+            }
         } finally {
-            this.isApplyingDatasource = false;
-            this.showLoading = false;
+            if (this.recordId === requestedRecordId) {
+                this.isApplyingDatasource = false;
+                this.showLoading = false;
+            }
         }
     }
 
     async ensureInitialGeographyRows() {
+        const requestedRecordId = this.recordId;
         if (this.filterClients === 'true') {
             return;
         }
@@ -729,12 +825,15 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         }
 
         while (this.currentPage < this.totalPages && this.allAvailableClients.length === 0) {
+            const pageBeforeFetch = this.currentPage;
             // If first page has no rows for booking geography, keep loading pages until we find matches.
             // This prevents a dead-end empty table with no scroll to trigger pagination.
             // eslint-disable-next-line no-await-in-loop
             await this.fetchNextServerPage();
+            if (this.recordId !== requestedRecordId || this.currentPage === pageBeforeFetch) {
+                return;
+            }
         }
-
         // CIBGLOBALD-4344 - Every page under "With Exposure" is exhausted and still nothing matches
         // this line's booking geography. On the default/initial load (never on a manual filter
         // change), fall back to "With and Without Exposure" so the tab isn't left empty.
@@ -748,6 +847,76 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
             this.filterClients = 'Y/N';
             this.clientPosition = 'Y/N';
             await this.loadDatasource();
+        }
+    }
+
+    async ensureServiceRowsForSelectedClients() {
+        const requestedRecordId = this.recordId;
+        if (this.filterClients !== 'true' || this.selectedRows.length === 0) {
+            return;
+        }
+
+        let missingCustomerIds = this.getSelectedCustomerIdsMissingInService();
+        while (missingCustomerIds.size > 0 && this.currentPage < this.totalPages) {
+            const pageBeforeFetch = this.currentPage;
+            // Pull extra pages only while selected clients are missing from service rows.
+            // eslint-disable-next-line no-await-in-loop
+            await this.fetchNextServerPage();
+            if (this.recordId !== requestedRecordId || this.currentPage === pageBeforeFetch) {
+                return;
+            }
+            missingCustomerIds = this.getSelectedCustomerIdsMissingInService();
+        }
+    }
+
+    getSelectedCustomerIdsMissingInService() {
+        const serviceCustomerIds = new Set((this.allAvailableClients || []).map((row) => row.customerId));
+        const missingIds = new Set();
+
+        for (const row of this.selectedRows || []) {
+            if (!serviceCustomerIds.has(row.customerId)) {
+                missingIds.add(row.customerId);
+            }
+        }
+
+        return missingIds;
+    }
+
+    // Changes been made for CIBGLOBALD-4687
+    async ensureSavedGoldenRowLoaded() {
+        const requestedRecordId = this.recordId;
+        if (!this.savedGoldenCode) {
+            return;
+        }
+
+        const hasSavedGoldenRow = () => this.allAvailableClients.some(
+            (row) => this.normalizeGoldenCode(row.goldenCustomerId) === this.savedGoldenCode
+        );
+
+        while (!hasSavedGoldenRow() && this.currentPage < this.totalPages) {
+            const pageBeforeFetch = this.currentPage;
+            // eslint-disable-next-line no-await-in-loop
+            await this.fetchNextServerPage();
+            if (this.recordId !== requestedRecordId) {
+                return;
+            }
+            if (this.currentPage === pageBeforeFetch) {
+                break;
+            }
+        }
+
+        if (hasSavedGoldenRow()) {
+            // Changes been made for CIBGLOBALD-4687
+            const savedGoldenIndex = this.allAvailableClients.findIndex(
+                (row) => this.normalizeGoldenCode(row.goldenCustomerId) === this.savedGoldenCode
+            );
+            this.selectedRows = this.allAvailableClients
+                .filter((row) => this.normalizeGoldenCode(row.goldenCustomerId) === this.savedGoldenCode)
+                .slice(0, 1)
+                .map((row) => ({ ...row }));
+            this.priorselectedRows = this.selectedRows.map((row) => ({ ...row }));
+            this.visibleRowLimit = Math.max(this.visibleRowLimit, savedGoldenIndex + 1);
+            this.mainHolder = '';
         }
     }
 
@@ -787,23 +956,33 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
     }
 
     async fetchNextServerPage() {
-        if (this.isFetchingPage || this.currentPage >= this.totalPages || !this.accountId) {
+        const clientsAccountId = this.availableClientsAccountId || this.accountId;
+        if (this.isFetchingPage || this.currentPage >= this.totalPages || !clientsAccountId) {
             return;
         }
+        const requestedRecordId = this.recordId;
 
         this.isFetchingPage = true;
         this.showLoading = true;
         try {
             const nextPage = this.currentPage + 1;
-            const response = await getAvailableClientsPage({
-                accountId: this.accountId,
+            const pagingParameters = {
                 clientPosition: this.clientPosition === 'true' ? 'Y/N' : this.clientPosition,
                 page: String(nextPage),
                 pageSize: String(this.serverPageSize)
-            });
+            };
+            const response = this.lineId
+                ? await getAvailableClientsPageForLine({
+                    ...pagingParameters, lineId: this.lineId, viewMode: this.viewMode
+                })
+                : await getAvailableClientsPage({ ...pagingParameters, accountId: clientsAccountId });
+
+            if (this.recordId !== requestedRecordId) {
+                return;
+            }
 
             const incoming = this.applyRatingExpiration(response.availableClients || [])
-                .filter((row) => this.matchesBookingGeography(row.customerId));
+                .filter((row) => this.matchesClientContext(row.customerId));
 
             this.allAvailableClients = this.mergeByCustomerId(this.allAvailableClients, incoming);
             this.availableClients = this.allAvailableClients;
@@ -811,11 +990,15 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
             this.totalPages = Number(response.totalPages || this.totalPages);
             this.visibleRowLimit = Math.min(this.visibleRowLimit + this.batchSize, this.allAvailableClients.length);
         } catch (error) {
-            this.errorMessage = this.resolveUserMessage('load', error);
+            if (this.recordId === requestedRecordId) {
+                this.errorMessage = this.resolveUserMessage('load', error);
+            }
         } finally {
-            this.isFetchingPage = false;
-            if (!this.isFetchingAllForSearch) {
-                this.showLoading = false;
+            if (this.recordId === requestedRecordId) {
+                this.isFetchingPage = false;
+                if (!this.isFetchingAllForSearch) {
+                    this.showLoading = false;
+                }
             }
         }
     }
@@ -824,18 +1007,25 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         if (this.isFetchingAllForSearch || this.isFetchingPage || this.currentPage >= this.totalPages || this.filterClients === 'true') {
             return;
         }
+        const requestedRecordId = this.recordId;
 
         this.isFetchingAllForSearch = true;
         this.showLoading = true;
         try {
             while (this.currentPage < this.totalPages) {
+                const pageBeforeFetch = this.currentPage;
                 // Sequential page loading avoids concurrent callouts and keeps order predictable.
                 // eslint-disable-next-line no-await-in-loop
                 await this.fetchNextServerPage();
+                if (this.recordId !== requestedRecordId || this.currentPage === pageBeforeFetch) {
+                    break;
+                }
             }
         } finally {
-            this.isFetchingAllForSearch = false;
-            this.showLoading = false;
+            if (this.recordId === requestedRecordId) {
+                this.isFetchingAllForSearch = false;
+                this.showLoading = false;
+            }
         }
     }
 
@@ -917,22 +1107,21 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
     }
 
     toggleGoldenClientSelection(customerId) {
+        // Changes been made for CIBGLOBALD-4687
         const clicked = this.allAvailableClients.find((row) => row.customerId === customerId);
         if (!clicked || !clicked.goldenCustomerId) {
             return;
         }
 
-        const clickedGoldenCode = clicked.goldenCustomerId;
+        const clickedGoldenCode = this.normalizeGoldenCode(clicked.goldenCustomerId);
         const alreadySelectedSameGroup = this.selectedRows.length > 0
-            && this.selectedRows[0].goldenCustomerId === clickedGoldenCode;
+            && this.normalizeGoldenCode(this.selectedRows[0].goldenCustomerId) === clickedGoldenCode;
 
         if (alreadySelectedSameGroup) {
             this.selectedRows = [];
             this.mainHolder = '';
         } else {
-            this.selectedRows = this.allAvailableClients
-                .filter((row) => row.goldenCustomerId === clickedGoldenCode)
-                .map((row) => ({ ...row }));
+            this.selectedRows = [{ ...clicked }];
             this.mainHolder = '';
         }
         this.errorMainHolder = false;
@@ -994,6 +1183,65 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         this.hasEditSession = false;
     }
 
+    async refreshPersistedLine(lineId) {
+        if (!lineId) {
+            return '';
+        }
+
+        try {
+            // Apex writes do not automatically refresh Client Type in LDS consumers.
+            await notifyRecordUpdateAvailable([{ recordId: lineId }]);
+            return '';
+        } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error('[dmtSelectClientsInLineMigrated][refresh]', error);
+            return 'Your changes were saved, but Client Type could not be refreshed. Please refresh the page.';
+        }
+    }
+
+    /**
+     * CIBGLOBALD-4811 - Asks before an action that would reopen approval tasks: 'selection' (handleSave),
+     * 'golden' (handleSaveGolden, or the switch to multiholder that clears the golden code) and 'deleteAssociation'
+     * (the switch to global that deletes the association). Only in Ready to close; the record type filter of the
+     * Line trigger checkpoint 3 is applied in DMT_SelectClientsInLineService.previewLineClientSave, which builds what
+     * the action writes from the same values and compares it with the snapshots, without saving. A failed check
+     * counts as no reopen.
+     * @returns true to go ahead, false when the user cancels
+     */
+    async _confirmReopen(action, goldenCode) {
+        if (this._lineStatus !== 'Ready to close') {
+            return true;
+        }
+        try {
+            const features = await previewLineClientSave({
+                caseTypeToCheck: 'readytoclose',
+                action,
+                lineId: this.lineId,
+                mainHolderAlphaCode: this.mainHolder,
+                currencyLine: this.currency,
+                groupId: this.groupId,
+                groupSfId: this.groupSfId,
+                externallineId: this.externallineId,
+                selectedRows: action === 'selection'
+                    ? this.normalizeSelectedRowsFromService(this.selectedRows, this.allAvailableClients)
+                    : null,
+                goldenCode
+            });
+            if (!features || features.length === 0) {
+                return true;
+            }
+        } catch (error) {
+            console.error('[dmtSelectClientsInLineMigrated][_confirmReopen]', error);
+            return true;
+        }
+        return LightningConfirm.open({
+            label: 'Modify Line?',
+            message: 'The Line will be modified and the associated cases and tasks will be reopened.' +
+                '\n\nDo you want to modify the Line?',
+            theme: 'warning'
+        });
+    }
+
     async handleSave() {
         if (this.viewMode === 'global') {
             return this.handleSaveGolden();
@@ -1015,13 +1263,18 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
             return;
         }
 
+        // CIBGLOBALD-4811 - Ready to close: ask before a save that would reopen tasks
+        if (!await this._confirmReopen('selection', null)) return;
+
+        const requestedRecordId = this.recordId;
+        const requestedLineId = this.lineId;
         try {
             this.isSaving = true;
             this.showLoading = true;
             this.errorMessage = '';
             const selectedRowsForSave = this.normalizeSelectedRowsFromService(this.selectedRows, this.allAvailableClients);
             const response = await saveSelection({
-                lineId: this.lineId,
+                lineId: requestedLineId,
                 mainHolderAlphaCode: this.mainHolder,
                 currencyLine: this.currency,
                 groupId: this.groupId,
@@ -1031,6 +1284,10 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
             });
 
             if (response.success) {
+                const refreshWarning = await this.refreshPersistedLine(requestedLineId);
+                if (this.recordId !== requestedRecordId) {
+                    return;
+                }
                 this.selectedRows = selectedRowsForSave;
                 this.priorselectedRows = this.selectedRows.map((row) => ({ ...row, mainHolder: this.mainHolder }));
                 this.snapshotBaseline();
@@ -1038,7 +1295,11 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
                     detail: { lineId: this.lineId }
                 }));
                 this.hasEditSession = false;
-                await this.loadDatasource();      
+                await this.loadDatasource();
+                if (this.recordId !== requestedRecordId) {
+                    return;
+                }
+                this.errorMessage = this.errorMessage || refreshWarning;
                 if (this.shouldOpenClosedVersionsModal) {
                     this.showLineVersionsModal = true;
                 } else {
@@ -1047,45 +1308,73 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
                 return;
             }
 
-            this.errorMessage = this.resolveUserMessage('save', response.error);
+            if (this.recordId === requestedRecordId) {
+                this.errorMessage = this.resolveUserMessage('save', response.error);
+            }
         } catch (error) {
-            this.errorMessage = this.resolveUserMessage('save', error);
+            if (this.recordId === requestedRecordId) {
+                this.errorMessage = this.resolveUserMessage('save', error);
+            }
         } finally {
-            this.isSaving = false;
-            this.showLoading = false;
+            if (this.recordId === requestedRecordId) {
+                this.isSaving = false;
+                this.showLoading = false;
+            }
         }
     }
     
     async handleSaveGolden() {
+        if (this.isSelectionReadOnlyByStatus || this.isSaving || this.showLoading) {
+            return;
+        }
         if (this.selectedRows.length === 0) {
-            this.errorMessage = 'Select a Global Client before saving.';
+            this.errorMessage = 'Select a Customer before saving.';
             return;
         }
 
+        // CIBGLOBALD-4811 - Ready to close: ask before a save that would reopen tasks
+        if (!await this._confirmReopen('golden', this.normalizeGoldenCode(this.selectedRows[0].goldenCustomerId))) return;
+
+        const requestedRecordId = this.recordId;
+        const requestedLineId = this.lineId;
         try {
             this.isSaving = true;
             this.showLoading = true;
             this.errorMessage = '';
 
-            const goldenCode = this.selectedRows[0].goldenCustomerId;
+            const goldenCode = this.normalizeGoldenCode(this.selectedRows[0].goldenCustomerId);
             const response = await saveGoldenSelection({
-                lineId: this.lineId,
+                lineId: requestedLineId,
                 goldenCode: goldenCode
             });
 
             if (response.success) {
+                const refreshWarning = await this.refreshPersistedLine(requestedLineId);
+                if (this.recordId !== requestedRecordId) {
+                    return;
+                }
                 this.snapshotBaseline();
                 this.hasEditSession = false;
-                await this.loadDatasource();   
+                await this.loadDatasource();
+                if (this.recordId !== requestedRecordId) {
+                    return;
+                }
+                this.errorMessage = this.errorMessage || refreshWarning;
                 this.dispatchEvent(new CustomEvent('reloadcard'));
                 return;
             }
-            this.errorMessage = this.resolveUserMessage('save', response.error);
+            if (this.recordId === requestedRecordId) {
+                this.errorMessage = this.resolveUserMessage('save', response.error);
+            }
         } catch (error) {
-            this.errorMessage = this.resolveUserMessage('save', error);
+            if (this.recordId === requestedRecordId) {
+                this.errorMessage = this.resolveUserMessage('save', error);
+            }
         } finally {
-            this.isSaving = false;
-            this.showLoading = false;
+            if (this.recordId === requestedRecordId) {
+                this.isSaving = false;
+                this.showLoading = false;
+            }
         }
     }
 
@@ -1100,7 +1389,7 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         this.handleCloseLineVersionsModal();
     }
 
-    handleViewModeChange(event) {
+    async handleViewModeChange(event) {
         if (this.isViewModeToggleDisabled) {
             return;
         }
@@ -1109,13 +1398,14 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         if (newMode === this.viewMode) {
             return;
         }
-
-        if (newMode === 'global' && this.viewMode === 'multiholder' && this.hasCustomAssociation) {
+        // Changes been made for CIBGLOBALD-4687
+        if (newMode === 'global' && this.viewMode !== 'global' && this.hasCustomAssociation) {
             this._pendingViewMode = newMode;
             this.showModeChangeWarning = true;
             return;
         }
 
+        // Changes been made for CIBGLOBALD-4687
         if (newMode === 'multiholder' && this.viewMode === 'global' && this.hasGoldenCode) {
             this._pendingViewMode = newMode;
             this.showModeChangeWarning = true;
@@ -1123,6 +1413,10 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         }
 
         this.applyViewModeChange(newMode);
+        // Changes been made for CIBGLOBALD-4687
+        if (newMode === 'global' && this.isCustomerProvTitleLine) {
+            await this.loadDatasource('global');
+        }
     }
 
     applyViewModeChange(newMode) {
@@ -1136,21 +1430,44 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
 
     async handleConfirmModeChange() {
         const mode = this._pendingViewMode;
+        const requestedRecordId = this.recordId;
+        const requestedLineId = this.lineId;
         this.showModeChangeWarning = false;
         this._pendingViewMode = null;
 
+        if (this.isViewModeToggleDisabled || !['global', 'multiholder'].includes(mode)) {
+            return;
+        }
+        // CIBGLOBALD-4811 - Ready to close: the switch deletes the association or clears the golden code; ask first
+        const reopenAction = mode === 'global' && this.hasCustomAssociation
+            ? 'deleteAssociation'
+            : (mode === 'multiholder' && this.hasGoldenCode ? 'golden' : null);
+        if (reopenAction && !await this._confirmReopen(reopenAction, null)) return;
         try {
-
             this.showLoading = true;
-
-            if (mode === 'global') {
-                const response = await deleteCustomAssociation({ lineId: this.lineId });
+            let refreshWarning = '';
+            // Changes been made for CIBGLOBALD-4687
+            if (mode === 'global' && this.hasCustomAssociation) {
+                const response = await deleteCustomAssociation({ lineId: requestedLineId });
+                if (response.success) {
+                    refreshWarning = await this.refreshPersistedLine(requestedLineId);
+                }
+                if (this.recordId !== requestedRecordId) {
+                    return;
+                }
                 if (!response.success) {
                     this.errorMessage = this.resolveUserMessage('save', response.error);
                     return;
                 }
-            } else if (mode === 'multiholder') {
-                const response = await clearGoldenSelection({ lineId: this.lineId });
+            // Changes been made for CIBGLOBALD-4687
+            } else if (mode === 'multiholder' && this.hasGoldenCode) {
+                const response = await clearGoldenSelection({ lineId: requestedLineId });
+                if (response.success) {
+                    refreshWarning = await this.refreshPersistedLine(requestedLineId);
+                }
+                if (this.recordId !== requestedRecordId) {
+                    return;
+                }
                 if (!response.success) {
                     this.errorMessage = this.resolveUserMessage('save', response.error);
                     return;
@@ -1158,13 +1475,20 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
             }
 
             if (mode) {
-                await this.loadDatasource();     
-                this.applyViewModeChange(mode);
+                await this.loadDatasource(mode);
+                if (this.recordId === requestedRecordId) {
+                    this.errorMessage = this.errorMessage || refreshWarning;
+                    this.dispatchEvent(new CustomEvent('reloadcard'));
+                }
             }
         } catch (error) {
-            this.errorMessage = this.resolveUserMessage('save', error);
+            if (this.recordId === requestedRecordId) {
+                this.errorMessage = this.resolveUserMessage('save', error);
+            }
         }  finally {
-            this.showLoading = false;
+            if (this.recordId === requestedRecordId) {
+                this.showLoading = false;
+            }
         }
     }
 
@@ -1186,7 +1510,7 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         const nineteenMonthsMs = 49965174000;
 
         return (rows || []).map((source) => {
-            const row = { ...source };
+            const row = { ...source, goldenCustomerId: this.normalizeGoldenCode(source.goldenCustomerId) };
             const scaleLast = this.parseDate(row.scaleLastUpdDate);
             const ratingValidity = this.parseDate(row.ratingValidityStartDate);
             const currentRating = this.parseDate(row.currentRatingToolDate);
@@ -1301,6 +1625,16 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
         return JSON.stringify(error);
     }
 
+    // Changes been made for CIBGLOBALD-4687
+    matchesClientContext(customerId) {
+        return this.isIfiLine || (this.isGlobalMode && this.isCustomerProvTitleLine)
+            || this.matchesBookingGeography(customerId);
+    }
+
+    normalizeGoldenCode(value) {
+        return String(value ?? '').trim();
+    }
+
     matchesBookingGeography(customerId) {
         const bookingPrefix = String(this.booking || '').trim().toUpperCase();
         if (!bookingPrefix) {
@@ -1320,6 +1654,50 @@ export default class DmtSelectClientsInLineMigrated extends LightningElement {
             mergedMap.set(row.customerId, row);
         }
         return Array.from(mergedMap.values());
+    }
+
+    mergeRowsForSelectedFilter(serviceRows, selectedRows) {
+        const mergedMap = new Map();
+        for (const row of serviceRows || []) {
+            mergedMap.set(row.customerId, { ...row });
+        }
+
+        for (const row of selectedRows || []) {
+            const existing = mergedMap.get(row.customerId);
+            if (!existing) {
+                mergedMap.set(row.customerId, { ...row });
+                continue;
+            }
+
+            mergedMap.set(
+                row.customerId,
+                this.mergeServiceRowWithSelectedEditableFields(existing, row)
+            );
+        }
+
+        return Array.from(mergedMap.values());
+    }
+
+    mergeServiceRowWithSelectedEditableFields(serviceRow, selectedRow) {
+        const merged = { ...serviceRow };
+        if (!selectedRow) {
+            return merged;
+        }
+
+        if (Object.prototype.hasOwnProperty.call(selectedRow, 'amount')) {
+            merged.amount = selectedRow.amount;
+        }
+        if (Object.prototype.hasOwnProperty.call(selectedRow, 'amountFD')) {
+            merged.amountFD = selectedRow.amountFD;
+        }
+        if (Object.prototype.hasOwnProperty.call(selectedRow, 'amountDVP')) {
+            merged.amountDVP = selectedRow.amountDVP;
+        }
+        if (Object.prototype.hasOwnProperty.call(selectedRow, 'term')) {
+            merged.term = selectedRow.term;
+        }
+
+        return merged;
     }
 
     normalizeSelectedRowsFromService(selectedRows, serviceRows) {
