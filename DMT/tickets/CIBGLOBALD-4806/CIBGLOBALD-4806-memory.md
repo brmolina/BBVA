@@ -79,3 +79,19 @@ Entry point probably dmt_page. User unsure what Main Holder is (Account? Opp cli
 - Rating finding: in DMTPRE2 the rating warning works when Client Data loads data (006KK000003KKREYA4); the 'no warning' cases are Opportunities whose Client tab loads empty (same-group clones, Group lookup) -> fixed by round 1. Industry bug reproduced in DMTPRE2 (006KK000003KKREYA4, Industrials & Transportation -> Energy, no warning) -> CIBGLOBALD-4806-DMTPRE2-bug-industry-changed-no-warning.jpg.
 - Note: creation fills DMT_Industry__c from Account.Industry, which is often empty for Main Holders (IBERDROLA INMOBILIARIA null) -> no original, no warning (correct).
 - Industry original sent as {value,label} (getIndustryLabel, Account.Industry picklist labels upper-case) after DEV evidence showed tooltip 'Original value: 1'. Deployed 0AfgN000003TTjHSAW Succeeded 28/28. Rating + Industry fix images DEV taken; Industry one being recaptured. Commit msg 2 + note 2 ready (only controller changed this round).
+
+## Status 2026-11-04 end of session - DONE in DEV, waiting DMTPRE2
+- Branch 4806: a6803153 (round 1), 14585594 (round 2 Industry + untrack 4 jpgs). main merged locally: 457ca59d, b2dde13f. Tree clean.
+- NOT PUSHED: SSH publickey error earlier; final push blocked by the auto-mode permission classifier. User must run: git push -u origin 4806 && git push origin main.
+- Old jpgs remain in local history of a6803153 (untracked from 14585594 on). Evidence (7 jpg) on disk only.
+- Industry design: no Account.Industry on the client -> no original -> no warning (user asked about it; open question whether to warn on empty original, user closed the ticket without asking for it).
+- Next: when the user says it is in DMTPRE2: retrieve/compare metadata (5 classes) read-only and collect evidence there (bug images exist for PRE2; fix images to replace DEV ones), via Sonnet subagent.
+
+## Round 3 - CAMN (2026-11-05)
+- Rating issue: tech lead said not to worry; reporter to replicate (ad-hoc). Any other issue goes to another ticket.
+- Org check found DMT_CreateOpportunityService changed by someone (removed @TestVisible on getClientValues + blank line); took org version as base.
+- Fix: DMT_OpportunityClientController new public resolveCamnValue (reuses resolveCamnFromCatalog); DMT_CreateOpportunityService.buildOpportunityClient saves DMT_CAMN__c = resolveCamnValue(activityMinimumLevelCodeDesc), HPG code only when no description. Test testBuildOpportunityClient_CamnFromHpgDescription.
+- Deploy 0AfgN000003U6W5SAK Succeeded 47/47 (CreateOpp, ClientController, CloneUtil tests); org == local for the 3 classes.
+- commit-message-3 + nota-tecnica-ticket-3 ready. Not committed yet. Evidence for CAMN: ask user.
+- 2026-11-05 CAMN assessment: stored values mostly codes ('F.41.10.01'...), 292 'N/A / N/A', 14 description texts; picklist options = A521 DMT_Value__c (codes). Readers: DMT_OppFeatureGenCons_Calc L119 isCamnEqual (DMT_CAMN__c == HPG activityMinimumLevelCode), DMT_Passport_Helper L416 client.camn -> Passport; renderers display only. Risk: round 3 can store A521 code / description text. USER DECIDED to keep round 3 as deployed. At DMTPRE2: check that these dependencies exist there and report anything missing.
+- Dependencies (not ours, must exist in target): DMT_Passport_Selector.getTaxonomyValuesByCatalogAndValues, DMT_CatalogHelper.getTaxonomyCatalogValuesByCode, DMT_HPG_GlobalPosition.Data.ratingSystemId, DMT_HPG_MainTableCustomController.fetchClientInitialData, DMT_Test_DataFactory.generateTaxonomyValue, 7-param buildOpportunityClient overload (in org DMT_CreateOpportunityService), D971 + A521 catalog data.

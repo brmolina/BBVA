@@ -267,6 +267,34 @@ static void testBuildOpportunityClient_Direct() {
         Assert.areEqual('Corporates', clientBlank.Counterpart__c, 'A blank HPG value must keep the Account Segment label');
         Assert.areEqual('Corporates', clientNoHpg.Counterpart__c, 'No HPG row must keep the Account Segment label');
     }
+
+    /**
+     * @description CIBGLOBALD-4806 - CAMN is saved as the value Client Data compares with: the A521 match of the HPG
+     * description, or the description itself when A521 has no match; the HPG code only when there is no description.
+     */
+    @isTest
+    static void testBuildOpportunityClient_CamnFromHpgDescription() {
+        DMT_CreateOpportunityService.ClientValues cv = new DMT_CreateOpportunityService.ClientValues();
+
+        DMT_HPG_GlobalPosition.Data hpgWithDesc = new DMT_HPG_GlobalPosition.Data();
+        hpgWithDesc.activityMinimumLevelCodeId = 'X.00.00.01';
+        hpgWithDesc.activityMinimumLevelCodeDesc = 'Activity not in catalog';
+        DMT_HPG_GlobalPosition.Data hpgCodeOnly = new DMT_HPG_GlobalPosition.Data();
+        hpgCodeOnly.activityMinimumLevelCodeId = 'X.00.00.02';
+
+        Test.startTest();
+        DMT_Opportunity_Client__c clientWithDesc = DMT_CreateOpportunityService.buildOpportunityClient(null, cv, hpgWithDesc, 'NO', null);
+        DMT_Opportunity_Client__c clientCodeOnly = DMT_CreateOpportunityService.buildOpportunityClient(null, cv, hpgCodeOnly, 'NO', null);
+        Test.stopTest();
+
+        Assert.areEqual(
+            DMT_OpportunityClientController.resolveCamnValue('Activity not in catalog'),
+            clientWithDesc.DMT_CAMN__c,
+            'CAMN must be the same value Client Data uses as original'
+        );
+        Assert.areEqual('Activity not in catalog', clientWithDesc.DMT_CAMN__c, 'Without an A521 match CAMN keeps the HPG description');
+        Assert.areEqual('X.00.00.02', clientCodeOnly.DMT_CAMN__c, 'Without an HPG description CAMN keeps the HPG code');
+    }
     // =========================================================
     // EXISTING TESTS
     // =========================================================

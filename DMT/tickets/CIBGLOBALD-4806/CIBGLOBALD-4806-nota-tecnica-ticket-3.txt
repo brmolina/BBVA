@@ -1,0 +1,17 @@
+CIBGLOBALD-4806 - Nota técnica (3) - CAMN sin diferencia artificial en Opportunities nuevas
+
+1. Causa
+- Client Data (DMT_OpportunityClientController.buildOriginalRecord -> resolveCamnFromCatalog) calcula el CAMN original buscando la descripción HPG (activityMinimumLevelCodeDesc) en el catálogo A521 por nombre: devuelve el DMT_Value__c de A521 si hay coincidencia, o la propia descripción si no la hay. La comparación se hace por descripción.
+- La creación (DMT_CreateOpportunityService.buildOpportunityClient) guardaba en DMT_Opportunity_Client__c.DMT_CAMN__c (label 'CAMN') el código HPG (activityMinimumLevelCodeId, p. ej. F.41.10.01). Si ese código no es un valor de A521, Client Data no encuentra su descripción y marca CAMN como distinto en una Opportunity recién creada sin cambios.
+
+2. Cambio
+- Nuevo DMT_OpportunityClientController.resolveCamnValue: mismo valor que Client Data usa como original (A521 por descripción HPG, o la descripción si A521 no la tiene).
+- La creación guarda DMT_CAMN__c con resolveCamnValue. Solo si HPG no trae descripción se guarda el código HPG como antes. Aplica a creación y a los clones que reconstruyen el cliente (DMT_OpportunityCloneUtil).
+- Consumo: +1 SOQL en la creación (lectura del catálogo A521, cacheada en la transacción).
+
+3. Cómo probar (QA)
+- Crear una Opportunity (nivel Group o Customer) para un cliente con CAMN en la hoja de posición.
+- Abrir la pestaña Client sin modificar nada: CAMN no muestra triángulo de aviso.
+- Consulta: SELECT DMT_CAMN__c FROM DMT_Opportunity_Client__c WHERE DMT_MDE_Opportunity__c = '<OpportunityId>'
+  Esperado: un DMT_Value__c del catálogo A521 (SELECT DMT_Value__c, DMT_Name__c FROM DMT_Taxonomy_Values__c WHERE DMT_Catalog__c = 'A521') cuyo nombre coincide con la descripción CAMN de HPG, o la descripción HPG si A521 no la contiene.
+- Cambiar CAMN a otro valor: aparece el aviso con el valor original.
