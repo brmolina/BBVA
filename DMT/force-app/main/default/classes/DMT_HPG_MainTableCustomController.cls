@@ -767,22 +767,13 @@ public with sharing class DMT_HPG_MainTableCustomController {
             throw new AuraHandledException('LineId is null');
         }
 
-        List<Custom_Association__c> associationList = [
-            SELECT Id, g_customer_id__c
-            FROM Custom_Association__c
-            WHERE DMT_Line__c = :lineId
-            LIMIT 1
-        ];
+        List<Custom_Association__c> associationList = queryLineAssociation(lineId); // CIBGLOBALD-4811
 
-        Custom_Association__c association;
+        // CIBGLOBALD-4811 - the association record comes from prepareAssociation, shared with buildSelectionSave
+        Custom_Association__c association = prepareAssociation(
+            associationList.isEmpty() ? null : associationList[0], lineId, mainHolderAlphaCode, currencyLine, groupId, groupSfId, externallineId
+        );
         if (associationList.isEmpty()) {
-            association = new Custom_Association__c();
-            association.DMT_Line__c = lineId;
-            association.CurrencyIsoCode = currencyLine;
-            association.g_group_Id__c   = groupId;
-            association.Group__c = groupSfId;
-            association.gf_customer_group_Id__c = externallineId;
-            association.g_customer_id__c = mainHolderAlphaCode;
             insert association;
 
             DMT_Line__c line = new DMT_Line__c();
@@ -790,8 +781,6 @@ public with sharing class DMT_HPG_MainTableCustomController {
             line.Custom_Association__c = association.Id;
             update line;
         } else {
-            association = associationList[0];
-            association.g_customer_id__c = mainHolderAlphaCode;
             update association;
         }
     }
@@ -805,12 +794,7 @@ public with sharing class DMT_HPG_MainTableCustomController {
         }
 
         // 1. Obtener o crear Custom_Association__c para la línea
-        List<Custom_Association__c> associationList = [
-            SELECT Id, g_customer_id__c, Group__c, gf_customer_group_id__c
-            FROM Custom_Association__c
-            WHERE DMT_Line__c = :lineId
-            LIMIT 1
-        ];
+        List<Custom_Association__c> associationList = queryLineAssociation(lineId); // CIBGLOBALD-4811
 
         Custom_Association__c association;
         if (associationList.isEmpty()) {
@@ -821,67 +805,12 @@ public with sharing class DMT_HPG_MainTableCustomController {
             association = associationList[0];
         }
 
-        // 2. Recopilar alphaCodes entrantes
-        Set<String> incomingAlphaCodes = new Set<String>();
-        if (selectedClients != null) {
-            for (Object obj : selectedClients) {
-                Map<String, Object> row = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(obj));
-                String alphaCode = (String) row.get('customerId');
-                if (String.isNotBlank(alphaCode)) {
-                    incomingAlphaCodes.add(alphaCode);
-                }
-            }
-        }
-
-        // 3. Traer los Custom_Association_Client__c existentes
-        List<Custom_Association_Client__c> existingRecords = [
-            SELECT Id, Alpha_Code_Client__c
-            FROM Custom_Association_Client__c
-            WHERE Custom_Association__c = :association.Id
-        ];
-
-        Map<String, Custom_Association_Client__c> existingByAlpha = new Map<String, Custom_Association_Client__c>();
-        for (Custom_Association_Client__c rec : existingRecords) {
-            if (rec.Alpha_Code_Client__c != null) {
-                existingByAlpha.put(rec.Alpha_Code_Client__c, rec);
-            }
-        }
-
-        // 4. Calcular INSERT y DELETE
-        List<Custom_Association_Client__c> toInsert = new List<Custom_Association_Client__c>();
-        List<Custom_Association_Client__c> toDelete = new List<Custom_Association_Client__c>();
-
-        // INSERT: nuevos seleccionados que no existen aún
-        if (selectedClients != null) {
-            for (Object obj : selectedClients) {
-                Map<String, Object> row = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(obj));
-                String alphaCode = (String) row.get('customerId');
-
-                if (String.isNotBlank(alphaCode) && !existingByAlpha.containsKey(alphaCode)) {
-                    Custom_Association_Client__c client = new Custom_Association_Client__c();
-                    client.Custom_Association__c = association.Id;
-                    client.Alpha_Code_Client__c = (String) row.get('customerId');
-                    client.g_customer_id__c = (String) row.get('customerId');
-                    client.gf_customer_group_Id__c = (String) associationList[0].gf_customer_group_Id__c;
-                    client.DMT_ClientRating__c = (String) row.get('updSmsclInternalRatgType');
-                    client.Name = (String) row.get('customerName');
-                    client.g_entific_Id__c = (String) row.get('countryIfoId');
-                    String dateStr = (String) row.get('currentRatingToolDate');
-                    client.DMT_Client_Rating_Date__c = String.isNotBlank(dateStr) ? Date.valueOf(dateStr.substring(0, 10)) : null;
-                    client.DMT_ClientStarCode__c = (String) row.get('customerCounterpartiesCodesDesc');
-                    client.DMT_ClientContracts__c = (String) row.get('operationMitigantDesc');
-                    client.DMT_Term__c = (String) row.get('term');
-                    toInsert.add(client);
-                }
-            }
-        }
-
-        // DELETE: existentes que ya no están seleccionados
-        for (Custom_Association_Client__c existing : existingRecords) {
-            if (existing.Alpha_Code_Client__c == null || !incomingAlphaCodes.contains(existing.Alpha_Code_Client__c)) {
-                toDelete.add(existing);
-            }
-        }
+        // CIBGLOBALD-4811 - the rows to insert and delete come from buildClientInserts / buildClientDeletes, shared
+        // with buildSelectionSave. Enhancement fix to existing process: with no association before this call the
+        // new clients read the group code from the record just created (before, associationList[0] failed).
+        List<Custom_Association_Client__c> existingRecords = queryAssociationClients(association.Id);
+        List<Custom_Association_Client__c> toInsert = buildClientInserts(association, selectedClients, existingRecords);
+        List<Custom_Association_Client__c> toDelete = buildClientDeletes(existingRecords, incomingAlphaCodes(selectedClients));
 
         if (!toDelete.isEmpty()) {
             delete toDelete;
@@ -921,41 +850,251 @@ public with sharing class DMT_HPG_MainTableCustomController {
         ];
 
         for (Custom_Association_Client__c client : toUpdate) {
-            Map<String, Object> row = rowsByAlpha.get(client.Alpha_Code_Client__c);
-
-            client.DMT_Term__c = (String) row.get('term');
-
-            Object amountObj = row.get('amount');
-            Object amountFDObj = row.get('amountFD');
-            Object amountDVPObj = row.get('amountDVP');
-
-            String amount =
-                amountObj == null ? null : String.valueOf(amountObj).trim();
-
-            String amountFD =
-                amountFDObj == null ? null : String.valueOf(amountFDObj).trim();
-
-            String amountDVP =
-                amountDVPObj == null ? null : String.valueOf(amountDVPObj).trim();
-
-            client.DMT_Amount__c =
-                String.isNotBlank(amount) && amount != 'null'
-                ? Decimal.valueOf(amount)
-                : null;
-
-            client.DMT_FDAmount__c =
-                String.isNotBlank(amountFD) && amountFD != 'null'
-                ? Decimal.valueOf(amountFD)
-                : null;
-
-            client.DMT_DVPAmount__c =
-                String.isNotBlank(amountDVP) && amountDVP != 'null'
-                ? Decimal.valueOf(amountDVP)
-                : null;
+            applyClientFields(client, rowsByAlpha.get(client.Alpha_Code_Client__c)); // CIBGLOBALD-4811
         }
 
         if (!toUpdate.isEmpty()) {
             update toUpdate;
+        }
+    }
+
+    // CIBGLOBALD-4811 - the Line's association, read by the saves and by buildSelectionSave.
+    private static List<Custom_Association__c> queryLineAssociation(Id lineId) {
+        return [
+            SELECT Id, g_customer_id__c, Group__c, gf_customer_group_id__c
+            FROM Custom_Association__c
+            WHERE DMT_Line__c = :lineId
+            LIMIT 1
+        ];
+    }
+
+    // CIBGLOBALD-4811 - the association's client rows with the fields the saves write.
+    private static List<Custom_Association_Client__c> queryAssociationClients(Id associationId) {
+        if (associationId == null) {
+            return new List<Custom_Association_Client__c>();
+        }
+        return [
+            SELECT Id, Alpha_Code_Client__c, DMT_Amount__c, DMT_FDAmount__c, DMT_DVPAmount__c, DMT_Term__c
+            FROM Custom_Association_Client__c
+            WHERE Custom_Association__c = :associationId
+        ];
+    }
+
+    // CIBGLOBALD-4811 - the association saveCustomAssociation writes: a new one with the line and group data, or the
+    // existing one with the new main holder.
+    private static Custom_Association__c prepareAssociation(
+        Custom_Association__c existing, Id lineId, String mainHolderAlphaCode, String currencyLine, String groupId, Id groupSfId, String externallineId
+    ) {
+        if (existing == null) {
+            Custom_Association__c association = new Custom_Association__c();
+            association.DMT_Line__c = lineId;
+            association.CurrencyIsoCode = currencyLine;
+            association.g_group_Id__c   = groupId;
+            association.Group__c = groupSfId;
+            association.gf_customer_group_Id__c = externallineId;
+            association.g_customer_id__c = mainHolderAlphaCode;
+            return association;
+        }
+        existing.g_customer_id__c = mainHolderAlphaCode;
+        return existing;
+    }
+
+    // CIBGLOBALD-4811 - the alpha codes of the selected clients.
+    private static Set<String> incomingAlphaCodes(List<Object> selectedClients) {
+        Set<String> alphaCodes = new Set<String>();
+        if (selectedClients != null) {
+            for (Object obj : selectedClients) {
+                Map<String, Object> row = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(obj));
+                String alphaCode = (String) row.get('customerId');
+                if (String.isNotBlank(alphaCode)) {
+                    alphaCodes.add(alphaCode);
+                }
+            }
+        }
+        return alphaCodes;
+    }
+
+    // CIBGLOBALD-4811 - a client row for each selected client the association does not have yet (saveLineClients).
+    private static List<Custom_Association_Client__c> buildClientInserts(
+        Custom_Association__c association, List<Object> selectedClients, List<Custom_Association_Client__c> existingRecords
+    ) {
+        Set<String> existingAlphaCodes = new Set<String>();
+        for (Custom_Association_Client__c rec : existingRecords) {
+            if (rec.Alpha_Code_Client__c != null) {
+                existingAlphaCodes.add(rec.Alpha_Code_Client__c);
+            }
+        }
+        List<Custom_Association_Client__c> toInsert = new List<Custom_Association_Client__c>();
+        if (selectedClients != null) {
+            for (Object obj : selectedClients) {
+                Map<String, Object> row = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(obj));
+                String alphaCode = (String) row.get('customerId');
+
+                if (String.isNotBlank(alphaCode) && !existingAlphaCodes.contains(alphaCode)) {
+                    Custom_Association_Client__c client = new Custom_Association_Client__c();
+                    client.Custom_Association__c = association.Id;
+                    client.Alpha_Code_Client__c = (String) row.get('customerId');
+                    client.g_customer_id__c = (String) row.get('customerId');
+                    client.gf_customer_group_Id__c = (String) association.gf_customer_group_Id__c;
+                    client.DMT_ClientRating__c = (String) row.get('updSmsclInternalRatgType');
+                    client.Name = (String) row.get('customerName');
+                    client.g_entific_Id__c = (String) row.get('countryIfoId');
+                    String dateStr = (String) row.get('currentRatingToolDate');
+                    client.DMT_Client_Rating_Date__c = String.isNotBlank(dateStr) ? Date.valueOf(dateStr.substring(0, 10)) : null;
+                    client.DMT_ClientStarCode__c = (String) row.get('customerCounterpartiesCodesDesc');
+                    client.DMT_ClientContracts__c = (String) row.get('operationMitigantDesc');
+                    client.DMT_Term__c = (String) row.get('term');
+                    toInsert.add(client);
+                }
+            }
+        }
+        return toInsert;
+    }
+
+    // CIBGLOBALD-4811 - the stored client rows no longer selected (saveLineClients).
+    private static List<Custom_Association_Client__c> buildClientDeletes(List<Custom_Association_Client__c> existingRecords, Set<String> incomingAlphaCodes) {
+        List<Custom_Association_Client__c> toDelete = new List<Custom_Association_Client__c>();
+        for (Custom_Association_Client__c existing : existingRecords) {
+            if (existing.Alpha_Code_Client__c == null || !incomingAlphaCodes.contains(existing.Alpha_Code_Client__c)) {
+                toDelete.add(existing);
+            }
+        }
+        return toDelete;
+    }
+
+    // CIBGLOBALD-4811 - the term and amounts of a selected client row (saveLineClientFields).
+    private static void applyClientFields(Custom_Association_Client__c client, Map<String, Object> row) {
+        client.DMT_Term__c = (String) row.get('term');
+
+        Object amountObj = row.get('amount');
+        Object amountFDObj = row.get('amountFD');
+        Object amountDVPObj = row.get('amountDVP');
+
+        String amount =
+            amountObj == null ? null : String.valueOf(amountObj).trim();
+
+        String amountFD =
+            amountFDObj == null ? null : String.valueOf(amountFDObj).trim();
+
+        String amountDVP =
+            amountDVPObj == null ? null : String.valueOf(amountDVPObj).trim();
+
+        client.DMT_Amount__c =
+            String.isNotBlank(amount) && amount != 'null'
+            ? Decimal.valueOf(amount)
+            : null;
+
+        client.DMT_FDAmount__c =
+            String.isNotBlank(amountFD) && amountFD != 'null'
+            ? Decimal.valueOf(amountFD)
+            : null;
+
+        client.DMT_DVPAmount__c =
+            String.isNotBlank(amountDVP) && amountDVP != 'null'
+            ? Decimal.valueOf(amountDVP)
+            : null;
+    }
+
+    /**
+     * @description CIBGLOBALD-4811 - Everything a Line client selection save writes (saveCustomAssociation,
+     * saveLineClients and saveLineClientFields in that order, as DMT_SelectClientsInLineService.saveSelection runs
+     * them), built without DML: the association, the client rows to delete, the new client rows (with term and
+     * amounts) and the stored rows still selected with their new term and amounts. The association and its
+     * clients are read once (the three methods read the association three times and the clients twice).
+     */
+    public static SelectionSave buildSelectionSave(
+        Id lineId, String mainHolderAlphaCode, String currencyLine, String groupId, Id groupSfId, String externallineId, List<Object> selectedRows
+    ) {
+        if (lineId == null) {
+            throw new AuraHandledException('LineId is null');
+        }
+        List<Custom_Association__c> associationList = queryLineAssociation(lineId);
+        SelectionSave selectionSave = new SelectionSave();
+        selectionSave.lineId = lineId;
+        selectionSave.isNewAssociation = associationList.isEmpty();
+        selectionSave.association = prepareAssociation(
+            associationList.isEmpty() ? null : associationList[0], lineId, mainHolderAlphaCode, currencyLine, groupId, groupSfId, externallineId
+        );
+
+        List<Custom_Association_Client__c> existingRecords = queryAssociationClients(selectionSave.association.Id);
+        Set<String> alphaCodes = incomingAlphaCodes(selectedRows);
+        selectionSave.clientsToInsert = buildClientInserts(selectionSave.association, selectedRows, existingRecords);
+        selectionSave.clientsToDelete = buildClientDeletes(existingRecords, alphaCodes);
+
+        if (selectedRows != null) {
+            Map<String, Map<String, Object>> rowsByAlpha = new Map<String, Map<String, Object>>();
+            for (Object obj : selectedRows) {
+                Map<String, Object> row = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(obj));
+                String alphaCode = (String) row.get('customerId');
+                if (String.isNotBlank(alphaCode)) {
+                    rowsByAlpha.put(alphaCode, row);
+                }
+            }
+            for (Custom_Association_Client__c client : selectionSave.clientsToInsert) {
+                applyClientFields(client, rowsByAlpha.get(client.Alpha_Code_Client__c));
+            }
+            for (Custom_Association_Client__c existing : existingRecords) {
+                if (existing.Alpha_Code_Client__c != null && rowsByAlpha.containsKey(existing.Alpha_Code_Client__c)) {
+                    Custom_Association_Client__c client = new Custom_Association_Client__c(Id = existing.Id, Alpha_Code_Client__c = existing.Alpha_Code_Client__c);
+                    applyClientFields(client, rowsByAlpha.get(existing.Alpha_Code_Client__c));
+                    selectionSave.clientsToUpdate.add(client);
+                }
+            }
+        }
+        return selectionSave;
+    }
+
+    // CIBGLOBALD-4811 - writes a buildSelectionSave result in the order of the three save methods: association (and the
+    // Line link when new), deleted clients, new clients, then the term and amounts of the clients kept.
+    public static void applySelectionSave(SelectionSave selectionSave) {
+        if (selectionSave.isNewAssociation) {
+            insert selectionSave.association;
+            update new DMT_Line__c(Id = selectionSave.lineId, Custom_Association__c = selectionSave.association.Id);
+        } else {
+            update selectionSave.association;
+        }
+        if (!selectionSave.clientsToDelete.isEmpty()) {
+            delete selectionSave.clientsToDelete;
+        }
+        if (!selectionSave.clientsToInsert.isEmpty()) {
+            for (Custom_Association_Client__c client : selectionSave.clientsToInsert) {
+                client.Custom_Association__c = selectionSave.association.Id;
+            }
+            insert selectionSave.clientsToInsert;
+        }
+        if (!selectionSave.clientsToUpdate.isEmpty()) {
+            update selectionSave.clientsToUpdate;
+        }
+    }
+
+    // CIBGLOBALD-4811 - the records a Line client selection save writes (buildSelectionSave).
+    public class SelectionSave {
+        public Id lineId;
+        public Boolean isNewAssociation = false;
+        public Custom_Association__c association;
+        public List<Custom_Association_Client__c> clientsToDelete = new List<Custom_Association_Client__c>();
+        public List<Custom_Association_Client__c> clientsToInsert = new List<Custom_Association_Client__c>();
+        public List<Custom_Association_Client__c> clientsToUpdate = new List<Custom_Association_Client__c>();
+
+        // Every row in the DMT_ApprovalChangeStep_Handler.previewUnsavedChanges format: a row without Id is new.
+        public List<Map<String, Object>> toUnsavedRows() {
+            List<Map<String, Object>> rows = new List<Map<String, Object>>();
+            List<SObject> written = new List<SObject>{ association };
+            written.addAll((List<SObject>) clientsToInsert);
+            written.addAll((List<SObject>) clientsToUpdate);
+            for (SObject record : written) {
+                Map<String, Object> values = new Map<String, Object>(record.getPopulatedFieldsAsMap());
+                values.remove('Id');
+                rows.add(new Map<String, Object>{
+                    'objectApiName' => String.valueOf(record.getSObjectType()),
+                    'rowId' => (String) record.Id,
+                    'values' => values
+                });
+            }
+            for (Custom_Association_Client__c record : clientsToDelete) {
+                rows.add(new Map<String, Object>{ 'objectApiName' => 'Custom_Association_Client__c', 'rowId' => (String) record.Id, 'deleted' => true });
+            }
+            return rows;
         }
     }
 }

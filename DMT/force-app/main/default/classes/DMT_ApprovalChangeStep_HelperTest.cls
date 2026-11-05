@@ -91,6 +91,22 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
         );
     }
 
+    // CIBGLOBALD-4811 - a multi-select picklist (Opportunity.DES_Countries__c) is a set: another order is not a
+    // change, another selection is; on a text field the order still counts.
+    @IsTest
+    static void testMultiPicklistOrderDoesNotDiffer() {
+        List<String> fields = new List<String>{ 'DES_Countries__c', 'Name' };
+        Map<String, Object> frozen = new Map<String, Object>{ '006000000000001' => new Map<String, Object>{ 'DES_Countries__c' => 'ES;PT', 'Name' => 'A;B' } };
+        Map<String, Object> reordered = new Map<String, Object>{ '006000000000001' => new Map<String, Object>{ 'DES_Countries__c' => 'PT;ES', 'Name' => 'A;B' } };
+        Map<String, Object> reselected = new Map<String, Object>{ '006000000000001' => new Map<String, Object>{ 'DES_Countries__c' => 'ES', 'Name' => 'A;B' } };
+        Map<String, Object> textReordered = new Map<String, Object>{ '006000000000001' => new Map<String, Object>{ 'DES_Countries__c' => 'ES;PT', 'Name' => 'B;A' } };
+
+        Assert.isFalse(DMT_ApprovalChangeStep_Helper.rowsDiffer(frozen, reordered, fields, Opportunity.SObjectType), 'The same countries in another order are not a change');
+        Assert.isTrue(DMT_ApprovalChangeStep_Helper.rowsDiffer(frozen, reselected, fields, Opportunity.SObjectType), 'A removed country is a change');
+        Assert.isTrue(DMT_ApprovalChangeStep_Helper.rowsDiffer(frozen, textReordered, fields, Opportunity.SObjectType), 'On a text field the order is part of the value');
+        Assert.isTrue(DMT_ApprovalChangeStep_Helper.rowsDiffer(frozen, reordered, fields), 'Without the row object the value is compared as text');
+    }
+
     @IsTest
     static void testChangedTrackedFieldDiffers() {
         Map<String, Object> frozen = buildRows('a0A000000000001', 'ES0182000170441', 'AA');

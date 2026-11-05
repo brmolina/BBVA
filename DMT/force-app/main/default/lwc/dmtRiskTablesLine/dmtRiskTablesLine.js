@@ -6,6 +6,8 @@ import { refreshApex } from '@salesforce/apex';
 import getData from '@salesforce/apex/DMT_RiskTablesLineController.getData';
 import saveProducts from '@salesforce/apex/DMT_RiskTablesLineController.saveProducts';
 import updateRiskLineTermAmount from '@salesforce/apex/DMT_RiskTablesLineController.updateRiskLineTermAmount';
+import previewProductsSave from '@salesforce/apex/DMT_RiskTablesLineController.previewProductsSave'; // CIBGLOBALD-4811
+import LightningConfirm from 'lightning/confirm'; // CIBGLOBALD-4811
 //import refreshInformation from '@salesforce/apex/DMT_Passport_Handler.refreshInformation';
 
 import TOTAL_AMOUNT_LABEL from '@salesforce/label/c.dmt_cl_TotalAmount';
@@ -18,21 +20,28 @@ import { formFields as FORM_FIELDS_CONFIG } from './dmtRiskTablesLine-fields';
 
 import STATUS_FIELD from '@salesforce/schema/DMT_Line__c.Status__c';
 import CURRENCY_FIELD from '@salesforce/schema/DMT_Line__c.CurrencyIsoCode';
+import GEOGRAPHY_FIELD from '@salesforce/schema/DMT_Line__c.Booking_Geography__c';
+import IFI_FIELD from '@salesforce/schema/DMT_Line__c.DMT_Is_IFI__c';
+import RECORD_TYPE_FIELD from '@salesforce/schema/DMT_Line__c.RecordTypeId';
 
-const RECORD_FIELDS = [STATUS_FIELD, CURRENCY_FIELD];
+const TEMPLATE_FIELDS = [GEOGRAPHY_FIELD, IFI_FIELD, RECORD_TYPE_FIELD];
+const RECORD_FIELDS = [STATUS_FIELD, CURRENCY_FIELD, ...TEMPLATE_FIELDS];
 
 /**
- * Single source of truth for which sections of the card each Booking_Geography__c sees.
- * `hiddenFor` wins over `visibleFor`; an empty/unknown key means "always visible".
+ * Single source of truth for Products-tab section visibility.
+ * IFI overrides take precedence over standard geography rules.
+ * An empty/unknown key means "always visible".
  */
-const GEOGRAPHY_VISIBILITY = {
-    deposTable: { hiddenFor: ['CO', 'AR'] },
-    equitiesTable: { hiddenFor: ['CO', 'PE', 'AR', 'MX'] },
+const COMPONENT_VISIBILITY = {
+    deposTable: { hiddenFor: ['CO', 'AR'], showForIfi: true },
+    equitiesTable: { hiddenFor: ['CO', 'PE', 'AR', 'MX'], hideForIfi: true },
     reposTable:  { visibleFor: ['MX'] },
-    singularTreasury: { visibleFor: ['CO', 'AR'] },
+    singularTreasury: { visibleFor: ['CO', 'AR'], hideForIfi: true },
     derivativesTable: { hiddenFor: [] },
-    productRestrictions: { hiddenFor: ['MX'] },
-    derivativesRestrictions: { visibleFor: ['MX'] }
+    productRestrictions: { hiddenFor: ['MX'], showForIfi: true },
+    derivativesRestrictions: { visibleFor: ['MX'] },
+    derivativesMessage: { hideForIfi: true },
+    additionalProducts: { hideForIfi: true }
 };
 
 // Fields that make a not-yet-persisted row worth saving.
@@ -59,6 +68,7 @@ export default class DmtRiskTablesLine extends LightningElement {
     lineStatus;
     isReadOnlyUser = false;
     showSingular = false;
+    isIfiProductsEnabled = false;
 
     // Form fields (cfRiskFormLine)
     dvpAmount;
@@ -105,6 +115,7 @@ export default class DmtRiskTablesLine extends LightningElement {
     // Wire reference
     wiredDataResult;
     wiredRecordResult;
+    _recordTemplateContext;
 
     // ─── Wire: record change detection ───────────────────────────────────────
     @wire(getRecord, { recordId: '$recordId', fields: RECORD_FIELDS })
@@ -113,9 +124,16 @@ export default class DmtRiskTablesLine extends LightningElement {
         if (result.data) {
             const newStatus = getFieldValue(result.data, STATUS_FIELD);
             const statusChanged = this.lineStatus && this.lineStatus !== newStatus;
+            const templateContext = JSON.stringify([
+                result.data.id,
+                ...TEMPLATE_FIELDS.map(field => getFieldValue(result.data, field))
+            ]);
+            const templateChanged = this._recordTemplateContext !== undefined
+                && this._recordTemplateContext !== templateContext;
+            this._recordTemplateContext = templateContext;
             this.lineStatus = newStatus;
             this.currencyIsoCode = getFieldValue(result.data, CURRENCY_FIELD);
-            if (statusChanged && this.lineStatus !== 'Closed') {
+            if (templateChanged || (statusChanged && this.lineStatus !== 'Closed')) {
                 this._loadData().catch(error => {
                     console.error('Error reloading data after status change:', error);
                 });
@@ -132,14 +150,26 @@ export default class DmtRiskTablesLine extends LightningElement {
 
     // ─── Computed ─────────────────────────────────────────────────────────────
 
+    get isIfiTemplateEnabled() {
+        // MX uses the IFI catalog but retains its current presentation for now.
+        return this.isIfiProductsEnabled
+            && (this.bookingGeography || '').trim().toUpperCase() !== 'MX';
+    }
+
     /**
      * Generic geography-driven visibility check, exposed so it can be exercised from
      * a parent component or a Jest test with any GEOGRAPHY_VISIBILITY key.
      */
     @api
     isComponentVisible(componentKey) {
-        const rule = GEOGRAPHY_VISIBILITY[componentKey];
+        const rule = COMPONENT_VISIBILITY[componentKey];
         if (!rule) {
+            return true;
+        }
+        if (rule.hideForIfi && this.isIfiTemplateEnabled) {
+            return false;
+        }
+        if (rule.showForIfi && this.isIfiTemplateEnabled) {
             return true;
         }
         const geography = (this.bookingGeography || '').trim().toUpperCase();
@@ -155,6 +185,14 @@ export default class DmtRiskTablesLine extends LightningElement {
 
     get showEquitiesTable() {
         return this.isComponentVisible('equitiesTable');
+    }
+
+    get showDerivativesMessage() {
+        return this.isComponentVisible('derivativesMessage');
+    }
+
+    get showAdditionalProducts() {
+        return this.isComponentVisible('additionalProducts');
     }
     
     get showReposTable() {
@@ -182,7 +220,7 @@ export default class DmtRiskTablesLine extends LightningElement {
     }
 
     get isEditDisabled() {
-        return this.isReadOnlyUser || this.lineStatus === 'Closed';
+        return this.isReadOnlyUser;
     }
 
     get isClosed() {
@@ -202,6 +240,14 @@ export default class DmtRiskTablesLine extends LightningElement {
 
         return FORM_FIELDS_CONFIG
             .filter(field => {
+                if (this.isIfiTemplateEnabled) {
+                    if (field.hideForIfi) {
+                        return false;
+                    }
+                    if (field.showForIfi) {
+                        return true;
+                    }
+                }
                 if (field.hiddenGeographies && field.hiddenGeographies.includes(this.bookingGeography)) {
                     return false;
                 }
@@ -270,6 +316,7 @@ export default class DmtRiskTablesLine extends LightningElement {
         this.isReadOnlyUser = data.isReadOnlyUser === true || data.isReadOnlyUser === 'true';
         this.lineStatus = data.lineStatus;
         this.showSingular = data.showSingular === true || data.showSingular === 'true';
+        this.isIfiProductsEnabled = data.isIfiProductsEnabled === true || data.isIfiProductsEnabled === 'true';
         // Form data
         this.dvpAmount = data.dvpAmount;
         this.fdAmount = data.fdAmount;
@@ -562,6 +609,59 @@ export default class DmtRiskTablesLine extends LightningElement {
 
     // ─── Save / Cancel ────────────────────────────────────────────────────────
 
+    // CIBGLOBALD-4811 - the saveProducts payload, shared by handleSave and _confirmReopen (previewProductsSave).
+    _buildSavePayload() {
+        return {
+            recordId: this.recordId,
+            derivatives: this._serializeRows(this.derivatives, RISK_ROW_FIELDS),
+            depos: this._serializeRows(this.depos, RISK_ROW_FIELDS),
+            repos: this._serializeRows(this.repos, RISK_ROW_FIELDS),
+            equities: this._serializeRows(this.equities, RISK_ROW_FIELDS),
+            tableRestric: this.tableRestric ? JSON.stringify(this.tableRestric) : null,
+            tableDerivativesProducts: this.tableDerivativesProducts ? JSON.stringify(this.tableDerivativesProducts) : null,
+            tableDeposProducts: this.tableDeposProducts ? JSON.stringify(this.tableDeposProducts) : null,
+            tableReposProducts: this.tableReposProducts ? JSON.stringify(this.tableReposProducts) : null,
+            singularCon: this._serializeRows(this.singularCon, SINGULAR_ROW_FIELDS),
+            derivativesTotalAmount: this.derivativesTotalAmount,
+            dvpAmount: this.dvpAmount,
+            fdAmount: this.fdAmount,
+            firstBreakclause: this.firstBreakclause,
+            breakclauseFrequency: this.breakclauseFrequency,
+            waiver: this.waiver,
+            mitigantComments: this.mitigantComments,
+            additionalRestrictions: this.additionalRestrictions || '',
+            comments: this.comments || ''
+        };
+    }
+
+    /**
+     * CIBGLOBALD-4811 - Asks before a save that would reopen approval tasks. Only in Ready to close; the record type
+     * filter of the Line trigger checkpoint 3 (TreasurySettlement, OtherProducts) is applied in
+     * DMT_RiskTablesLineController.previewProductsSave, which builds what saveProducts writes from the same payload
+     * and compares it with the snapshots, without saving. A failed check counts as no reopen.
+     * @returns true to save, false when the user cancels
+     */
+    async _confirmReopen() {
+        if (this.lineStatus !== 'Ready to close') {
+            return true;
+        }
+        try {
+            const features = await previewProductsSave({ caseTypeToCheck: 'readytoclose', ...this._buildSavePayload() });
+            if (!features || features.length === 0) {
+                return true;
+            }
+        } catch (error) {
+            console.error('[dmtRiskTablesLine][_confirmReopen]', error);
+            return true;
+        }
+        return LightningConfirm.open({
+            label: 'Modify Line?',
+            message: 'The Line will be modified and the associated cases and tasks will be reopened.' +
+                '\n\nDo you want to modify the Line?',
+            theme: 'warning'
+        });
+    }
+
     async handleSave() {
         // Validate form FIRST (without changing state)
         const formRenderer = this.template.querySelector('c-dmt_form_renderer');
@@ -575,6 +675,9 @@ export default class DmtRiskTablesLine extends LightningElement {
             }
         }
 
+        // CIBGLOBALD-4811 - Ready to close: ask before a save that would reopen tasks; Cancel keeps edit mode
+        if (!await this._confirmReopen()) return;
+
         // Only after validation passes, enter save flow
         this.isSaving = true;
         this.showRiskTables = false;  // Unmount tables for reload
@@ -583,27 +686,7 @@ export default class DmtRiskTablesLine extends LightningElement {
         let saveSuccessful = false;
 
         try {
-            const payload = {
-                recordId: this.recordId,
-                derivatives: this._serializeRows(this.derivatives, RISK_ROW_FIELDS),
-                depos: this._serializeRows(this.depos, RISK_ROW_FIELDS),
-                repos: this._serializeRows(this.repos, RISK_ROW_FIELDS),
-                equities: this._serializeRows(this.equities, RISK_ROW_FIELDS),
-                tableRestric: this.tableRestric ? JSON.stringify(this.tableRestric) : null,
-                tableDerivativesProducts: this.tableDerivativesProducts ? JSON.stringify(this.tableDerivativesProducts) : null,
-                tableDeposProducts: this.tableDeposProducts ? JSON.stringify(this.tableDeposProducts) : null,
-                tableReposProducts: this.tableReposProducts ? JSON.stringify(this.tableReposProducts) : null,
-                singularCon: this._serializeRows(this.singularCon, SINGULAR_ROW_FIELDS),
-                derivativesTotalAmount: this.derivativesTotalAmount,
-                dvpAmount: this.dvpAmount,
-                fdAmount: this.fdAmount,
-                firstBreakclause: this.firstBreakclause,
-                breakclauseFrequency: this.breakclauseFrequency,
-                waiver: this.waiver,
-                mitigantComments: this.mitigantComments,
-                additionalRestrictions: this.additionalRestrictions || '',
-                comments: this.comments || ''
-            };
+            const payload = this._buildSavePayload(); // CIBGLOBALD-4811
 
             console.log('payload: '+JSON.stringify(payload));
 

@@ -6,6 +6,13 @@ import getOpportunityLineItemData from '@salesforce/apex/DMT_OpportunityProducts
 import getUnderlyingsData        from '@salesforce/apex/DMT_OpportunityProductsController.getUnderlyingsData';
 import getMitigantsData          from '@salesforce/apex/DMT_OpportunityProductsController.getMitigantsData';
 import saveOpportunityProduct    from '@salesforce/apex/DMT_OpportunityProductsController.saveOpportunityProduct';
+import previewOpportunityProductSave from '@salesforce/apex/DMT_OpportunityProductsController.previewOpportunityProductSave'; // CIBGLOBALD-4811
+import LightningConfirm from 'lightning/confirm'; // CIBGLOBALD-4811
+
+// CIBGLOBALD-4811 - same text as the other Opportunity tabs (dmt_opp_info, dmt_opp_client)
+const REOPEN_LABEL   = 'Modify Opportunity?';
+const REOPEN_MESSAGE = 'The Opportunity will be modified and the associated cases and tasks will be reopened.' +
+    '\n\nDo you want to modify the Opportunity?';
 
 const SECTION_REF_NAMES = ['generalInfo', 'lineDescription', 'underlyings', 'costOfFunding', 'sustainability', 'countryRisk', 'mitigants','unfundedMitigants'];
 
@@ -27,6 +34,8 @@ export default class DmtOppProductDetailsLine extends LightningElement {
     _wiredResult = null;
     _wiredUnderlyingsResult = null;
     _canEdit = true;
+    // CIBGLOBALD-4811 - set by dmt_opp_products: Ready to close and record type DMT_Opportunity
+    @api checkReopen = false;
     _readOnlyApplied = false;
 
     @api get recordId() { return this.currentRecordId; }
@@ -226,7 +235,8 @@ export default class DmtOppProductDetailsLine extends LightningElement {
             }
 
             const toDateOnly = (v) => (typeof v === 'string' ? v.substring(0, 10) : v);
-            const result = await saveOpportunityProduct({
+            // CIBGLOBALD-4811 - one payload for the reopen check and the save; Cancel keeps edit mode and the values
+            const savePayload = {
                 recordFields,
                 tenorsToUpsert      : [],
                 tenorsToDelete      : [],
@@ -237,7 +247,9 @@ export default class DmtOppProductDetailsLine extends LightningElement {
                 initialDate  : toDateOnly(this.recordData?.gf_initial_date__c),
                 maturityDate : toDateOnly(this.recordData?.gf_maturity_date__c),
                 oppId: this._wiredResult?.data?.OpportunityId
-            });
+            };
+            if (!await this._confirmReopen(savePayload)) return;
+            const result = await saveOpportunityProduct(savePayload); // CIBGLOBALD-4811
 
             if (result?.success === false) {
                 this.hasError = true;
@@ -255,6 +267,27 @@ export default class DmtOppProductDetailsLine extends LightningElement {
         } finally {
             this.isLoadingSaving = false;
         }
+    }
+
+    /**
+     * CIBGLOBALD-4811 - Asks before a save that would reopen approval tasks. Runs only when the parent
+     * (dmt_opp_products) sets checkReopen: Opportunity in Ready to close with record type DMT_Opportunity.
+     * DMT_OpportunityProductsController.previewOpportunityProductSave runs the Ready to close comparison of
+     * the Opportunity trigger (DMT_OpportunityTriggerHandler checkpoint 3) on what this save writes, without
+     * saving. The reopen itself happens when leaving edit mode releases the Opportunity edit lock
+     * (dmt_opp_custom_page). A failed check counts as no reopen. Returns true to save, false to stay in edit mode.
+     */
+    async _confirmReopen(savePayload) {
+        if (!this.checkReopen) return true;
+        let reopens = false;
+        try {
+            const features = await previewOpportunityProductSave({ caseTypeToCheck: 'readytoclose', ...savePayload });
+            reopens = !!(features && features.length > 0);
+        } catch (error) {
+            console.error('[dmt_opp_product_details_line][_confirmReopen]', error);
+        }
+        if (!reopens) return true;
+        return LightningConfirm.open({ label: REOPEN_LABEL, message: REOPEN_MESSAGE, theme: 'warning' });
     }
 
     handleCancel() {
@@ -276,8 +309,8 @@ export default class DmtOppProductDetailsLine extends LightningElement {
     _exitEditMode(commitSections = true) {
         this.isEditMode = false;
         if (commitSections) {
-            for (const ref of this._sectionRefs()) {
-                ref.commitEdit?.();
+        for (const ref of this._sectionRefs()) {
+            ref.commitEdit?.();
             }
         }
         this.draftRecordData = null;

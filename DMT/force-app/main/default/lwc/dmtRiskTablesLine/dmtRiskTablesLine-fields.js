@@ -3,6 +3,7 @@
 export const formFields = [
   {
     id: "DvP_Amount__c",
+    showForIfi: true,
     label: "Delivery versus Payment (DvP) Amount",
     apiName: "DvP_Amount__c",
     objectType: "DMT_Line__c",
@@ -16,6 +17,7 @@ export const formFields = [
   },
   {
     id: "FD_Amount__c",
+    showForIfi: true,
     label: "Free Delivery (FD) Amount",
     apiName: "FD_Amount__c",
     objectType: "DMT_Line__c",
@@ -30,6 +32,7 @@ export const formFields = [
   },
   {
     id: "First_Breakclause__c",
+    showForIfi: true,
     label: "First Breakclause",
     apiName: "First_Breakclause__c",
     objectType: "DMT_Line__c",
@@ -44,6 +47,7 @@ export const formFields = [
   },
   {
     id: "Breakclause_Frequency__c",
+    showForIfi: true,
     label: "Breakclause Frequency",
     apiName: "Breakclause_Frequency__c",
     objectType: "DMT_Line__c",
@@ -58,6 +62,7 @@ export const formFields = [
   },
   {
     id: "Waiver__c",
+    hideForIfi: true,
     label: "Exception to the policy on the execution of mitigating agreements (ISDA/GMRA/GMSLA or similar)",
     apiName: "Waiver__c",
     objectType: "DMT_Line__c",
@@ -71,6 +76,7 @@ export const formFields = [
   },
   {
     id: "DMT_Mitigant_Agreement_comments__c",
+    hideForIfi: true,
     label: "Mitigant Agreement comments",
     apiName: "DMT_Mitigant_Agreement_comments__c",
     objectType: "DMT_Line__c",

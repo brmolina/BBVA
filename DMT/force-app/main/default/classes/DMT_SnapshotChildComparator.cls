@@ -248,6 +248,9 @@ public without sharing class DMT_SnapshotChildComparator implements DMT_Approval
         Map<String, Object> liveRowsAsJson = (Map<String, Object>) JSON.deserializeUntyped(
             JSON.serialize(liveRowsBySectionAndRecord.get(sectionKey).get(recordId))
         );
-        return DMT_ApprovalChangeStep_Helper.rowsDiffer((Map<String, Object>) frozenSection, liveRowsAsJson, trackedFields);
+        return DMT_ApprovalChangeStep_Helper.rowsDiffer( // CIBGLOBALD-4811
+            (Map<String, Object>) frozenSection, liveRowsAsJson, trackedFields,
+            Schema.getGlobalDescribe().get(objectApiNameBySection.get(sectionKey)) // CIBGLOBALD-4811
+        );
     }
 }

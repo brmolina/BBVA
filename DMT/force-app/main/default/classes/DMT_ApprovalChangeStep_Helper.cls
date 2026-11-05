@@ -386,6 +386,10 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
         if (value == null || (value instanceof String && String.isBlank((String) value))) {
             return null;
         }
+        // CIBGLOBALD-4811 - a multi-select picklist can come as a list (dmt_opp_commercial_process_data)
+        if (fieldType == Schema.DisplayType.MULTIPICKLIST) {
+            return toMultiPicklistValue(value);
+        }
         String text = String.valueOf(value);
         switch on fieldType {
             when DATE {
@@ -407,6 +411,21 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
                 return text;
             }
         }
+    }
+
+    // CIBGLOBALD-4811 - the selected values joined with ';' in the order received, as the tab save stores them
+    // (DMT_CommercialProcessDataController.putFieldValue). Null when nothing is selected.
+    private static String toMultiPicklistValue(Object value) {
+        if (!(value instanceof List<Object>)) {
+            return String.valueOf(value);
+        }
+        List<String> selected = new List<String>();
+        for (Object item : (List<Object>) value) {
+            if (item != null && String.isNotBlank(String.valueOf(item))) {
+                selected.add(String.valueOf(item));
+            }
+        }
+        return selected.isEmpty() ? null : String.join(selected, ';');
     }
 
     // CIBGLOBALD-4811 - compares only the components frozen in each snapshot, with one live fetch
@@ -789,7 +808,7 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
         Map<String, Object> liveFields = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(record));
 
         for (String fieldName : DMT_RendererFactory.getTrackedFields(trackedComponentsForSnapshot(snapshot), record)) {
-            if (valueAt(liveFields, fieldName) != valueAt(frozenFields, fieldName)) {
+            if (valueChanged(record.getSObjectType(), fieldName, valueAt(frozenFields, fieldName), valueAt(liveFields, fieldName))) { // CIBGLOBALD-4811
                 if (changes == null) { // CIBGLOBALD-4811
                     return true;
                 }
@@ -823,6 +842,25 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
     // CIBGLOBALD-4117 - blank strings normalize to null before any comparison in this class.
     private static Object normalizeBlank(Object value) {
         return (value instanceof String && String.isBlank((String) value)) ? null : value;
+    }
+
+    // CIBGLOBALD-4811 - Enhancement fix to existing process: true when a tracked value changed. A multi-select
+    // picklist compares as a set of values: Salesforce stores the values in the order they were sent, so the
+    // same selection in another order is not a change. The field type is read only when the values differ.
+    private static Boolean valueChanged(Schema.SObjectType objectType, String fieldName, Object frozenValue, Object liveValue) {
+        Object frozenNormalized = normalizeBlank(frozenValue);
+        Object liveNormalized = normalizeBlank(liveValue);
+        if (frozenNormalized == liveNormalized) {
+            return false;
+        }
+        if (objectType == null || fieldName.contains('.') || !(frozenNormalized instanceof String) || !(liveNormalized instanceof String)) {
+            return true;
+        }
+        Schema.SObjectField field = objectType.getDescribe().fields.getMap().get(fieldName);
+        if (field == null || field.getDescribe().getType() != Schema.DisplayType.MULTIPICKLIST) {
+            return true;
+        }
+        return !new Set<String>(((String) frozenNormalized).split(';')).equals(new Set<String>(((String) liveNormalized).split(';')));
     }
 
     // CIBGLOBALD-4800 - Enhancement fix to existing process: task Ids already restarted inline or queued
@@ -879,6 +917,11 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
     }
 
     public static Boolean rowsDiffer(Map<String, Object> frozenRows, Map<String, Object> liveRows, List<String> trackedFields) {
+        return rowsDiffer(frozenRows, liveRows, trackedFields, null); // CIBGLOBALD-4811
+    }
+
+    // CIBGLOBALD-4811 - with the row object, multi-select picklists compare as sets (valueChanged).
+    public static Boolean rowsDiffer(Map<String, Object> frozenRows, Map<String, Object> liveRows, List<String> trackedFields, Schema.SObjectType rowObjectType) {
         if (liveRows == null) {
             liveRows = new Map<String, Object>();
         }
@@ -889,7 +932,7 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
             Map<String, Object> frozenRow = (Map<String, Object>) frozenRows.get(recordId);
             Map<String, Object> liveRow = (Map<String, Object>) liveRows.get(recordId);
             for (String fieldName : trackedFields) {
-                if (normalizeBlank(frozenRow.get(fieldName)) != normalizeBlank(liveRow.get(fieldName))) {
+                if (valueChanged(rowObjectType, fieldName, frozenRow.get(fieldName), liveRow.get(fieldName))) { // CIBGLOBALD-4811
                     return true;
                 }
             }

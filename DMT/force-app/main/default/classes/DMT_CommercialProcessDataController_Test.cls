@@ -23,12 +23,12 @@ private class DMT_CommercialProcessDataController_Test {
         Opportunity result = DMT_CommercialProcessDataController.getCommercialProcessData(opp.Id);
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(opp.Id, result.Id, 'Returned Opportunity Id should match');
+        Assert.areNotEqual(null, result, 'Result should not be null');
+        Assert.areEqual(opp.Id, result.Id, 'Returned Opportunity Id should match');
         // Salesforce normalizes multiselect picklist storage order to match the field's
         // valueSet definition order (AB, AE, AR, ...), not insertion order.
-        System.assertEquals('AE;AR', result.DES_Countries__c, 'Countries should match');
-        System.assertEquals('Some comments', result.DES_Comments__c, 'Comments should match');
+        Assert.areEqual('AE;AR', result.DES_Countries__c, 'Countries should match');
+        Assert.areEqual('Some comments', result.DES_Comments__c, 'Comments should match');
     }
 
     @isTest
@@ -43,7 +43,7 @@ private class DMT_CommercialProcessDataController_Test {
         }
         Test.stopTest();
 
-        System.assert(exceptionThrown, 'An exception should be thrown when no matching Opportunity is found');
+        Assert.isTrue(exceptionThrown, 'An exception should be thrown when no matching Opportunity is found');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -81,11 +81,11 @@ private class DMT_CommercialProcessDataController_Test {
         Test.stopTest();
 
         Opportunity updatedOpp = [SELECT DES_Comments__c FROM Opportunity WHERE Id = :opp.Id];
-        System.assertEquals('Updated comments', updatedOpp.DES_Comments__c, 'Opportunity field should be updated');
+        Assert.areEqual('Updated comments', updatedOpp.DES_Comments__c, 'Opportunity field should be updated');
 
         OpportunityLineItem updatedOli = [SELECT deferred_fee_amount__c, periodic_fee_amount__c FROM OpportunityLineItem WHERE Id = :oli.Id];
-        System.assertEquals(10, updatedOli.deferred_fee_amount__c, 'Line item field should be updated');
-        System.assertEquals(50, updatedOli.periodic_fee_amount__c, 'Line item field should be updated');
+        Assert.areEqual(10, updatedOli.deferred_fee_amount__c, 'Line item field should be updated');
+        Assert.areEqual(50, updatedOli.periodic_fee_amount__c, 'Line item field should be updated');
 
         // Note: the "AfterCreateOpportunity" record-triggered flow (RecordAfterSave, CreateAndUpdate)
         // also creates its own Passport__c on Opportunity insert and marks a Passport__c obsolete
@@ -105,7 +105,7 @@ private class DMT_CommercialProcessDataController_Test {
                 break;
             }
         }
-        System.assert(anyObsoleted, 'Passport should be flagged as obsoleted');
+        Assert.isTrue(anyObsoleted, 'Passport should be flagged as obsoleted');
     }
 
     @isTest
@@ -120,7 +120,7 @@ private class DMT_CommercialProcessDataController_Test {
         Test.stopTest();
 
         Opportunity updatedOpp = [SELECT DES_Comments__c FROM Opportunity WHERE Id = :opp.Id];
-        System.assertEquals('No line items', updatedOpp.DES_Comments__c, 'Opportunity field should still be updated');
+        Assert.areEqual('No line items', updatedOpp.DES_Comments__c, 'Opportunity field should still be updated');
     }
 
     @isTest
@@ -135,7 +135,7 @@ private class DMT_CommercialProcessDataController_Test {
         Test.stopTest();
 
         Opportunity updatedOpp = [SELECT DES_Comments__c FROM Opportunity WHERE Id = :opp.Id];
-        System.assertEquals('Empty line items', updatedOpp.DES_Comments__c, 'Opportunity field should still be updated');
+        Assert.areEqual('Empty line items', updatedOpp.DES_Comments__c, 'Opportunity field should still be updated');
     }
 
     @isTest
@@ -158,7 +158,7 @@ private class DMT_CommercialProcessDataController_Test {
         Test.stopTest();
 
         OpportunityLineItem unchangedOli = [SELECT deferred_fee_amount__c FROM OpportunityLineItem WHERE Id = :oli.Id];
-        System.assertNotEquals(999, unchangedOli.deferred_fee_amount__c, 'Line item without Id should not be updated');
+        Assert.areNotEqual(999, unchangedOli.deferred_fee_amount__c, 'Line item without Id should not be updated');
     }
 
     @isTest
@@ -173,7 +173,45 @@ private class DMT_CommercialProcessDataController_Test {
         Test.stopTest();
 
         Opportunity updatedOpp = [SELECT DES_Comments__c FROM Opportunity WHERE Id = :opp.Id];
-        System.assertEquals('No passport', updatedOpp.DES_Comments__c, 'Should complete successfully with no Passport__c records');
+        Assert.areEqual('No passport', updatedOpp.DES_Comments__c, 'Should complete successfully with no Passport__c records');
+    }
+
+    // CIBGLOBALD-4811 - the reopen check builds what the save writes and saves nothing; without a Ready to
+    // close Case nothing reopens.
+    @isTest
+    static void testPreviewCommercialProcessDataSave_NoCase_ReturnsNothingAndSavesNothing() {
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+        OpportunityLineItem oli = DMT_Test_DataFactory.generateOpportunityLineItem(opp);
+        Map<String, Object> fieldValues = new Map<String, Object>{
+            'DES_Comments__c' => 'Unsaved comments',
+            'DES_Countries__c' => new List<Object>{ 'ES', 'PT' }
+        };
+        List<Map<String, Object>> lineItems = new List<Map<String, Object>>{
+            new Map<String, Object>{ 'Id' => oli.Id, 'deferred_fee_amount__c' => 99 },
+            new Map<String, Object>{ 'deferred_fee_amount__c' => 1 }
+        };
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_CommercialProcessDataController.previewCommercialProcessDataSave('readytoclose', opp.Id, fieldValues, lineItems);
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'Without a Ready to close Case nothing reopens');
+        Assert.areNotEqual('Unsaved comments', [SELECT DES_Comments__c FROM Opportunity WHERE Id = :opp.Id].DES_Comments__c, 'The preview saves no Opportunity field');
+        Assert.areNotEqual(99, [SELECT deferred_fee_amount__c FROM OpportunityLineItem WHERE Id = :oli.Id].deferred_fee_amount__c, 'The preview saves no product row');
+    }
+
+    // CIBGLOBALD-4811 - a check that fails is logged and answers nothing, so the save is never blocked.
+    @isTest
+    static void testPreviewCommercialProcessDataSave_Failure_ReturnsNothing() {
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_CommercialProcessDataController.previewCommercialProcessDataSave('readytoclose', opp.Id, null, null);
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'A failing check returns nothing');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -192,7 +230,7 @@ private class DMT_CommercialProcessDataController_Test {
         Test.stopTest();
 
         Opportunity updatedOpp = [SELECT DES_Expected_Probability__c FROM Opportunity WHERE Id = :opp.Id];
-        System.assertEquals(45, updatedOpp.DES_Expected_Probability__c, 'String should be coerced to Decimal for Percent field');
+        Assert.areEqual(45, updatedOpp.DES_Expected_Probability__c, 'String should be coerced to Decimal for Percent field');
     }
 
     @isTest
@@ -207,7 +245,7 @@ private class DMT_CommercialProcessDataController_Test {
         Test.stopTest();
 
         Opportunity updatedOpp = [SELECT DMT_NUM_Time_Limit__c FROM Opportunity WHERE Id = :opp.Id];
-        System.assertEquals(24, updatedOpp.DMT_NUM_Time_Limit__c, 'String should be coerced to Integer for Number(scale 0) field');
+        Assert.areEqual(24, updatedOpp.DMT_NUM_Time_Limit__c, 'String should be coerced to Integer for Number(scale 0) field');
     }
 
     @isTest
@@ -224,7 +262,7 @@ private class DMT_CommercialProcessDataController_Test {
         Test.stopTest();
 
         Opportunity updatedOpp = [SELECT DES_Expected_Probability__c FROM Opportunity WHERE Id = :opp.Id];
-        System.assertEquals(null, updatedOpp.DES_Expected_Probability__c, 'Blank string should be coerced to null for numeric field');
+        Assert.areEqual(null, updatedOpp.DES_Expected_Probability__c, 'Blank string should be coerced to null for numeric field');
     }
 
     @isTest
@@ -241,7 +279,7 @@ private class DMT_CommercialProcessDataController_Test {
         Opportunity updatedOpp = [SELECT DES_Countries__c FROM Opportunity WHERE Id = :opp.Id];
         // Salesforce normalizes multiselect picklist storage order to match the field's
         // valueSet definition order (AB, AE, AR, ...), not insertion/join order.
-        System.assertEquals('AE;AR', updatedOpp.DES_Countries__c, 'List values should be joined with semicolons');
+        Assert.areEqual('AE;AR', updatedOpp.DES_Countries__c, 'List values should be joined with semicolons');
     }
 
     @isTest
@@ -258,7 +296,7 @@ private class DMT_CommercialProcessDataController_Test {
         Test.stopTest();
 
         Opportunity updatedOpp = [SELECT DES_Countries__c FROM Opportunity WHERE Id = :opp.Id];
-        System.assertEquals(null, updatedOpp.DES_Countries__c, 'Empty list should result in null field value');
+        Assert.areEqual(null, updatedOpp.DES_Countries__c, 'Empty list should result in null field value');
     }
 
     @isTest
@@ -274,7 +312,7 @@ private class DMT_CommercialProcessDataController_Test {
         Test.stopTest();
 
         Opportunity updatedOpp = [SELECT DES_Comments__c FROM Opportunity WHERE Id = :opp.Id];
-        System.assertEquals(null, updatedOpp.DES_Comments__c, 'Field should be set to null');
+        Assert.areEqual(null, updatedOpp.DES_Comments__c, 'Field should be set to null');
     }
 
     @isTest
@@ -289,7 +327,7 @@ private class DMT_CommercialProcessDataController_Test {
         Test.stopTest();
 
         Opportunity updatedOpp = [SELECT DMT_Credentials__c FROM Opportunity WHERE Id = :opp.Id];
-        System.assertEquals(true, updatedOpp.DMT_Credentials__c, 'Boolean value should be set directly without coercion');
+        Assert.areEqual(true, updatedOpp.DMT_Credentials__c, 'Boolean value should be set directly without coercion');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -322,10 +360,10 @@ private class DMT_CommercialProcessDataController_Test {
         }
         Test.stopTest();
 
-        System.assert(exceptionThrown, 'AuraHandledException should be thrown when the DML operation fails');
+        Assert.isTrue(exceptionThrown, 'AuraHandledException should be thrown when the DML operation fails');
 
         Opportunity notUpdatedOpp = [SELECT DES_Comments__c FROM Opportunity WHERE Id = :opp.Id];
-        System.assertNotEquals('Should be rolled back', notUpdatedOpp.DES_Comments__c, 'Opportunity update should have been rolled back');
+        Assert.areNotEqual('Should be rolled back', notUpdatedOpp.DES_Comments__c, 'Opportunity update should have been rolled back');
     }
 
     @isTest
@@ -344,7 +382,7 @@ private class DMT_CommercialProcessDataController_Test {
         }
         Test.stopTest();
 
-        System.assert(exceptionThrown, 'AuraHandledException should be thrown for an invalid field name');
+        Assert.isTrue(exceptionThrown, 'AuraHandledException should be thrown for an invalid field name');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -365,9 +403,9 @@ private class DMT_CommercialProcessDataController_Test {
         List<OpportunityLineItem> result = DMT_CommercialProcessDataController.getOppLineItems(opp.Id);
         Test.stopTest();
 
-        System.assertEquals(2, result.size(), 'Should return both line items');
-        System.assertEquals(oli2.Id, result[0].Id, 'Line item with lower group priority should be returned first');
-        System.assertEquals(oli1.Id, result[1].Id, 'Line item with higher group priority should be returned last');
+        Assert.areEqual(2, result.size(), 'Should return both line items');
+        Assert.areEqual(oli2.Id, result[0].Id, 'Line item with lower group priority should be returned first');
+        Assert.areEqual(oli1.Id, result[1].Id, 'Line item with higher group priority should be returned last');
     }
 
     @isTest
@@ -378,6 +416,6 @@ private class DMT_CommercialProcessDataController_Test {
         List<OpportunityLineItem> result = DMT_CommercialProcessDataController.getOppLineItems(opp.Id);
         Test.stopTest();
 
-        System.assertEquals(0, result.size(), 'Should return an empty list when there are no line items');
+        Assert.areEqual(0, result.size(), 'Should return an empty list when there are no line items');
     }
 }

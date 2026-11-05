@@ -8,6 +8,8 @@ import getProductLineTypeOptions              from '@salesforce/apex/DMT_Opportu
 import getTaxonomyCatalogValues               from '@salesforce/apex/DMT_OpportunityProductsController.getTaxonomyCatalogValues';
 import cloneOpportunityLineItem               from '@salesforce/apex/DMT_OpportunityProductsController.cloneOpportunityLineItem';
 import deleteOpportunityLineItem              from '@salesforce/apex/DMT_OpportunityProductsController.deleteOpportunityLineItem';
+import previewCompareUnsavedChanges           from '@salesforce/apex/DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges'; // CIBGLOBALD-4811
+import LightningConfirm                       from 'lightning/confirm'; // CIBGLOBALD-4811
 import getPicklistValues                      from '@salesforce/apex/DMT_SustainableDealController.getPicklistValues';
 import DmtOppProductCreateModal               from 'c/dmt_opp_product_create_modal';
 //import DmtOppProductLineSelectorModal         from 'c/dmt_opp_product_line_selector_modal';
@@ -38,6 +40,7 @@ export default class Dmt_opp_products extends LightningElement {
     activeTabId       = null;
     stageName;
     requestedPassport;
+    _recordTypeDeveloperName = null; // CIBGLOBALD-4811
     selectedProductContext;
 
     _riskTypeOptions        = [];
@@ -62,6 +65,12 @@ export default class Dmt_opp_products extends LightningElement {
 
     get buttonProfitability() {
         return this.isLoading || this.stageName === 'Closed' || this.requestedPassport === false;
+    }
+
+    // CIBGLOBALD-4811 - same filter as the Opportunity trigger Ready to close checkpoint
+    // (DMT_OpportunityTriggerHandler): stage Ready to close and record type DMT_Opportunity.
+    get checkReopen() {
+        return this.stageRecord === 'Ready to close' && this._recordTypeDeveloperName === 'DMT_Opportunity';
     }
 
     get disabledButtons() {
@@ -115,11 +124,12 @@ export default class Dmt_opp_products extends LightningElement {
 
     // ─── Wire: Opportunity record ─────────────────────────────────────────────
 
-    @wire(getRecord, { recordId: '$recordId', fields: FIELDS })
+    @wire(getRecord, { recordId: '$recordId', fields: FIELDS, optionalFields: ['Opportunity.RecordType.DeveloperName'] }) // CIBGLOBALD-4811
     wiredRecordOpp({ data, error }) {
         if (data) {
             this.stageName        = getFieldValue(data, DMT_STAGE_NAME_FIELD);
             this.requestedPassport= getFieldValue(data, DMT_REQUESTED_PASSPORT_FIELD);
+            this._recordTypeDeveloperName = data.fields.RecordType?.value?.fields?.DeveloperName?.value; // CIBGLOBALD-4811
         }
         if (error) this.error = error;
     }
@@ -256,6 +266,8 @@ export default class Dmt_opp_products extends LightningElement {
     }
 
     async openCreateModal() {
+        // CIBGLOBALD-4811 - a new product row is a change to the Products component of the snapshot
+        if (!await this._confirmReopen({ objectApiName: 'OpportunityLineItem', rowId: null, values: {} })) return;
         const result = await DmtOppProductCreateModal.open({
             size: 'medium',
             recordId: this.recordId,
@@ -277,6 +289,8 @@ export default class Dmt_opp_products extends LightningElement {
     }
 
     async handleCloneProduct() {
+        // CIBGLOBALD-4811 - the clone inserts a new product row
+        if (!await this._confirmReopen({ objectApiName: 'OpportunityLineItem', rowId: null, values: {} })) return;
         this.isLoading = true;
         try {
             const result = await cloneOpportunityLineItem({ opportunityLineItemId: this.activeTabId });
@@ -301,6 +315,8 @@ export default class Dmt_opp_products extends LightningElement {
     }
 
     async handleDeleteProduct() {
+        // CIBGLOBALD-4811 - the delete removes the active product row
+        if (!await this._confirmReopen({ objectApiName: 'OpportunityLineItem', rowId: this.activeTabId, deleted: true })) return;
         this.isLoading = true;
         try {
             const deletedId = this.activeTabId;
@@ -327,6 +343,37 @@ export default class Dmt_opp_products extends LightningElement {
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
+
+    /**
+     * CIBGLOBALD-4811 - Asks before adding, cloning or deleting a product when that would reopen approval
+     * tasks: only in Ready to close with record type DMT_Opportunity (checkReopen).
+     * DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges compares the product rows frozen in the
+     * readytoclose snapshots with the live rows plus this change ({objectApiName, rowId, values, deleted}).
+     * These actions do not update the Opportunity, so the tasks reopen at its next update (for example when an
+     * edit-mode save releases the edit lock). A failed check counts as no reopen. Returns true to proceed.
+     */
+    async _confirmReopen(unsavedRow) {
+        if (!this.checkReopen) return true;
+        let reopens = false;
+        try {
+            const features = await previewCompareUnsavedChanges({
+                recordId: this.recordId,
+                caseTypeToCheck: 'readytoclose',
+                unsavedValues: null,
+                unsavedRows: [unsavedRow]
+            });
+            reopens = !!(features && features.length > 0);
+        } catch (error) {
+            console.error('[dmt_opp_products][_confirmReopen]', error);
+        }
+        if (!reopens) return true;
+        return LightningConfirm.open({
+            label: 'Modify Opportunity?',
+            message: 'The Opportunity will be modified and the associated cases and tasks will be reopened.' +
+                '\n\nDo you want to modify the Opportunity?',
+            theme: 'warning'
+        });
+    }
 
     async refreshData() {
         this.isLoading = true;

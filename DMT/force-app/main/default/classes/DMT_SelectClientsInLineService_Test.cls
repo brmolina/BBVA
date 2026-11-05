@@ -21,7 +21,7 @@ public with sharing class DMT_SelectClientsInLineService_Test {
     @isTest
     static void loadDatasource_withLine_returnsContextAndSelectedRows() {
         DMT_Line__c line = [
-            SELECT Id, Client__c, Status__c
+            SELECT Id, Client__c, Client__r.DES_Client_Type__c, Status__c
             FROM DMT_Line__c
             WHERE Status__c = :DMT_Constants.DRAFT
             AND Custom_Association__c != null
@@ -34,12 +34,46 @@ public with sharing class DMT_SelectClientsInLineService_Test {
         Map<String, Object> response = DMT_SelectClientsInLineService.loadDatasource(line.Id, DMT_Constants.CHAR_Y);
         Test.stopTest();
 
-        System.assertEquals(line.Client__c, (Id) response.get('accountId'));
-        System.assertEquals(DMT_Constants.DRAFT, (String) response.get('lineStatus'));
-        System.assertEquals(true, (Boolean) response.get('canEditSelection'));
+        Assert.areEqual(line.Client__c, (Id) response.get('accountId'));
+        Assert.areEqual(DMT_Constants.DRAFT, (String) response.get('lineStatus'));
+        Assert.areEqual(true, (Boolean) response.get('canEditSelection'));
+        // Changes been made for CIBGLOBALD-4687
+        Assert.areEqual(line.Client__r.DES_Client_Type__c, (String) response.get('clientAccountType'));
 
         List<Object> priorSelectedRows = (List<Object>) response.get('priorselectedRows');
-        System.assertNotEquals(null, priorSelectedRows, 'Expected selected rows key to be present.');
+        Assert.areNotEqual(null, priorSelectedRows, 'Expected selected rows key to be present.');
+    }
+
+    // Changes been made for CIBGLOBALD-4687
+    @isTest
+    static void loadDatasource_customerGlobalModeUsesParentAccount() {
+        DMT_Line__c line = [
+            SELECT Id, Client__c, Status__c
+            FROM DMT_Line__c
+            WHERE Status__c = :DMT_Constants.DRAFT
+            AND Custom_Association__c != null
+            LIMIT 1
+        ];
+        Account parentAccount = DMT_Test_DataFactory.generateAccount();
+        Account subsidiary = DMT_Test_DataFactory.generateSubsidiaryForGroup(
+            parentAccount.Id,
+            new Map<Schema.SObjectField, Object>{ Account.g_customer_id__c => 'ES0182000999001' }
+        );
+        line.Client__c = subsidiary.Id;
+        update line;
+
+        Test.setMock(HttpCalloutMock.class, new DMT_Integration_MockGenerator());
+
+        Test.startTest();
+        Map<String, Object> response = DMT_SelectClientsInLineService.loadDatasourceForMode(
+            line.Id,
+            'Y/N',
+            'global'
+        );
+        Test.stopTest();
+
+        Assert.areEqual(subsidiary.Id, (Id) response.get('accountId'));
+        Assert.areEqual(parentAccount.Id, (Id) response.get('availableClientsAccountId'));
     }
 
     @isTest
@@ -48,7 +82,7 @@ public with sharing class DMT_SelectClientsInLineService_Test {
         Map<String, Object> response = DMT_SelectClientsInLineService.loadDatasource(null, null);
         Test.stopTest();
 
-        System.assertEquals(0, response.size());
+        Assert.areEqual(0, response.size());
     }
 
     @isTest
@@ -57,11 +91,11 @@ public with sharing class DMT_SelectClientsInLineService_Test {
         Map<String, Object> pageResult = DMT_SelectClientsInLineService.getAvailableClientsPage(null, null, null, null);
         Test.stopTest();
 
-        System.assertEquals(Integer.valueOf(DEFAULT_PAGE), (Integer) pageResult.get('page'));
-        System.assertEquals(Integer.valueOf(DEFAULT_PAGE_SIZE), (Integer) pageResult.get('pageSize'));
-        System.assertEquals(0, (Integer) pageResult.get('totalElements'));
-        System.assertEquals(1, (Integer) pageResult.get('totalPages'));
-        System.assertEquals(0, ((List<Object>) pageResult.get('availableClients')).size());
+        Assert.areEqual(Integer.valueOf(DEFAULT_PAGE), (Integer) pageResult.get('page'));
+        Assert.areEqual(Integer.valueOf(DEFAULT_PAGE_SIZE), (Integer) pageResult.get('pageSize'));
+        Assert.areEqual(0, (Integer) pageResult.get('totalElements'));
+        Assert.areEqual(1, (Integer) pageResult.get('totalPages'));
+        Assert.areEqual(0, ((List<Object>) pageResult.get('availableClients')).size());
     }
 
     @isTest
@@ -86,8 +120,8 @@ public with sharing class DMT_SelectClientsInLineService_Test {
         });
         Test.stopTest();
 
-        System.assertEquals(1, ((List<Object>) addResult.get('responseRS')).size());
-        System.assertEquals(0, ((List<Object>) removeResult.get('responseRS')).size());
+        Assert.areEqual(1, ((List<Object>) addResult.get('responseRS')).size());
+        Assert.areEqual(0, ((List<Object>) removeResult.get('responseRS')).size());
 
         Map<String, Object> groupRow = new Map<String, Object>{
             'clientType' => DMT_Constants.GROUP_CLIENT.toLowerCase(),
@@ -108,7 +142,7 @@ public with sharing class DMT_SelectClientsInLineService_Test {
             'recentRow' => groupRow
         });
 
-        System.assertEquals(2, ((List<Object>) groupResult.get('responseRS')).size());
+        Assert.areEqual(2, ((List<Object>) groupResult.get('responseRS')).size());
     }
 
     @isTest
@@ -134,7 +168,7 @@ public with sharing class DMT_SelectClientsInLineService_Test {
 
         List<Object> fullRows = (List<Object>) result.get('fullRows');
         Map<String, Object> row = (Map<String, Object>) fullRows[0];
-        System.assertEquals(150, row.get('amount'));
+        Assert.areEqual(150, row.get('amount'));
     }
 
     @isTest
@@ -175,8 +209,8 @@ public with sharing class DMT_SelectClientsInLineService_Test {
         );
         Test.stopTest();
 
-        System.assertEquals(true, (Boolean) result.get('success'));
-        System.assertEquals('OK', (String) result.get('error'));
+        Assert.areEqual(true, (Boolean) result.get('success'));
+        Assert.areEqual('OK', (String) result.get('error'));
 
         Custom_Association_Client__c savedClient = [
             SELECT Id, Alpha_Code_Client__c, DMT_Amount__c, DMT_FDAmount__c, DMT_DVPAmount__c, DMT_Term__c
@@ -186,7 +220,145 @@ public with sharing class DMT_SelectClientsInLineService_Test {
             LIMIT 1
         ];
 
-        System.assertNotEquals(null, savedClient.Id, 'Expected selected client to be persisted in line association.');
+        Assert.areNotEqual(null, savedClient.Id, 'Expected selected client to be persisted in line association.');
+    }
+
+    // CIBGLOBALD-4811 - Enhancement fix to existing process: a client row that fails to insert rolls back the
+    // association already updated in the same save.
+    @isTest
+    static void saveSelection_FailedStep_RollsBackAssociation() {
+        DMT_Line__c line = [
+            SELECT Id, Client__c, Line_Id__c, CurrencyIsoCode, Custom_Association__c
+            FROM DMT_Line__c
+            WHERE Status__c = :DMT_Constants.DRAFT
+            AND Custom_Association__c != null
+            LIMIT 1
+        ];
+        String mainHolderBefore = [SELECT g_customer_id__c FROM Custom_Association__c WHERE Id = :line.Custom_Association__c].g_customer_id__c;
+        List<Object> selectedRows = new List<Object>{
+            new Map<String, Object>{
+                'customerId' => 'ES0182000004811',
+                'customerName' => 'X'.repeat(300),
+                'term' => '6'
+            }
+        };
+
+        Test.startTest();
+        Map<String, Object> result = DMT_SelectClientsInLineService.saveSelection(
+            line.Id, 'ES0182000004811', line.CurrencyIsoCode, 'G20180109100427', line.Client__c, line.Line_Id__c, selectedRows
+        );
+        Test.stopTest();
+
+        Assert.areEqual(false, (Boolean) result.get('success'), 'A client name over the field length fails the insert');
+        Assert.areEqual(mainHolderBefore, [SELECT g_customer_id__c FROM Custom_Association__c WHERE Id = :line.Custom_Association__c].g_customer_id__c,
+            'The association update made before the failure is rolled back');
+    }
+
+    // CIBGLOBALD-4811 - the reopen check of the Line Client tab builds what each action writes and saves nothing:
+    // only Lines in Ready to close are checked; without a Ready to close Case nothing reopens; a failing check
+    // answers nothing.
+    @isTest
+    static void previewLineClientSave_ReturnsNothingWithoutCaseAndSavesNothing() {
+        DMT_Line__c line = [
+            SELECT Id, Client__c, Line_Id__c, CurrencyIsoCode, Custom_Association__c
+            FROM DMT_Line__c
+            WHERE Status__c = :DMT_Constants.DRAFT
+            AND Custom_Association__c != null
+            LIMIT 1
+        ];
+        Integer clientsBefore = [SELECT COUNT() FROM Custom_Association_Client__c WHERE Custom_Association__c = :line.Custom_Association__c];
+        String goldenBefore = [SELECT Golden_Code__c FROM DMT_Line__c WHERE Id = :line.Id].Golden_Code__c;
+        List<Object> selectedRows = new List<Object>{
+            new Map<String, Object>{ 'customerId' => 'ES0182000004811', 'customerName' => 'ZZ 4811', 'term' => '6', 'amount' => '10' }
+        };
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> notReadyToClose = DMT_SelectClientsInLineService.previewLineClientSave(
+            'readytoclose', 'selection', line.Id, 'ES0182000004811', line.CurrencyIsoCode, 'G20180109100427', line.Client__c, line.Line_Id__c, selectedRows, null
+        );
+        TriggerBypass.setBypass();
+        update new DMT_Line__c(Id = line.Id, Status__c = DMT_Constants.READYTOCLOSE);
+        TriggerBypass.removeBypass();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> selection = DMT_SelectClientsInLineService.previewLineClientSave(
+            'readytoclose', 'selection', line.Id, 'ES0182000004811', line.CurrencyIsoCode, 'G20180109100427', line.Client__c, line.Line_Id__c, selectedRows, null
+        );
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> golden = DMT_SelectClientsInLineService.previewLineClientSave(
+            'readytoclose', 'golden', line.Id, null, null, null, null, null, null, ' G4811 '
+        );
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> deleteAssociation = DMT_SelectClientsInLineService.previewLineClientSave(
+            'readytoclose', 'deleteAssociation', line.Id, null, null, null, null, null, null, null
+        );
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> unknownAction = DMT_SelectClientsInLineService.previewLineClientSave(
+            'readytoclose', 'other', line.Id, null, null, null, null, null, null, null
+        );
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> failing = DMT_SelectClientsInLineService.previewLineClientSave(
+            'readytoclose', 'selection', null, null, null, null, null, null, null, null
+        );
+        Test.stopTest();
+
+        Assert.isTrue(notReadyToClose.isEmpty(), 'Outside Ready to close nothing reopens');
+        Assert.isTrue(selection.isEmpty() && golden.isEmpty() && deleteAssociation.isEmpty(), 'Without a Ready to close Case nothing reopens');
+        Assert.isTrue(unknownAction.isEmpty(), 'An unknown action is not checked');
+        Assert.isTrue(failing.isEmpty(), 'A failing check returns nothing');
+        Assert.areEqual(clientsBefore, [SELECT COUNT() FROM Custom_Association_Client__c WHERE Custom_Association__c = :line.Custom_Association__c], 'The preview saves nothing');
+        Assert.areEqual(goldenBefore, [SELECT Golden_Code__c FROM DMT_Line__c WHERE Id = :line.Id].Golden_Code__c, 'The preview saves nothing');
+    }
+
+    // Changes been made for CIBGLOBALD-4687
+    @isTest
+    static void saveGoldenSelection_updatesOnlyGoldenCode() {
+        DMT_Line__c line = [
+            SELECT Id, Client__c, Custom_Association__c
+            FROM DMT_Line__c
+            WHERE Status__c = :DMT_Constants.DRAFT
+            AND Custom_Association__c != null
+            LIMIT 1
+        ];
+
+        Test.startTest();
+        Map<String, Object> result = DMT_SelectClientsInLineService.saveGoldenSelection(
+            line.Id,
+            'GOLDEN-CODE-123'
+        );
+        Test.stopTest();
+
+        DMT_Line__c savedLine = [
+            SELECT Client__c, Golden_Code__c, Custom_Association__c
+            FROM DMT_Line__c
+            WHERE Id = :line.Id
+        ];
+        Assert.areEqual(true, (Boolean) result.get('success'));
+        Assert.areEqual('GOLDEN-CODE-123', savedLine.Golden_Code__c);
+        Assert.areEqual(line.Client__c, savedLine.Client__c);
+        Assert.areEqual(line.Custom_Association__c, savedLine.Custom_Association__c);
+    }
+
+    // Changes been made for CIBGLOBALD-4687
+    @isTest
+    static void clearGoldenSelection_updatesOnlyGoldenCode() {
+        DMT_Line__c line = [
+            SELECT Id, Client__c, Custom_Association__c
+            FROM DMT_Line__c
+            WHERE Status__c = :DMT_Constants.DRAFT
+            AND Custom_Association__c != null
+            LIMIT 1
+        ];
+        line.Golden_Code__c = 'GOLDEN-CODE-123';
+        update line;
+
+        Test.startTest();
+        Map<String, Object> result = DMT_SelectClientsInLineService.clearGoldenSelection(line.Id);
+        Test.stopTest();
+
+        DMT_Line__c savedLine = [
+            SELECT Client__c, Golden_Code__c, Custom_Association__c
+            FROM DMT_Line__c
+            WHERE Id = :line.Id
+        ];
+        Assert.areEqual(true, (Boolean) result.get('success'));
+        Assert.areEqual(null, savedLine.Golden_Code__c);
+        Assert.areEqual(line.Client__c, savedLine.Client__c);
+        Assert.areEqual(line.Custom_Association__c, savedLine.Custom_Association__c);
     }
 
     @isTest
@@ -211,8 +383,8 @@ public with sharing class DMT_SelectClientsInLineService_Test {
         );
         Test.stopTest();
 
-        System.assertEquals(false, (Boolean) result.get('success'));
-        System.assert(((String) result.get('error')).contains('cannot be edited'));
+        Assert.areEqual(false, (Boolean) result.get('success'));
+        Assert.isTrue(((String) result.get('error')).contains('cannot be edited'));
     }
 
     @isTest
@@ -221,7 +393,7 @@ public with sharing class DMT_SelectClientsInLineService_Test {
         Map<String, Object> response = DMT_SelectClientsInLineService.loadProductDatasource(null, '01', null);
         Test.stopTest();
 
-        System.assertEquals(0, response.size());
+        Assert.areEqual(0, response.size());
     }
 
     @isTest
@@ -258,10 +430,10 @@ public with sharing class DMT_SelectClientsInLineService_Test {
         Map<String, Object> response = DMT_SelectClientsInLineService.loadProductDatasource(line.Id, '01', null);
         Test.stopTest();
 
-        System.assertEquals(line.Id, (Id) response.get('lineId'));
-        System.assertEquals(line.Line_Id__c + '_01', (String) response.get('productAssociationExternalId'));
-        System.assertNotEquals(null, response.get('selectedRows'));
-        System.assertNotEquals(null, response.get('availableClients'));
+        Assert.areEqual(line.Id, (Id) response.get('lineId'));
+        Assert.areEqual(line.Line_Id__c + '_01', (String) response.get('productAssociationExternalId'));
+        Assert.areNotEqual(null, response.get('selectedRows'));
+        Assert.areNotEqual(null, response.get('availableClients'));
     }
 
     @isTest
@@ -308,9 +480,9 @@ public with sharing class DMT_SelectClientsInLineService_Test {
         );
         Test.stopTest();
 
-        System.assertEquals(true, (Boolean) createResult.get('success'));
-        System.assertEquals(true, (Boolean) deleteResult.get('success'));
-        System.assertEquals(
+        Assert.areEqual(true, (Boolean) createResult.get('success'));
+        Assert.areEqual(true, (Boolean) deleteResult.get('success'));
+        Assert.areEqual(
             0,
             [SELECT COUNT() FROM Custom_Association__c WHERE gf_customer_group_id__c = :line.Line_Id__c + '_02']
         );
@@ -338,7 +510,7 @@ public with sharing class DMT_SelectClientsInLineService_Test {
         );
         Test.stopTest();
 
-        System.assertEquals(false, (Boolean) result.get('success'));
-        System.assertNotEquals(null, result.get('error'));
+        Assert.areEqual(false, (Boolean) result.get('success'));
+        Assert.areNotEqual(null, result.get('error'));
     }
 }

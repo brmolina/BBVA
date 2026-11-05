@@ -226,6 +226,34 @@ public static List<Map<String, Object>> searchCounterparties(
         Boolean isGodMode = FeatureManagement.checkPermission('DMT_Line_God');
         AccessLevel dbMode = isGodMode ? AccessLevel.SYSTEM_MODE : AccessLevel.USER_MODE;
 
+        // CIBGLOBALD-4811 - the Opportunity to write comes from buildUnderwritingOpportunity, shared with
+        // previewUnderwritingSave; the DML is unchanged.
+        Opportunity oppToUpdate = buildUnderwritingOpportunity(recordId, updatedFields);
+        if (oppToUpdate != null) {
+            Database.update(oppToUpdate, dbMode);
+        }
+
+        if (idsToDelete != null && !idsToDelete.isEmpty()) {
+            Database.delete([SELECT Id FROM Sold_Order__c WHERE Id IN :idsToDelete], dbMode);
+        }
+
+        if (soldOrders != null && !soldOrders.isEmpty()) {
+            for (Sold_Order__c so : soldOrders) {
+                so.opportunity_id__c = recordId;
+                if (so.Id != null) {
+                    try { Id.valueOf(so.Id); } catch(Exception e) { so.Id = null; }
+                }
+            }
+            Database.upsert(soldOrders, dbMode);
+        }
+    }
+
+    /**
+     * @description CIBGLOBALD-4811 - The Opportunity saveUnderwritingData writes, built without DML: the allowed
+     * fields of updatedFields (blank text as null, dates parsed) and the recalculated underwriting_fee_amount__c.
+     * Null when there is nothing to write.
+     */
+    private static Opportunity buildUnderwritingOpportunity(Id recordId, Map<String, Object> updatedFields) {
         Set<String> allowedFields = new Set<String>{
             'underwriting_agreement_type__c', 'deal_total_amount__c', 'bbva_prtcp_tranche_amount__c', 'syndicated_loan_drawn_amount__c' ,
             'operation_underwriting_per__c', 'gf_est_fee_cust_sycr_bp_amount__c', 'opening_fee_per__c', 'risk_committee_aprvl_ind_type__c',
@@ -261,21 +289,37 @@ public static List<Map<String, Object>> searchCounterparties(
                 Decimal trancheAmount = updatedFields.containsKey('bbva_prtcp_tranche_amount__c') ? Decimal.valueOf(String.valueOf(updatedFields.get('bbva_prtcp_tranche_amount__c'))) : currentOpp.bbva_prtcp_tranche_amount__c;
                 oppToUpdate.underwriting_fee_amount__c = (opUnderwriting != null && trancheAmount != null) ? (opUnderwriting / 10000) * trancheAmount : null;
             }
-            Database.update(oppToUpdate, dbMode);
+            return oppToUpdate;
         }
+        return null;
+    }
 
-        if (idsToDelete != null && !idsToDelete.isEmpty()) {
-            Database.delete([SELECT Id FROM Sold_Order__c WHERE Id IN :idsToDelete], dbMode);
-        }
-
-        if (soldOrders != null && !soldOrders.isEmpty()) {
-            for (Sold_Order__c so : soldOrders) {
-                so.opportunity_id__c = recordId;
-                if (so.Id != null) {
-                    try { Id.valueOf(so.Id); } catch(Exception e) { so.Id = null; }
-                }
+    /**
+     * @description CIBGLOBALD-4811 - The Ready to close reopen check of an Underwriting save (dmt_underwritingForm):
+     * builds the Opportunity saveUnderwritingData writes (buildUnderwritingOpportunity), without DML, and compares it
+     * with the snapshots of the Cases of that type (DMT_ApprovalChangeStep_Handler.previewUnsavedChanges). Sold
+     * orders are saved apart and are not part of the check. Empty when nothing reopens or the check fails (logged).
+     * @param caseTypeToCheck Case.DMT_Passport_Sanction__c value: readytoclose from the tab
+     */
+    @AuraEnabled
+    public static List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> previewUnderwritingSave(
+        String caseTypeToCheck, Id recordId, Map<String, Object> updatedFields
+    ) {
+        try {
+            Opportunity oppToUpdate = buildUnderwritingOpportunity(recordId, updatedFields);
+            if (oppToUpdate == null) {
+                return new List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper>();
             }
-            Database.upsert(soldOrders, dbMode);
+            Map<String, Object> valuesToWrite = new Map<String, Object>(oppToUpdate.getPopulatedFieldsAsMap());
+            valuesToWrite.remove('Id');
+            return DMT_ApprovalChangeStep_Handler.previewUnsavedChanges(recordId, caseTypeToCheck, valuesToWrite, null);
+        } catch (Exception e) {
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
+                e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
+                'DMT_UnderwritingFormController', 'previewUnderwritingSave', 'DMT', 'Opportunity'
+            ));
+            DMT_AsyncOrchestrator.flush();
+            return new List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper>();
         }
     }
 

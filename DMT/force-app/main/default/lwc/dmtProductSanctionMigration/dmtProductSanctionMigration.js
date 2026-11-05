@@ -5,6 +5,8 @@ import getData  from '@salesforce/apex/DMT_ProductSanctionMigrationController.ge
 import cloneRisk from '@salesforce/apex/DMT_ProductSanctionMigrationController.cloneRisk';
 import deleteRisk from '@salesforce/apex/DMT_ProductSanctionMigrationController.deleteRisk';
 import addProducts from '@salesforce/apex/DMT_ProductSanctionMigrationController.addProducts';
+// Changes been made for CIBGLOBALD-4763 - Import approval-state UI edit eligibility for products.
+import canEditLineInApprovalStateUi from '@salesforce/apex/DMT_LineController.canEditLineInApprovalStateUi';
 
 const OTHER_PRODUCTS_LINE_TYPE = 'Line (Other Products)';
 // Sanction record type's RecordType.Name label is "Approval" (not "Sanction").
@@ -64,6 +66,8 @@ export default class DmtProductSanctionMigration extends LightningElement {
     entific;
     access       = false;
     hasGodAccess = false;
+    // Changes been made for CIBGLOBALD-4763 - Track approval-state UI edit eligibility separately from save access.
+    canEditApprovalStateUi = false;
 
     // Wire reference for refreshApex
     wiredDataResult;
@@ -95,8 +99,9 @@ export default class DmtProductSanctionMigration extends LightningElement {
         return this.activeRisk?.operationType || this.productList?.[0]?.operationType || null;
     }
 
+    // Changes been made for CIBGLOBALD-4763 - Include approval-state eligibility in product UI controls.
     get hasAccess() {
-        return !!this.access;
+        return !!this.access || this.canEditApprovalStateUi;
     }
 
     get showEmptyState() {
@@ -231,6 +236,18 @@ export default class DmtProductSanctionMigration extends LightningElement {
             this.entific      = data.entific;
             this.access       = data.access       || false;
             this.hasGodAccess = data.hasGodAccess || false;
+            const loadedRecordId = this.recordId;
+            // Changes been made for CIBGLOBALD-4763 - Refresh the approval-state UI permission with product data.
+            this.canEditApprovalStateUi = false;
+            canEditLineInApprovalStateUi({ recordId: loadedRecordId })
+                .then((canEdit) => {
+                    if (this.recordId === loadedRecordId) {
+                        this.canEditApprovalStateUi = canEdit === true;
+                    }
+                })
+                .catch(() => {
+                    this.canEditApprovalStateUi = false;
+                });
             this.fieldConfigs = data.fieldConfigs || [];
 
             const risks = data.risks || [];

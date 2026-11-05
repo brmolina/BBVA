@@ -944,9 +944,10 @@ public with sharing class DMT_OpportunityClientController {
     ) {
         Savepoint sp = Database.setSavepoint();
         try {
-            DMT_Opportunity_Client__c dmtClient = new DMT_Opportunity_Client__c(Id = dmtClientId);
-            applyFormFields(dmtClient, fieldValues);
-            update as user dmtClient;
+            // CIBGLOBALD-4811 - the records come from buildMainBorrowerFieldsSave, shared with
+            // previewMainBorrowerSave; the DML keeps the previous order.
+            ClientSave clientSave = buildMainBorrowerFieldsSave(opportunityId, dmtClientId, stageName, fieldValues);
+            update as user clientSave.mainBorrower; // CIBGLOBALD-4811
 
             List<Passport__c> passports = [
                 SELECT Id
@@ -960,10 +961,7 @@ public with sharing class DMT_OpportunityClientController {
                 update as user passports[0];
             }
 
-            Opportunity opp = new Opportunity(Id = opportunityId);
-            opp.DMT_Threshold_Type__c = (String) fieldValues.get('DMT_Threshold_Type__c');
-            opp.DMT_Is_Change_in_Ready_to_close__c = stageName == STAGE_READY_TO_CLOSE;
-            update as user opp;
+            update as user clientSave.opportunity; // CIBGLOBALD-4811
         } catch (Exception ex) {
             Database.rollback(sp);
             logException(ex, 'saveMainBorrowerFields');
@@ -980,13 +978,7 @@ public with sharing class DMT_OpportunityClientController {
         String mainBorrower,
         List<Object> selectedClients
     ) {
-        List<Custom_Association_Opportunity__c> association = [
-            SELECT Id, g_customer_id__c, Group__c, gf_customer_group_id__c
-            FROM Custom_Association_Opportunity__c
-            WHERE Opportunity__c = :opportunityId
-            WITH USER_MODE
-            LIMIT 1
-        ];
+        List<Custom_Association_Opportunity__c> association = queryAssociation(opportunityId); // CIBGLOBALD-4811
 
         // Capture the previous main borrower BEFORE overwriting it.
         String previousMainBorrower = association.isEmpty() ? null : association[0].g_customer_id__c;
@@ -1006,13 +998,143 @@ public with sharing class DMT_OpportunityClientController {
             insert as user currentAssociation;
         }
 
-        List<DMT_Opportunity_Client__c> existingRecords = [
-            SELECT Id, Alpha_Code_Client__c
-            FROM DMT_Opportunity_Client__c
-            WHERE DMT_MDE_Opportunity__c = :opportunityId
-            WITH USER_MODE
-        ];
+        // CIBGLOBALD-4811 - Enhancement to existing process: the DMT_Opportunity_Client__c query read here before
+        // (existingRecords / existingAlphaCodes) was never used; removed, one SOQL less per save.
 
+        Savepoint sp = Database.setSavepoint();
+        try {
+            // CIBGLOBALD-4811 - the records come from buildMainBorrowerWithClientsSave, shared with
+            // previewMainBorrowerSave; the DML keeps the previous order.
+            ClientSave clientSave = buildMainBorrowerWithClientsSave(
+                opportunityId, dmtClientId, stageName, fieldValues, mainBorrower, selectedClients, currentAssociation, previousMainBorrower
+            );
+            List<DMT_Opportunity_Client__c> toUpsert = clientSave.toUpsert; // CIBGLOBALD-4811
+            List<DMT_Custom_Association_ClientOpportunity__c> toInsertSecondary = clientSave.toInsertSecondary; // CIBGLOBALD-4811
+            List<DMT_Custom_Association_ClientOpportunity__c> toUpdateSecondary = clientSave.toUpdateSecondary; // CIBGLOBALD-4811
+            List<DMT_Custom_Association_ClientOpportunity__c> toDeleteSecondary = clientSave.toDeleteSecondary; // CIBGLOBALD-4811
+
+            if (!toUpsert.isEmpty()) {
+                upsert as user toUpsert;
+            }
+            if (!toInsertSecondary.isEmpty()) {
+                insert as user toInsertSecondary;
+            }
+            if (!toUpdateSecondary.isEmpty()) {
+                update as user toUpdateSecondary;
+            }
+            if (!toDeleteSecondary.isEmpty()) {
+                delete toDeleteSecondary;
+            }
+
+            List<Passport__c> passports = [
+                SELECT Id
+                FROM Passport__c
+                WHERE Opportunity__c = :opportunityId
+                WITH USER_MODE
+                LIMIT 1
+            ];
+            if (!passports.isEmpty()) {
+                passports[0].DMT_Is_Obsoleted_Passport_Save__c = true;
+                update as user passports[0];
+            }
+
+            update as user clientSave.opportunity; // CIBGLOBALD-4811
+        } catch (Exception ex) {
+            Database.rollback(sp);
+            logException(ex, 'saveMainBorrowerWithClients');
+            throw new AuraHandledException('Error saving client form data: ' + ex.getMessage());
+        }
+    }
+
+    // CIBGLOBALD-4811 - the Opportunity's association (main borrower), read by the save and by its preview.
+    private static List<Custom_Association_Opportunity__c> queryAssociation(Id opportunityId) {
+        return [
+            SELECT Id, g_customer_id__c, Group__c, gf_customer_group_id__c
+            FROM Custom_Association_Opportunity__c
+            WHERE Opportunity__c = :opportunityId
+            WITH USER_MODE
+            LIMIT 1
+        ];
+    }
+
+    /**
+     * @description CIBGLOBALD-4811 - The Ready to close reopen check of a Client tab save (dmt_opp_client): builds
+     * exactly what the save of that action writes, without DML (buildMainBorrowerFieldsSave for saveMainBorrowerFields,
+     * buildMainBorrowerWithClientsSave plus the association change for saveMainBorrowerWithClients), and compares it
+     * with the snapshots of the Cases of that type (DMT_ApprovalChangeStep_Handler.previewUnsavedChanges). Saves
+     * nothing. Empty when nothing reopens or the check fails (logged).
+     * @param caseTypeToCheck Case.DMT_Passport_Sanction__c value: readytoclose from the tab
+     * @param withClients true for the edit-mode save with client selection (saveMainBorrowerWithClients), false for
+     * the inline or subsidiary save (saveMainBorrowerFields)
+     */
+    @AuraEnabled
+    public static List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> previewMainBorrowerSave(
+        String caseTypeToCheck,
+        Id opportunityId,
+        Id dmtClientId,
+        String stageName,
+        Map<String, Object> fieldValues,
+        Boolean withClients,
+        String mainBorrower,
+        List<Object> selectedClients
+    ) {
+        try {
+            ClientSave clientSave;
+            if (withClients == true) {
+                List<Custom_Association_Opportunity__c> association = queryAssociation(opportunityId);
+                String previousMainBorrower = association.isEmpty() ? null : association[0].g_customer_id__c;
+                Custom_Association_Opportunity__c currentAssociation = association.isEmpty()
+                    ? new Custom_Association_Opportunity__c(Opportunity__c = opportunityId, g_customer_id__c = mainBorrower)
+                    : association[0];
+                Boolean associationChanges = association.isEmpty() || currentAssociation.g_customer_id__c != mainBorrower;
+                currentAssociation.g_customer_id__c = mainBorrower;
+                clientSave = buildMainBorrowerWithClientsSave(
+                    opportunityId, dmtClientId, stageName, fieldValues, mainBorrower, selectedClients, currentAssociation, previousMainBorrower
+                );
+                if (associationChanges) {
+                    clientSave.association = currentAssociation;
+                }
+            } else {
+                clientSave = buildMainBorrowerFieldsSave(opportunityId, dmtClientId, stageName, fieldValues);
+            }
+            return DMT_ApprovalChangeStep_Handler.previewUnsavedChanges(
+                opportunityId, caseTypeToCheck, valuesToWrite(clientSave.opportunity), clientSave.toUnsavedRows()
+            );
+        } catch (Exception e) {
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
+                e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
+                'DMT_OpportunityClientController', 'previewMainBorrowerSave', 'DMT', 'Opportunity'
+            ));
+            DMT_AsyncOrchestrator.flush();
+            return new List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper>();
+        }
+    }
+
+    // CIBGLOBALD-4811 - what saveMainBorrowerFields writes: the main borrower row with the form fields and the Opportunity.
+    private static ClientSave buildMainBorrowerFieldsSave(Id opportunityId, Id dmtClientId, String stageName, Map<String, Object> fieldValues) {
+        ClientSave clientSave = new ClientSave();
+        clientSave.mainBorrower = new DMT_Opportunity_Client__c(Id = dmtClientId);
+        applyFormFields(clientSave.mainBorrower, fieldValues);
+        clientSave.opportunity = buildOpportunityUpdate(opportunityId, stageName, fieldValues);
+        return clientSave;
+    }
+
+    /**
+     * @description CIBGLOBALD-4811 - What saveMainBorrowerWithClients writes after the association, built without DML:
+     * the main borrower row (form fields, financials copied from the previous main borrower, alpha code), the
+     * participant rows to insert, update or delete, and the Opportunity. Reads the existing participants, the
+     * previous main borrower's financials and the Accounts of the selected clients.
+     */
+    private static ClientSave buildMainBorrowerWithClientsSave(
+        Id opportunityId,
+        Id dmtClientId,
+        String stageName,
+        Map<String, Object> fieldValues,
+        String mainBorrower,
+        List<Object> selectedClients,
+        Custom_Association_Opportunity__c currentAssociation,
+        String previousMainBorrower
+    ) {
         Id associationId = currentAssociation.Id;
 
         List<DMT_Custom_Association_ClientOpportunity__c> existingSecondaries = associationId == null
@@ -1023,11 +1145,6 @@ public with sharing class DMT_OpportunityClientController {
                 WHERE DMT_Custom_Association_Opportunity__c = :associationId
                 WITH USER_MODE
             ];
-
-        Set<String> existingAlphaCodes = new Set<String>();
-        for (DMT_Opportunity_Client__c rec : existingRecords) {
-            existingAlphaCodes.add(rec.Alpha_Code_Client__c);
-        }
 
         Set<String> existingSecondaryAlphaCodes = new Set<String>();
         Map<String, DMT_Custom_Association_ClientOpportunity__c> existingSecondaryByAlpha = new Map<String, DMT_Custom_Association_ClientOpportunity__c>();
@@ -1076,49 +1193,30 @@ public with sharing class DMT_OpportunityClientController {
         List<DMT_Custom_Association_ClientOpportunity__c> toInsertSecondary = new List<DMT_Custom_Association_ClientOpportunity__c>();
         List<DMT_Custom_Association_ClientOpportunity__c> toUpdateSecondary = new List<DMT_Custom_Association_ClientOpportunity__c>();
 
-        Savepoint sp = Database.setSavepoint();
-        try {
-            for (Map<String, Object> clientMap : parsedClients) {
-                String alphaCode = (String) clientMap.get('customerId');
-                Id clientAccountId = accountIdByAlphaCode.get(alphaCode);
-                Boolean isMainBorrower = alphaCode.equals(mainBorrower);
+        for (Map<String, Object> clientMap : parsedClients) {
+            String alphaCode = (String) clientMap.get('customerId');
+            Id clientAccountId = accountIdByAlphaCode.get(alphaCode);
+            Boolean isMainBorrower = alphaCode.equals(mainBorrower);
 
-                if (isMainBorrower) {
-                    // Reutilizar el registro existente (update) en vez de crear uno nuevo
-                    DMT_Opportunity_Client__c dmtClient = dmtClientId != null
-                        ? new DMT_Opportunity_Client__c(Id = dmtClientId)
-                        : new DMT_Opportunity_Client__c(DMT_MDE_Opportunity__c = opportunityId);
-                    applyFormFields(dmtClient, fieldValues);
-                    copyFinancialFields(previousMainBorrowerData, dmtClient);
-                    dmtClient.Alpha_Code_Client__c = alphaCode;
-                    toUpsert.add(dmtClient);
+            if (isMainBorrower) {
+                // Reutilizar el registro existente (update) en vez de crear uno nuevo
+                DMT_Opportunity_Client__c dmtClient = dmtClientId != null
+                    ? new DMT_Opportunity_Client__c(Id = dmtClientId)
+                    : new DMT_Opportunity_Client__c(DMT_MDE_Opportunity__c = opportunityId);
+                applyFormFields(dmtClient, fieldValues);
+                copyFinancialFields(previousMainBorrowerData, dmtClient);
+                dmtClient.Alpha_Code_Client__c = alphaCode;
+                toUpsert.add(dmtClient);
 
-                    // Main Borrower también en DMT_Custom_Association_ClientOpportunity__c (igual que en Lines)
-                    if (!existingSecondaryAlphaCodes.contains(alphaCode)) {
-                        DMT_Custom_Association_ClientOpportunity__c mainAsParticipant = new DMT_Custom_Association_ClientOpportunity__c();
-                        mainAsParticipant.DMT_Custom_Association_Opportunity__c = associationId;
-                        mainAsParticipant.DMT_g_customer_id__c = alphaCode;
-                        mainAsParticipant.DMT_Client__c = clientAccountId;
-                        mainAsParticipant.DMT_gf_customer_group_id__c = currentAssociation.gf_customer_group_id__c;
-                        mainAsParticipant.DMT_g_entific_id__c = (String) clientMap.get('countryIfoId');
-                        toInsertSecondary.add(mainAsParticipant);
-                    } else {
-                        DMT_Custom_Association_ClientOpportunity__c existing = existingSecondaryByAlpha.get(alphaCode);
-                        if (existing != null && (existing.DMT_g_entific_id__c == null || existing.DMT_Client__c == null)) {
-                            existing.DMT_gf_customer_group_id__c = currentAssociation.gf_customer_group_id__c;
-                            existing.DMT_g_entific_id__c = (String) clientMap.get('countryIfoId');
-                            existing.DMT_Client__c = clientAccountId;
-                            toUpdateSecondary.add(existing);
-                        }
-                    }
-                } else if (!existingSecondaryAlphaCodes.contains(alphaCode)) {
-                    DMT_Custom_Association_ClientOpportunity__c secClient = new DMT_Custom_Association_ClientOpportunity__c();
-                    secClient.DMT_Custom_Association_Opportunity__c = associationId;
-                    secClient.DMT_g_customer_id__c = alphaCode;
-                    secClient.DMT_Client__c = clientAccountId;
-                    secClient.DMT_gf_customer_group_id__c = currentAssociation.gf_customer_group_id__c;
-                    secClient.DMT_g_entific_id__c = (String) clientMap.get('countryIfoId');
-                    toInsertSecondary.add(secClient);
+                // Main Borrower también en DMT_Custom_Association_ClientOpportunity__c (igual que en Lines)
+                if (!existingSecondaryAlphaCodes.contains(alphaCode)) {
+                    DMT_Custom_Association_ClientOpportunity__c mainAsParticipant = new DMT_Custom_Association_ClientOpportunity__c();
+                    mainAsParticipant.DMT_Custom_Association_Opportunity__c = associationId;
+                    mainAsParticipant.DMT_g_customer_id__c = alphaCode;
+                    mainAsParticipant.DMT_Client__c = clientAccountId;
+                    mainAsParticipant.DMT_gf_customer_group_id__c = currentAssociation.gf_customer_group_id__c;
+                    mainAsParticipant.DMT_g_entific_id__c = (String) clientMap.get('countryIfoId');
+                    toInsertSecondary.add(mainAsParticipant);
                 } else {
                     DMT_Custom_Association_ClientOpportunity__c existing = existingSecondaryByAlpha.get(alphaCode);
                     if (existing != null && (existing.DMT_g_entific_id__c == null || existing.DMT_Client__c == null)) {
@@ -1128,48 +1226,94 @@ public with sharing class DMT_OpportunityClientController {
                         toUpdateSecondary.add(existing);
                     }
                 }
-            }
-
-            List<DMT_Custom_Association_ClientOpportunity__c> toDeleteSecondary = new List<DMT_Custom_Association_ClientOpportunity__c>();
-            for (DMT_Custom_Association_ClientOpportunity__c rec : existingSecondaries) {
-                if (rec.DMT_g_customer_id__c == null || !selectedAlphaCodes.contains(rec.DMT_g_customer_id__c)) {
-                    toDeleteSecondary.add(rec);
+            } else if (!existingSecondaryAlphaCodes.contains(alphaCode)) {
+                DMT_Custom_Association_ClientOpportunity__c secClient = new DMT_Custom_Association_ClientOpportunity__c();
+                secClient.DMT_Custom_Association_Opportunity__c = associationId;
+                secClient.DMT_g_customer_id__c = alphaCode;
+                secClient.DMT_Client__c = clientAccountId;
+                secClient.DMT_gf_customer_group_id__c = currentAssociation.gf_customer_group_id__c;
+                secClient.DMT_g_entific_id__c = (String) clientMap.get('countryIfoId');
+                toInsertSecondary.add(secClient);
+            } else {
+                DMT_Custom_Association_ClientOpportunity__c existing = existingSecondaryByAlpha.get(alphaCode);
+                if (existing != null && (existing.DMT_g_entific_id__c == null || existing.DMT_Client__c == null)) {
+                    existing.DMT_gf_customer_group_id__c = currentAssociation.gf_customer_group_id__c;
+                    existing.DMT_g_entific_id__c = (String) clientMap.get('countryIfoId');
+                    existing.DMT_Client__c = clientAccountId;
+                    toUpdateSecondary.add(existing);
                 }
             }
+        }
 
-            if (!toUpsert.isEmpty()) {
-                upsert as user toUpsert;
+        List<DMT_Custom_Association_ClientOpportunity__c> toDeleteSecondary = new List<DMT_Custom_Association_ClientOpportunity__c>();
+        for (DMT_Custom_Association_ClientOpportunity__c rec : existingSecondaries) {
+            if (rec.DMT_g_customer_id__c == null || !selectedAlphaCodes.contains(rec.DMT_g_customer_id__c)) {
+                toDeleteSecondary.add(rec);
             }
-            if (!toInsertSecondary.isEmpty()) {
-                insert as user toInsertSecondary;
-            }
-            if (!toUpdateSecondary.isEmpty()) {
-                update as user toUpdateSecondary;
-            }
-            if (!toDeleteSecondary.isEmpty()) {
-                delete toDeleteSecondary;
-            }
+        }
 
-            List<Passport__c> passports = [
-                SELECT Id
-                FROM Passport__c
-                WHERE Opportunity__c = :opportunityId
-                WITH USER_MODE
-                LIMIT 1
-            ];
-            if (!passports.isEmpty()) {
-                passports[0].DMT_Is_Obsoleted_Passport_Save__c = true;
-                update as user passports[0];
-            }
+        ClientSave clientSave = new ClientSave();
+        clientSave.toUpsert = toUpsert;
+        clientSave.toInsertSecondary = toInsertSecondary;
+        clientSave.toUpdateSecondary = toUpdateSecondary;
+        clientSave.toDeleteSecondary = toDeleteSecondary;
+        clientSave.opportunity = buildOpportunityUpdate(opportunityId, stageName, fieldValues);
+        return clientSave;
+    }
 
-            Opportunity opp = new Opportunity(Id = opportunityId);
-            opp.DMT_Threshold_Type__c = (String) fieldValues.get('DMT_Threshold_Type__c');
-            opp.DMT_Is_Change_in_Ready_to_close__c = stageName == STAGE_READY_TO_CLOSE;
-            update as user opp;
-        } catch (Exception ex) {
-            Database.rollback(sp);
-            logException(ex, 'saveMainBorrowerWithClients');
-            throw new AuraHandledException('Error saving client form data: ' + ex.getMessage());
+    // CIBGLOBALD-4811 - the Opportunity fields both Client saves write.
+    private static Opportunity buildOpportunityUpdate(Id opportunityId, String stageName, Map<String, Object> fieldValues) {
+        Opportunity opp = new Opportunity(Id = opportunityId);
+        opp.DMT_Threshold_Type__c = (String) fieldValues.get('DMT_Threshold_Type__c');
+        opp.DMT_Is_Change_in_Ready_to_close__c = stageName == STAGE_READY_TO_CLOSE;
+        return opp;
+    }
+
+    // CIBGLOBALD-4811 - the field values a built record writes, without its Id.
+    private static Map<String, Object> valuesToWrite(SObject record) {
+        Map<String, Object> values = new Map<String, Object>(record.getPopulatedFieldsAsMap());
+        values.remove('Id');
+        return values;
+    }
+
+    // CIBGLOBALD-4811 - the records a Client tab save writes (buildMainBorrowerFieldsSave, buildMainBorrowerWithClientsSave).
+    private class ClientSave {
+        Custom_Association_Opportunity__c association;
+        DMT_Opportunity_Client__c mainBorrower;
+        List<DMT_Opportunity_Client__c> toUpsert = new List<DMT_Opportunity_Client__c>();
+        List<DMT_Custom_Association_ClientOpportunity__c> toInsertSecondary = new List<DMT_Custom_Association_ClientOpportunity__c>();
+        List<DMT_Custom_Association_ClientOpportunity__c> toUpdateSecondary = new List<DMT_Custom_Association_ClientOpportunity__c>();
+        List<DMT_Custom_Association_ClientOpportunity__c> toDeleteSecondary = new List<DMT_Custom_Association_ClientOpportunity__c>();
+        Opportunity opportunity;
+
+        // Every row in the DMT_ApprovalChangeStep_Handler.previewUnsavedChanges format: a row without Id is new.
+        List<Map<String, Object>> toUnsavedRows() {
+            List<SObject> written = new List<SObject>();
+            if (association != null) {
+                written.add(association);
+            }
+            if (mainBorrower != null) {
+                written.add(mainBorrower);
+            }
+            written.addAll((List<SObject>) toUpsert);
+            written.addAll((List<SObject>) toInsertSecondary);
+            written.addAll((List<SObject>) toUpdateSecondary);
+            List<Map<String, Object>> rows = new List<Map<String, Object>>();
+            for (SObject record : written) {
+                rows.add(new Map<String, Object>{
+                    'objectApiName' => String.valueOf(record.getSObjectType()),
+                    'rowId' => (String) record.Id,
+                    'values' => valuesToWrite(record)
+                });
+            }
+            for (SObject record : toDeleteSecondary) {
+                rows.add(new Map<String, Object>{
+                    'objectApiName' => String.valueOf(record.getSObjectType()),
+                    'rowId' => (String) record.Id,
+                    'deleted' => true
+                });
+            }
+            return rows;
         }
     }
 

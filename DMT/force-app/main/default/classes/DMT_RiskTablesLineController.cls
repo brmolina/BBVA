@@ -12,6 +12,40 @@ public with sharing class DMT_RiskTablesLineController {
     private static final String RISK_TYPE_SINGULAR = 'Singular';
     private static final String RISK_TYPE_RESTRIC = 'Restric';
     private static Map<String, Product2> riskProductsByType;
+    private static List<DMT_OperationalRestrictionsTRSR__mdt> activeIfiProducts;
+
+    public static Boolean hasActiveIfiProductsForGeography(String bookingGeography) {
+        String geography = normalizeGeography(bookingGeography);
+        if (String.isBlank(geography)) {
+            return false;
+        }
+
+        if (activeIfiProducts == null) {
+            activeIfiProducts = [
+                SELECT Entific__c, isActive__c, DMT_ProductIFIS__c, DMT_Operational_Restrictions_Name__c
+                FROM DMT_OperationalRestrictionsTRSR__mdt
+                WHERE isActive__c = true AND DMT_ProductIFIS__c = true
+                WITH USER_MODE
+            ];
+        }
+        return hasUsableIfiProduct(geography, activeIfiProducts);
+    }
+
+    @TestVisible
+    private static Boolean hasUsableIfiProduct(String bookingGeography, List<DMT_OperationalRestrictionsTRSR__mdt> products) {
+        String geography = normalizeGeography(bookingGeography);
+        if (String.isBlank(geography) || products == null) {
+            return false;
+        }
+        for (DMT_OperationalRestrictionsTRSR__mdt product : products) {
+            if (product != null && normalizeGeography(product.Entific__c) == geography
+                && product.isActive__c == true && product.DMT_ProductIFIS__c == true
+                && String.isNotBlank(product.DMT_Operational_Restrictions_Name__c)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     // ─── Inner classes for structured response ────────────────────────────────
     public class RiskTableRow {
@@ -58,6 +92,7 @@ public with sharing class DMT_RiskTablesLineController {
         @AuraEnabled public String lineStatus;
         @AuraEnabled public Boolean isReadOnlyUser;
         @AuraEnabled public Boolean showSingular;
+        @AuraEnabled public Boolean isIfiProductsEnabled;
 
         // Form fields
         @AuraEnabled public Decimal dvpAmount;
@@ -128,8 +163,9 @@ public with sharing class DMT_RiskTablesLineController {
         }
 
         DMT_Line__c line = [
-            SELECT Id, OwnerId, Status__c, Closed__c, DMT_line_template_type__c,
+            SELECT Id, OwnerId, Status__c, Closed__c, DMT_line_template_type__c, RecordType.DeveloperName,
                    Booking_Geography__c, CurrencyIsoCode, DvP_Amount__c, FD_Amount__c,
+                   DMT_Is_IFI__c,
                    First_Breakclause__c, Breakclause_Frequency__c, Waiver__c,
                    DMT_Mitigant_Agreement_comments__c, DMT_DerivativesAmount__c,
                    DMT_Additional_Restrictions__c, DMT_Comments__c,
@@ -223,10 +259,12 @@ public with sharing class DMT_RiskTablesLineController {
         response.reposTotalAmount = !response.repos.isEmpty() ? response.repos[0].amount : 0;
 
         // Product restrictions from custom metadata
-        response.tableRestric = buildTableRestric(recordId, line.Booking_Geography__c, false, false, false);
-        response.tableDerivativesProducts = buildTableRestric(recordId, line.Booking_Geography__c, true, false, false);
-        response.tableDeposProducts = buildTableRestric(recordId, line.Booking_Geography__c, false, true, false);
-        response.tableReposProducts = buildTableRestric(recordId, line.Booking_Geography__c, false, false, true);
+        Boolean useIfiProducts = shouldUseIfiProducts(line.DMT_Is_IFI__c, line.RecordType.DeveloperName);
+        response.isIfiProductsEnabled = useIfiProducts;
+        response.tableRestric = buildTableRestric(recordId, line.Booking_Geography__c, false, false, false, useIfiProducts);
+        response.tableDerivativesProducts = buildTableRestric(recordId, line.Booking_Geography__c, true, false, false, useIfiProducts);
+        response.tableDeposProducts = buildTableRestric(recordId, line.Booking_Geography__c, false, true, false, useIfiProducts);
+        response.tableReposProducts = buildTableRestric(recordId, line.Booking_Geography__c, false, false, true, useIfiProducts);
         response.maxTenorOptions = getMaxTenorOptions();
 
         // Columns for copy/paste
@@ -301,73 +339,229 @@ public with sharing class DMT_RiskTablesLineController {
         }
 
         // Verify edit access
-        DMT_Line__c line = [
-            SELECT Id, OwnerId, Status__c, Closed__c, DMT_line_template_type__c, CurrencyIsoCode,
-                   Booking_Geography__c
-            FROM DMT_Line__c
-            WHERE Id = :recordId
-            LIMIT 1
-        ];
+        DMT_Line__c line = queryLineForSave(recordId); // CIBGLOBALD-4811
         if (!resolveCanEdit(line)) {
             throw new AuraHandledException('This line cannot be edited with your current permissions.');
         }
 
-        String lineCurrency = line.CurrencyIsoCode;
-
+        // CIBGLOBALD-4811 - Enhancement fix to existing process: a failed step rolls back the steps already saved
+        // (before, the Line fields stayed saved while the user got the error).
+        Savepoint sp = Database.setSavepoint();
         try {
-            // 1. Update form fields on DMT_Line__c (convert display values back to storage)
-            DMT_Line__c lineUpdate = new DMT_Line__c(Id = recordId);
-            lineUpdate.DvP_Amount__c = DMT_Currency_Conversion_Utils.convertToStorage(lineCurrency, dvpAmount);
-            lineUpdate.FD_Amount__c = DMT_Currency_Conversion_Utils.convertToStorage(lineCurrency, fdAmount);
-            lineUpdate.First_Breakclause__c = firstBreakclause;
-            lineUpdate.Breakclause_Frequency__c = breakclauseFrequency;
-            lineUpdate.Waiver__c = waiver;
-            lineUpdate.DMT_Mitigant_Agreement_comments__c = mitigantComments;
-            lineUpdate.DMT_Additional_Restrictions__c = additionalRestrictions;
-            lineUpdate.DMT_Comments__c = comments;
-            update lineUpdate;
-
-            // 2. Process risk table rows (upsert/delete)
-            processRiskTableRows(
-                recordId,
-                applyDerivativesTotal(derivatives, derivativesTotalAmount),
-                RISK_TYPE_DERIVATIVES,
-                lineCurrency
+            // CIBGLOBALD-4811 - the records come from buildProductsSave, shared with previewProductsSave; the DML
+            // keeps the previous order (Line fields, each risk table, each restriction table, stale items).
+            // Enhancement to existing process: the existing risk rows and product items are read once
+            // (before, one query per risk table, one per restriction table and one more for the cleanup).
+            LineProductsSave productsSave = buildProductsSave(
+                line, derivatives, depos, equities, repos, tableRestric, tableDerivativesProducts, tableDeposProducts,
+                tableReposProducts, singularCon, dvpAmount, fdAmount, firstBreakclause, breakclauseFrequency, waiver,
+                mitigantComments, additionalRestrictions, comments, derivativesTotalAmount
             );
-            processRiskTableRows(recordId, depos, RISK_TYPE_DEPOS, lineCurrency);
-            processRiskTableRows(recordId, equities, RISK_TYPE_EQUITIES, lineCurrency);
-            processRiskTableRows(recordId, repos, RISK_TYPE_REPOS, lineCurrency);
 
-            // 3. Process singular treasury
-            if (String.isNotBlank(singularCon)) {
-                processRiskTableRows(recordId, singularCon, RISK_TYPE_SINGULAR, lineCurrency);
-            }
+            // 1. Update form fields on DMT_Line__c (convert display values back to storage)
+            update productsSave.lineUpdate; // CIBGLOBALD-4811
+
+            // 2. Process risk table rows (upsert/delete), 3. singular treasury // CIBGLOBALD-4811
+            for (RiskRowChanges changes : productsSave.riskChanges) { // CIBGLOBALD-4811
+                if (!changes.toDelete.isEmpty()) { // CIBGLOBALD-4811
+                    delete changes.toDelete; // CIBGLOBALD-4811
+                } // CIBGLOBALD-4811
+                if (!changes.toUpsert.isEmpty()) { // CIBGLOBALD-4811
+                    upsert changes.toUpsert; // CIBGLOBALD-4811
+                } // CIBGLOBALD-4811
+            } // CIBGLOBALD-4811
 
             // 4. Process operational restrictions (DMT_Line_Product_Item__c)
-            if (String.isNotBlank(tableRestric)) {
-                processTableRestricRows(recordId, tableRestric, line.Booking_Geography__c, false, false, false);
-            }
-            if (String.isNotBlank(tableDerivativesProducts)) {
-                processTableRestricRows(recordId, tableDerivativesProducts, line.Booking_Geography__c, true, false, false);
-            }
-            if (String.isNotBlank(tableDeposProducts)) {
-                processTableRestricRows(recordId, tableDeposProducts, line.Booking_Geography__c, false, true, false);
-            }
-            if (String.isNotBlank(tableReposProducts)) {
-                processTableRestricRows(recordId, tableReposProducts, line.Booking_Geography__c, false, false, true);
-            }
-            cleanupStaleProductItems(recordId, line.Booking_Geography__c);
+            for (List<DMT_Line_Product_Item__c> items : productsSave.productItemUpserts) { // CIBGLOBALD-4811
+                if (!items.isEmpty()) { // CIBGLOBALD-4811
+                    Database.upsert(items, AccessLevel.USER_MODE); // CIBGLOBALD-4811
+                } // CIBGLOBALD-4811
+            } // CIBGLOBALD-4811
+            List<DMT_Line_Product_Item__c> staleItems = productsSave.staleProductItems(); // CIBGLOBALD-4811
+            if (!staleItems.isEmpty()) { // CIBGLOBALD-4811
+                delete staleItems; // CIBGLOBALD-4811
+            } // CIBGLOBALD-4811
 
             result.put('error', 'OK');
         } catch (DmlException dmlEx) {
+            Database.rollback(sp); // CIBGLOBALD-4811 - Enhancement fix to existing process
             result.put('error', 'DML_ERROR');
             result.put('message', dmlEx.getDmlMessage(0));
         } catch (Exception e) {
+            Database.rollback(sp); // CIBGLOBALD-4811 - Enhancement fix to existing process
             result.put('error', 'ERROR');
             result.put('message', e.getMessage());
         }
 
         return result;
+    }
+
+    /**
+     * @description CIBGLOBALD-4811 - The Ready to close reopen check of a Line Products save (dmtRiskTablesLine):
+     * builds exactly what saveProducts writes (buildProductsSave), without DML, and compares it with the snapshots of
+     * the Cases of that type (DMT_ApprovalChangeStep_Handler.previewUnsavedChanges): the Line fields, the risk rows
+     * (DMT_Risk_Line_Term__c) and the restriction items (DMT_Line_Product_Item__c) upserted or deleted. Saves nothing.
+     * Empty when nothing reopens or the check fails (logged).
+     * @param caseTypeToCheck Case.DMT_Passport_Sanction__c value: readytoclose from the tab
+     */
+    @AuraEnabled
+    public static List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> previewProductsSave(
+        String caseTypeToCheck,
+        Id recordId,
+        String derivatives,
+        String depos,
+        String equities,
+        String repos,
+        String tableRestric,
+        String tableDerivativesProducts,
+        String tableDeposProducts,
+        String tableReposProducts,
+        String singularCon,
+        Decimal dvpAmount,
+        Decimal fdAmount,
+        String firstBreakclause,
+        String breakclauseFrequency,
+        Boolean waiver,
+        String mitigantComments,
+        String additionalRestrictions,
+        String comments,
+        Decimal derivativesTotalAmount
+    ) {
+        try {
+            DMT_Line__c line = queryLineForSave(recordId);
+            // Same filter as the Line trigger Ready to close checkpoint (DMT_Line_Helper): other record types never reopen.
+            if (line.Status__c != DMT_Constants.READYTOCLOSE
+                || (line.RecordType.DeveloperName != 'TreasurySettlement' && line.RecordType.DeveloperName != 'OtherProducts')) {
+                return new List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper>();
+            }
+            LineProductsSave productsSave = buildProductsSave(
+                line, derivatives, depos, equities, repos, tableRestric, tableDerivativesProducts,
+                tableDeposProducts, tableReposProducts, singularCon, dvpAmount, fdAmount, firstBreakclause,
+                breakclauseFrequency, waiver, mitigantComments, additionalRestrictions, comments, derivativesTotalAmount
+            );
+            Map<String, Object> lineValues = new Map<String, Object>(productsSave.lineUpdate.getPopulatedFieldsAsMap());
+            lineValues.remove('Id');
+            return DMT_ApprovalChangeStep_Handler.previewUnsavedChanges(recordId, caseTypeToCheck, lineValues, productsSave.toUnsavedRows());
+        } catch (Exception e) {
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
+                e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
+                'DMT_RiskTablesLineController', 'previewProductsSave', 'DMT', 'DMT_Line__c'
+            ));
+            DMT_AsyncOrchestrator.flush();
+            return new List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper>();
+        }
+    }
+
+    // CIBGLOBALD-4811 - the Line fields saveProducts needs (edit check, currency, geography, IFI catalog).
+    private static DMT_Line__c queryLineForSave(Id recordId) {
+        return [
+            SELECT Id, OwnerId, Status__c, Closed__c, DMT_line_template_type__c, CurrencyIsoCode, RecordType.DeveloperName,
+                   Booking_Geography__c, DMT_Is_IFI__c
+            FROM DMT_Line__c
+            WHERE Id = :recordId
+            LIMIT 1
+        ];
+    }
+
+    /**
+     * @description CIBGLOBALD-4811 - Everything saveProducts writes, built without DML: the Line form fields
+     * (display values converted to storage), per risk table the rows to delete and to upsert, per restriction
+     * table the items to upsert, and the items that are no longer valid for the geography. The existing risk
+     * rows and product items are read once here.
+     */
+    private static LineProductsSave buildProductsSave(
+        DMT_Line__c line,
+        String derivatives,
+        String depos,
+        String equities,
+        String repos,
+        String tableRestric,
+        String tableDerivativesProducts,
+        String tableDeposProducts,
+        String tableReposProducts,
+        String singularCon,
+        Decimal dvpAmount,
+        Decimal fdAmount,
+        String firstBreakclause,
+        String breakclauseFrequency,
+        Boolean waiver,
+        String mitigantComments,
+        String additionalRestrictions,
+        String comments,
+        Decimal derivativesTotalAmount
+    ) {
+        Id recordId = line.Id;
+        String lineCurrency = line.CurrencyIsoCode;
+        LineProductsSave productsSave = new LineProductsSave();
+
+        DMT_Line__c lineUpdate = new DMT_Line__c(Id = recordId);
+        lineUpdate.DvP_Amount__c = DMT_Currency_Conversion_Utils.convertToStorage(lineCurrency, dvpAmount);
+        lineUpdate.FD_Amount__c = DMT_Currency_Conversion_Utils.convertToStorage(lineCurrency, fdAmount);
+        lineUpdate.First_Breakclause__c = firstBreakclause;
+        lineUpdate.Breakclause_Frequency__c = breakclauseFrequency;
+        lineUpdate.Waiver__c = waiver;
+        lineUpdate.DMT_Mitigant_Agreement_comments__c = mitigantComments;
+        lineUpdate.DMT_Additional_Restrictions__c = additionalRestrictions;
+        lineUpdate.DMT_Comments__c = comments;
+        productsSave.lineUpdate = lineUpdate;
+
+        Map<String, List<DMT_Risk_Line_Term__c>> existingRowsByType = new Map<String, List<DMT_Risk_Line_Term__c>>();
+        for (DMT_Risk_Line_Term__c existing : [
+            SELECT Id, DMT_Risk_Type__c
+            FROM DMT_Risk_Line_Term__c
+            WHERE DMT_Line__c = :recordId
+        ]) {
+            if (!existingRowsByType.containsKey(existing.DMT_Risk_Type__c)) {
+                existingRowsByType.put(existing.DMT_Risk_Type__c, new List<DMT_Risk_Line_Term__c>());
+            }
+            existingRowsByType.get(existing.DMT_Risk_Type__c).add(existing);
+        }
+        Map<String, String> rowsJsonByType = new Map<String, String>{
+            RISK_TYPE_DERIVATIVES => applyDerivativesTotal(derivatives, derivativesTotalAmount),
+            RISK_TYPE_DEPOS => depos,
+            RISK_TYPE_EQUITIES => equities,
+            RISK_TYPE_REPOS => repos,
+            RISK_TYPE_SINGULAR => singularCon
+        };
+        for (String riskType : new List<String>{ RISK_TYPE_DERIVATIVES, RISK_TYPE_DEPOS, RISK_TYPE_EQUITIES, RISK_TYPE_REPOS, RISK_TYPE_SINGULAR }) {
+            if (String.isNotBlank(rowsJsonByType.get(riskType))) {
+                productsSave.riskChanges.add(buildRiskTableRows(
+                    recordId, rowsJsonByType.get(riskType), riskType, lineCurrency, existingRowsByType.get(riskType)
+                ));
+            }
+        }
+
+        productsSave.useIfiProducts = shouldUseIfiProducts(line.DMT_Is_IFI__c, line.RecordType.DeveloperName);
+        productsSave.bookingGeography = line.Booking_Geography__c;
+        for (DMT_Line_Product_Item__c existing : [
+            SELECT Id, Product_Code_Value__c
+            FROM DMT_Line_Product_Item__c
+            WHERE Line__c = :recordId
+            WITH USER_MODE
+        ]) {
+            productsSave.itemsToCheck.add(existing);
+            String code = String.isBlank(existing.Product_Code_Value__c)
+                ? null
+                : existing.Product_Code_Value__c.trim().toUpperCase();
+            if (code != null) {
+                productsSave.itemsByCode.put(code, existing);
+            }
+        }
+        List<List<Object>> restrictionTables = new List<List<Object>>{
+            new List<Object>{ tableRestric, false, false, false },
+            new List<Object>{ tableDerivativesProducts, true, false, false },
+            new List<Object>{ tableDeposProducts, false, true, false },
+            new List<Object>{ tableReposProducts, false, false, true }
+        };
+        for (List<Object> table : restrictionTables) {
+            if (String.isNotBlank((String) table[0])) {
+                productsSave.productItemUpserts.add(buildTableRestricRows(
+                    recordId, (String) table[0], line.Booking_Geography__c, (Boolean) table[1], (Boolean) table[2], (Boolean) table[3],
+                    productsSave.useIfiProducts, productsSave
+                ));
+            }
+        }
+        return productsSave;
     }
 
     @AuraEnabled
@@ -385,7 +579,8 @@ public with sharing class DMT_RiskTablesLineController {
         ];
 
         DMT_Line__c line = [
-            SELECT Id, OwnerId, Status__c, Closed__c, DMT_line_template_type__c, CurrencyIsoCode
+            SELECT Id, OwnerId, Status__c, Closed__c, DMT_line_template_type__c, CurrencyIsoCode,
+                   RecordType.DeveloperName
             FROM DMT_Line__c
             WHERE Id = :term.DMT_Line__c
             WITH USER_MODE
@@ -468,10 +663,9 @@ public with sharing class DMT_RiskTablesLineController {
         return JSON.serialize(rawRows);
     }
 
-    private static void processRiskTableRows(Id lineId, String rowsJson, String riskType, String lineCurrency) {
-        if (String.isBlank(rowsJson)) {
-            return;
-        }
+    // CIBGLOBALD-4811 - the risk rows of one table to delete and to upsert, built without DML. existingRows are this
+    // type's stored rows (read once in buildProductsSave instead of one query per table).
+    private static RiskRowChanges buildRiskTableRows(Id lineId, String rowsJson, String riskType, String lineCurrency, List<DMT_Risk_Line_Term__c> existingRows) {
         System.debug('Processing risk table rows for lineId: ' + lineId + ', riskType: ' + riskType + ', rowsJson: ' + JSON.serializePretty(rowsJson));
         List<Object> rawRows = (List<Object>) JSON.deserializeUntyped(rowsJson);
         Set<Id> incomingIds = new Set<Id>();
@@ -497,7 +691,7 @@ public with sharing class DMT_RiskTablesLineController {
                 }
             }else{
                 rec.DMT_Line__c = lineId;
-            }
+            }          
             System.debug('rec line 417 lineId: '+lineId+ 'riskType: '+riskType+' rowsJson: '+ JSON.serializePretty(rowsJson));
             
             rec.CurrencyIsoCode = lineCurrency;
@@ -530,26 +724,14 @@ public with sharing class DMT_RiskTablesLineController {
         }
 
         // Delete rows that were removed from the table
-        List<DMT_Risk_Line_Term__c> existingRows = [
-            SELECT Id
-            FROM DMT_Risk_Line_Term__c
-            WHERE DMT_Line__c = :lineId AND DMT_Risk_Type__c = :riskType
-        ];
-
-        List<DMT_Risk_Line_Term__c> toDelete = new List<DMT_Risk_Line_Term__c>();
-        for (DMT_Risk_Line_Term__c existing : existingRows) {
+        RiskRowChanges changes = new RiskRowChanges();
+        changes.toUpsert = toUpsert;
+        for (DMT_Risk_Line_Term__c existing : existingRows == null ? new List<DMT_Risk_Line_Term__c>() : existingRows) {
             if (!incomingIds.contains(existing.Id)) {
-                toDelete.add(existing);
+                changes.toDelete.add(existing);
             }
         }
-
-        if (!toDelete.isEmpty()) {
-            delete toDelete;
-        }
-        if (!toUpsert.isEmpty()) {
-            System.debug('toUpsert: '+toUpsert);
-            upsert toUpsert;
-        }
+        return changes;
     }
 
     private static Product2 getRiskProduct(String riskType) {
@@ -634,7 +816,7 @@ public with sharing class DMT_RiskTablesLineController {
         };
     }
 
-    private static List<Map<String, Object>> buildTableRestric(Id recordId, String bookingGeography, boolean DMT_Derivatives_layout2, boolean DMT_Depos_layout2, boolean DMT_Repos_layout2) {
+    private static List<Map<String, Object>> buildTableRestric(Id recordId, String bookingGeography, Boolean DMT_Derivatives_layout2, Boolean DMT_Depos_layout2, Boolean DMT_Repos_layout2, Boolean useIfiProducts) {
         String geography = normalizeGeography(bookingGeography);
 
         List<DMT_Line_Product_Item__c> lpis = [
@@ -658,7 +840,8 @@ public with sharing class DMT_RiskTablesLineController {
                    MaturityTerm_Disabled__c, FD_dependent_Derivatives__c, DVP_dependent_Derivatives__c,
                    Apply_Validations_FD__c, Apply_Validations_DVP__c
             FROM DMT_OperationalRestrictionsTRSR__mdt
-            WHERE Entific__c = :geography AND isActive__c = true  AND (
+            WHERE Entific__c = :geography AND isActive__c = true
+            AND DMT_ProductIFIS__c = :useIfiProducts AND (
                 DMT_Derivatives_layout2__c = :DMT_Derivatives_layout2 AND
                 DMT_Depos_layout2__c = :DMT_Depos_layout2 AND
                 DMT_Repos_layout2__c = :DMT_Repos_layout2
@@ -705,26 +888,19 @@ public with sharing class DMT_RiskTablesLineController {
         return tableRestricRows;
     }
 
-    private static void processTableRestricRows(Id lineId, String tableRestricJson, String bookingGeography, Boolean DMT_Derivatives_layout2, Boolean DMT_Depos_layout2, Boolean DMT_Repos_layout2) {
-        if (String.isBlank(tableRestricJson)) return;
+    // CIBGLOBALD-4811 - the restriction items of one table to upsert, built without DML. Existing items come from
+    // productsSave (read once in buildProductsSave instead of one query per table).
+    @TestVisible
+    private static List<DMT_Line_Product_Item__c> buildTableRestricRows(Id lineId, String tableRestricJson, String bookingGeography, Boolean DMT_Derivatives_layout2, Boolean DMT_Depos_layout2, Boolean DMT_Repos_layout2, Boolean useIfiProducts, LineProductsSave productsSave) {
+        if (String.isBlank(tableRestricJson)) return new List<DMT_Line_Product_Item__c>();
 
         List<Object> rawRows = (List<Object>) JSON.deserializeUntyped(tableRestricJson);
 
         // Only restrictions defined in the MDT for this geography may be persisted.
-        Set<String> allowedCodes = getGeographyProductCodes(bookingGeography, DMT_Derivatives_layout2, DMT_Depos_layout2, DMT_Repos_layout2);
-
-        Map<String, DMT_Line_Product_Item__c> existingByProdCode = new Map<String, DMT_Line_Product_Item__c>();
-        for (DMT_Line_Product_Item__c existing : [
-            SELECT Id, Product_Code_Value__c
-            FROM DMT_Line_Product_Item__c
-            WHERE Line__c = :lineId
-        ]) {
-            String code = String.isBlank(existing.Product_Code_Value__c)
-                ? null
-                : existing.Product_Code_Value__c.trim().toUpperCase();
-            if (code != null) {
-                existingByProdCode.put(code, existing);
-            }
+        Set<String> allowedCodes = getGeographyProductCodes(bookingGeography, DMT_Derivatives_layout2, DMT_Depos_layout2, DMT_Repos_layout2, useIfiProducts);
+        // An empty IFI catalog permits no inserts or updates, not arbitrary codes.
+        if (useIfiProducts == true && allowedCodes.isEmpty()) {
+            return new List<DMT_Line_Product_Item__c>();
         }
 
         Map<String, DMT_Line_Product_Item__c> toUpsertByCode = new Map<String, DMT_Line_Product_Item__c>();
@@ -746,12 +922,20 @@ public with sharing class DMT_RiskTablesLineController {
             Boolean lineDVP = parseBoolean(row.get('lineDVP'));
             String maxTerm = (String) row.get('maxTerm');
 
-            DMT_Line_Product_Item__c item = new DMT_Line_Product_Item__c();
-            if (existingByProdCode.containsKey(code)) {
-                item.Id = existingByProdCode.get(code).Id;
-            } else {
+            // CIBGLOBALD-4811 - an existing code reuses its record: the stored one, or the one an earlier table of this
+            // save adds (before, the next table's query found the row the previous upsert had inserted).
+            DMT_Line_Product_Item__c item = productsSave.itemsByCode.get(code);
+            Boolean isPending = productsSave.pendingCodes.contains(code);
+            if (item == null) {
+                item = new DMT_Line_Product_Item__c();
                 item.Line__c = lineId;
                 item.Name = row.get('products') != null ? (String) row.get('products') : prodValue;
+                productsSave.itemsByCode.put(code, item);
+                productsSave.itemsToCheck.add(item);
+            } else if (!isPending) {
+                item = new DMT_Line_Product_Item__c(Id = item.Id);
+                productsSave.itemsByCode.put(code, item);
+                productsSave.replaceItemToCheck(item);
             }
             item.Product_Code_Value__c = prodValue;
             item.DMT_DerivativeRestriction__c = derivativesLine;
@@ -759,42 +943,108 @@ public with sharing class DMT_RiskTablesLineController {
             item.DMT_DVPRestriction__c = lineDVP;
             item.Max_Tenor_WC__c = maxTerm != null ? maxTerm : '';
 
-            toUpsertByCode.put(code, item);
-        }
-
-        if (!toUpsertByCode.isEmpty()) {
-            System.debug('toUpsertByCode: '+toUpsertByCode.values());
-            upsert toUpsertByCode.values();
-        }
-    }
-
-    private static void cleanupStaleProductItems(Id lineId, String bookingGeography) {
-        Set<String> validCodes = new Set<String>();
-        validCodes.addAll(getGeographyProductCodes(bookingGeography, false, false, false));
-        validCodes.addAll(getGeographyProductCodes(bookingGeography, true, false, false));
-        validCodes.addAll(getGeographyProductCodes(bookingGeography, false, true, false));
-        validCodes.addAll(getGeographyProductCodes(bookingGeography, false, false, true));
-
-        List<DMT_Line_Product_Item__c> staleItems = new List<DMT_Line_Product_Item__c>();
-        for (DMT_Line_Product_Item__c existing : [
-            SELECT Id, Product_Code_Value__c
-            FROM DMT_Line_Product_Item__c
-            WHERE Line__c = :lineId
-        ]) {
-            String code = String.isBlank(existing.Product_Code_Value__c)
-                ? null
-                : existing.Product_Code_Value__c.trim().toUpperCase();
-            if (code == null || (!validCodes.isEmpty() && !validCodes.contains(code))) {
-                staleItems.add(existing);
+            if (!isPending) {
+                productsSave.pendingCodes.add(code);
+                toUpsertByCode.put(code, item);
             }
         }
 
-        if (!staleItems.isEmpty()) {
-            delete staleItems;
+        return toUpsertByCode.values();
+    }
+
+    // CIBGLOBALD-4811 - the risk rows of one table that saveProducts deletes and upserts.
+    private class RiskRowChanges {
+        List<DMT_Risk_Line_Term__c> toDelete = new List<DMT_Risk_Line_Term__c>();
+        List<DMT_Risk_Line_Term__c> toUpsert = new List<DMT_Risk_Line_Term__c>();
+    }
+
+    // CIBGLOBALD-4811 - the records a Line Products save writes (buildProductsSave), in the order saveProducts applies them.
+    @TestVisible
+    private class LineProductsSave {
+        DMT_Line__c lineUpdate;
+        List<RiskRowChanges> riskChanges = new List<RiskRowChanges>();
+        List<List<DMT_Line_Product_Item__c>> productItemUpserts = new List<List<DMT_Line_Product_Item__c>>();
+        Map<String, DMT_Line_Product_Item__c> itemsByCode = new Map<String, DMT_Line_Product_Item__c>();
+        Set<String> pendingCodes = new Set<String>();
+        List<DMT_Line_Product_Item__c> itemsToCheck = new List<DMT_Line_Product_Item__c>();
+        Boolean useIfiProducts;
+        String bookingGeography;
+
+        // The stored version of an item is replaced by the record the save writes for it.
+        void replaceItemToCheck(DMT_Line_Product_Item__c item) {
+            for (Integer i = 0; i < itemsToCheck.size(); i++) {
+                if (itemsToCheck[i].Id == item.Id) {
+                    itemsToCheck[i] = item;
+                }
+            }
+        }
+
+        // The items no longer valid for the geography once the save is applied (blank code, or a code missing from
+        // every restriction layout of DMT_OperationalRestrictionsTRSR__mdt). Called after the upserts in saveProducts,
+        // so items the save just inserted have their Id.
+        List<DMT_Line_Product_Item__c> staleProductItems() {
+            Set<String> validCodes = new Set<String>();
+            validCodes.addAll(getGeographyProductCodes(bookingGeography, false, false, false, useIfiProducts));
+            validCodes.addAll(getGeographyProductCodes(bookingGeography, true, false, false, useIfiProducts));
+            validCodes.addAll(getGeographyProductCodes(bookingGeography, false, true, false, useIfiProducts));
+            validCodes.addAll(getGeographyProductCodes(bookingGeography, false, false, true, useIfiProducts));
+
+            List<DMT_Line_Product_Item__c> staleItems = new List<DMT_Line_Product_Item__c>();
+            for (DMT_Line_Product_Item__c item : itemsToCheck) {
+                String code = String.isBlank(item.Product_Code_Value__c)
+                    ? null
+                    : item.Product_Code_Value__c.trim().toUpperCase();
+                if (code == null || (!validCodes.isEmpty() && !validCodes.contains(code))) {
+                    staleItems.add(item);
+                }
+            }
+            return staleItems;
+        }
+
+        // Every row in the DMT_ApprovalChangeStep_Handler.previewUnsavedChanges format, as the Line is after the save:
+        // a row without Id is new; an item added and found stale in the same save is left out (inserted then deleted).
+        List<Map<String, Object>> toUnsavedRows() {
+            List<Map<String, Object>> rows = new List<Map<String, Object>>();
+            for (RiskRowChanges changes : riskChanges) {
+                for (DMT_Risk_Line_Term__c record : changes.toUpsert) {
+                    rows.add(unsavedRow(record));
+                }
+                for (DMT_Risk_Line_Term__c record : changes.toDelete) {
+                    rows.add(new Map<String, Object>{ 'objectApiName' => 'DMT_Risk_Line_Term__c', 'rowId' => (String) record.Id, 'deleted' => true });
+                }
+            }
+            List<DMT_Line_Product_Item__c> stale = staleProductItems();
+            for (List<DMT_Line_Product_Item__c> items : productItemUpserts) {
+                for (DMT_Line_Product_Item__c record : items) {
+                    Boolean isStale = false;
+                    for (DMT_Line_Product_Item__c staleItem : stale) {
+                        isStale = isStale || staleItem === record;
+                    }
+                    if (!isStale) {
+                        rows.add(unsavedRow(record));
+                    }
+                }
+            }
+            for (DMT_Line_Product_Item__c record : stale) {
+                if (record.Id != null) {
+                    rows.add(new Map<String, Object>{ 'objectApiName' => 'DMT_Line_Product_Item__c', 'rowId' => (String) record.Id, 'deleted' => true });
+                }
+            }
+            return rows;
+        }
+
+        Map<String, Object> unsavedRow(SObject record) {
+            Map<String, Object> values = new Map<String, Object>(record.getPopulatedFieldsAsMap());
+            values.remove('Id');
+            return new Map<String, Object>{
+                'objectApiName' => String.valueOf(record.getSObjectType()),
+                'rowId' => (String) record.Id,
+                'values' => values
+            };
         }
     }
 
-    private static Set<String> getGeographyProductCodes(String bookingGeography, Boolean DMT_Derivatives_layout2, Boolean DMT_Depos_layout2, Boolean DMT_Repos_layout2) {
+    private static Set<String> getGeographyProductCodes(String bookingGeography, Boolean DMT_Derivatives_layout2, Boolean DMT_Depos_layout2, Boolean DMT_Repos_layout2, Boolean useIfiProducts) {
         Set<String> codes = new Set<String>();
         String geography = normalizeGeography(bookingGeography);
         if (String.isBlank(geography)) {
@@ -803,17 +1053,26 @@ public with sharing class DMT_RiskTablesLineController {
         for (DMT_OperationalRestrictionsTRSR__mdt mdt : [
             SELECT DMT_Operational_Restrictions_Name__c
             FROM DMT_OperationalRestrictionsTRSR__mdt
-            WHERE Entific__c = :geography AND isActive__c = true AND (
+            WHERE Entific__c = :geography AND isActive__c = true
+            AND DMT_ProductIFIS__c = :useIfiProducts AND (
                 DMT_Derivatives_layout2__c = :DMT_Derivatives_layout2 AND
                 DMT_Depos_layout2__c = :DMT_Depos_layout2 AND
                 DMT_Repos_layout2__c = :DMT_Repos_layout2
             )
+            WITH USER_MODE
         ]) {
             if (String.isNotBlank(mdt.DMT_Operational_Restrictions_Name__c)) {
                 codes.add(mdt.DMT_Operational_Restrictions_Name__c.trim().toUpperCase());
             }
         }
         return codes;
+    }
+
+    @TestVisible
+    private static Boolean shouldUseIfiProducts(Boolean isIfiLine, String recordTypeName) {
+        // Classification selects the catalog even when no IFI metadata exists yet.
+        return isIfiLine == true
+            && DMT_LineController.isTreasuryRecordType(recordTypeName);
     }
 
     private static String normalizeGeography(String bookingGeography) {
@@ -839,41 +1098,7 @@ public with sharing class DMT_RiskTablesLineController {
     }
 
     private static Boolean resolveCanEdit(DMT_Line__c line) {
-        if (line == null) {
-            return false;
-        }
-
-        String statusValue = line.Status__c;
-        Boolean isDraft = statusValue == DMT_Constants.DRAFT;
-        Boolean hasGodAccess = DMT_Utils.checkLineGodUser();
-
-        if (isDraft && hasGodAccess) {
-            return true;
-        }
-        if (!DMT_Utils.hasWriteAccess()) {
-            return false;
-        }
-
-        List<DMT_TeamMember__c> teamMembers = [
-            SELECT Id, AccessLevel__c, DMT_ApprovalEdit__c
-            FROM DMT_TeamMember__c
-            WHERE Line__c = :line.Id AND User__c = :UserInfo.getUserId()
-            LIMIT 1
-        ];
-        DMT_TeamMember__c member = teamMembers.isEmpty() ? null : teamMembers[0];
-        Boolean hasTeamEditAccess = member != null && (member.AccessLevel__c == 'Edit' || member.AccessLevel__c == 'All');
-
-        if (isDraft) {
-            return line.OwnerId == UserInfo.getUserId() || hasTeamEditAccess;
-        }
-
-        Boolean canApprovalEdit = hasTeamEditAccess && member.DMT_ApprovalEdit__c == true;
-        Boolean isApproval = statusValue == DMT_Constants.APPROVAL;
-        Boolean isClosedWon = statusValue == DMT_Constants.CLOSED && line.Closed__c == DMT_Constants.WON;
-        Boolean isReadyToCloseOp = statusValue == DMT_Constants.READYTOCLOSE
-            && line.DMT_line_template_type__c == 'OP';
-
-        return canApprovalEdit && (isApproval || isClosedWon || isReadyToCloseOp);
+        return DMT_LineController.canEditLineInCurrentState(line);
     }
 
     private static String resolveMainBorrowerCountry(DMT_Line__c line) {

@@ -130,7 +130,7 @@ private class DMT_RiskTablesLineController_Test {
         DMT_Line__c line = [SELECT Id FROM DMT_Line__c WHERE Line_Id__c = '00002' LIMIT 1];
         DMT_Risk_Line_Term__c Derivatives = [SELECT Id FROM DMT_Risk_Line_Term__c WHERE DMT_Line__c = :line.Id and DMT_Risk_Type__c = 'Derivatives' LIMIT 1];
         DMT_RiskTablesLineController.updateRiskLineTermAmount(Derivatives.Id, 10000);
-        System.assertEquals(10000, [SELECT DMT_Amount__c FROM DMT_Risk_Line_Term__c WHERE Id = :Derivatives.Id].DMT_Amount__c);
+        Assert.areEqual(10000, [SELECT DMT_Amount__c FROM DMT_Risk_Line_Term__c WHERE Id = :Derivatives.Id].DMT_Amount__c);
         Test.stopTest();
         
     }
@@ -146,5 +146,77 @@ private class DMT_RiskTablesLineController_Test {
         List<DMT_Line_Product_Item__c>  productItem = [SELECT Id FROM DMT_Line_Product_Item__c WHERE Line__c = :line.Id LIMIT 1];
         DMT_RiskTablesLineController.saveProducts(line.Id, JSON.serialize(Derivatives), JSON.serialize(Depos), JSON.serialize(Equities), JSON.serialize(Repos), JSON.serialize(productItem), '[]','[]','[]','[]',0,0,'','',false,'','','',1000000);
         Test.stopTest();
+    }
+
+    // CIBGLOBALD-4811 - Enhancement fix to existing process: a step that fails after the Line update rolls the Line
+    // update back (a risk row whose Id no longer exists makes the upsert fail).
+    @isTest
+    static void saveProducts_FailedStep_RollsBackLineFields() {
+        DMT_Line__c line = [SELECT Id, DMT_Comments__c FROM DMT_Line__c WHERE Line_Id__c = '00002' LIMIT 1];
+        DMT_Risk_Line_Term__c removedRow = [SELECT Id FROM DMT_Risk_Line_Term__c WHERE DMT_Line__c = :line.Id AND DMT_Risk_Type__c = 'Derivatives' LIMIT 1];
+        String removedRowId = removedRow.Id;
+        delete removedRow;
+        String derivatives = JSON.serialize(new List<Object>{
+            new Map<String, Object>{ 'Id' => removedRowId, 'amount' => 5, 'initTerm' => '0', 'endTerm' => '365' }
+        });
+
+        Test.startTest();
+        Map<String, Object> result = DMT_RiskTablesLineController.saveProducts(
+            line.Id, derivatives, null, null, null, null, null, null, null, null,
+            0, 0, '', '', false, '', '', 'CIBGLOBALD-4811 not saved', null
+        );
+        Test.stopTest();
+
+        Assert.areNotEqual('OK', result.get('error'), 'The upsert of a removed row fails');
+        Assert.areEqual(line.DMT_Comments__c, [SELECT DMT_Comments__c FROM DMT_Line__c WHERE Id = :line.Id].DMT_Comments__c,
+            'The Line fields saved before the failure are rolled back');
+    }
+
+    // CIBGLOBALD-4811 - the reopen check only runs for Lines in Ready to close (TreasurySettlement, OtherProducts),
+    // saves nothing, and a failing check answers nothing.
+    @isTest
+    static void previewProductsSave_NotReadyToCloseOrFailure_ReturnsNothing() {
+        DMT_Line__c line = [SELECT Id, DMT_Comments__c FROM DMT_Line__c WHERE Line_Id__c = '00002' LIMIT 1];
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> notReadyToClose = DMT_RiskTablesLineController.previewProductsSave(
+            'readytoclose', line.Id, null, null, null, null, null, null, null, null, null,
+            0, 0, '', '', false, '', '', 'CIBGLOBALD-4811 preview only', null
+        );
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> failing = DMT_RiskTablesLineController.previewProductsSave(
+            'readytoclose', null, null, null, null, null, null, null, null, null, null,
+            0, 0, '', '', false, '', '', '', null
+        );
+        Test.stopTest();
+
+        Assert.isTrue(notReadyToClose.isEmpty(), 'Outside Ready to close nothing reopens');
+        Assert.isTrue(failing.isEmpty(), 'A failing check returns nothing');
+        Assert.areEqual(line.DMT_Comments__c, [SELECT DMT_Comments__c FROM DMT_Line__c WHERE Id = :line.Id].DMT_Comments__c, 'The preview saves nothing');
+    }
+
+    // CIBGLOBALD-4811 - in Ready to close the check builds what the save writes and compares it; without a Ready to
+    // close Case nothing reopens.
+    @isTest
+    static void previewProductsSave_ReadyToCloseWithoutCase_ReturnsNothing() {
+        DMT_Line__c line = [SELECT Id FROM DMT_Line__c WHERE Line_Id__c = '00002' LIMIT 1];
+        TriggerBypass.setBypass();
+        update new DMT_Line__c(Id = line.Id, Status__c = 'Ready to close');
+        TriggerBypass.removeBypass();
+        String derivatives = JSON.serialize(new List<Object>{
+            new Map<String, Object>{ 'amount' => 7, 'initTerm' => '0', 'endTerm' => '365' }
+        });
+        String restrictions = JSON.serialize(new List<Object>{
+            new Map<String, Object>{ 'productsValue' => 'ZZ4811', 'products' => 'ZZ 4811', 'maxTerm' => '1Y' }
+        });
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features = DMT_RiskTablesLineController.previewProductsSave(
+            'readytoclose', line.Id, derivatives, '[]', null, null, restrictions, null, null, null, null,
+            0, 0, '', '', false, '', '', 'CIBGLOBALD-4811 preview only', 100
+        );
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'Without a Ready to close Case nothing reopens');
+        Assert.areEqual(0, [SELECT COUNT() FROM DMT_Line_Product_Item__c WHERE Line__c = :line.Id AND Product_Code_Value__c = 'ZZ4811'], 'The preview saves nothing');
     }
 }

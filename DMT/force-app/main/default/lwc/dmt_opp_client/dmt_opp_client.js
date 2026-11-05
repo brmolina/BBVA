@@ -13,7 +13,7 @@ import getAllTaxonomyCatalogValues from '@salesforce/apex/DMT_CatalogHelper.getA
 import getMainHolderData from '@salesforce/apex/DMT_OpportunityClientController.getMainHolderData';
 import saveMainBorrowerWithClients from '@salesforce/apex/DMT_OpportunityClientController.saveMainBorrowerWithClients';
 import saveMainBorrowerFields from '@salesforce/apex/DMT_OpportunityClientController.saveMainBorrowerFields';
-import previewCompareUnsavedChanges from '@salesforce/apex/DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges'; // CIBGLOBALD-4811
+import previewMainBorrowerSave from '@salesforce/apex/DMT_OpportunityClientController.previewMainBorrowerSave'; // CIBGLOBALD-4811
 
 
 const DEFAULT_READONLY = new Map(clientFields.map(f => [f.id, f.isReadOnly]));
@@ -561,8 +561,8 @@ export default class Dmt_opp_client extends LightningElement {
      * reopen features: same filter as the Opportunity trigger checkpoint 3
      * (DMT_OpportunityTriggerHandler.restartApprovalTasksOnOpportunityResubmission: record type
      * DMT_Opportunity, stage Ready to close before and after the save, Cases 'readytoclose'), checked by
-     * DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges with the values this save writes
-     * (_unsavedValuesForCheck). Edit-mode Save with nothing changed: no call. Inline change: always asks,
+     * DMT_OpportunityClientController.previewMainBorrowerSave with the payload of the save it runs
+     * (_savePayloadForCheck). Edit-mode Save with nothing changed: no call. Inline change: always asks,
      * as before. A failed check counts as no reopen. Returns true to proceed, false to abort.
      */
     async _confirmReopen(fromInline = false) {
@@ -570,10 +570,9 @@ export default class Dmt_opp_client extends LightningElement {
         if (this.stageRecord === 'Ready to close' && this._recordTypeDeveloperName === 'DMT_Opportunity'
             && (fromInline || this._hasUnsavedChanges())) {
             try {
-                const features = await previewCompareUnsavedChanges({
-                    recordId: this.recordId,
+                const features = await previewMainBorrowerSave({
                     caseTypeToCheck: 'readytoclose',
-                    ...this._unsavedValuesForCheck()
+                    ...this._savePayloadForCheck(fromInline || this.isSubsidiary)
                 });
                 reopens = !!(features && features.length > 0);
             } catch (error) {
@@ -612,32 +611,19 @@ export default class Dmt_opp_client extends LightningElement {
             || clientKey(selection.selectedClients) !== clientKey(this._snapshot.selectedClients);
     }
 
-    /**
-     * CIBGLOBALD-4811 - What the save writes, in the previewCompareUnsavedChanges format
-     * (DMT_OpportunityClientController.saveMainBorrowerFields / saveMainBorrowerWithClients):
-     * Opportunity.DMT_Threshold_Type__c, and every form field on the main borrower DMT_Opportunity_Client__c
-     * row (applyFormFields writes all of them; a hidden field is not sent by the save, so it is written
-     * as null), plus Alpha_Code_Client__c when the main borrower changed. The financial fields copied
-     * from the previous main borrower (copyFinancialFields) are not included. With no main borrower row
-     * yet the save inserts one, sent without rowId (a new row).
-     */
-    _unsavedValuesForCheck() {
-        const valueOf = f => (f.isHidden ? null : (f.value ?? null));
-        const thresholdField = this.fields.find(f => f.id === 'DMT_Threshold_Type__c');
-        const rowValues = {};
-        for (const f of this.fields) {
-            if (f.id !== 'DMT_Threshold_Type__c') {
-                rowValues[f.id] = valueOf(f);
-            }
-        }
+    // CIBGLOBALD-4811 - the payload of the save this action runs: _saveFieldsOnly (inline change, subsidiary) or
+    // _saveFormFields (edit mode with client selection), for DMT_OpportunityClientController.previewMainBorrowerSave.
+    _savePayloadForCheck(fieldsOnly) {
         const childCmp = this.refs.selectClients;
-        const mainHolder = childCmp ? childCmp.getSelectionData().mainHolder : this._currentMainBorrower;
-        if (mainHolder && mainHolder !== this._previousMainBorrower) {
-            rowValues.Alpha_Code_Client__c = mainHolder;
-        }
+        const selection = childCmp ? childCmp.getSelectionData() : { selectedClients: [], mainHolder: null };
         return {
-            unsavedValues: { DMT_Threshold_Type__c: thresholdField ? valueOf(thresholdField) : null },
-            unsavedRows: [{ objectApiName: 'DMT_Opportunity_Client__c', rowId: this._currentMainBorrowerRecordId || null, values: rowValues }]
+            opportunityId: this.recordId,
+            dmtClientId: this._currentMainBorrowerRecordId,
+            stageName: this.stageRecord,
+            fieldValues: Object.fromEntries(this.fields.filter(f => !f.isHidden).map(f => [f.id, f.value ?? null])),
+            withClients: !fieldsOnly,
+            mainBorrower: fieldsOnly ? null : selection.mainHolder,
+            selectedClients: fieldsOnly ? null : selection.selectedClients
         };
     }
 

@@ -3,8 +3,98 @@ public with sharing class DMT_SelectClientsInLineService {
     private static final String DEFAULT_PAGE = '1';
     private static final String DEFAULT_PAGE_SIZE = '200';
 
+    /**OBSOLETED 04/11/2026 TODELETE
+     * Determines if an IFI Golden check is required based on the given parameters.
+     */
+    public static Boolean requiresIfiGolden(Boolean isIfi, String recordTypeName, String bookingGeography, String clientType) {
+        // Golden eligibility keeps its existing scope; product catalogs are global.
+        return isIfi == true && recordTypeName == 'TreasurySettlement'
+            && String.isNotBlank(bookingGeography) && bookingGeography.trim().equalsIgnoreCase('ES')
+            && DMT_RiskTablesLineController.hasActiveIfiProductsForGeography(bookingGeography)
+            && clientType == 'Subsidiary';
+    }
+
+    /** Resolves only the selected Customer, before any DML. Never use another HPG row as fallback. */
+    public static String resolveCustomerGoldenCode(Id clientId) {
+        List<Account> customers = [
+            SELECT Id, DES_Client_Type__c, g_customer_id__c
+            FROM Account WHERE Id = :clientId WITH USER_MODE LIMIT 1
+        ];
+        if (customers.isEmpty() || customers[0].DES_Client_Type__c != 'Subsidiary'
+            || String.isBlank(customers[0].g_customer_id__c)) {
+            throw new AuraHandledException(System.Label.DMT_IfiGoldenUnavailable);
+        }
+
+        DMT_HPG_GlobalPosition.Wrapper response;
+        try {
+            // The explicit Customer branch uses getAlphaCode; Account context can prefer a group code.
+            response = DMT_HPG_MainTableCustomController.fetchClientDataFromServiceLine(
+                null, DEFAULT_PAGE, DEFAULT_PAGE_SIZE, new List<String>(),
+                Date.valueOf(DMT_HPG_Utils.lastDate()), 'Y/N', String.valueOf(clientId)
+            );
+        } catch (CalloutException e) {
+            throw new AuraHandledException(System.Label.DMT_IfiGoldenUnavailable);
+        } catch (System.JSONException e) {
+            throw new AuraHandledException(System.Label.DMT_IfiGoldenUnavailable);
+        } catch (System.NullPointerException e) {
+            // Legacy HPG enrichment/date helpers assume non-null response rows.
+            throw new AuraHandledException(System.Label.DMT_IfiGoldenUnavailable);
+        } catch (System.ListException e) {
+            throw new AuraHandledException(System.Label.DMT_IfiGoldenUnavailable);
+        } catch (System.TypeException e) {
+            throw new AuraHandledException(System.Label.DMT_IfiGoldenUnavailable);
+        }
+        return resolveGoldenFromResponse(customers[0].g_customer_id__c, response);
+    }
+
+    @TestVisible
+    private static String resolveGoldenFromResponse(String customerCode, DMT_HPG_GlobalPosition.Wrapper response) {
+        if (String.isBlank(customerCode) || response == null || response.success != true || response.data == null) {
+            throw new AuraHandledException(System.Label.DMT_IfiGoldenUnavailable);
+        }
+
+        Set<String> goldenCodes = new Set<String>();
+        Integer maximumLength = DMT_Line__c.Golden_Code__c.getDescribe().getLength();
+        for (DMT_HPG_GlobalPosition.Data row : response.data) {
+            if (row == null || row.customerId != customerCode) {
+                continue;
+            }
+            if (String.isBlank(row.goldenCustomerId)
+                || row.goldenCustomerId.trim().length() > maximumLength) {
+                throw new AuraHandledException(System.Label.DMT_IfiGoldenUnavailable);
+            }
+            goldenCodes.add(row.goldenCustomerId.trim());
+        }
+        if (goldenCodes.size() != 1) {
+            throw new AuraHandledException(System.Label.DMT_IfiGoldenUnavailable);
+        }
+        return goldenCodes.iterator().next();
+    }
+
+    private static Boolean usesIfiCustomerContext(DMT_Line__c line) {
+        return line.DMT_Is_IFI__c == true && line.Client__r?.DES_Client_Type__c == 'Subsidiary';
+    }
+
+    private static Id resolveClientsAccountId(DMT_Line__c line, String viewMode, Boolean customerOnly) {
+        // IFI retains its originating Customer in both modes, without locking editing.
+        if (!customerOnly && line.Client__r != null
+            && line.Client__r.DES_Client_Type__c == 'Subsidiary'
+            && (viewMode == 'global' || String.isNotBlank(line.Golden_Code__c))
+            && line.Client__r.DES_Main_Parent__c != null) {
+            return line.Client__r.DES_Main_Parent__c;
+        }
+        return line.Client__c;
+    }
+
+    // Changes been made for CIBGLOBALD-4687
     @AuraEnabled
     public static Map<String, Object> loadDatasource(Id recordId, String clientPosition) {
+        return loadDatasourceForMode(recordId, clientPosition, 'multiholder');
+    }
+
+    // Changes been made for CIBGLOBALD-4687
+    @AuraEnabled
+    public static Map<String, Object> loadDatasourceForMode(Id recordId, String clientPosition, String viewMode) {
         Map<String, Object> response = new Map<String, Object>();
         List<Map<String, Object>> selectedRows = new List<Map<String, Object>>();
         String effectivePage = DEFAULT_PAGE;
@@ -24,6 +114,8 @@ public with sharing class DMT_SelectClientsInLineService {
 
         try {
             Id accountId = DMT_HPG_MainTableCustomController.getAccountIdFromRecordId(recordId);
+            Id clientsAccountId = accountId;
+            Boolean customerOnly = false;
             String effectiveClientPosition = String.isBlank(clientPosition) ? 'Y' : clientPosition;
             response.put('accountId', accountId);
             response.put('groupSfId', accountId);
@@ -35,14 +127,16 @@ public with sharing class DMT_SelectClientsInLineService {
                 'accountId' => accountId,
                 'effectiveClientPosition' => effectiveClientPosition
             });
-
+            // Changes been made for CIBGLOBALD-4687
             if (sobjectName == 'DMT_Line__c') {
-                    DMT_Line__c line = [
-                        SELECT Id, Client__c, Line_Id__c, Status__c, Closed__c, CurrencyIsoCode, Booking_Geography__c, Client_Type__c,
-                          DMT_line_template_type__c,
-                           Custom_Association__c, Custom_Association__r.g_customer_id__c, Golden_Code__c
+                DMT_Line__c line = [
+                    SELECT Id, Client__c, DMT_Is_IFI__c, Client__r.DES_Client_Type__c, Client__r.DES_Main_Parent__c,
+                           Line_Id__c, Status__c, Closed__c, CurrencyIsoCode, Booking_Geography__c,
+                           Client_Type__c, DMT_line_template_type__c, Custom_Association__c,
+                           Custom_Association__r.g_customer_id__c, Golden_Code__c
                     FROM DMT_Line__c
                     WHERE Id = :recordId
+                    WITH USER_MODE
                     LIMIT 1
                 ];
 
@@ -64,12 +158,19 @@ public with sharing class DMT_SelectClientsInLineService {
                 response.put('currency', line.CurrencyIsoCode);
                 response.put('booking', line.Booking_Geography__c);
                 response.put('lineclienttype', line.Client_Type__c);
+                response.put('isIfiLine', line.DMT_Is_IFI__c);
+                // Changes been made for CIBGLOBALD-4687
+                response.put('clientAccountType', line.Client__r == null ? null : line.Client__r.DES_Client_Type__c);
+                customerOnly = usesIfiCustomerContext(line);
+                clientsAccountId = resolveClientsAccountId(line, viewMode, customerOnly);
                 response.put('lineTemplateType', line.DMT_line_template_type__c);
-                response.put('canEditSelection', canEditLineSelection(line));
+                // Changes been made for CIBGLOBALD-4763 - Resolve Client edit access from the complete line permission context.
+                response.put('canEditSelection', canEditLineSelection(line.Id));
                 response.put('hasCustomAssociation', line.Custom_Association__c != null);
                 response.put('goldenCode', line.Golden_Code__c);
+                response.put('isGoldenRequired', false);
 
-                if (String.valueOf(line.Client_Type__c).toLowerCase() == 'customer') {
+                if (customerOnly || String.valueOf(line.Client_Type__c).toLowerCase() == 'customer') {
                     effectiveClientPosition = 'Y/N';
                     response.put('clientPosition', effectiveClientPosition);
                 }
@@ -97,11 +198,13 @@ public with sharing class DMT_SelectClientsInLineService {
                 }
             }
 
-            if (accountId != null) {
+            response.put('availableClientsAccountId', clientsAccountId);
+
+            if (clientsAccountId != null) {
                 Account contextAccount = [
                     SELECT Id, DES_Group_Code__c
                     FROM Account
-                    WHERE Id = :accountId
+                    WHERE Id = :clientsAccountId
                     LIMIT 1
                 ];
                 response.put('groupId', contextAccount.DES_Group_Code__c);
@@ -111,7 +214,9 @@ public with sharing class DMT_SelectClientsInLineService {
                 });
             }
 
-            Map<String, Object> pageResult = getAvailableClientsPageInternal(accountId, effectiveClientPosition, effectivePage, effectivePageSize);
+            Map<String, Object> pageResult = getAvailableClientsPageInternal(
+                clientsAccountId, effectiveClientPosition, effectivePage, effectivePageSize, customerOnly
+            );
             List<Map<String, Object>> availableClients = toMapList(pageResult.get('availableClients'));
             if (availableClients.isEmpty() && !selectedRows.isEmpty() && effectivePage == '1') {
                 logStep('getDatasource.availableClientsFallbackFromSelectedRows', new Map<String, Object>{
@@ -219,6 +324,7 @@ public with sharing class DMT_SelectClientsInLineService {
             'externallineId' => externallineId,
             'selectedRowsSize' => selectedRows == null ? 0 : selectedRows.size()
         });
+        Savepoint sp = Database.setSavepoint(); // CIBGLOBALD-4811 - Enhancement fix to existing process: a failed step rolls back the steps already saved
         try {
             if (!canEditLineSelection(lineId)) {
                 result.put('error', 'This line cannot be edited with your current permissions and line status.');
@@ -226,21 +332,19 @@ public with sharing class DMT_SelectClientsInLineService {
                 return result;
             }
 
-            DMT_HPG_MainTableCustomController.saveCustomAssociation(
-                lineId,
-                mainHolderAlphaCode,
-                currencyLine,
-                groupId,
-                groupSfId,
-                externallineId
-            );
-            DMT_HPG_MainTableCustomController.saveLineClients(selectedRows, lineId);
-            DMT_HPG_MainTableCustomController.saveLineClientFields(selectedRows, lineId);
+            // CIBGLOBALD-4811 - the records come from DMT_HPG_MainTableCustomController.buildSelectionSave, shared with
+            // previewSelectionSave, and are written in the order of saveCustomAssociation, saveLineClients and
+            // saveLineClientFields. Enhancement to existing process: the association is read once (was three times)
+            // and its clients once (was twice).
+            DMT_HPG_MainTableCustomController.applySelectionSave(DMT_HPG_MainTableCustomController.buildSelectionSave(
+                lineId, mainHolderAlphaCode, currencyLine, groupId, groupSfId, externallineId, selectedRows
+            ));
 
             result.put('error', 'OK');
             result.put('success', true);
             logStep('saveSelection.end', result);
         } catch (Exception e) {
+            Database.rollback(sp); // CIBGLOBALD-4811 - Enhancement fix to existing process
             result.put('error', e.getMessage());
             result.put('success', false);
             logStep('saveSelection.error', new Map<String, Object>{
@@ -267,10 +371,7 @@ public with sharing class DMT_SelectClientsInLineService {
                 return result;
             }
 
-            update new DMT_Line__c(
-                Id = lineId,
-                Golden_Code__c = goldenCode
-            );
+            Database.update(buildGoldenUpdate(lineId, goldenCode), AccessLevel.USER_MODE); // CIBGLOBALD-4811
 
             result.put('error', 'OK');
             result.put('success', true);
@@ -297,10 +398,7 @@ public with sharing class DMT_SelectClientsInLineService {
                 return result;
             }
 
-            update new DMT_Line__c(
-                Id = lineId,
-                Golden_Code__c = null
-            );
+            Database.update(buildGoldenUpdate(lineId, null), AccessLevel.USER_MODE); // CIBGLOBALD-4811
 
             result.put('error', 'OK');
             result.put('success', true);
@@ -314,6 +412,79 @@ public with sharing class DMT_SelectClientsInLineService {
             });
         }
         return result;
+    }
+
+    // CIBGLOBALD-4811 - the Line update of saveGoldenSelection (and clearGoldenSelection with a blank code).
+    private static DMT_Line__c buildGoldenUpdate(Id lineId, String goldenCode) {
+        return new DMT_Line__c(
+            Id = lineId,
+            Golden_Code__c = String.isBlank(goldenCode) ? null : goldenCode.trim()
+        );
+    }
+
+    /**
+     * @description CIBGLOBALD-4811 - Ready to close reopen check of the Line Client tab (dmtSelectClientsInLineMigrated)
+     * for each action that writes: 'selection' (saveSelection, built by DMT_HPG_MainTableCustomController.buildSelectionSave),
+     * 'golden' (saveGoldenSelection, or clearGoldenSelection with a blank goldenCode) and 'deleteAssociation'
+     * (deleteCustomAssociation: its client rows go). Builds what the action writes without DML and compares it with
+     * the snapshots of the Cases of that type (DMT_ApprovalChangeStep_Handler.previewUnsavedChanges). Only Lines in
+     * Ready to close of record type TreasurySettlement or OtherProducts (Line trigger checkpoint 3) are checked.
+     * Saves nothing. Empty when nothing reopens or the check fails (logged).
+     */
+    @AuraEnabled
+    public static List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> previewLineClientSave(
+        String caseTypeToCheck,
+        String action,
+        Id lineId,
+        String mainHolderAlphaCode,
+        String currencyLine,
+        String groupId,
+        Id groupSfId,
+        String externallineId,
+        List<Object> selectedRows,
+        String goldenCode
+    ) {
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> nothing = new List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper>();
+        try {
+            DMT_Line__c line = [
+                SELECT Id, Status__c, Custom_Association__c, RecordType.DeveloperName
+                FROM DMT_Line__c
+                WHERE Id = :lineId
+                LIMIT 1
+            ];
+            if (line.Status__c != DMT_Constants.READYTOCLOSE
+                || (line.RecordType.DeveloperName != 'TreasurySettlement' && line.RecordType.DeveloperName != 'OtherProducts')) {
+                return nothing;
+            }
+            Map<String, Object> lineValues = new Map<String, Object>();
+            List<Map<String, Object>> rows = new List<Map<String, Object>>();
+            if (action == 'selection') {
+                rows = DMT_HPG_MainTableCustomController.buildSelectionSave(
+                    lineId, mainHolderAlphaCode, currencyLine, groupId, groupSfId, externallineId, selectedRows
+                ).toUnsavedRows();
+            } else if (action == 'golden') {
+                lineValues.put('Golden_Code__c', buildGoldenUpdate(lineId, goldenCode).Golden_Code__c);
+            } else if (action == 'deleteAssociation') {
+                if (line.Custom_Association__c == null) {
+                    return nothing;
+                }
+                for (Custom_Association_Client__c client : [
+                    SELECT Id FROM Custom_Association_Client__c WHERE Custom_Association__c = :line.Custom_Association__c
+                ]) {
+                    rows.add(new Map<String, Object>{ 'objectApiName' => 'Custom_Association_Client__c', 'rowId' => (String) client.Id, 'deleted' => true });
+                }
+            } else {
+                return nothing;
+            }
+            return DMT_ApprovalChangeStep_Handler.previewUnsavedChanges(lineId, caseTypeToCheck, lineValues, rows);
+        } catch (Exception e) {
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
+                e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
+                'DMT_SelectClientsInLineService', 'previewLineClientSave', 'DMT', 'DMT_Line__c'
+            ));
+            DMT_AsyncOrchestrator.flush();
+            return nothing;
+        }
     }
 
     @AuraEnabled
@@ -402,7 +573,8 @@ public with sharing class DMT_SelectClientsInLineService {
             response.put('clientPosition', effectiveClientPosition);
             response.put('productAssociationExternalId', productAssociationExternalId);
             response.put('returnedDate', DMT_HPG_Utils.lastDate());
-            response.put('canEditSelection', canEditLineSelection(line));
+            // Changes been made for CIBGLOBALD-4763 - Resolve Client edit access from the complete line permission context.
+            response.put('canEditSelection', canEditLineSelection(line.Id));
 
             if (line.Client__c != null) {
                 Account contextAccount = [
@@ -642,24 +814,18 @@ public with sharing class DMT_SelectClientsInLineService {
         return externalLineId + '_' + priorityId;
     }
 
+    // Changes been made for CIBGLOBALD-4763 - Allow qualified line owners and approval editors to save client selections.
     private static Boolean canEditLineSelection(Id lineId) {
         if (lineId == null) {
             return false;
         }
 
         DMT_Line__c line = [
-            SELECT Id, Status__c, Closed__c, DMT_line_template_type__c
+            SELECT Id, Status__c, Closed__c, DMT_line_template_type__c, RecordType.DeveloperName
             FROM DMT_Line__c
             WHERE Id = :lineId
             LIMIT 1
         ];
-        return canEditLineSelection(line);
-    }
-
-    private static Boolean canEditLineSelection(DMT_Line__c line) {
-        if (line == null) {
-            return false;
-        }
 
         String statusValue = String.valueOf(line.Status__c);
         if (statusValue == DMT_Constants.DRAFT) {
@@ -669,8 +835,20 @@ public with sharing class DMT_SelectClientsInLineService {
         Boolean isApproval = statusValue == DMT_Constants.APPROVAL;
         Boolean isClosedWon = statusValue == DMT_Constants.CLOSED && String.valueOf(line.Closed__c) == DMT_Constants.WON;
         Boolean isReadyToCloseOp = statusValue == DMT_Constants.READYTOCLOSE && String.valueOf(line.DMT_line_template_type__c) == 'OP';
+        Boolean isTargetRecordType = line.RecordType.DeveloperName == 'Sanction'
+            || line.RecordType.DeveloperName == 'OtherProducts';
+        Boolean isReadyToCloseTarget = statusValue == DMT_Constants.READYTOCLOSE && isTargetRecordType;
 
-        if (!(isApproval || isClosedWon || isReadyToCloseOp)) {
+        if (!(isApproval || isClosedWon || isReadyToCloseOp || isReadyToCloseTarget)) {
+            return false;
+        }
+
+        // Changes been made for CIBGLOBALD-4763 - Allow Line God superusers without an owner-only exception.
+        if (isTargetRecordType && DMT_Utils.checkLineGodUser()) {
+            return true;
+        }
+
+        if (isTargetRecordType && !DMT_Utils.hasWriteAccess()) {
             return false;
         }
 
@@ -719,7 +897,36 @@ public with sharing class DMT_SelectClientsInLineService {
         return getAvailableClientsPageInternal(accountId, effectiveClientPosition, effectivePage, effectivePageSize);
     }
 
+    @AuraEnabled(cacheable=true)
+    public static Map<String, Object> getAvailableClientsPageForLine(
+        Id lineId, String viewMode, String clientPosition, String page, String pageSize
+    ) {
+        if (lineId == null) {
+            throw new AuraHandledException('Line Id is required.');
+        }
+        DMT_Line__c line = [
+            SELECT Client__c, DMT_Is_IFI__c, RecordType.DeveloperName, Booking_Geography__c,
+                Client__r.DES_Client_Type__c, Client__r.DES_Main_Parent__c, Golden_Code__c
+            FROM DMT_Line__c WHERE Id = :lineId WITH USER_MODE LIMIT 1
+        ];
+        Boolean customerOnly = usesIfiCustomerContext(line);
+        Id clientsAccountId = resolveClientsAccountId(line, viewMode, customerOnly);
+        String effectiveClientPosition = customerOnly ? 'Y/N' : (String.isBlank(clientPosition) ? 'Y' : clientPosition);
+        return getAvailableClientsPageInternal(
+            clientsAccountId, effectiveClientPosition,
+            String.isBlank(page) ? DEFAULT_PAGE : page,
+            String.isBlank(pageSize) ? DEFAULT_PAGE_SIZE : pageSize,
+            customerOnly
+        );
+    }
+
     private static Map<String, Object> getAvailableClientsPageInternal(Id accountId, String clientPosition, String page, String pageSize) {
+        return getAvailableClientsPageInternal(accountId, clientPosition, page, pageSize, false);
+    }
+
+    private static Map<String, Object> getAvailableClientsPageInternal(
+        Id accountId, String clientPosition, String page, String pageSize, Boolean customerOnly
+    ) {
         Map<String, Object> pageResult = new Map<String, Object>{
             'availableClients' => new List<Map<String, Object>>(),
             'page' => 1,
@@ -748,13 +955,13 @@ public with sharing class DMT_SelectClientsInLineService {
 
         Object rawResponse = DMT_HPG_MainTableCustomController.fetchClientInitialData(
             'tcm',
-            accountId,
+            customerOnly ? null : accountId,
             new List<String>(),
             DMT_HPG_Utils.lastDate(),
             clientPosition,
             page,
             pageSize,
-            ''
+            customerOnly ? String.valueOf(accountId) : ''
         );
 
         Map<String, Object> responseMap = toMap(rawResponse);

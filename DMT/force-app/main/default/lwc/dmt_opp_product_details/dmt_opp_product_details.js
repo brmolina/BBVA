@@ -5,8 +5,17 @@ import DmtOppMoneyModal   from 'c/dmt_opp_money_modal';
 import getOpportunityLineItemData from '@salesforce/apex/DMT_OpportunityProductsController.getOpportunityLineItemData';
 import getTenorsData              from '@salesforce/apex/DMT_TableTenors.getTenorsData';
 import getMitigantsData           from '@salesforce/apex/DMT_OpportunityProductsController.getMitigantsData';
+import isSecuritizationProduct    from '@salesforce/apex/DMT_OpportunityProductsController.isSecuritizationProduct';
+import isDoubleProduct            from '@salesforce/apex/DMT_OpportunityProductsController.isDoubleProduct';
 import saveOpportunityProduct     from '@salesforce/apex/DMT_OpportunityProductsController.saveOpportunityProduct';
+import previewOpportunityProductSave from '@salesforce/apex/DMT_OpportunityProductsController.previewOpportunityProductSave'; // CIBGLOBALD-4811
+import LightningConfirm from 'lightning/confirm'; // CIBGLOBALD-4811
 import ERR_NEGATIVE_VALUE_SUMMARY from '@salesforce/label/c.DMT_Negative_Validation_Summary';
+
+// CIBGLOBALD-4811 - same text as the other Opportunity tabs (dmt_opp_info, dmt_opp_client)
+const REOPEN_LABEL   = 'Modify Opportunity?';
+const REOPEN_MESSAGE = 'The Opportunity will be modified and the associated cases and tasks will be reopened.' +
+    '\n\nDo you want to modify the Opportunity?';
 
 const SECTION_REF_NAMES = ['generalInfo', 'dealDescription', 'schedule', 'costOfFunding', 'sustainability', 'countryRisk', 'mitigants', 'unfundedMitigants'];
 
@@ -27,6 +36,8 @@ export default class DmtOppProductDetails extends LightningElement {
     optionsMap  = {};
     tenorsData  = [];
     mitigantsData = [];
+    isSecuritizationProduct = false;
+    isDoubleProduct = false;
     fieldsWithErrors = new Map(); // key: apiName, value: label
 
     currentCurrencyCode = '';
@@ -37,6 +48,8 @@ export default class DmtOppProductDetails extends LightningElement {
 
     _wiredResult     = null;
     _canEdit         = true;
+    // CIBGLOBALD-4811 - set by dmt_opp_products: Ready to close and record type DMT_Opportunity
+    @api checkReopen = false;
     _readOnlyApplied = false;
 
     // ─── Public API ───────────────────────────────────────────────────────────
@@ -85,13 +98,21 @@ export default class DmtOppProductDetails extends LightningElement {
 
     async _loadRelatedData() {
         try {
-            const tenorsResult    = await getTenorsData({ oppLineItemId: this.currentRecordId });
-            if (tenorsResult)     this.tenorsData = tenorsResult.tenors || [];
+            const [tenorsResult, mitigantsResult, securitizationResult, doubleProductResult] = await Promise.all([
+                getTenorsData({ oppLineItemId: this.currentRecordId }),
+                getMitigantsData({ opportunityLineItemId: this.currentRecordId }),
+                isSecuritizationProduct({ opportunityLineItemId: this.currentRecordId }),
+                isDoubleProduct({ opportunityLineItemId: this.currentRecordId })
+            ]);
 
-            const mitigantsResult = await getMitigantsData({ opportunityLineItemId: this.currentRecordId });
+            if (tenorsResult)     this.tenorsData = tenorsResult.tenors || [];
             if (mitigantsResult)  this.mitigantsData = [...mitigantsResult];
+            this.isSecuritizationProduct = !!securitizationResult;
+            this.isDoubleProduct = !!doubleProductResult;
         } catch (error) {
             console.error('[dmt_opp_product_details] Error loading related data:', error);
+            this.isSecuritizationProduct = false;
+            this.isDoubleProduct = false;
         }
     }
 
@@ -223,7 +244,8 @@ export default class DmtOppProductDetails extends LightningElement {
             // 5. Single transactional Apex call
             const toDateOnly = (v) => (typeof v === 'string' ? v.substring(0, 10) : v);
 
-            const result = await saveOpportunityProduct({
+            // CIBGLOBALD-4811 - one payload for the reopen check and the save; Cancel keeps edit mode and the values
+            const savePayload = {
                 recordFields,
                 tenorsToUpsert,
                 tenorsToDelete,
@@ -232,7 +254,9 @@ export default class DmtOppProductDetails extends LightningElement {
                 initialDate : toDateOnly(this.currentInitialDate),
                 maturityDate: toDateOnly(this.currentMaturityDate),
                 oppId: this._wiredResult?.data?.OpportunityId
-            });
+            };
+            if (!await this._confirmReopen(savePayload)) return;
+            const result = await saveOpportunityProduct(savePayload); // CIBGLOBALD-4811
 
             // 6. Business validation failed (not an exception — returned as success:false)
             if (result?.success === false) {
@@ -252,6 +276,27 @@ export default class DmtOppProductDetails extends LightningElement {
         } finally {
             this.isLoadingSaving = false;
         }
+    }
+
+    /**
+     * CIBGLOBALD-4811 - Asks before a save that would reopen approval tasks. Runs only when the parent
+     * (dmt_opp_products) sets checkReopen: Opportunity in Ready to close with record type DMT_Opportunity.
+     * DMT_OpportunityProductsController.previewOpportunityProductSave runs the Ready to close comparison of
+     * the Opportunity trigger (DMT_OpportunityTriggerHandler checkpoint 3) on what this save writes, without
+     * saving. The reopen itself happens when leaving edit mode releases the Opportunity edit lock
+     * (dmt_opp_custom_page). A failed check counts as no reopen. Returns true to save, false to stay in edit mode.
+     */
+    async _confirmReopen(savePayload) {
+        if (!this.checkReopen) return true;
+        let reopens = false;
+        try {
+            const features = await previewOpportunityProductSave({ caseTypeToCheck: 'readytoclose', ...savePayload });
+            reopens = !!(features && features.length > 0);
+        } catch (error) {
+            console.error('[dmt_opp_product_details][_confirmReopen]', error);
+        }
+        if (!reopens) return true;
+        return LightningConfirm.open({ label: REOPEN_LABEL, message: REOPEN_MESSAGE, theme: 'warning' });
     }
 
     @api notifyEditMode(value) {
