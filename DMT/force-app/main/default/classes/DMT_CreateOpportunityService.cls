@@ -307,7 +307,6 @@ public with sharing class DMT_CreateOpportunityService {
                     DMT_Custom_Association_Opportunity__c = assoc.Id,
                 DMT_g_entific_id__c = bookingGeography,
                 DMT_Client__c = resolvedClientId,
-
                 DMT_g_customer_id__c = clientValues.clientGCustomerId,
                 DMT_gf_customer_group_id__c = lineId
                     );
@@ -571,7 +570,7 @@ public with sharing class DMT_CreateOpportunityService {
         System.debug('DMT_DEBUG resolveClientByEntific: NO MATCH for bookingGeography=' + bookingGeography);
         return null;
     }
-    @TestVisible
+    
     public static ClientValues getClientValues(Id resolvedClientId, Id comparisonAccountId) {
         ClientValues cv = new ClientValues();
         
@@ -767,7 +766,10 @@ public with sharing class DMT_CreateOpportunityService {
         
         if (customerHPG != null) {
             oppClient.DMT_Activity__c = customerHPG.assetAllocationActvyType;
-            oppClient.DMT_CAMN__c = customerHPG.activityMinimumLevelCodeId;
+            // CIBGLOBALD-4806 - CAMN stored as the catalog A521 value matched by the HPG description, the same value Client Data
+            // compares with (DMT_OpportunityClientController.resolveCamnValue); HPG code only when HPG sends no description
+            String camnValue = DMT_OpportunityClientController.resolveCamnValue(customerHPG.activityMinimumLevelCodeDesc);
+            oppClient.DMT_CAMN__c = camnValue != null ? camnValue : customerHPG.activityMinimumLevelCodeId;
             oppClient.DMT_External_Rating_Fitch__c = customerHPG.fitchLtRatingFcType;
             oppClient.DMT_External_Rating_Moodys__c = customerHPG.moodysLtRatingFcType;
             oppClient.DMT_External_Rating_SP__c = customerHPG.spLtRatingLcType;

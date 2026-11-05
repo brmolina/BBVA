@@ -1,0 +1,5 @@
+CIBGLOBALD-4806 - CAMN saved at creation with the same A521 value Client Data compares with
+
+- DMT_OpportunityClientController: new public resolveCamnValue returns the catalog A521 value matched by the HPG description (activityMinimumLevelCodeDesc), or the description itself when A521 has no match, reusing resolveCamnFromCatalog.
+- DMT_CreateOpportunityService: buildOpportunityClient saves DMT_CAMN__c with resolveCamnValue instead of the HPG code (activityMinimumLevelCodeId), which is kept only when HPG sends no description. Client Data compares CAMN by the HPG description against A521, so the HPG code flagged a CAMN difference on every new Opportunity whose code was not an A521 value. Applies to creation and to the clones that rebuild the client data.
+- Tests: DMT_CreateOpportunityServiceTest adds testBuildOpportunityClient_CamnFromHpgDescription.

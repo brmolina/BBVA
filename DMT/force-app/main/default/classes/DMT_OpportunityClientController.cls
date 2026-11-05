@@ -598,6 +598,18 @@ public with sharing class DMT_OpportunityClientController {
         };
     }
 
+    /**
+     * @description CIBGLOBALD-4806 - Value saved in DMT_Opportunity_Client__c.DMT_CAMN__c at creation
+     * (DMT_CreateOpportunityService.buildOpportunityClient): the A521 value matched by the HPG description
+     * (activityMinimumLevelCodeDesc), or the description itself when A521 has no match; the same value
+     * resolveCamnFromCatalog gives Client Data as original, so a new Opportunity shows no CAMN difference.
+     * @return null when the HPG description is blank
+     */
+    public static String resolveCamnValue(String hpgDesc) {
+        Map<String, Object> camn = resolveCamnFromCatalog(hpgDesc);
+        return camn == null ? null : (String) camn.get('value');
+    }
+
     // CAMBIO A521: cache lazy del catálogo A521 indexado por name normalizado (mayúsculas + trim)
     private static Map<String, Map<String, String>> getA521ByName() {
         if (a521ByNormalizedName == null) {
