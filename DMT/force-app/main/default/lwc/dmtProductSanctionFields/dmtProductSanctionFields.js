@@ -3,6 +3,8 @@ import { getRecord, updateRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getRelatedSelections from '@salesforce/apex/DMT_ProductSanctionMigrationController.getRelatedSelections';
 import saveRelatedSelections from '@salesforce/apex/DMT_ProductSanctionMigrationController.saveRelatedSelections';
+import previewRiskFieldsSave from '@salesforce/apex/DMT_ProductSanctionMigrationController.previewRiskFieldsSave'; // CIBGLOBALD-4811
+import LightningConfirm from 'lightning/confirm'; // CIBGLOBALD-4811
 
 const OBJECT_API = 'DMT_Risk_Line_Term__c';
 const ID_FIELD = `${OBJECT_API}.Id`;
@@ -44,6 +46,12 @@ export default class DmtProductSanctionFields extends LightningElement {
     }
 
     set fieldConfigs(value) {
+        // CIBGLOBALD-4811 - Enhancement fix to existing process: the parent (dmtProductSanctionMigration) passes a new
+        // array on every render, for example when the saving state changes; only a real configuration change resets the
+        // typed values (a risk line change resets them through riskId).
+        if (this._fieldConfigs && JSON.stringify(value || []) === JSON.stringify(this._fieldConfigs)) {
+            return;
+        }
         this._fieldConfigs = value || [];
         this.changedValues = {};
         this.fieldValidity = {};
@@ -284,6 +292,49 @@ export default class DmtProductSanctionFields extends LightningElement {
         this.dispatchEvent(new CustomEvent('canceledit'));
     }
 
+    // CIBGLOBALD-4811 - the saveRelatedSelections payload, shared by handleSave and _confirmReopen.
+    _buildRelatedPayload(relatedFieldChanges) {
+        const relatedPayload = {};
+        if (Object.prototype.hasOwnProperty.call(relatedFieldChanges, WARRANTY_FIELD_KEY)) {
+            relatedPayload[WARRANTY_FIELD_KEY] = this._normalizeMultiValuePayload(relatedFieldChanges[WARRANTY_FIELD_KEY]);
+        }
+        if (Object.prototype.hasOwnProperty.call(relatedFieldChanges, CURRENCY_PROVISION_FIELD_KEY)) {
+            relatedPayload[CURRENCY_PROVISION_FIELD_KEY] = this._normalizeMultiValuePayload(relatedFieldChanges[CURRENCY_PROVISION_FIELD_KEY]);
+        }
+        return relatedPayload;
+    }
+
+    /**
+     * CIBGLOBALD-4811 - Asks before a risk line save that would reopen approval tasks.
+     * DMT_ProductSanctionMigrationController.previewRiskFieldsSave applies the Line filter of the trigger checkpoint 3
+     * (Ready to close, TreasurySettlement or OtherProducts) and compares the risk line fields and the related rows
+     * this save writes with the snapshots, without saving. A failed check counts as no reopen.
+     * @returns true to save, false when the user cancels
+     */
+    async _confirmReopen(riskFieldChanges, relatedValues) {
+        try {
+            const features = await previewRiskFieldsSave({
+                caseTypeToCheck: 'readytoclose',
+                lineId: this.lineId,
+                riskId: this.riskId,
+                riskFieldChanges,
+                relatedValues
+            });
+            if (!features || features.length === 0) {
+                return true;
+            }
+        } catch (error) {
+            console.error('[dmtProductSanctionFields][_confirmReopen]', error);
+            return true;
+        }
+        return LightningConfirm.open({
+            label: 'Modify Line?',
+            message: 'The Line will be modified and the associated cases and tasks will be reopened.' +
+                '\n\nDo you want to modify the Line?',
+            theme: 'warning'
+        });
+    }
+
     async handleSave() {
         if (!this.isEditMode || this.isSaving) {
             return;
@@ -340,6 +391,12 @@ export default class DmtProductSanctionFields extends LightningElement {
             relatedFieldKeys: Object.keys(relatedFieldChanges)
         }));
 
+        // CIBGLOBALD-4811 - Ready to close: ask before a save that would reopen tasks; Cancel keeps edit mode and the values
+        if (!await this._confirmReopen(hasRiskChanges ? riskFieldChanges : null, hasRelatedChanges ? this._buildRelatedPayload(relatedFieldChanges) : null)) {
+            this._setSaving(false);
+            return;
+        }
+
         try {
             if (hasRiskChanges) {
                 const updatePayload = { Id: this.riskId, ...riskFieldChanges };
@@ -347,13 +404,7 @@ export default class DmtProductSanctionFields extends LightningElement {
             }
 
             if (hasRelatedChanges) {
-                const relatedPayload = {};
-                if (Object.prototype.hasOwnProperty.call(relatedFieldChanges, WARRANTY_FIELD_KEY)) {
-                    relatedPayload[WARRANTY_FIELD_KEY] = this._normalizeMultiValuePayload(relatedFieldChanges[WARRANTY_FIELD_KEY]);
-                }
-                if (Object.prototype.hasOwnProperty.call(relatedFieldChanges, CURRENCY_PROVISION_FIELD_KEY)) {
-                    relatedPayload[CURRENCY_PROVISION_FIELD_KEY] = this._normalizeMultiValuePayload(relatedFieldChanges[CURRENCY_PROVISION_FIELD_KEY]);
-                }
+                const relatedPayload = this._buildRelatedPayload(relatedFieldChanges); // CIBGLOBALD-4811
 
                 console.debug('[dmtProductSanctionFields] related payload to Apex', JSON.stringify(relatedPayload));
 

@@ -89,6 +89,18 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>DMT_ApprovalTemplate_Controller</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_ApprovalTemplate_ControllerTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_ApprovalTemplate_Selector</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>DMT_ApproverLookupController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -1177,6 +1189,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>DMT_StartApprovalCasePayload</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>DMT_SustainabilityRenderer</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -1197,6 +1213,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>DMT_TaskApprovalFlowService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>DMT_TaskApproverRelationshipRemove</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -1206,6 +1226,14 @@
     </classAccesses>
     <classAccesses>
         <apexClass>DMT_TaskRelationshipRemove</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_TaskSnapshotService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>DMT_TaskStatusSnapshotPayload</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -4206,6 +4234,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>DMT_Line__c.DMT_Purpose_Summary__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>DMT_Line__c.DMT_RAROEC_RORC_Proposal__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -4891,6 +4924,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>DMT_Opportunity_Client__c.DMT_Industry2__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>DMT_Opportunity_Client__c.DMT_Industry__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -4926,6 +4964,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>DMT_Opportunity_Client__c.DMT_Purpose_Summary__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>DMT_Opportunity_Client__c.DMT_Purpose__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -4942,6 +4985,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>DMT_Opportunity_Client__c.DMT_Scoring__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Opportunity_Client__c.DMT_Sector_Head2__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -4992,6 +5040,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>DMT_Opportunity_Client__c.DMT_Xsell_Cost_to_Income__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Opportunity_Client__c.DMT_Year_Business_Plan__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -5791,6 +5844,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>DMT_Opportunity_Tenor__c.DMT_Manual_RW__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>DMT_Opportunity_Tenor__c.DMT_Opportunity_Product__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -5881,6 +5939,91 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_Allin_Drawn__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_Allin_Undrawn__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_EAD_Eco__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_EAD_Reg__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_Economic_Capital__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_Franchise_Deal__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_Global_Expected_RORC__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_Net_Income_Eco__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_Net_Income_Reg__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_OpportunityLineItem__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_Opportunity__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_RAROEC__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_RORC_CDD__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_RORC__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_RWA_Eco__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_RWA_Reg__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Profitability_results__c.DMT_Regulatory_Capital__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>DMT_Risk_Line_Term__c.DMT_Amount__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -5892,6 +6035,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>DMT_Risk_Line_Term__c.DMT_Commercial_Product_Description__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Risk_Line_Term__c.DMT_End_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -5982,6 +6130,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>DMT_Risk_Line_Term__c.DMT_Singular__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Risk_Line_Term__c.DMT_Start_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -6196,6 +6349,66 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>DMT_Task_Field_Config__c.DMT_Display_Order__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Task_Field_Config__c.DMT_Field_Api_Name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Task_Field_Config__c.DMT_Field_Label__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Task_Field_Config__c.DMT_Field_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Task_Field_Config__c.DMT_Picklist_Options__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Task_Field_Config__c.DMT_Required__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Task_Field_Config__c.DMT_Task_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Task_Field_Config__c.DMT_Template__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Task_Field_Value__c.DMT_Field_Key__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Task_Field_Value__c.DMT_Field_Value__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Task_Field_Value__c.DMT_TaskId__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>DMT_Task_Field_Value__c.DMT_Task_Field_Config__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>DMT_Task_Type__c.DMT_Active__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -6215,7 +6428,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>DMT_Task_Type__c.DMT_Finish_Case__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -7356,6 +7569,16 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Opportunity.DMT_Allin_Drawn__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_Allin_Undrawn__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Opportunity.DMT_ApproverGlobalBanker__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -7461,6 +7684,21 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Opportunity.DMT_EAD_eco__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_EAD_reg__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_Economic_Capital__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Opportunity.DMT_Entity__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -7470,8 +7708,18 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_Franchise_Deal__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.DMT_GlobalBanker__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_Global_Expected_RORC__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -7502,6 +7750,16 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Opportunity.DMT_NUM_Version__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_Net_Income_Eco__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_Net_Income_Reg__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -7545,6 +7803,21 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_RAROEC__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_RORC_CDD__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_RORC__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.DMT_RUP_Initial_Date__c</field>
         <readable>true</readable>
@@ -7555,8 +7828,23 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_RWA_eco__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_RWA_reg__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>false</editable>
         <field>Opportunity.DMT_RecordTypeName__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Opportunity.DMT_Regulatory_Capital__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -7846,6 +8134,16 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>OpportunityLineItem.DMT_Allin_Drawn__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_Allin_Undrawn__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>OpportunityLineItem.DMT_Associated_Line_Product__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -7866,6 +8164,21 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>OpportunityLineItem.DMT_EAD_Eco__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_EAD_Reg__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_Economic_Capital__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>OpportunityLineItem.DMT_ExpectedFinal_Take__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -7877,6 +8190,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>OpportunityLineItem.DMT_Extension_Duration_Fees__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_Franchise_Deal__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -7901,6 +8219,16 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>OpportunityLineItem.DMT_Net_Income_Eco__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_Net_Income_Reg__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>OpportunityLineItem.DMT_NewMoney_BBVA__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -7921,6 +8249,31 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>OpportunityLineItem.DMT_RAROEC__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_RORC_CDD__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_RORC__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_RWA_Eco__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_RWA_Reg__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>OpportunityLineItem.DMT_RateType__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -7932,6 +8285,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>OpportunityLineItem.DMT_Risk_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_Sub_Limit__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -7987,6 +8345,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>OpportunityLineItem.DMT_Utilisation_Fee__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.DMT_Validity_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -8052,6 +8415,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>OpportunityLineItem.deferred_fee_amount__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>OpportunityLineItem.entity_role_type__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -10943,6 +11311,16 @@
     </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>DMT_Profitability_results__c</object>
+        <viewAllFields>false</viewAllFields>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
         <allowDelete>true</allowDelete>
         <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
@@ -10970,6 +11348,26 @@
         <object>DMT_TaskStatusWhenCompleted__c</object>
         <viewAllFields>false</viewAllFields>
         <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>DMT_Task_Field_Config__c</object>
+        <viewAllFields>true</viewAllFields>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>DMT_Task_Field_Value__c</object>
+        <viewAllFields>true</viewAllFields>
+        <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>

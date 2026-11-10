@@ -104,6 +104,45 @@ private class DMT_ProductSanctionControllerTest {
         return currentUser;
     }
 
+    // CIBGLOBALD-4811 - the reopen checks of the Products tab (risk line edit, add/clone/delete) save nothing: only
+    // Lines in Ready to close are checked, without a Ready to close Case nothing reopens, a failing check answers nothing.
+    @IsTest
+    static void previewRiskChecks_ReturnNothingWithoutCaseAndSaveNothing() {
+        User currentUser = grantCurrentUserWriteRole();
+
+        System.runAs(currentUser) {
+            DMT_Line__c line = DMT_Test_DataFactory.generateTestOtherLines();
+            DMT_Risk_Line_Term__c risk = firstRisk(line.Id);
+            Map<String, Object> riskFields = new Map<String, Object>{ 'Id' => risk.Id, 'DMT_End_Term__c' => '4811' };
+            Map<String, Object> relatedValues = new Map<String, Object>{
+                'DMT_Warranty__c.g_limits_grid_guarantee_type__c' => new List<Object>{ 'W4811' }
+            };
+            Integer warrantiesBefore = [SELECT COUNT() FROM DMT_Warranty__c WHERE DMT_Risk_Line_Term__c = :risk.Id];
+
+            Test.startTest();
+            List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> notReadyToClose =
+                DMT_ProductSanctionMigrationController.previewRiskFieldsSave('readytoclose', line.Id, risk.Id, riskFields, relatedValues);
+            TriggerBypass.setBypass();
+            update new DMT_Line__c(Id = line.Id, Status__c = DMT_Constants.READYTOCLOSE);
+            TriggerBypass.removeBypass();
+            List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> fieldsSave =
+                DMT_ProductSanctionMigrationController.previewRiskFieldsSave('readytoclose', line.Id, risk.Id, riskFields, relatedValues);
+            List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> newRow =
+                DMT_ProductSanctionMigrationController.previewRiskRowChange('readytoclose', line.Id, null, false);
+            List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> deletedRow =
+                DMT_ProductSanctionMigrationController.previewRiskRowChange('readytoclose', line.Id, risk.Id, true);
+            List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> failing =
+                DMT_ProductSanctionMigrationController.previewRiskRowChange('readytoclose', null, null, false);
+            Test.stopTest();
+
+            Assert.isTrue(notReadyToClose.isEmpty(), 'Outside Ready to close nothing reopens');
+            Assert.isTrue(fieldsSave.isEmpty() && newRow.isEmpty() && deletedRow.isEmpty(), 'Without a Ready to close Case nothing reopens');
+            Assert.isTrue(failing.isEmpty(), 'A failing check returns nothing');
+            Assert.areEqual(warrantiesBefore, [SELECT COUNT() FROM DMT_Warranty__c WHERE DMT_Risk_Line_Term__c = :risk.Id], 'The preview saves nothing');
+            Assert.areNotEqual('4811', [SELECT DMT_End_Term__c FROM DMT_Risk_Line_Term__c WHERE Id = :risk.Id].DMT_End_Term__c, 'The preview saves nothing');
+        }
+    }
+
     @IsTest
     static void relatedSelections_roundTripReplacesWarrantyAndCurrency() {
         User currentUser = grantCurrentUserWriteRole();
@@ -253,6 +292,45 @@ private class DMT_ProductSanctionControllerTest {
                 LIMIT 1
             ];
             Assert.areEqual('01', remainingRisk.gf_group_priority_line_id__c);
+        }
+    }
+
+    // CIBGLOBALD-4811 - in Ready to close, clone and delete follow the same access rule as the Products tab buttons
+    // (DMT_LineController.canEditLineInCurrentState): allowed users clone and delete, others get the access error.
+    @IsTest
+    static void cloneAndDelete_ReadyToClose_FollowTabAccessRule() {
+        User currentUser = grantCurrentUserWriteRole();
+
+        System.runAs(currentUser) {
+            DMT_Line__c line = DMT_Test_DataFactory.generateTestOtherLines();
+            DMT_Risk_Line_Term__c risk = firstRisk(line.Id);
+            TriggerBypass.setBypass();
+            update new DMT_Line__c(Id = line.Id, Status__c = DMT_Constants.READYTOCLOSE);
+            TriggerBypass.removeBypass();
+            DMT_Line__c readyToCloseLine = [SELECT Id, Status__c, Closed__c, RecordType.DeveloperName FROM DMT_Line__c WHERE Id = :line.Id];
+            Boolean tabAllowsEdit = DMT_LineController.canEditLineInCurrentState(readyToCloseLine);
+            Integer risksBefore = [SELECT COUNT() FROM DMT_Risk_Line_Term__c WHERE DMT_Line__c = :line.Id];
+
+            Test.startTest();
+            String cloneError;
+            String deleteError;
+            Id clonedRiskId;
+            try {
+                clonedRiskId = DMT_ProductSanctionMigrationController.cloneRisk(risk.Id, line.Id).clonedRiskId;
+            } catch (AuraHandledException e) {
+                cloneError = e.getMessage();
+            }
+            try {
+                DMT_ProductSanctionMigrationController.deleteRisk(clonedRiskId != null ? clonedRiskId : risk.Id, line.Id);
+            } catch (AuraHandledException e) {
+                deleteError = e.getMessage();
+            }
+            Test.stopTest();
+
+            Assert.areEqual(tabAllowsEdit, cloneError == null, 'Clone follows the Products tab access rule');
+            Assert.areEqual(tabAllowsEdit, deleteError == null, 'Delete follows the Products tab access rule');
+            Assert.areEqual(risksBefore, [SELECT COUNT() FROM DMT_Risk_Line_Term__c WHERE DMT_Line__c = :line.Id],
+                'The clone is deleted again, or nothing changed when not allowed');
         }
     }
 

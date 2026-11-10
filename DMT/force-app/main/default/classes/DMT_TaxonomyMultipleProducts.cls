@@ -346,6 +346,7 @@ public with sharing class DMT_TaxonomyMultipleProducts {
             lineTerm.gf_group_priority_line_id__c = riskSize > 9 ? String.valueOf(riskSize + 1) : '0' + String.valueOf(riskSize + 1) ;
 
             insert lineTerm;
+            DMT_ApprovalChangeStep_Helper.recheckReadyToCloseLine(lineId); // CIBGLOBALD-4811
             }
         } catch (Exception e) {
             throw new AuraHandledException('An error occur while creating category: ' + e.getMessage());

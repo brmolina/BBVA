@@ -498,8 +498,9 @@ public with sharing class DMT_SelectClientsInLineService {
                 return result;
             }
 
+            // CIBGLOBALD-4811 - Status__c added for the Ready to close check after the delete
             DMT_Line__c line = [
-                SELECT Id, Custom_Association__c
+                SELECT Id, Custom_Association__c, Status__c
                 FROM DMT_Line__c
                 WHERE Id = :lineId
                 LIMIT 1
@@ -511,6 +512,7 @@ public with sharing class DMT_SelectClientsInLineService {
                     FROM Custom_Association__c
                     WHERE Id = :line.Custom_Association__c
                 ];
+                DMT_ApprovalChangeStep_Helper.recheckReadyToCloseLine(line); // CIBGLOBALD-4811
             }
 
             result.put('error', 'OK');

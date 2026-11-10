@@ -15,6 +15,8 @@
         <members>DMT_RiskTablesLineController</members>
         <members>DMT_HPG_MainTableCustomController</members>
         <members>DMT_SelectClientsInLineService</members>
+        <members>DMT_ProductSanctionMigrationController</members>
+        <members>DMT_TaxonomyMultipleProducts</members>
         <members>DMT_ApprovalChangeStep_test</members>
         <members>DMT_OpportunityTriggerHandler_Test</members>
         <members>DMT_Line_TriggerHandler_Test</members>
@@ -27,6 +29,7 @@
         <members>DMT_RiskTablesLineController_Test</members>
         <members>DMT_HPG_MainTableCustomController_Test</members>
         <members>DMT_SelectClientsInLineService_Test</members>
+        <members>DMT_ProductSanctionControllerTest</members>
         <name>ApexClass</name>
     </types>
     <types>
@@ -45,6 +48,8 @@
         <members>dmt_approval_process_data</members>
         <members>dmtRiskTablesLine</members>
         <members>dmtSelectClientsInLineMigrated</members>
+        <members>dmtProductSanctionMigration</members>
+        <members>dmtProductSanctionFields</members>
         <name>LightningComponentBundle</name>
     </types>
     <version>65.0</version>

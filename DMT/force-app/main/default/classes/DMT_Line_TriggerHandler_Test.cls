@@ -412,6 +412,39 @@ public with sharing class DMT_Line_TriggerHandler_Test {
         Assert.areEqual(1, features.size(), 'A field missing from the snapshot JSON is compared from the tracked-field list');
     }
 
+    // CIBGLOBALD-4811 - a client row added outside edit mode to a Line in Ready to close reopens the stale task once the
+    // Line is rechecked (DMT_ApprovalChangeStep_Helper.recheckReadyToCloseLine updates the Line).
+    @isTest
+    public static void testRecheckReadyToCloseLine_ChildRowAdded_Restarts() {
+        DMT_Line__c line = queryLineWithTrackedFields();
+        Custom_Association__c ca = DMT_Test_DataFactory.generateCustomAssociation(line.Id, line.Client__c);
+        line = queryLineWithTrackedFields();
+        line.Status__c = DMT_Constants.READYTOCLOSE;
+        update line;
+        Task openTask = setupApprovalTaskWithSnapshot(queryLineWithTrackedFields(), 'readytoclose');
+        DMT_Test_DataFactory.generateCustomAssociationClient(ca.Id);
+
+        Test.startTest();
+        DMT_ApprovalChangeStep_Helper.recheckReadyToCloseLine(line.Id);
+        Test.stopTest();
+
+        Assert.areEqual(DMT_Constants.CANCELLED, [SELECT Status FROM Task WHERE Id = :openTask.Id].Status,
+            'The client row added after the snapshot reopens the Ready to close task');
+    }
+
+    // CIBGLOBALD-4811 - a Line outside Ready to close is not updated by the recheck.
+    @isTest
+    public static void testRecheckReadyToCloseLine_NotReadyToClose_NoUpdate() {
+        DMT_Line__c line = queryLineWithTrackedFields();
+
+        Test.startTest();
+        DMT_ApprovalChangeStep_Helper.recheckReadyToCloseLine(line.Id);
+        Integer dmlStatements = Limits.getDmlStatements();
+        Test.stopTest();
+
+        Assert.areEqual(0, dmlStatements, 'No Line update outside Ready to close');
+    }
+
     // CIBGLOBALD-4811 - a Line in Ready to close whose readytoclose task was closed on the current data.
     private static DMT_Line__c setupReadyToCloseLine() {
         DMT_Line__c line = queryLineWithTrackedFields();
