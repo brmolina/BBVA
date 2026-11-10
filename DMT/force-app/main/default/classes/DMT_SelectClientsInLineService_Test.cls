@@ -305,6 +305,31 @@ public with sharing class DMT_SelectClientsInLineService_Test {
     }
 
     // Changes been made for CIBGLOBALD-4687
+    // CIBGLOBALD-4811 - switch to Global on an OtherProducts Line in Ready to close: the association is deleted and the
+    // Line is rechecked (DMT_ApprovalChangeStep_Helper.recheckReadyToCloseLine); without a Line team member only a Line
+    // God user may do it (canEditLineSelection).
+    @isTest
+    static void deleteCustomAssociation_ReadyToCloseOtherProductsLine_DeletesAndRechecks() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestOtherLines();
+        // own customer group id: the @TestSetup association already uses the default one (unique field)
+        Custom_Association__c association = new DMT_UtilTestClass().createCustomAssociationRecord(line.Id, line.Client__c,
+            new Map<Schema.SObjectField, Object>{ Custom_Association__c.gf_customer_group_id__c => line.Id + '_4811' });
+        TriggerBypass.setBypass();
+        update new DMT_Line__c(Id = line.Id, Custom_Association__c = association.Id, Status__c = DMT_Constants.READYTOCLOSE);
+        TriggerBypass.removeBypass();
+        Boolean allowed = DMT_Utils.checkLineGodUser();
+
+        Test.startTest();
+        Map<String, Object> result = DMT_SelectClientsInLineService.deleteCustomAssociation(line.Id);
+        Test.stopTest();
+
+        Assert.areEqual(allowed, result.get('success'), 'Without a team member only a Line God user can switch to Global');
+        Assert.areEqual(allowed ? 0 : 1, [SELECT COUNT() FROM Custom_Association__c WHERE Id = :association.Id],
+            'The association is deleted only when allowed');
+        Assert.areEqual(DMT_Constants.READYTOCLOSE, [SELECT Status__c FROM DMT_Line__c WHERE Id = :line.Id].Status__c,
+            'The recheck update keeps the Line in Ready to close');
+    }
+
     @isTest
     static void saveGoldenSelection_updatesOnlyGoldenCode() {
         DMT_Line__c line = [

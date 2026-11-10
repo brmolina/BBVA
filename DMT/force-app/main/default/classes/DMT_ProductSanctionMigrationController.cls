@@ -92,9 +92,10 @@ public with sharing class DMT_ProductSanctionMigrationController {
             throw new AuraHandledException('lineId is required');
         }
 
+        // CIBGLOBALD-4811 - RecordType.DeveloperName added for resolveLineAccess (DMT_LineController.canEditLineInCurrentState)
         DMT_Line__c line = [
             SELECT Id, OwnerId, Line_Id__c, Name, Status__c, Closed__c, DMT_line_template_type__c,
-                   DMT_Client_Entific__c, DMT_Entity__c, Client_Type__c, Client__c, RecordType.Name
+                   DMT_Client_Entific__c, DMT_Entity__c, Client_Type__c, Client__c, RecordType.Name, RecordType.DeveloperName
             FROM DMT_Line__c
             WHERE Id = :lineId
             LIMIT 1
@@ -196,7 +197,7 @@ public with sharing class DMT_ProductSanctionMigrationController {
         if (riskId == null || lineId == null) {
             throw new AuraHandledException('riskId and lineId are required');
         }
-        ensureLineEditable(lineId);
+        DMT_Line__c line = ensureLineEditable(lineId); // CIBGLOBALD-4811
         CloneResponse response = new CloneResponse();
         List<String> cloneFields = buildCloneFieldList(DMT_Risk_Line_Term__c.SObjectType.getDescribe());
         String queryText = 'SELECT ' + String.join(cloneFields, ',')
@@ -219,6 +220,7 @@ public with sharing class DMT_ProductSanctionMigrationController {
         cloneRelatedRecords('DMT_Warranty__c', riskId, cloned.Id, clonedPriority);
         cloneRelatedRecords('DMT_Currency_Provision__c', riskId, cloned.Id, clonedPriority);
         cloneProductCustomAssociation(lineId, sourcePriority, clonedPriority);
+        DMT_ApprovalChangeStep_Helper.recheckReadyToCloseLine(line); // CIBGLOBALD-4811
         response.clonedRiskId = cloned.Id;
         return response;
     }
@@ -271,7 +273,7 @@ public with sharing class DMT_ProductSanctionMigrationController {
         if (riskId == null || lineId == null) {
             throw new AuraHandledException('riskId and lineId are required');
         }
-        ensureLineEditable(lineId);
+        DMT_Line__c line = ensureLineEditable(lineId); // CIBGLOBALD-4811
         List<DMT_Risk_Line_Term__c> toDelete = [
             SELECT Id, gf_group_priority_line_id__c, DMT_Line__c, DMT_Line__r.Line_Id__c, DMT_Line__r.RecordType.Name
             FROM DMT_Risk_Line_Term__c
@@ -282,6 +284,7 @@ public with sharing class DMT_ProductSanctionMigrationController {
             deleteProductCustomAssociations(toDelete);
             delete toDelete;
             resequenceRiskPriorities(lineId);
+            DMT_ApprovalChangeStep_Helper.recheckReadyToCloseLine(line); // CIBGLOBALD-4811
         }
     }
 
@@ -302,7 +305,7 @@ public with sharing class DMT_ProductSanctionMigrationController {
         if (lineId == null) {
             throw new AuraHandledException('lineId is required');
         }
-        ensureLineEditable(lineId);
+        DMT_Line__c line = ensureLineEditable(lineId); // CIBGLOBALD-4811
         if ((productIds == null || productIds.isEmpty()) && String.isBlank(selectedCodes)) {
             throw new AuraHandledException('productIds or selectedCodes is required');
         }
@@ -392,6 +395,7 @@ public with sharing class DMT_ProductSanctionMigrationController {
         AddProductsResponse response = new AddProductsResponse();
         response.createdCount = toInsert.size();
         resequenceRiskPriorities(lineId);
+        DMT_ApprovalChangeStep_Helper.recheckReadyToCloseLine(line); // CIBGLOBALD-4811
         return response;
     }
 
@@ -705,23 +709,21 @@ public with sharing class DMT_ProductSanctionMigrationController {
             return result;
         }
 
+        // CIBGLOBALD-4811 - Enhancement fix to existing process: outside Draft the rule is the one that shows the Products
+        // tab buttons (DMT_LineController.canEditLineInCurrentState, CIBGLOBALD-4741/4763: Line God, or team member with
+        // Edit/All and Approval Edit, in Approval, Ready to close or Closed Won), so the Apex accepts what the tab offers.
+        if (!isDraft) {
+            result.canEdit = DMT_LineController.canEditLineInCurrentState(line);
+            return result;
+        }
+
         if (!DMT_Utils.hasWriteAccess()) {
             return result;
         }
 
         DMT_TeamMember__c member = getCurrentUserLineTeamMember(line.Id);
         Boolean hasTeamEditAccess = hasTeamEditAccess(member);
-        if (isDraft) {
-            result.canEdit = line.OwnerId == UserInfo.getUserId() || hasTeamEditAccess;
-            return result;
-        }
-
-        Boolean canApprovalEdit = hasTeamEditAccess && member != null && member.DMT_ApprovalEdit__c == true;
-        Boolean isApproval = statusValue == DMT_Constants.APPROVAL;
-        Boolean isClosedWon = statusValue == DMT_Constants.CLOSED && String.valueOf(line.Closed__c) == DMT_Constants.WON;
-        Boolean isReadyToCloseOp = statusValue == DMT_Constants.READYTOCLOSE
-            && String.valueOf(line.DMT_line_template_type__c) == 'OP';
-        result.canEdit = canApprovalEdit && (isApproval || isClosedWon || isReadyToCloseOp);
+        result.canEdit = line.OwnerId == UserInfo.getUserId() || hasTeamEditAccess; // CIBGLOBALD-4811
         return result;
     }
 
@@ -742,13 +744,14 @@ public with sharing class DMT_ProductSanctionMigrationController {
         return member.AccessLevel__c == 'Edit' || member.AccessLevel__c == 'All';
     }
 
-    private static void ensureLineEditable(Id lineId) {
+    private static DMT_Line__c ensureLineEditable(Id lineId) { // CIBGLOBALD-4811
         if (lineId == null) {
             throw new AuraHandledException('lineId is required');
         }
 
+        // CIBGLOBALD-4811 - RecordType.DeveloperName added for resolveLineAccess (DMT_LineController.canEditLineInCurrentState)
         DMT_Line__c line = [
-            SELECT Id, OwnerId, Status__c, Closed__c, DMT_line_template_type__c
+            SELECT Id, OwnerId, Status__c, Closed__c, DMT_line_template_type__c, RecordType.DeveloperName
             FROM DMT_Line__c
             WHERE Id = :lineId
             LIMIT 1
@@ -756,6 +759,7 @@ public with sharing class DMT_ProductSanctionMigrationController {
         if (!resolveLineAccess(line).canEdit) {
             throw new AuraHandledException('This line cannot be edited with your current permissions and line status.');
         }
+        return line; // CIBGLOBALD-4811
     }
 
     @AuraEnabled
@@ -823,6 +827,27 @@ public with sharing class DMT_ProductSanctionMigrationController {
         String lineBusinessId = riskRecord.DMT_Line__r == null ? null : riskRecord.DMT_Line__r.Line_Id__c;
         String riskPriority = riskRecord.gf_group_priority_line_id__c;
 
+        // CIBGLOBALD-4811 - the rows come from buildRelatedSelections, shared with previewRiskFieldsSave; the DML keeps
+        // the previous order (old warranties, old currency provisions, new rows).
+        RelatedSelectionChanges changes = buildRelatedSelections(riskId, riskPriority, relatedValues);
+        if (!changes.oldWarranties.isEmpty()) {
+            delete changes.oldWarranties;
+        }
+        if (!changes.oldCurrencyRows.isEmpty()) {
+            delete changes.oldCurrencyRows;
+        }
+        List<SObject> toInsert = changes.toInsert;
+        if (!toInsert.isEmpty()) {
+            insert toInsert;
+        }
+        System.debug('Total related records inserted: ' + toInsert.size());
+        System.debug('=== END SAVE_RELATED_SELECTIONS DEBUG ===');
+    }
+
+    // CIBGLOBALD-4811 - the warranties and currency provisions saveRelatedSelections replaces, built without DML: the
+    // stored rows of each payload key and the new rows for its values.
+    private static RelatedSelectionChanges buildRelatedSelections(Id riskId, String riskPriority, Map<String, Object> relatedValues) {
+        RelatedSelectionChanges changes = new RelatedSelectionChanges();
         Boolean hasWarrantyPayload = relatedValues != null && relatedValues.containsKey(WARRANTY_FIELD_KEY);
         Boolean hasCurrencyPayload = relatedValues != null && relatedValues.containsKey(CURRENCY_PROVISION_FIELD_KEY);
         List<String> warrantyValues = hasWarrantyPayload
@@ -839,30 +864,24 @@ public with sharing class DMT_ProductSanctionMigrationController {
             + currencyProvisionValues.size() + '): ' + currencyProvisionValues);
 
         if (hasWarrantyPayload) {
-            List<DMT_Warranty__c> oldWarranties = [
+            changes.oldWarranties = [
                 SELECT Id
                 FROM DMT_Warranty__c
                 WHERE DMT_Risk_Line_Term__c = :riskId
             ];
-            if (!oldWarranties.isEmpty()) {
-                delete oldWarranties;
-            }
         }
 
         if (hasCurrencyPayload) {
-            List<DMT_Currency_Provision__c> oldCurrencyRows = [
+            changes.oldCurrencyRows = [
                 SELECT Id
                 FROM DMT_Currency_Provision__c
                 WHERE DMT_Risk_Line_Term__c = :riskId
             ];
-            if (!oldCurrencyRows.isEmpty()) {
-                delete oldCurrencyRows;
-            }
         }
 
         Map<String, Schema.SObjectField> warrantyFieldMap = Schema.SObjectType.DMT_Warranty__c.fields.getMap();
         Map<String, Schema.SObjectField> currencyProvisionFieldMap = Schema.SObjectType.DMT_Currency_Provision__c.fields.getMap();
-        List<SObject> toInsert = new List<SObject>();
+        List<SObject> toInsert = changes.toInsert;
 
         if (hasWarrantyPayload) {
             for (String warrantyValue : warrantyValues) {
@@ -894,12 +913,107 @@ public with sharing class DMT_ProductSanctionMigrationController {
             }
         }
 
-        if (!toInsert.isEmpty()) {
-            insert toInsert;
-        }
-        System.debug('Total related records inserted: ' + toInsert.size());
-        System.debug('=== END SAVE_RELATED_SELECTIONS DEBUG ===');
+        return changes;
     }
+
+    // CIBGLOBALD-4811 - the rows saveRelatedSelections deletes and inserts.
+    private class RelatedSelectionChanges {
+        List<DMT_Warranty__c> oldWarranties = new List<DMT_Warranty__c>();
+        List<DMT_Currency_Provision__c> oldCurrencyRows = new List<DMT_Currency_Provision__c>();
+        List<SObject> toInsert = new List<SObject>();
+
+        // In the DMT_ApprovalChangeStep_Handler.previewUnsavedChanges format: old rows deleted, new rows without Id.
+        List<Map<String, Object>> toUnsavedRows() {
+            List<Map<String, Object>> rows = new List<Map<String, Object>>();
+            List<SObject> oldRows = new List<SObject>();
+            oldRows.addAll((List<SObject>) oldWarranties);
+            oldRows.addAll((List<SObject>) oldCurrencyRows);
+            for (SObject record : oldRows) {
+                rows.add(new Map<String, Object>{ 'objectApiName' => String.valueOf(record.getSObjectType()), 'rowId' => (String) record.Id, 'deleted' => true });
+            }
+            for (SObject record : toInsert) {
+                Map<String, Object> values = new Map<String, Object>(record.getPopulatedFieldsAsMap());
+                rows.add(new Map<String, Object>{ 'objectApiName' => String.valueOf(record.getSObjectType()), 'rowId' => null, 'values' => values });
+            }
+            return rows;
+        }
+    }
+
+    // CIBGLOBALD-4811 - true when a change to this Line can reopen approval tasks: same filter as the Line trigger
+    // Ready to close checkpoint (DMT_Line_Helper): status Ready to close, record type TreasurySettlement or OtherProducts.
+    // Sanction Lines use this tab too and never reopen.
+    private static Boolean isReopenChecked(Id lineId) {
+        DMT_Line__c line = [SELECT Status__c, RecordType.DeveloperName FROM DMT_Line__c WHERE Id = :lineId LIMIT 1];
+        return line.Status__c == DMT_Constants.READYTOCLOSE
+            && (line.RecordType.DeveloperName == 'TreasurySettlement' || line.RecordType.DeveloperName == 'OtherProducts');
+    }
+
+    /**
+     * @description CIBGLOBALD-4811 - Ready to close reopen check of a risk line edit (dmtProductSanctionFields): the risk
+     * line fields the save writes (updateRecord) plus the warranties and currency provisions saveRelatedSelections
+     * replaces (buildRelatedSelections), compared with the snapshots of the Cases of that type
+     * (DMT_ApprovalChangeStep_Handler.previewUnsavedChanges). Saves nothing. Empty when nothing reopens, the Line is
+     * not checked (isReopenChecked) or the check fails (logged).
+     */
+    @AuraEnabled
+    public static List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> previewRiskFieldsSave(
+        String caseTypeToCheck, Id lineId, Id riskId, Map<String, Object> riskFieldChanges, Map<String, Object> relatedValues
+    ) {
+        try {
+            if (!isReopenChecked(lineId)) {
+                return new List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper>();
+            }
+            List<Map<String, Object>> rows = new List<Map<String, Object>>();
+            if (riskFieldChanges != null && !riskFieldChanges.isEmpty()) {
+                Map<String, Object> values = new Map<String, Object>(riskFieldChanges);
+                values.remove('Id');
+                rows.add(new Map<String, Object>{ 'objectApiName' => 'DMT_Risk_Line_Term__c', 'rowId' => (String) riskId, 'values' => values });
+            }
+            if (relatedValues != null && !relatedValues.isEmpty()) {
+                String riskPriority = [SELECT gf_group_priority_line_id__c FROM DMT_Risk_Line_Term__c WHERE Id = :riskId LIMIT 1].gf_group_priority_line_id__c;
+                rows.addAll(buildRelatedSelections(riskId, riskPriority, relatedValues).toUnsavedRows());
+            }
+            return DMT_ApprovalChangeStep_Handler.previewUnsavedChanges(lineId, caseTypeToCheck, null, rows);
+        } catch (Exception e) {
+            logPreviewFailure(e, 'previewRiskFieldsSave');
+            return new List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper>();
+        }
+    }
+
+    /**
+     * @description CIBGLOBALD-4811 - Ready to close reopen check of the actions that add or remove a risk line
+     * (dmtProductSanctionMigration): add product (addProducts), add category (DMT_TaxonomyMultipleProducts
+     * .saveCategoryOtherLine) and clone (cloneRisk) add a new row (riskId null); delete (deleteRisk) removes riskId.
+     * A new or removed row is enough for the comparison, so the rest of the new row is not built. Saves nothing.
+     * Empty when nothing reopens, the Line is not checked (isReopenChecked) or the check fails (logged).
+     */
+    @AuraEnabled
+    public static List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> previewRiskRowChange(
+        String caseTypeToCheck, Id lineId, Id riskId, Boolean deleted
+    ) {
+        try {
+            if (!isReopenChecked(lineId)) {
+                return new List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper>();
+            }
+            Map<String, Object> row = deleted == true
+                ? new Map<String, Object>{ 'objectApiName' => 'DMT_Risk_Line_Term__c', 'rowId' => (String) riskId, 'deleted' => true }
+                : new Map<String, Object>{ 'objectApiName' => 'DMT_Risk_Line_Term__c', 'rowId' => null, 'values' => new Map<String, Object>() };
+            return DMT_ApprovalChangeStep_Handler.previewUnsavedChanges(lineId, caseTypeToCheck, null, new List<Map<String, Object>>{ row });
+        } catch (Exception e) {
+            logPreviewFailure(e, 'previewRiskRowChange');
+            return new List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper>();
+        }
+    }
+
+    // CIBGLOBALD-4811 - a failed reopen check is logged and never blocks the save.
+    private static void logPreviewFailure(Exception e, String methodName) {
+        DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
+            e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
+            'DMT_ProductSanctionMigrationController', methodName, 'DMT', 'DMT_Risk_Line_Term__c'
+        ));
+        DMT_AsyncOrchestrator.flush();
+    }
+
 
     private static List<RiskRow> fetchRisks(Id lineId) {
         List<RiskRow> rows = new List<RiskRow>();

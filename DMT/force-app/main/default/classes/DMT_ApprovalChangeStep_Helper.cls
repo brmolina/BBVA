@@ -896,6 +896,28 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
         }
     }
 
+    /**
+     * @description CIBGLOBALD-4811 - for Line child rows saved outside edit mode (no lock release follows: clone, delete,
+     * add product or category on the Products tab, switch to Global on the Client tab). When the Line is in Ready to close
+     * it updates the Line after the rows are saved, so the Line trigger runs the readytoclose checkpoint
+     * (DMT_Line_Helper.restartApprovalTasksOnLineResubmission) as the lock release does after an edit-mode save.
+     * @param line the Line, with Status__c
+     */
+    public static void recheckReadyToCloseLine(DMT_Line__c line) {
+        if (line != null && line.Id != null && line.Status__c == DMT_Constants.READYTOCLOSE) {
+            update new DMT_Line__c(Id = line.Id);
+        }
+    }
+
+    // CIBGLOBALD-4811 - same as recheckReadyToCloseLine(DMT_Line__c), for callers that only have the Line Id (one query).
+    public static void recheckReadyToCloseLine(Id lineId) {
+        if (lineId == null) {
+            return;
+        }
+        List<DMT_Line__c> lines = [SELECT Id, Status__c FROM DMT_Line__c WHERE Id = :lineId LIMIT 1];
+        recheckReadyToCloseLine(lines.isEmpty() ? null : lines[0]);
+    }
+
     // CIBGLOBALD-4117 - row-matching rule for a snapshot's child-record sections.
     // CIBGLOBALD-4811 - Enhancement to existing process: true when the update only takes the edit lock (lock field
     // from empty to a user, every other field unchanged). Nothing the user changes can be compared yet, so the Ready to

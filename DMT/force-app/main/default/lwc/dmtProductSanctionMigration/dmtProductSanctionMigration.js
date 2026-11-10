@@ -5,6 +5,8 @@ import getData  from '@salesforce/apex/DMT_ProductSanctionMigrationController.ge
 import cloneRisk from '@salesforce/apex/DMT_ProductSanctionMigrationController.cloneRisk';
 import deleteRisk from '@salesforce/apex/DMT_ProductSanctionMigrationController.deleteRisk';
 import addProducts from '@salesforce/apex/DMT_ProductSanctionMigrationController.addProducts';
+import previewRiskRowChange from '@salesforce/apex/DMT_ProductSanctionMigrationController.previewRiskRowChange'; // CIBGLOBALD-4811
+import LightningConfirm from 'lightning/confirm'; // CIBGLOBALD-4811
 // Changes been made for CIBGLOBALD-4763 - Import approval-state UI edit eligibility for products.
 import canEditLineInApprovalStateUi from '@salesforce/apex/DMT_LineController.canEditLineInApprovalStateUi';
 
@@ -307,7 +309,42 @@ export default class DmtProductSanctionMigration extends LightningElement {
         }));
     }
 
+    /**
+     * CIBGLOBALD-4811 - Asks before an action that adds a risk line (add product, add category, clone: riskId null)
+     * or removes one (delete) when that would reopen approval tasks. Only in Ready to close;
+     * DMT_ProductSanctionMigrationController.previewRiskRowChange applies the record type filter of the Line trigger
+     * checkpoint 3 and compares the changed rows with the snapshots, without saving. A failed check counts as no reopen.
+     * @returns true to go ahead, false when the user cancels
+     */
+    async _confirmReopen(riskId, deleted) {
+        if (this._lineStatus !== 'Ready to close') {
+            return true;
+        }
+        try {
+            const features = await previewRiskRowChange({
+                caseTypeToCheck: 'readytoclose',
+                lineId: this.recordId,
+                riskId,
+                deleted
+            });
+            if (!features || features.length === 0) {
+                return true;
+            }
+        } catch (error) {
+            console.error('[dmtProductSanctionMigration][_confirmReopen]', error);
+            return true;
+        }
+        return LightningConfirm.open({
+            label: 'Modify Line?',
+            message: 'The Line will be modified and the associated cases and tasks will be reopened.' +
+                '\n\nDo you want to modify the Line?',
+            theme: 'warning'
+        });
+    }
+
     async handleClone() {
+        // CIBGLOBALD-4811 - the clone adds a risk line
+        if (!await this._confirmReopen(null, false)) return;
         this._startLoading('Cloning product...');
         try {
             const result = await cloneRisk({
@@ -329,6 +366,8 @@ export default class DmtProductSanctionMigration extends LightningElement {
     }
 
     async handleDelete() {
+        // CIBGLOBALD-4811 - the delete removes the selected risk line
+        if (!await this._confirmReopen(this.selectedRiskId, true)) return;
         this._startLoading('Deleting product...');
         try {
             const deletedId  = this.selectedRiskId;
@@ -347,7 +386,9 @@ export default class DmtProductSanctionMigration extends LightningElement {
         }
     }
 
-    handleAddCategory() {
+    async handleAddCategory() { // CIBGLOBALD-4811
+        // CIBGLOBALD-4811 - the category modal adds a risk line
+        if (!await this._confirmReopen(null, false)) return;
         this.showCategoryModal = true;
     }
 
@@ -410,6 +451,8 @@ export default class DmtProductSanctionMigration extends LightningElement {
         if (this.disableAddProductSave) {
             return;
         }
+        // CIBGLOBALD-4811 - the new products are new risk lines
+        if (!await this._confirmReopen(null, false)) return;
 
         this.addProductSaving = true;
         try {
