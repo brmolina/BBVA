@@ -169,7 +169,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
             DMT_Case_Steps_Controller.getStepsFromParentCase(c.Id);
         Test.stopTest();
 
-        Assert.areEqual(0, listStep.size(), 'The list should be empty when the Case has no ParentId');
+        Assert.areEqual(0, listStep.size(), 'La lista debería estar vacía cuando el Case no tiene ParentId');
     }
 
     @isTest
@@ -184,7 +184,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
             LIMIT 1
         ];
 
-        // Child Case pointing to the existing parent Case (which has approval Tasks)
+        // Creamos un Case hijo que apunta al Case padre ya existente (con Tasks de aprobación)
         Case childCase = DMT_Test_DataFactory.generateCase(null, null, queueId.Id);
         TriggerBypass.setBypass();
         childCase.ParentId = parentCase.Id;
@@ -196,7 +196,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
             DMT_Case_Steps_Controller.getStepsFromParentCase(childCase.Id);
         Test.stopTest();
 
-        Assert.areNotEqual(0, listStep.size(), 'It should return the steps of the parent Case');
+        Assert.areNotEqual(0, listStep.size(), 'Debería devolver los steps del Case padre');
     }
     
     /**
@@ -441,7 +441,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
 
     @isTest
     static void test_buildApproverTypeMap() {
-        // Empty list
+        //Lista vacía
         Map<String, String> resultEmpty = DMT_Case_Steps_Controller.buildApproverTypeMap(new List<Map<String,String>>());
         Assert.areEqual(0, resultEmpty.size(), 'Empty list should return empty map');
 
@@ -616,7 +616,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         insert line;
         Passport__c passport = new Passport__c(
             DMT_Line__c = line.Id,
-            DMT_Passport_Save__c = '{"data":{"features":[{"id":"99","passportSanction":"approval","tasks":[{"id":"T99"}]}]}}' // CIBGLOBALD-4801
+            DMT_Passport_Save__c = '{"data":{"features":[{"id":"99","passportSanction":"approval"}]}}'
         );
         insert passport;
         Test.startTest();
@@ -631,7 +631,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
         insert line;
         Passport__c passport = new Passport__c(
             DMT_Line__c = line.Id,
-            DMT_Passport_Save__c = '{"data":{"features":[{"id":"77","passportSanction":"approval","tasks":[{"id":"T77"}]}]}}' // CIBGLOBALD-4801
+            DMT_Passport_Save__c = '{"data":{"features":[{"id":"77","passportSanction":"approval"}]}}'
         );
         insert passport;
         Id approvalRT = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
@@ -663,7 +663,7 @@ public with sharing class DMT_Case_Steps_Controller_Test {
 
         Passport__c passport = new Passport__c(
             DMT_Line__c = line.Id,
-            DMT_Passport_Save__c = '{"data":{"features":[{"id":"88","passportSanction":"approval","tasks":[{"id":"T88"}]}]}}' // CIBGLOBALD-4801
+            DMT_Passport_Save__c = '{"data":{"features":[{"id":"88","passportSanction":"approval"}]}}'
         );
         insert passport;
 
@@ -1824,7 +1824,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> result = DMT_Case_Steps_Controller.getStepsFromUser();
         Test.stopTest();
 
-        Assert.areNotEqual(null, result, 'Result should not be null');
+        System.assertNotEquals(null, result, 'Result should not be null');
         Boolean hasClosedTasksSection = false;
         for (DMT_Case_Steps_Controller.WRAPPER_Step step : result) {
             if (step.itemKey == 'ClosedTasks') {
@@ -1832,7 +1832,7 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
                 break;
             }
         }
-        Assert.isTrue(hasClosedTasksSection, 'Result should contain a ClosedTasks section for cases where the user previously participated');
+        System.assert(hasClosedTasksSection, 'Result should contain a ClosedTasks section for cases where the user previously participated');
     }
 
     @isTest
@@ -1842,9 +1842,9 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> result = DMT_Case_Steps_Controller.getStepsFromUser();
         Test.stopTest();
 
-        Assert.areNotEqual(null, result, 'Result should not be null');
+        System.assertNotEquals(null, result, 'Result should not be null');
         // The method should complete without exception
-        Assert.isTrue(true, 'getStepsFromUser should complete without error');
+        System.assert(true, 'getStepsFromUser should complete without error');
     }
 
     @isTest
@@ -1883,130 +1883,16 @@ static void testStartCaseQueueableExecuteEmptyAndWithData() {
         List<DMT_Case_Steps_Controller.WRAPPER_Step> result = DMT_Case_Steps_Controller.getStepsFromUser();
         Test.stopTest();
 
-        Assert.areNotEqual(null, result, 'Result should not be null');
+        System.assertNotEquals(null, result, 'Result should not be null');
         // Cases with a closed Line should NOT appear in the ClosedTasks section
         for (DMT_Case_Steps_Controller.WRAPPER_Step step : result) {
             if (step.itemKey == 'ClosedTasks' && step.subitems != null) {
                 for (DMT_Case_Steps_Controller.WRAPPER_Step sub : step.subitems) {
-                    Assert.areNotEqual('CLOSED-LINE-TASK-TEST', sub.featureId, 'Case on closed line must not appear in ClosedTasks');
+                    System.assertNotEquals('CLOSED-LINE-TASK-TEST', sub.featureId, 'Case on closed line must not appear in ClosedTasks');
                 }
             }
         }
     }
 
-    // ===== CIBGLOBALD-4801 - automatic move to Ready to close (processStartNextCaseApproval -> moveStatusToReadyToClose) =====
 
-    // CIBGLOBALD-4801 - Approval feature '20' (approved) plus the given extra features, as Passport JSON
-    private static String buildReadyToClosePassportJson(String oppExternalId, String extraFeatures) {
-        return '{"data":{"opportunityId":"' + oppExternalId + '","features":['
-            + '{"id":"20","name":"Business Approval","passportSanction":"approval","orderNumber":1,'
-            + '"tasks":[{"id":"6","name":"Business Approval","approvers":[{"id":"TestExternalId4801","name":"Business"}]}]}'
-            + (String.isBlank(extraFeatures) ? '' : ',' + extraFeatures)
-            + ']}}';
-    }
-
-    // CIBGLOBALD-4801 - Passport feature with tasks, required (Y/N) for requiredStatus, workflow rule GRE
-    private static String buildRequiredFeatureJson(String featureId, String name, String passportSanction, String requiredType, String requiredStatus) {
-        return '{"id":"' + featureId + '","name":"' + name + '","passportSanction":"' + passportSanction + '","stateName":"WHITE",'
-            + '"requiredType":"' + requiredType + '","requiredStatus":"' + requiredStatus + '","requiredColorWorkflow":"GRE",'
-            + '"tasks":[{"id":"T' + featureId + '","approvers":[{"id":"TestExternalId4801","name":"Business"}]}]}';
-    }
-
-    // CIBGLOBALD-4801 - Opportunity in Approval with the given Passport JSON (DMT_Opp_Id__c is the JSON opportunityId)
-    private static Opportunity setupOpportunityInApproval(String extraFeatures) {
-        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
-        update new Opportunity(Id = opp.Id, StageName = DMT_Constants.APPROVAL);
-        DMT_Test_DataFactory.generatePassport(opp.Id, buildReadyToClosePassportJson(opp.DMT_Opp_Id__c, extraFeatures));
-        return opp;
-    }
-
-    // CIBGLOBALD-4801 - Approval Case of the feature closed with the given step result; returned as the Case flow passes it
-    private static Case createClosedApprovalCase(Id opportunityId, String featureId, String passportSanction, String stepResult) {
-        Group queue = [SELECT Id FROM Group WHERE Type = 'Queue' AND Name LIKE '%TestApproverDataFactory%' LIMIT 1];
-        Case approvalCase = DMT_Test_DataFactory.generateCase(queue.Id, new Map<Schema.SObjectField, Object>{
-            Case.opportunity_id__c => opportunityId,
-            Case.DMT_Feature_Id__c => featureId,
-            Case.DMT_Passport_Sanction__c => passportSanction,
-            Case.Status => DMT_Constants.PENDING
-        });
-        Id stepTaskRecordTypeId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get(DMT_Constants.TASK_RT_APPROVAL_STEP).getRecordTypeId();
-        DMT_Test_DataFactory.generateTasksWithOwner(queue.Id, stepTaskRecordTypeId, approvalCase.Id, 1, new Map<Schema.SObjectField, Object>{
-            Task.DMT_Step_Result__c => stepResult
-        });
-        priorCaseById.put(approvalCase.Id, queryCaseAsFlowPassesIt(approvalCase.Id));
-        update new Case(Id = approvalCase.Id, Status = DMT_Constants.FINISHED);
-        return queryCaseAsFlowPassesIt(approvalCase.Id);
-    }
-
-    // CIBGLOBALD-4801 - Case before the close, used as the flow's prior record (IsClosed false)
-    private static Map<Id, Case> priorCaseById = new Map<Id, Case>();
-
-    // CIBGLOBALD-4801 - Case fields the Case_After_Trigger_Flow passes to startNextCaseApproval
-    private static Case queryCaseAsFlowPassesIt(Id caseId) {
-        return [SELECT Id, RecordTypeId, DMT_Line__c, opportunity_id__c, DMT_LineOpportunity__c, IsClosed, Status,
-                    DMT_Passport_Sanction__c, DMT_Feature_Id__c, DMT_Closed_By_Passport__c
-                FROM Case WHERE Id = :caseId];
-    }
-
-    // CIBGLOBALD-4801 - runs the automatic step for the last approval Case and returns the Opportunity stage
-    private static String runStartNextCaseApproval(Opportunity opp, Case closedCase) {
-        Test.startTest();
-        DMT_Case_Steps_Controller.processStartNextCaseApproval(closedCase, priorCaseById.get(closedCase.Id));
-        Test.stopTest();
-        return [SELECT StageName FROM Opportunity WHERE Id = :opp.Id].StageName;
-    }
-
-    // CIBGLOBALD-4801 - every approval feature approved, but a passport feature required for Ready to close is not green: stays in Approval
-    @isTest
-    static void testMoveToReadyToClose_RequiredPassportFeatureNotGreen_StaysInApproval() {
-        TriggerBypass.setBypass();
-        Opportunity opp = setupOpportunityInApproval(buildRequiredFeatureJson('226', 'Asset Allocation Validation', 'passport', 'Y', 'READY TO CLOSE'));
-        Case closedCase = createClosedApprovalCase(opp.Id, '20', 'approval', 'Yes');
-
-        String stage = runStartNextCaseApproval(opp, closedCase);
-
-        Assert.areEqual(DMT_Constants.APPROVAL, stage, 'A required feature that is not green must block the automatic move');
-    }
-
-    // CIBGLOBALD-4801 - the same required feature approved (green): moves to Ready to close
-    @isTest
-    static void testMoveToReadyToClose_RequiredPassportFeatureGreen_MovesToReadyToClose() {
-        TriggerBypass.setBypass();
-        Opportunity opp = setupOpportunityInApproval(buildRequiredFeatureJson('226', 'Asset Allocation Validation', 'passport', 'Y', 'READY TO CLOSE'));
-        createClosedApprovalCase(opp.Id, '226', 'passport', 'Yes');
-        Case closedCase = createClosedApprovalCase(opp.Id, '20', 'approval', 'Yes');
-
-        String stage = runStartNextCaseApproval(opp, closedCase);
-
-        Assert.areEqual(DMT_Constants.READYTOCLOSE, stage, 'With every required feature green the Opportunity must move to Ready to close');
-    }
-
-    // CIBGLOBALD-4801 - features not required for Ready to close (requiredType N, or required for Closed Won) do not block
-    @isTest
-    static void testMoveToReadyToClose_FeaturesNotRequiredForReadyToClose_MovesToReadyToClose() {
-        TriggerBypass.setBypass();
-        Opportunity opp = setupOpportunityInApproval(
-            buildRequiredFeatureJson('301', 'Not required', 'passport', 'N', 'READY TO CLOSE') + ','
-            + buildRequiredFeatureJson('302', 'Required for Closed Won', 'readytoclose', 'Y', 'CLOSED WON'));
-        Case closedCase = createClosedApprovalCase(opp.Id, '20', 'approval', 'Yes');
-
-        String stage = runStartNextCaseApproval(opp, closedCase);
-
-        Assert.areEqual(DMT_Constants.READYTOCLOSE, stage, 'Features not required for Ready to close must not block the move');
-    }
-
-    // CIBGLOBALD-4801 - an approval feature closed with No: stays in Approval (approval features keep being checked)
-    @isTest
-    static void testMoveToReadyToClose_ApprovalFeatureRejected_StaysInApproval() {
-        TriggerBypass.setBypass();
-        Opportunity opp = setupOpportunityInApproval(
-            '{"id":"21","name":"Other Approval","passportSanction":"approval","orderNumber":2,'
-            + '"tasks":[{"id":"7","approvers":[{"id":"TestExternalId4801","name":"Other"}]}]}');
-        createClosedApprovalCase(opp.Id, '21', 'approval', 'No');
-        Case closedCase = createClosedApprovalCase(opp.Id, '20', 'approval', 'Yes');
-
-        String stage = runStartNextCaseApproval(opp, closedCase);
-
-        Assert.areEqual(DMT_Constants.APPROVAL, stage, 'A rejected approval feature must block the automatic move');
-    }
 }

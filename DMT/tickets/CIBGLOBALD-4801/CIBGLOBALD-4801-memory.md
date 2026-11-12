@@ -1,6 +1,6 @@
 ---
 name: cibglobald-4801
-description: "Auto-advance Approval -> Ready to close ignores Passport features required for RTC (requiredType Y + requiredStatus READY TO CLOSE); implemented, deployed DEV, auto + browser tests PASSED 2026-11-10; waiting user staging / commit"
+description: "ROLLED BACK in DMT_TCM_DEV 2026-11-12, ticket will NOT be delivered; was: required Passport features (requiredType Y + requiredStatus) block the move to Ready to close"
 metadata:
   node_type: memory
   type: project
@@ -101,3 +101,23 @@ the user moves manually (gate passes). Not part of the ticket.
 - 2026-11-11: user renamed the LWC import alias to validateTrafficLightRulesForStageChange (Apex name unchanged); I fixed its doc comment,
   redeploy 0AfgN000003WzUrSAK Succeeded. User staged (company repo). Commit message + ticket comment 1 (technical note) saved in
   DMT/tickets/CIBGLOBALD-4801/. Next: personal repo commit and push when the user says.
+**2026-11-12 (personal repo):** worktree leftovers committed on branch 4801 (b93e0640, incl. org drift DMT_Features_Selector, 4836 lines in Line_Helper, 4709 in Line_TriggerHandler), merged to main (f009385e), pushed.
+
+**ROLLBACK 2026-11-12 (user: ticket will not be delivered anymore):** rebuilt from the pre-4801 baseline (scratchpad baseline, now saved in
+DMT/tickets/CIBGLOBALD-4801/CIBGLOBALD-4801-org-original/); org copy before rollback saved in CIBGLOBALD-4801-org-before-rollback-2026-11-12/.
+8 files restored from baseline as is; DMT_Line_Helper = org copy with only the avoidPassingApproval block back to baseline (keeps Alejandro's
+2 hunks); dmt_custom_path_opp.js = org copy with only the 2 toast lines back (keeps the 2026-11-11 16:10 deploy that dropped the
+validateStageAdvanceRequirements import and a commented toast). Only our own classes referenced DMT_Semaphore_Logic (MetadataComponentDependency).
+Deployed from temp project scratchpad/rb4801 with --ignore-conflicts (tracking only; org check showed no change since retrieve), NoTestRun:
+0AfgN000003XbjrSAC Succeeded. Tests after: 125/126, only DMT_Line_Helper_test.testcreateConsolidatedLine (validation rule, also failed before
+the rollback). Org == rollback files, no 4801 marker in org. Personal repo (main) still holds the 4801 code: not synced (shared tree), waiting
+for the user. DEV test data left: Opp 006gN000009xTVZQA2 (RTC), Line a5ugN00000025LNQAY, ZZ_TEST_4801 Cases, Passports with test JSON.
+- 2026-11-12 Jorge: Opp stage path showed 'Error validating traffic light rules.' (no Passport). Cause NOT 4801: the 2026-11-11 16:10 UTC deploy
+  of dmt_custom_path_opp (under Bruno's user, source unknown, likely IDE deploy of a copy without the method) removed the import of
+  validateStageAdvanceRequirements while line ~346 still calls it -> ReferenceError -> LWC fallback toast. The 4801 rollback kept that copy.
+  User OK -> restored the 2 import lines (same as pre-4801 baseline), deploy 0AfgN000003XsccSAC Succeeded, org == fix. Pre-fix copy in
+  DMT/tickets/CIBGLOBALD-4801/CIBGLOBALD-4801-org-before-import-fix-2026-11-12/.
+- **PARKED 2026-11-12 (user):** stays rolled back in DEV. Jorge's 'Error validating traffic light rules.' was NOT the 4801 code: the
+  single-component deploy 0AfgN000003XAgPSAW (2026-11-11 16:10:14 UTC, Bruno's user, no session recorded it) removed the
+  validateStageAdvanceRequirements import from dmt_custom_path_opp. Import fixed today (0AfgN000003XsccSAC). If they report more errors,
+  decide then: redeploying 4801 = files in CIBGLOBALD-4801-org-before-rollback-2026-11-12/ (keep the import fix), same org check first.

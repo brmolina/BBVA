@@ -333,21 +333,15 @@ async isEditingRecord() {
             if (!result.isValid && result.incompleteFeatures?.length > 0) {
                 const featureNames = result.incompleteFeatures.join(', ')
                 const featureCount = result.incompleteFeatures.length
-                const messageText = featureCount === 1
-                    ? `Opportunity cannot advance to ${targetStage} because the required feature ${featureNames} does not meet its traffic light rule.` // CIBGLOBALD-4801
-                    : `Opportunity cannot advance to ${targetStage} because the required features ${featureNames} do not meet their traffic light rule.` // CIBGLOBALD-4801
+                const messageText = featureCount === 1 
+                    ? `Opportunity cannot advance to ${targetStage} because the feature ${featureNames} has been rejected.`
+                    : `Opportunity cannot advance to ${targetStage} because the features ${featureNames} have been rejected.`
                 this.dispatchEvent(new ShowToastEvent({
                     title: 'Error',
                     message: messageText,
                     variant: 'error',
                     mode: 'dismissable'
                 }))
-                /*this.dispatchEvent(new ShowToastEvent({
-                    title: 'Error',
-                    message: `Opportunity cannot advance to ${targetStage} because the following features do not meet the required semaphore conditions: ${featureNames}.`,
-                    variant: 'error',
-                    mode: 'dismissable'
-                }))*/
                 return false
             }
 

@@ -20,7 +20,6 @@ import previewCompareTasksFromCase from '@salesforce/apex/DMT_ApprovalChangeStep
 import fetchClientDataFromServiceLine from '@salesforce/apex/DMT_HPG_MainTableCustomController.fetchClientDataFromServiceLine';
 import lastDate from '@salesforce/apex/DMT_HPG_Utils.lastDate';
 import checkProspectInLine from '@salesforce/apex/DMT_Line_Helper.checkProspectInLine';
-import validateTrafficLightRulesForStageChange from '@salesforce/apex/DMT_FeaturesController.validateSemaphoreRulesForStageChange'; // CIBGLOBALD-4801
 
 const ERROR_INVALID_UPDATING = 'Error updating status:'
 const ERROR_TITLE =
@@ -405,11 +404,6 @@ export default class Dmt_custom_path_line extends LightningElement {
   }
 
   async updateStatus (newStatus) { // CIBGLOBALD-4811
-    // CIBGLOBALD-4801 - required Passport features for the target status must meet their traffic light rule
-    if (!(await this.validateTrafficLightForStage(this.trafficLightTargetStatus(newStatus)))) {
-      this.resetPathAfterBlockedMove()
-      return
-    }
     await this.showReopenWarning(newStatus) // CIBGLOBALD-4811
     const fields = {}
     fields[ID_FIELD.fieldApiName] = this.recordId
@@ -463,59 +457,11 @@ export default class Dmt_custom_path_line extends LightningElement {
       })
   }
 
-  // CIBGLOBALD-4801 - Status__c 'Closed' plus Won/Lost (DMT_Line__c.Closed__c) is checked as Closed Won / Closed Lost, as for Opportunities
-  trafficLightTargetStatus (newStatus) {
-    return newStatus === 'Closed' && this.wonLostValue ? 'Closed ' + this.wonLostValue : newStatus
-  }
-
-  // CIBGLOBALD-4801 - path back to the current status after a blocked move
-  resetPathAfterBlockedMove () {
-    this.selectedStage = this.status
-    const childComponent = this.template.querySelector('.childCustomPath')
-    if (childComponent) {
-      childComponent.setLoading(false)
-      childComponent.setIsDisabled(false)
-    }
-  }
-
-  /**
-   * CIBGLOBALD-4801 - Traffic light check before a status change (imported as validateTrafficLightRulesForStageChange from the
-   * Apex method DMT_FeaturesController.validateSemaphoreRulesForStageChange, the same rule as dmt_custom_path_opp): Passport features with requiredType Y and requiredStatus = target status must
-   * meet requiredColorCapability / requiredColorWorkflow. Shows the blocking features and returns false; an error in the
-   * check also blocks.
-   */
-  async validateTrafficLightForStage (targetStatus) {
-    try {
-      const result = await validateTrafficLightRulesForStageChange({ opportunityId: this.recordId, targetStatus })
-      if (result && !result.isValid) {
-        const featureNames = (result.incompleteFeatures || []).join(', ')
-        const message = (result.incompleteFeatures || []).length === 1
-          ? `Line cannot advance to ${targetStatus} because the required feature ${featureNames} does not meet its traffic light rule.`
-          : `Line cannot advance to ${targetStatus} because the required features ${featureNames} do not meet their traffic light rule.`
-        this.dispatchEvent(new ShowToastEvent({ title: ERROR_TITLE, message, variant: 'error', mode: 'dismissable' }))
-        return false
-      }
-      return true
-    } catch (error) {
-      this.dispatchEvent(new ShowToastEvent({
-        title: ERROR_TITLE,
-        message: error?.body?.message || 'The required Passport features could not be checked.',
-        variant: 'error',
-        mode: 'dismissable'
-      }))
-      return false
-    }
-  }
-
   handleWonLostChange (event) {
     this.wonLostValue = event.target.value
   }
 
-  async handleModalSave () { // CIBGLOBALD-4801
-    // CIBGLOBALD-4801 - same traffic light check as the path before moving to Ready to close
-    if (!(await this.validateTrafficLightForStage('Ready to close'))) {
-      return
-    }
+  handleModalSave () {
     const fields = {}
     fields[ID_FIELD.fieldApiName] = this.recordId
     fields[STATUS_FIELD.fieldApiName] = 'Ready to close'
@@ -534,12 +480,7 @@ export default class Dmt_custom_path_line extends LightningElement {
       })
   }
 
-  async saveModal () { // CIBGLOBALD-4801
-    // CIBGLOBALD-4801 - same traffic light check as the path before closing (Closed Won / Closed Lost)
-    if (!(await this.validateTrafficLightForStage(this.trafficLightTargetStatus('Closed')))) {
-      this.resetPathAfterBlockedMove()
-      return
-    }
+  saveModal () {
     const childComponent = this.template.querySelector('.childCustomPath')
     if (childComponent) {
       childComponent.setLoading(true)

@@ -1,0 +1,79 @@
+<template>
+    <!-- CIBGLOBALD-4811 -->
+    <c-dmt_customtoast></c-dmt_customtoast>
+    <div class="slds-card slds-p-around_medium slds-m-bottom_small">
+        <div class="slds-path">
+            <div class="slds-grid slds-path__track">
+                <div class="slds-grid slds-path__scroller-container">
+                    <div class="slds-path__scroller">
+                        <div class="slds-path__scroller_inner">
+                            <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal"
+                                aria-label="Opportunity Stage Path">
+                                <template for:each={stageItems} for:item="stage">
+                                    <li key={stage.value} class={stage.cssClass} role="presentation">
+                                        <a class="slds-path__link" role="option" tabindex={stage.tabindex}
+                                            aria-selected={stage.isSelected} data-value={stage.value}
+                                            onclick={handleStageClick} title={stage.label}>
+                                            <span class="slds-path__stage">
+                                                <lightning-icon icon-name="utility:check" size="x-small" variant="inverse"
+                                                    alternative-text="Stage Complete"></lightning-icon>
+                                                <span class="slds-assistive-text">Stage Complete</span>
+                                            </span>
+                                            <span class="slds-path__title">{stage.label}</span>
+                                        </a>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Path action button -->
+                <div class="slds-grid slds-path__action">
+                    <div class="slds-is-relative action-button-wrapper">
+                        <button class="slds-button slds-button_brand slds-path__mark-complete" disabled={isLoading}
+                            onclick={handleMarkAsCurrent}>
+                            <lightning-icon class="slds-button__icon slds-button__icon_left" icon-name="utility:check"
+                                size="x-small" variant="inverse" alternative-text="Check">
+                            </lightning-icon> {actionButtonLabel}</button>
+                        <template lwc:if={isLoading}>
+                            <div class="spinner-overlay">
+                                <div role="status" class="slds-spinner slds-spinner_small slds-spinner_brand">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <template if:true={showPendingChangesModal}>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <section role="dialog" tabindex="-1" aria-modal="true"
+                    aria-labelledby="modal-heading-01"
+                    aria-describedby="modal-content-id-1"
+                    class="block-changes slds-modal slds-fade-in-open slds-modal_xxx-small">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">
+                            {labels.modalUnsavedChangesTitle}
+                        </h1>
+                    </div>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <p>{labels.modalUnsavedChangesBody}</p>
+                    </div>
+                    <div class="slds-modal__footer slds-modal__footer_directional">
+                        <button class="slds-button slds-button_destructive" onclick={handleExitWithoutSaving}>
+                            {labels.btnExitWithoutSaving}
+                        </button>
+                        <button class="slds-button slds-button_brand" onclick={handleCloseModal}>
+                            {labels.btnKeepEditing}
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </template>
+    </div>
+</template>
