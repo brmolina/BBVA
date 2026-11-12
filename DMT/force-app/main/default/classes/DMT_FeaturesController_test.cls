@@ -1,16 +1,17 @@
 @isTest
 public with sharing class DMT_FeaturesController_test {
+    private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass(); // CIBGLOBALD-4801
     static Id testLineId;
 
     @TestSetup
     static void setupTestData() {
 
-        // Account necesaria para evitar NullPointerException en el trigger de Opportunity
+        // Account needed to avoid a NullPointerException in the Opportunity trigger
         Account testAccount = new Account(Name = 'Test Account');
         insert testAccount;
 
         DMT_Line__c line = new DMT_Line__c(
-            Name = 'Línea de prueba',
+            Name = 'Test line',
             Line_Id__c = '00002'
         );
         insert line;
@@ -60,9 +61,9 @@ public with sharing class DMT_FeaturesController_test {
         List<Map<String, Object>> result = DMT_FeaturesController.loadFeatures(testLineId, 'Type1');
         Test.stopTest();
 
-        System.assertNotEquals(null, result, 'El resultado no debe ser null');
-        System.assert(result.size() > 0, 'Debe haber al menos una feature devuelta');
-        System.assert(result[0].containsKey('isSelected'), 'Debe contener el campo isSelected');
+        Assert.areNotEqual(null, result, 'The result must not be null');
+        Assert.isTrue(result.size() > 0, 'At least one feature must be returned');
+        Assert.isTrue(result[0].containsKey('isSelected'), 'It must contain the isSelected field');
     }
 
     @isTest
@@ -75,7 +76,7 @@ public with sharing class DMT_FeaturesController_test {
         Id passportId = DMT_FeaturesController.getPassportIdFromLineOrOpportunity(lineId);
         Test.stopTest();
 
-        System.assertNotEquals(null, passportId, 'Debe devolver un Id de Passport');
+        Assert.areNotEqual(null, passportId, 'It must return a Passport Id');
     }
 
     @isTest
@@ -110,7 +111,7 @@ public with sharing class DMT_FeaturesController_test {
         Assert.areEqual('GREEN', features[1].get('stateName'), 'Second feature stateName should match.');
     }
 
-    // --- Helpers reutilizables: Para nueva lógica de semáforos en passport ---
+    // --- Reusable helpers for the Passport traffic light rules ---
 
     private static Map<String, Object> buildFeature(String id, String name, String stateName, String requiredType,
                                                       String reqColorCap, String reqColorWF, String operatorType,
@@ -137,52 +138,33 @@ public with sharing class DMT_FeaturesController_test {
     }
 
     private static Opportunity createTestOpportunity(String name, String extId) {
-        Account acc = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
-        Opportunity opp = new Opportunity(
-            Name = name,
-            StageName = 'Prospecting',
-            CloseDate = Date.today().addDays(30),
-            DMT_Opp_Id__c = extId,
-            AccountId = acc.Id
-        );
-        insert opp;
-        return opp;
+        // CIBGLOBALD-4801 - Opportunity from DMT_Test_DataFactory instead of an inline insert
+        return DMT_Test_DataFactory.generateOpportunity(new Map<Schema.SObjectField, Object>{
+            Opportunity.Name => name,
+            Opportunity.DMT_Opp_Id__c => extId
+        });
     }
 
     private static Passport__c createTestPassport(Id opportunityId, List<Map<String, Object>> features) {
-        Passport__c passport = new Passport__c(
-            Opportunity__c = opportunityId,
-            DMT_Passport_Save__c = buildPassportJson(features)
-        );
-        insert passport;
-        return passport;
+        // CIBGLOBALD-4801 - Passport from DMT_Test_DataFactory (reuses the one the Opportunity automation may create)
+        return DMT_Test_DataFactory.generatePassport(opportunityId, buildPassportJson(features));
     }
 
-    // Reutiliza el mismo patrón que ya usaban los tests DEPRECATED (Case + Task con RecordType DMT_Step_Approval)
-    private static Task createWorkflowCaseAndTask(Id opportunityId, String featureId, String caseStatus, String stepResult) {
-        Case workflowCase = new Case(
-            Subject = 'Workflow Case ' + featureId,
-            Status = caseStatus
-        );
-        workflowCase.put('Opportunity_Id__c', opportunityId);
-        workflowCase.put('DMT_Feature_Id__c', featureId);
-        insert workflowCase;
-
-        RecordType stepApprovalRt = [
-            SELECT Id FROM RecordType
-            WHERE SObjectType = 'Task' AND DeveloperName = 'DMT_Step_Approval'
-            LIMIT 1
-        ];
-
-        Task workflowTask = new Task(
-            WhatId = workflowCase.Id,
-            Subject = 'Workflow Task ' + featureId,
-            Status = 'Completed',
-            RecordTypeId = stepApprovalRt.Id
-        );
-        workflowTask.put('DMT_Step_Result__c', stepResult);
-        insert workflowTask;
-        return workflowTask;
+    // CIBGLOBALD-4801 - Approval Case (record type Approval, as every feature Case) of an Opportunity or a DMT Line with one
+    // step Task, from DMT_Test_DataFactory instead of inline inserts
+    private static Task createWorkflowCaseAndTask(Id recordId, String featureId, String caseStatus, String stepResult) {
+        Schema.SObjectField contextField = recordId.getSObjectType() == Opportunity.SObjectType ? Case.opportunity_id__c : Case.DMT_Line__c;
+        Case workflowCase = DMT_Test_DataFactory.generateCase(UserInfo.getUserId(), new Map<Schema.SObjectField, Object>{
+            Case.Subject => 'Workflow Case ' + featureId,
+            Case.Status => caseStatus,
+            Case.DMT_Feature_Id__c => featureId,
+            contextField => recordId
+        });
+        Id stepTaskRecordTypeId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get(DMT_Constants.TASK_RT_APPROVAL_STEP).getRecordTypeId();
+        return DMT_Test_DataFactory.generateTasksWithOwner(UserInfo.getUserId(), stepTaskRecordTypeId, workflowCase.Id, 1, new Map<Schema.SObjectField, Object>{
+            Task.Status => 'Completed',
+            Task.DMT_Step_Result__c => stepResult
+        })[0];
     }
 
     @isTest
@@ -191,7 +173,7 @@ public with sharing class DMT_FeaturesController_test {
         Map<String, Object> result = DMT_FeaturesController.validateSemaphoreRulesForStageChange('irrelevantId', 'Closed Lost');
         Test.stopTest();
 
-        Assert.isTrue((Boolean) result.get('isValid'), 'Closed Lost debe devolver siempre isValid = true');
+        Assert.isTrue((Boolean) result.get('isValid'), 'Closed Lost must always return isValid = true');
         Assert.isTrue(((List<Object>) result.get('incompleteFeatures')).isEmpty());
     }
 
@@ -206,7 +188,7 @@ public with sharing class DMT_FeaturesController_test {
         Map<String, Object> result = DMT_FeaturesController.validateSemaphoreRulesForStageChange(opp.Id, 'Closed Won');
         Test.stopTest();
 
-        Assert.isFalse((Boolean) result.get('isValid'), 'Capability RED no cumple GRE requerido, debe bloquear con AND');
+        Assert.isFalse((Boolean) result.get('isValid'), 'Capability RED does not meet the required GRE, it must block with AND');
         List<Object> blocking = (List<Object>) result.get('incompleteFeatures');
         Assert.areEqual(1, blocking.size());
         Assert.areEqual('Capability Blocking Feature', (String) blocking[0]);
@@ -219,7 +201,7 @@ public with sharing class DMT_FeaturesController_test {
         createTestPassport(opp.Id, new List<Map<String, Object>>{
             buildFeature('F1', 'Feature Case Red', 'YEL', 'Y', 'GRE', 'RED', 'OR', 'Closed Won', tasks)
         });
-        createWorkflowCaseAndTask(opp.Id, 'F1', 'Finished', 'No'); // <- crea el Case + Task real
+        createWorkflowCaseAndTask(opp.Id, 'F1', 'Finished', 'No');
 
         Test.startTest();
         Map<String, Object> result = DMT_FeaturesController.validateSemaphoreRulesForStageChange(opp.Id, 'Closed Won');
@@ -230,13 +212,13 @@ public with sharing class DMT_FeaturesController_test {
 
     @isTest
     static void testResolveWorkflowColor_FinishedYes_ReturnsGre() {
-        Assert.areEqual('GRE', DMT_FeaturesController.resolveWorkflowColor('Finished', 'Yes'));
+        Assert.areEqual('GRE', DMT_Semaphore_Logic.resolveWorkflowColor('Finished', 'Yes')); // CIBGLOBALD-4801
     }
 
     @isTest
     static void testResolveWorkflowColor_PendingOrInProgress_ReturnsYellow() {
-        Assert.areEqual('YEL', DMT_FeaturesController.resolveWorkflowColor('Pending', null));
-        Assert.areEqual('YEL', DMT_FeaturesController.resolveWorkflowColor('In Progress', null));
+        Assert.areEqual('YEL', DMT_Semaphore_Logic.resolveWorkflowColor('Pending', null)); // CIBGLOBALD-4801
+        Assert.areEqual('YEL', DMT_Semaphore_Logic.resolveWorkflowColor('In Progress', null)); // CIBGLOBALD-4801
     }
 
     @isTest
@@ -249,12 +231,126 @@ public with sharing class DMT_FeaturesController_test {
     static void testEvaluate_NoOperator_AllBranches() {
         DMT_Semaphore_Logic.SemaphoreRule r = new DMT_Semaphore_Logic.SemaphoreRule();
         r.requiredColorCapability = 'GRE'; r.requiredColorWorkflow = null;
-        Assert.isTrue(DMT_Semaphore_Logic.evaluate(r, 'GRE', null));   // solo capability
+        Assert.isTrue(DMT_Semaphore_Logic.evaluate(r, 'GRE', null));   // capability only
 
         r.requiredColorCapability = null; r.requiredColorWorkflow = 'GRE';
-        Assert.isTrue(DMT_Semaphore_Logic.evaluate(r, null, 'GRE'));   // solo workflow
+        Assert.isTrue(DMT_Semaphore_Logic.evaluate(r, null, 'GRE'));   // workflow only
 
         r.requiredColorCapability = null; r.requiredColorWorkflow = null;
-        Assert.isFalse(DMT_Semaphore_Logic.evaluate(r, 'GRE', 'GRE')); // ninguno configurado
+        Assert.isFalse(DMT_Semaphore_Logic.evaluate(r, 'GRE', 'GRE')); // none configured
+    }
+
+    // CIBGLOBALD-4801 - coverage of validateStageAdvanceRequirements (same class): Closed Lost never blocks
+    @isTest
+    static void testValidateStageAdvanceRequirements_ClosedLost_IsValid() {
+        Map<String, Object> result = DMT_FeaturesController.validateStageAdvanceRequirements(null, 'Approval', 'Closed Lost');
+        Assert.isTrue((Boolean) result.get('isValid'), 'Closed Lost must always be valid');
+    }
+
+    // CIBGLOBALD-4801 - coverage of validateStageAdvanceRequirements: Proposal -> Approval without Description of the deal is blocked
+    @isTest
+    static void testValidateStageAdvanceRequirements_ApprovalWithoutDescription_IsInvalid() {
+        Opportunity opp = createTestOpportunity('Opp StageAdvance', 'EXT-STAGEADVANCE-001');
+        createTestPassport(opp.Id, new List<Map<String, Object>>{
+            buildFeature('F1', 'Any feature', 'GREEN', 'N', null, null, null, null, null)
+        });
+
+        Test.startTest();
+        Map<String, Object> result = DMT_FeaturesController.validateStageAdvanceRequirements(opp.Id, 'Proposal', 'Approval');
+        Test.stopTest();
+
+        Assert.isFalse((Boolean) result.get('isValid'), 'Approval needs the Description of the deal');
+        Assert.isTrue(String.valueOf(result.get('errorMessage')).contains('Description of the deal'), 'The message names the missing field');
+    }
+
+    // CIBGLOBALD-4801 - Finished Case without step result is grey, as in the Passport cards; Finished + No is red
+    @isTest
+    static void testResolveWorkflowColor_FinishedWithoutResult_ReturnsGrey() {
+        Assert.areEqual('GRA', DMT_Semaphore_Logic.resolveWorkflowColor('Finished', null), 'Finished without result is grey');
+        Assert.areEqual('RED', DMT_Semaphore_Logic.resolveWorkflowColor('Finished', 'No'), 'Finished with No is red');
+        Assert.isNull(DMT_Semaphore_Logic.resolveWorkflowColor(null, null), 'No Case status gives no color');
+    }
+
+    // CIBGLOBALD-4801 - Line moving to Ready to close: a passport-sanction feature required for READY TO CLOSE whose
+    // workflow is not green (tasks, no Case yet = YEL) blocks, even when it is not an approval feature
+    @isTest
+    static void testValidateSemaphore_LineReadyToClose_RequiredPassportFeatureNotGreen_Blocks() {
+        DMT_Line__c line = createLineWithPassport(new List<Map<String, Object>>{
+            buildRequiredFeature('226', 'Asset Allocation Validation', 'passport', 'Y', 'READY TO CLOSE')
+        });
+
+        Test.startTest();
+        Map<String, Object> result = DMT_FeaturesController.validateSemaphoreRulesForStageChange(line.Id, DMT_Constants.READYTOCLOSE);
+        Test.stopTest();
+
+        Assert.isFalse((Boolean) result.get('isValid'), 'A required feature without a green workflow must block Ready to close');
+        Assert.areEqual(new List<String>{ 'Asset Allocation Validation' }, (List<String>) result.get('incompleteFeatures'), 'The blocking feature name is returned');
+    }
+
+    // CIBGLOBALD-4801 - same feature approved (Case Finished, latest step Yes) lets the Line move
+    @isTest
+    static void testValidateSemaphore_LineReadyToClose_RequiredFeatureApproved_IsValid() {
+        DMT_Line__c line = createLineWithPassport(new List<Map<String, Object>>{
+            buildRequiredFeature('226', 'Asset Allocation Validation', 'passport', 'Y', 'READY TO CLOSE')
+        });
+        createWorkflowCaseAndTask(line.Id, '226', DMT_Constants.FINISHED, 'Yes');
+
+        Test.startTest();
+        Map<String, Object> result = DMT_FeaturesController.validateSemaphoreRulesForStageChange(line.Id, DMT_Constants.READYTOCLOSE);
+        Test.stopTest();
+
+        Assert.isTrue((Boolean) result.get('isValid'), 'A green required feature must not block Ready to close');
+    }
+
+    // CIBGLOBALD-4801 - features not required for the target status never block: requiredType N, or required for another status
+    @isTest
+    static void testValidateSemaphore_FeatureNotRequiredForTargetStatus_IsValid() {
+        Opportunity opp = createTestOpportunity('Opp NotRequired', 'EXT-NOTREQUIRED-001');
+        createTestPassport(opp.Id, new List<Map<String, Object>>{
+            buildRequiredFeature('F1', 'Not required feature', 'passport', 'N', 'READY TO CLOSE'),
+            buildRequiredFeature('F2', 'Required for Closed Won', 'readytoclose', 'Y', 'CLOSED WON')
+        });
+
+        Test.startTest();
+        Map<String, Object> result = DMT_FeaturesController.validateSemaphoreRulesForStageChange(opp.Id, DMT_Constants.READYTOCLOSE);
+        Test.stopTest();
+
+        Assert.isTrue((Boolean) result.get('isValid'), 'Features not required for Ready to close must not block it');
+    }
+
+    // CIBGLOBALD-4801 - a check that cannot run blocks the move (the path shows the error)
+    @isTest
+    static void testValidateSemaphore_InvalidRecordId_Throws() {
+        Boolean thrown = false;
+        Test.startTest();
+        try {
+            DMT_FeaturesController.validateSemaphoreRulesForStageChange('not-an-id', DMT_Constants.READYTOCLOSE);
+        } catch (AuraHandledException e) {
+            thrown = true;
+        }
+        Test.stopTest();
+
+        Assert.isTrue(thrown, 'A failing check must throw so the stage change is blocked');
+    }
+
+    // CIBGLOBALD-4801 - Passport feature with tasks and a workflow rule (GRE) for the given required type and status
+    private static Map<String, Object> buildRequiredFeature(String id, String name, String passportSanction, String requiredType, String requiredStatus) {
+        List<Object> tasks = new List<Object>{ new Map<String, Object>{ 'id' => 'T' + id } };
+        Map<String, Object> feature = buildFeature(id, name, 'WHITE', requiredType, null, 'GRE', null, requiredStatus, tasks);
+        feature.put('passportSanction', passportSanction);
+        return feature;
+    }
+
+    // CIBGLOBALD-4801 - DMT Line in Approval with a Passport holding the given features
+    private static DMT_Line__c createLineWithPassport(List<Map<String, Object>> features) {
+        DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+            DMT_Line__c.Line_Id__c => 'L4801',
+            DMT_Line__c.Status__c => DMT_Constants.APPROVAL
+        });
+        DMT_UTIL.createPassportRecord(new Map<Schema.SObjectField, Object>{
+            Passport__c.DMT_Line__c => line.Id,
+            Passport__c.DMT_Passport_Save__c => buildPassportJson(features)
+        });
+        return line;
     }
 }

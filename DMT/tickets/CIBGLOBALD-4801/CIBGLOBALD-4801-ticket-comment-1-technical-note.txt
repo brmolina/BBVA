@@ -1,0 +1,50 @@
+Nota técnica CIBGLOBALD-4801
+
+Qué se ha hecho
+El paso automático de Approval a Ready to close solo comprobaba las features de approval. Ahora también exige que toda feature del Passport obligatoria para Ready to close cumpla su regla de semáforo, sea cual sea su passportSanction (passport, approval, readytoclose). Si alguna no la cumple, la Opportunity o la Line se queda en Approval. El stage path de Opportunity y el de Line aplican la misma regla cuando el usuario mueve el registro a mano.
+
+Regla exacta (DMT_Semaphore_Logic.getBlockingFeatureNames)
+- Origen de los datos: el JSON del Passport, Passport__c.DMT_Passport_Save__c (label Passport Save), array data.features. Se usa el Passport más reciente de la Opportunity (Passport__c.Opportunity__c) o de la Line (Passport__c.DMT_Line__c).
+- Una feature bloquea el cambio a un estado cuando cumple todo esto:
+  1. requiredType = Y (N o vacío no bloquea nunca).
+  2. Tiene regla de semáforo: requiredColorCapability y/o requiredColorWorkflow informados (listas separadas por punto y coma, por ejemplo GRE;RED;GRA).
+  3. requiredStatus coincide con el estado destino sin distinguir mayúsculas (READY TO CLOSE para Ready to close). Para Closed Won también vale requiredStatus Closed. Closed Lost no se bloquea nunca.
+  4. No cumple la regla: DMT_Semaphore_Logic.evaluate con colorLogicalOperatorType (AND: ambos colores; OR o sin operador con ambos informados: uno de los dos; solo uno informado: ese).
+- Color de capability: stateName de la feature en el JSON (GREEN/GRE, YELLOW/YEL, RED, WHITE/WHI, GRAY/GRA).
+- Color de workflow: Case más reciente de record type Approval con Case.DMT_Feature_Id__c (label Feature Id) = id de la feature, y su Task más reciente de record type DMT_Step_Approval:
+  - Case Pending o In Progress = YEL
+  - Case Finished y Task.DMT_Step_Result__c (label Step Result) = Yes = GRE
+  - Finished y No = RED
+  - Finished sin resultado = GRA
+  - Sin Case y la feature tiene tasks en el JSON = YEL
+- Además, el paso automático exige que todas las features con passportSanction approval que tienen tasks tengan su Case más reciente Finished con último Step Result Yes (DMT_Semaphore_Logic.areApprovalFeaturesApproved). Las features de approval sin tasks no cuentan porque nunca pueden tener Case.
+
+Dónde se aplica
+- Opportunity automático: Case_After_Trigger_Flow (acción Start Next Case Automatization, sin cambios) llama a DMT_Case_Steps_Controller.startNextCaseApproval, luego processStartNextCaseApproval, y este llama a moveStatusToReadyToClose cuando se cierra con Yes el último Case de approval. moveStatusToReadyToClose solo pasa StageName a Ready to close si la Opportunity está en Approval, todas las features de approval están aprobadas y ninguna feature obligatoria bloquea. Si bloquea, deja un System.debug INFO con el texto: stays in Approval, required features not met, seguido de los nombres.
+- Line automático: Case_After_Trigger_Flow informa DMT_Line__c.DMT_Approval_Date__c (label Approval Date) cuando un Case de la Line pasa a Finished con la Line en Approval. El trigger de DMT_Line__c (before update, DMT_Line_Helper.avoidPassingApproval, solo para guardados de un registro) calcula DMT_Approval_Validation__c (label Approval Validation) con la comprobación de approval y pasa Status__c a Ready to close solo si además ninguna feature obligatoria bloquea (y la Line no es de plantilla OP, como antes).
+- Opportunity manual: LWC dmt_custom_path_opp, método validateTrafficLightForStage, que llama a DMT_FeaturesController.validateSemaphoreRulesForStageChange antes de cada cambio de stage. Mensaje: Opportunity cannot advance to <stage> because the required feature <nombre> does not meet its traffic light rule. (en plural si son varias).
+- Line manual: LWC dmt_custom_path_line, método validateTrafficLightForStage, en updateStatus (todos los cambios desde el path), handleModalSave (modal PE a Ready to close) y saveModal (Closed, evaluado como Closed Won / Closed Lost según DMT_Line__c.Closed__c). Mensaje: Line cannot advance to <estado> because the required feature <nombre> does not meet its traffic light rule.
+- Si la comprobación no se puede ejecutar (por ejemplo un JSON inválido), se registra con DMT_AsyncOrchestrator y DMT_LogExceptionPayload y el cambio se bloquea: en los paths aparece el error The required Passport features could not be checked, so the stage cannot change; en el paso automático el registro se queda en Approval.
+
+Componentes
+- Apex: DMT_Semaphore_Logic, DMT_Case_Steps_Selector (getApprovalCasesByLineIds y getApprovalCasesByOpportunityIds devuelven la última Task DMT_Step_Approval de cada Case), DMT_Case_Steps_Controller (processStartNextCaseApproval, moveStatusToReadyToClose, checkApprovalValidation), DMT_FeaturesController (validateSemaphoreRulesForStageChange; resolveWorkflowColor pasa a DMT_Semaphore_Logic), DMT_Line_Helper (avoidPassingApproval).
+- LWC: dmt_custom_path_opp, dmt_custom_path_line.
+- Test classes: DMT_FeaturesController_test, DMT_Case_Steps_Controller_Test, DMT_Line_TriggerHandler_Test.
+
+Mejora del proceso existente
+- processStartNextCaseApproval ya no hace ninguna query en los guardados de Case que no cierran un Case de approval (antes 1 query de Task en cada guardado). checkApprovalValidation pasa de unas 7 queries a 2. moveStatusToReadyToClose pasa de 1 query a ninguna (usa el Passport y los Cases ya cargados).
+
+Cómo probar
+Buscar con Salesforce Inspector una Opportunity en Approval cuyo Passport tenga una feature obligatoria para Ready to close:
+SELECT Id, Opportunity__c, Opportunity__r.StageName, DMT_Passport_Save__c FROM Passport__c WHERE Opportunity__r.StageName = 'Approval' ORDER BY LastModifiedDate DESC
+En DMT_Passport_Save__c buscar una feature con requiredType: Y y requiredStatus: READY TO CLOSE (por ejemplo una feature de passport como Asset Allocation Validation). Para Lines, la misma query con DMT_Line__c, DMT_Line__r.Status__c y WHERE DMT_Line__r.Status__c = 'Approval'.
+Estado de los Cases de cada feature:
+SELECT CaseNumber, DMT_Feature_Id__c, DMT_Passport_Sanction__c, Status, (SELECT DMT_Step_Result__c FROM Tasks WHERE RecordType.DeveloperName = 'DMT_Step_Approval' ORDER BY CreatedDate DESC LIMIT 1) FROM Case WHERE opportunity_id__c = '<Id de la Opportunity>' AND RecordType.DeveloperName = 'Approval' ORDER BY CreatedDate DESC
+
+1. Feature obligatoria sin aprobar (sin Case, o Case Pending/In Progress): mover la Opportunity a Ready to close desde el stage path. Debe aparecer el toast de error con el nombre de la feature y el stage sigue en Approval.
+2. Aprobar todas las features de approval (Request en el Passport y cerrar la task con resultado afirmativo). Al cerrarse el último Case de approval la Opportunity debe seguir en Approval mientras la feature obligatoria no esté en verde.
+3. Feature obligatoria con el workflow en rojo (Case Finished con No) o en amarillo: mismo resultado que en 1 y 2.
+4. Hacer Request de la feature obligatoria desde el Passport y aprobarla (semáforo verde). Mover a Ready to close desde el stage path: debe avanzar sin error.
+5. Feature no obligatoria para Ready to close (requiredType N, o requiredStatus de otro estado como CLOSED WON): no bloquea el paso a Ready to close.
+6. Con todas las features de approval aprobadas y sin features obligatorias pendientes, al cerrarse el último Case de approval la Opportunity pasa sola a Ready to close (comportamiento de approval sin cambios).
+7. Line: repetir 1 desde el path de la Line (toast Line cannot advance...). Con la feature obligatoria aprobada y las de approval aprobadas, al cerrarse un Case de la Line estando en Approval la Line pasa sola a Ready to close.

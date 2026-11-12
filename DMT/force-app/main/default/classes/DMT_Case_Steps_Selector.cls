@@ -33,7 +33,7 @@ public without sharing class DMT_Case_Steps_Selector {
     }
 
     public static List<Case> getCasesFromTasks(Set<Id> caseIdWithTasks) {
-        return [SELECT Id, Status, DMT_LineOpportunity__c, opportunity_id__c, description, opportunity_id__r.Name, Opportunity_Id__r.StageName, opportunity_id__r.DMT_Opp_Id__c, DMT_Line__r.Line_Id__c, DMT_Line__c, DMT_Line__r.Name, DMT_Line__r.Status__c, DMT_Line__r.Line_Details__c, DMT_Line__r.Line_Term__c, DMT_Line__r.Product__c, DMT_Line__r.Booking_Geography__c,  DMT_Line__r.RecordType.DeveloperName, DMT_Line__r.End_Date__c, DMT_Line__r.CurrencyIsoCode, DMT_Line__r.Start_Date__c, Amount__c, Account.DES_Client_Type__c, Account.DES_Main_Parent__r.Name, Account.Name, CaseNumber, CurrencyIsoCode,DMT_Feature_Id__c, DMT_LineOppDateToProposal__c,DMT_Related_feature_name__c,(SELECT Id FROM Tasks WHERE RecordType.DeveloperName='DMT_Step_Approval' ), DMT_Passport_Sanction__c FROM Case WHERE Id IN :caseIdWithTasks WITH USER_MODE];
+        return [SELECT Id, Status, DMT_LineOpportunity__c, opportunity_id__c, description, opportunity_id__r.Name, Opportunity_Id__r.StageName, opportunity_id__r.DMT_Opp_Id__c,opportunity_id__r.DMT_Product_Area__c, opportunity_id__r.DMT_Main_Holder_Name__c, opportunity_id__r.DMT_Group_Name__c, DMT_Line__r.Line_Id__c, DMT_Line__c, DMT_Line__r.Name, DMT_Line__r.Status__c, DMT_Line__r.Line_Details__c, DMT_Line__r.Line_Term__c, DMT_Line__r.Product__c, DMT_Line__r.Booking_Geography__c,  DMT_Line__r.RecordType.DeveloperName, DMT_Line__r.End_Date__c, DMT_Line__r.CurrencyIsoCode, DMT_Line__r.Start_Date__c, Amount__c, Account.DES_Client_Type__c, Account.DES_Main_Parent__r.Name, Account.Name, CaseNumber, CurrencyIsoCode,DMT_Feature_Id__c, DMT_LineOppDateToProposal__c,DMT_Related_feature_name__c,(SELECT Id FROM Tasks WHERE RecordType.DeveloperName='DMT_Step_Approval' ), DMT_Passport_Sanction__c FROM Case WHERE Id IN :caseIdWithTasks WITH USER_MODE];
     }
 
     public static List<Passport__c> getPassportsByLineIds(Set<Id> lineIds) {
@@ -45,11 +45,58 @@ public without sharing class DMT_Case_Steps_Selector {
     }
 
     public static List<Case> getApprovalCasesByLineIds(Set<Id> lineIds) {
-        return [SELECT Id,CreatedDate, LastModifiedBy.Name, DMT_Line__c, opportunity_id__c, RecordType.DeveloperName, Status, DMT_Closing_Tasks__c, IsClosed, DMT_Feature_Id__c FROM Case WHERE RecordType.DeveloperName = 'Approval' AND DMT_Line__c IN :lineIds ORDER BY CreatedDate DESC];
+        // CIBGLOBALD-4801 - Tasks subquery: latest DMT_Step_Approval Task of each Case (traffic light rules, DMT_Semaphore_Logic)
+        return [SELECT Id,CreatedDate, LastModifiedBy.Name, DMT_Line__c, opportunity_id__c, RecordType.DeveloperName, Status, DMT_Closing_Tasks__c, IsClosed, DMT_Feature_Id__c, DMT_Passport_Sanction__c,
+                    (SELECT Id, DMT_Step_Result__c FROM Tasks WHERE RecordType.DeveloperName = :DMT_Constants.TASK_RT_APPROVAL_STEP ORDER BY CreatedDate DESC LIMIT 1)
+                FROM Case WHERE RecordType.DeveloperName = 'Approval' AND DMT_Line__c IN :lineIds ORDER BY CreatedDate DESC];
     }
 
     public static List<Case> getApprovalCasesByOpportunityIds(Set<Id> oppIds) {
-        return [SELECT Id,CreatedDate, LastModifiedBy.Name, DMT_Line__c, opportunity_id__c, RecordType.DeveloperName, Status, DMT_Closing_Tasks__c, IsClosed, DMT_Feature_Id__c FROM Case WHERE RecordType.DeveloperName = 'Approval' AND opportunity_id__c IN :oppIds ORDER BY CreatedDate DESC];
+        // CIBGLOBALD-4801 - Tasks subquery: latest DMT_Step_Approval Task of each Case (traffic light rules, DMT_Semaphore_Logic)
+        return [SELECT Id,CreatedDate, LastModifiedBy.Name, DMT_Line__c, opportunity_id__c, RecordType.DeveloperName, Status, DMT_Closing_Tasks__c, IsClosed, DMT_Feature_Id__c, DMT_Passport_Sanction__c,
+                    (SELECT Id, DMT_Step_Result__c FROM Tasks WHERE RecordType.DeveloperName = :DMT_Constants.TASK_RT_APPROVAL_STEP ORDER BY CreatedDate DESC LIMIT 1)
+                FROM Case WHERE RecordType.DeveloperName = 'Approval' AND opportunity_id__c IN :oppIds ORDER BY CreatedDate DESC];
+    }
+
+    /**
+     * @description Returns tasks completed by a specific user that belong to cases NOT in the exclusion set.
+     *              Used to build the "Closed Tasks" section — cases where the user participated previously
+     *              but is no longer the current assignee.
+     */
+    public static List<Task> getCompletedTasksByUser(Id userId, Set<Id> excludeCaseIds) {
+        if (excludeCaseIds == null || excludeCaseIds.isEmpty()) {
+            return [SELECT Id, WhatId
+                    FROM Task
+                    WHERE DMT_UserClosedTask__c = :userId
+                    AND RecordType.DeveloperName = :DMT_Constants.TASK_RT_APPROVAL_STEP
+                    AND WhatId != null
+                    WITH SECURITY_ENFORCED
+                    ORDER BY CreatedDate DESC];
+        }
+        return [SELECT Id, WhatId
+                FROM Task
+                WHERE DMT_UserClosedTask__c = :userId
+                AND RecordType.DeveloperName = :DMT_Constants.TASK_RT_APPROVAL_STEP
+                AND WhatId != null
+                AND WhatId NOT IN :excludeCaseIds
+                WITH SECURITY_ENFORCED
+                ORDER BY CreatedDate DESC];
+    }
+
+    /**
+     * @description Returns open Approval cases by ID set. Excludes Finished cases.
+     *              Used to validate which cases are still in progress for the "Closed Tasks" section.
+     */
+    public static List<Case> getOpenApprovalCasesByIds(Set<Id> caseIds) {
+        return [SELECT Id, Status, DMT_LineOpportunity__c,
+                       DMT_Line__r.Status__c, DMT_Line__r.RecordType.DeveloperName,
+                       DMT_Line__r.Booking_Geography__c,
+                       Opportunity_Id__r.StageName
+                FROM Case
+                WHERE Id IN :caseIds
+                AND RecordType.DeveloperName = :DMT_Constants.CASE_RT_APPROVAL
+                AND Status != :DMT_Constants.FINISHED
+                WITH SECURITY_ENFORCED];
     }
 
 }
