@@ -157,7 +157,7 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
     // Implemented by DMT_SnapshotChildComparator. Returns true when a record's child rows no
     // longer match the frozen snapshot.
     public interface SnapshotChildComparator {
-        Boolean hasChanges(Id recordId, Map<String, Object> snapshotJson, List<String> componentNames); // CIBGLOBALD-4811
+        Boolean hasChanges(Id recordId, Map<String, Object> snapshotJson, List<String> componentNames); // CIBGLOBALD-4811, CIBGLOBALD-4870
         List<String> changedComponents(Id recordId, Map<String, Object> snapshotJson, List<String> componentNames); // CIBGLOBALD-4811
     }
 
@@ -819,7 +819,7 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
         // Child-record fields don't live on the record, so they're compared separately.
         if (childComparator != null) {
             if (changes == null) { // CIBGLOBALD-4811
-                return childComparator.hasChanges(recordId, snapshotJson, trackedComponentsForSnapshot(snapshot)); // CIBGLOBALD-4811
+                return childComparator.hasChanges(recordId, snapshotJson, trackedComponentsForSnapshot(snapshot)); // CIBGLOBALD-4811, CIBGLOBALD-4870
             }
             changes.addAll(childComparator.changedComponents(recordId, snapshotJson, trackedComponentsForSnapshot(snapshot))); // CIBGLOBALD-4811
         }
@@ -844,7 +844,7 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
         return (value instanceof String && String.isBlank((String) value)) ? null : value;
     }
 
-    // CIBGLOBALD-4811 - Enhancement fix to existing process: true when a tracked value changed. A multi-select
+    // CIBGLOBALD-4811, CIBGLOBALD-4870 - Enhancement fix to existing process: true when a tracked value changed. A multi-select
     // picklist compares as a set of values: Salesforce stores the values in the order they were sent, so the
     // same selection in another order is not a change. The field type is read only when the values differ.
     private static Boolean valueChanged(Schema.SObjectType objectType, String fieldName, Object frozenValue, Object liveValue) {
@@ -939,10 +939,10 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
     }
 
     public static Boolean rowsDiffer(Map<String, Object> frozenRows, Map<String, Object> liveRows, List<String> trackedFields) {
-        return rowsDiffer(frozenRows, liveRows, trackedFields, null); // CIBGLOBALD-4811
+        return rowsDiffer(frozenRows, liveRows, trackedFields, null); // CIBGLOBALD-4811, CIBGLOBALD-4870
     }
 
-    // CIBGLOBALD-4811 - with the row object, multi-select picklists compare as sets (valueChanged).
+    // CIBGLOBALD-4811, CIBGLOBALD-4870 - with the row object, multi-select picklists compare as sets (valueChanged).
     public static Boolean rowsDiffer(Map<String, Object> frozenRows, Map<String, Object> liveRows, List<String> trackedFields, Schema.SObjectType rowObjectType) {
         if (liveRows == null) {
             liveRows = new Map<String, Object>();
@@ -954,7 +954,7 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
             Map<String, Object> frozenRow = (Map<String, Object>) frozenRows.get(recordId);
             Map<String, Object> liveRow = (Map<String, Object>) liveRows.get(recordId);
             for (String fieldName : trackedFields) {
-                if (valueChanged(rowObjectType, fieldName, frozenRow.get(fieldName), liveRow.get(fieldName))) { // CIBGLOBALD-4811
+                if (valueChanged(rowObjectType, fieldName, frozenRow.get(fieldName), liveRow.get(fieldName))) { // CIBGLOBALD-4811, CIBGLOBALD-4870
                     return true;
                 }
             }

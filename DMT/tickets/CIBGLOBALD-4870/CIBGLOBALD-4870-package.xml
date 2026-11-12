@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CIBGLOBALD-4870 - Ready to close business close cancels tasks: child comparison scoped to the task's components.
+     Order: helper (interface + rowsDiffer) first, then the comparator that implements it, then the test. -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>DMT_ApprovalChangeStep_Helper</members>
+        <members>DMT_SnapshotChildComparator</members>
+        <members>DMT_SnapshotChildComparatorTest</members>
+        <name>ApexClass</name>
+    </types>
+    <version>65.0</version>
+</Package>
