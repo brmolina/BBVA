@@ -45,17 +45,11 @@ public without sharing class DMT_Case_Steps_Selector {
     }
 
     public static List<Case> getApprovalCasesByLineIds(Set<Id> lineIds) {
-        // CIBGLOBALD-4801 - Tasks subquery: latest DMT_Step_Approval Task of each Case (traffic light rules, DMT_Semaphore_Logic)
-        return [SELECT Id,CreatedDate, LastModifiedBy.Name, DMT_Line__c, opportunity_id__c, RecordType.DeveloperName, Status, DMT_Closing_Tasks__c, IsClosed, DMT_Feature_Id__c, DMT_Passport_Sanction__c,
-                    (SELECT Id, DMT_Step_Result__c FROM Tasks WHERE RecordType.DeveloperName = :DMT_Constants.TASK_RT_APPROVAL_STEP ORDER BY CreatedDate DESC LIMIT 1)
-                FROM Case WHERE RecordType.DeveloperName = 'Approval' AND DMT_Line__c IN :lineIds ORDER BY CreatedDate DESC];
+        return [SELECT Id,CreatedDate, LastModifiedBy.Name, DMT_Line__c, opportunity_id__c, RecordType.DeveloperName, Status, DMT_Closing_Tasks__c, IsClosed, DMT_Feature_Id__c, DMT_Passport_Sanction__c FROM Case WHERE RecordType.DeveloperName = 'Approval' AND DMT_Line__c IN :lineIds ORDER BY CreatedDate DESC];
     }
 
     public static List<Case> getApprovalCasesByOpportunityIds(Set<Id> oppIds) {
-        // CIBGLOBALD-4801 - Tasks subquery: latest DMT_Step_Approval Task of each Case (traffic light rules, DMT_Semaphore_Logic)
-        return [SELECT Id,CreatedDate, LastModifiedBy.Name, DMT_Line__c, opportunity_id__c, RecordType.DeveloperName, Status, DMT_Closing_Tasks__c, IsClosed, DMT_Feature_Id__c, DMT_Passport_Sanction__c,
-                    (SELECT Id, DMT_Step_Result__c FROM Tasks WHERE RecordType.DeveloperName = :DMT_Constants.TASK_RT_APPROVAL_STEP ORDER BY CreatedDate DESC LIMIT 1)
-                FROM Case WHERE RecordType.DeveloperName = 'Approval' AND opportunity_id__c IN :oppIds ORDER BY CreatedDate DESC];
+        return [SELECT Id,CreatedDate, LastModifiedBy.Name, DMT_Line__c, opportunity_id__c, RecordType.DeveloperName, Status, DMT_Closing_Tasks__c, IsClosed, DMT_Feature_Id__c, DMT_Passport_Sanction__c FROM Case WHERE RecordType.DeveloperName = 'Approval' AND opportunity_id__c IN :oppIds ORDER BY CreatedDate DESC];
     }
 
     /**

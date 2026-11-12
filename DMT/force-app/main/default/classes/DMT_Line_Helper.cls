@@ -1268,23 +1268,10 @@ public with sharing class DMT_Line_Helper{
     public void avoidPassingApproval(List<DMT_Line__c> newLines, Map<Id, DMT_Line__c> oldMapLines, Integer triggerSize){
         if (triggerSize == 1 && ((oldMapLines.values()[0].Status__c == newLines[0].Status__c && oldMapLines.values()[0].DMT_Approval_Date__c != newLines[0].DMT_Approval_Date__c) || ((newLines[0].Status__c == DMT_Constants.READYTOCLOSE || newLines[0].Status__c == DMT_Constants.CLOSED) && oldMapLines.values()[0].Status__c != newLines[0].Status__c))){
 
-            // CIBGLOBALD-4801 - One load of Passport + Cases (2 SOQL) gives both the approval flag and the Ready to close traffic light check; the automatic move to Ready to close also needs no required Passport feature blocking it (DMT_Semaphore_Logic). A failing check logs the error, leaves the flag false and does not move.
-            Boolean blockedByRequiredFeatures = true;
-            try {
-                DMT_Semaphore_Logic.RecordFeatureData featureData = DMT_Semaphore_Logic.loadFeatureData(new Set<Id>{ newLines[0].Id }).get(newLines[0].Id);
-                newLines[0].DMT_Approval_Validation__c = featureData.hasPassport
-                    && DMT_Semaphore_Logic.areApprovalFeaturesApproved(featureData.features, featureData.cases);
-                blockedByRequiredFeatures = !DMT_Semaphore_Logic.getBlockingFeatureNames(featureData.features, featureData.cases, DMT_Constants.READYTOCLOSE).isEmpty();
-            } catch (Exception e) {
-                newLines[0].DMT_Approval_Validation__c = false;
-                DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
-                    e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
-                    'DMT_Line_Helper', 'avoidPassingApproval', 'DMT', newLines[0].Id
-                ));
-            }
+            newLines[0].DMT_Approval_Validation__c = DMT_Case_Steps_Controller.checkApprovalValidation(newLines[0].Id);
 
-            if (newLines[0].DMT_Approval_Validation__c && !blockedByRequiredFeatures && newLines[0].Status__c == DMT_Constants.APPROVAL && newLines[0].dmt_line_template_type__c != 'OP'){ // CIBGLOBALD-4801
-                newLines[0].Status__c = DMT_Constants.READYTOCLOSE;
+            if (newLines[0].DMT_Approval_Validation__c && newLines[0].Status__c == DMT_Constants.APPROVAL && newLines[0].dmt_line_template_type__c != 'OP'){
+                newLines[0].Status__c = DMT_Constants.READYTOCLOSE;                
             }
         }
     }
