@@ -47,13 +47,13 @@ private class DMT_SnapshotChildComparatorTest {
         };
         Map<String, Object> snapshotJson = new Map<String, Object>{ 'warranties' => frozenWarranties };
 
-        Boolean changed = comparator.hasChanges(queriedLine.Id, snapshotJson, null); // CIBGLOBALD-4811
+        Boolean changed = comparator.hasChanges(queriedLine.Id, snapshotJson, null); // CIBGLOBALD-4811, CIBGLOBALD-4870
         Assert.isTrue(changed, 'A live Warranty.Name differing from the frozen value must be detected through the cross-object lookup.');
         Assert.areEqual(1, comparator.changedComponents(queriedLine.Id, snapshotJson, null).size(), 'The component of the changed section is named'); // CIBGLOBALD-4811
         // CIBGLOBALD-4811 - only the task's components count: warranties belong to Products.
         Assert.areEqual(new List<String>{ 'Products' }, comparator.changedComponents(queriedLine.Id, snapshotJson, new List<String>{ 'Products', 'Line Info' }), 'The changed section is named by the task component that tracks it');
-        Assert.isFalse(comparator.hasChanges(queriedLine.Id, snapshotJson, new List<String>{ 'Line Info' }), 'A section of a component the task did not freeze is not compared');
-        Assert.isNull(DMT_SnapshotChildComparator.forRecords(recordsById, new List<String>{ 'Line Info' }), 'No child section is queried when the task components have none');
+        Assert.isFalse(comparator.hasChanges(queriedLine.Id, snapshotJson, new List<String>{ 'Line Info' }), 'A section of a component the task did not freeze is not compared'); // CIBGLOBALD-4870
+        Assert.isNull(DMT_SnapshotChildComparator.forRecords(recordsById, new List<String>{ 'Line Info' }), 'No child section is queried when the task components have none'); // CIBGLOBALD-4870
     }
 
     @IsTest
@@ -81,7 +81,7 @@ private class DMT_SnapshotChildComparatorTest {
         };
         Map<String, Object> snapshotJson = new Map<String, Object>{ 'warranties' => frozenWarranties };
 
-        Boolean changed = comparator.hasChanges(queriedLine.Id, snapshotJson, null); // CIBGLOBALD-4811
+        Boolean changed = comparator.hasChanges(queriedLine.Id, snapshotJson, null); // CIBGLOBALD-4811, CIBGLOBALD-4870
         Assert.isFalse(changed, 'Identical frozen and live Warranty rows must not be flagged as changed.');
         Assert.isTrue(comparator.changedComponents(queriedLine.Id, snapshotJson, null).isEmpty(), 'No component is named when the rows match'); // CIBGLOBALD-4811
     }
