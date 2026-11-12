@@ -33,10 +33,12 @@ public without sharing class DMT_Line_TriggerHandler extends DMT_TriggerHandler 
     //   }
 
     public override void afterUpdate() {
+        DMT_OperationClosureService.afterLinesUpdate(lstNew, mapOld);
         System.debug('DMT_Line_TriggerHandler afterUpdate');
         DMT_Line_Helper lineHelper = new DMT_Line_Helper();
         System.debug('entering createConsolidatedLine');
-        lineHelper.createConsolidatedLine(lstNew, mapNew, mapOld);
+        // Changes been made for CIBGLOBALD-4709
+        lineHelper.createConsolidatedLinesAfterUpdate(lstNew, mapNew, mapOld);
         System.debug('entering closeFather');
         lineHelper.closeFather(lstNew, mapOld);
         System.debug('entering createLineVersionSnapshot');
@@ -49,6 +51,7 @@ public without sharing class DMT_Line_TriggerHandler extends DMT_TriggerHandler 
         lineHelper.enqueueAutoWorkflowOnStatusChange(lstNew, mapOld);
 
         DMT_CloseWonNotificationService.sendCloseWonLineNotifications(lstNew, mapOld);
+        DMT_CloseWonNotificationService.sendCloseLostLineNotifications(lstNew, mapOld);
         DMT_CloseWonNotificationService.sendDraftLineNotifications(lstNew, mapOld);
 
         //after all after update methods

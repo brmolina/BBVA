@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CIBGLOBALD-4801 - Required Passport features gate the move to Ready to close (Opportunity and Line, automatic and manual).
+     Order: logic and selectors first, then the classes that call them, then the LWCs, then tests. -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>DMT_Semaphore_Logic</members>
+        <members>DMT_Case_Steps_Selector</members>
+        <members>DMT_FeaturesController</members>
+        <members>DMT_Case_Steps_Controller</members>
+        <members>DMT_Line_Helper</members>
+        <members>DMT_FeaturesController_test</members>
+        <members>DMT_Case_Steps_Controller_Test</members>
+        <members>DMT_Line_TriggerHandler_Test</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>dmt_custom_path_opp</members>
+        <members>dmt_custom_path_line</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <version>65.0</version>
+</Package>

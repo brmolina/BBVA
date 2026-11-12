@@ -60,7 +60,74 @@ public without sharing class DMT_Case_Steps_Controller {
 
         List<Task> tasks = DMT_Case_Steps_Selector.getTasksById(taskIds);
 
-        return processTasksFromCases(tasks);
+        List<WRAPPER_Step> fullData = processTasksFromCases(tasks);
+
+        // --- "Closed Tasks" section ---
+        // Cases where the current user completed a task but is no longer the active assignee
+        Set<Id> pendingCaseIds = new Set<Id>(casesMap.keySet());
+        List<Task> userCompletedTasks = DMT_Case_Steps_Selector.getCompletedTasksByUser(UserInfo.getUserId(), pendingCaseIds);
+
+        if (!userCompletedTasks.isEmpty()) {
+            Set<Id> completedTaskCaseIds = new Set<Id>();
+            for (Task t : userCompletedTasks) {
+                completedTaskCaseIds.add(t.WhatId);
+            }
+
+            // Get open (non-Finished) Approval cases from those IDs
+            List<Case> openCases = DMT_Case_Steps_Selector.getOpenApprovalCasesByIds(completedTaskCaseIds);
+
+            // Exclude cases whose Line/Opp is already closed
+            Set<Id> openValidCaseIds = new Set<Id>();
+            for (Case c : openCases) {
+                Boolean isLineOppClosed = false;
+                if (c.DMT_LineOpportunity__c != null) {
+                    if (c.DMT_LineOpportunity__c.equalsIgnoreCase('L') && c.DMT_Line__r != null
+                            && c.DMT_Line__r.Status__c != null && c.DMT_Line__r.Status__c.contains('Closed')) {
+                        isLineOppClosed = true;
+                    } else if (c.DMT_LineOpportunity__c.equalsIgnoreCase('O') && c.Opportunity_Id__r != null
+                            && c.Opportunity_Id__r.StageName != null && c.Opportunity_Id__r.StageName.contains('Closed')) {
+                        isLineOppClosed = true;
+                    } else if (c.DMT_LineOpportunity__c.equalsIgnoreCase('L') && c.DMT_Line__r != null
+                            && c.DMT_Line__r.RecordType != null
+                            && (c.DMT_Line__r.RecordType.DeveloperName == 'TreasurySettlement' || c.DMT_Line__r.RecordType.DeveloperName == 'OtherProducts')
+                            && c.DMT_Line__r.Booking_Geography__c != null && c.DMT_Line__r.Booking_Geography__c != 'PE'
+                            && c.DMT_Line__r.Status__c != null && c.DMT_Line__r.Status__c == DMT_Constants.READYTOCLOSE) {
+                        isLineOppClosed = true;
+                    }
+                }
+                if (!isLineOppClosed) {
+                    openValidCaseIds.add(c.Id);
+                }
+            }
+
+            if (!openValidCaseIds.isEmpty()) {
+                Map<Id, Task> closedTasksTaskMap = DMT_Case_Steps_Selector.getTasksByNotInTaskMap(openValidCaseIds, new Set<Id>());
+                List<Task> closedTasksList = DMT_Case_Steps_Selector.getTasksById(closedTasksTaskMap.keySet());
+
+                if (!closedTasksList.isEmpty()) {
+                    List<WRAPPER_Step> rawClosedSteps = processTasksFromCases(closedTasksList);
+
+                    // Collect only flat case-level steps (not the parentStep groups like 'Finished'/'Closed')
+                    List<WRAPPER_Step> closedTaskItems = new List<WRAPPER_Step>();
+                    for (WRAPPER_Step s : rawClosedSteps) {
+                        if (s.itemKey != 'Finished' && s.itemKey != 'Closed' && s.itemKey != 'ClosedTasks') {
+                            closedTaskItems.add(s);
+                        }
+                    }
+
+                    if (!closedTaskItems.isEmpty()) {
+                        WRAPPER_Step parentStepClosedTasks = new WRAPPER_Step();
+                        parentStepClosedTasks.itemLabel = 'Closed Tasks';
+                        parentStepClosedTasks.itemKey = 'ClosedTasks';
+                        parentStepClosedTasks.itemKeyAsLink = false;
+                        parentStepClosedTasks.subitems = closedTaskItems;
+                        fullData.add(parentStepClosedTasks);
+                    }
+                }
+            }
+        }
+
+        return fullData;
 
     }
 
@@ -116,7 +183,7 @@ public without sharing class DMT_Case_Steps_Controller {
         parentStep.subitems = new List<WRAPPER_Step>();
 
         WRAPPER_Step parentStepFinished = new WRAPPER_Step();
-        parentStepFinished.itemLabel = 'Returned to requester';
+        parentStepFinished.itemLabel = 'Closed Features';
         parentStepFinished.itemKey = 'Finished';
         parentStepFinished.itemKeyAsLink = false;
         Boolean hasFinished = false;
@@ -135,13 +202,25 @@ public without sharing class DMT_Case_Steps_Controller {
                 substep.status = task.Status;
                 substep.step = new WRAPPER_Url();
                 substep.step.urlLabel = task.DMT_Task_Type__r.Name != null ? task.DMT_Task_Type__r.Name : task.Id;
-                substep.lineOrOpportunity = cases.get(caseId).DMT_LineOpportunity__c;
+                //substep.lineOrOpportunity = cases.get(caseId).DMT_LineOpportunity__c; // CIBGLOBAL-4628 cambia por tipoFuncOperacionProd
+                if(cases.get(caseId).DMT_LineOpportunity__c == 'O'){
+                     substep.tipoFuncOperacionProd = cases.get(caseId).opportunity_id__r.DMT_Product_Area__c;
+
+                }else if(cases.get(caseId).DMT_LineOpportunity__c == 'L'){
+                    if(cases.get(caseId).DMT_Line__r.RecordType.DeveloperName == 'TreasurySettlement'){
+                            substep.tipoFuncOperacionProd = DMT_Constants.LINE_RT_TSLINE;
+
+                    }else if(cases.get(caseId).DMT_Line__r.RecordType.DeveloperName == 'OtherProducts'){
+                            substep.tipoFuncOperacionProd = DMT_Constants.LINE_RT_OTHERLINE;
+                    }
+                }
+
                 substep.oppLineName = new WRAPPER_Url();
                 substep.oppLineName.urlLabel = cases.get(caseId).DMT_LineOpportunity__c == 'O' ? cases.get(caseId).opportunity_id__r.Name : cases.get(caseId).DMT_Line__r.Name;
                 substep.description = cases.get(caseId).description;
                 substep.oppLineName.urlValue = cases.get(caseId).DMT_LineOpportunity__c == 'O' ? '/' + cases.get(caseId).opportunity_id__c : '/' + cases.get(caseId).DMT_Line__c;
                 substep.lineDetails = cases.get(caseId).DMT_Line__r != null ? String.valueOf(cases.get(caseId).DMT_Line__r.Line_Details__c) : '';
-                substep.client = cases.get(caseId).Account?.Name;
+                substep.client = cases.get(caseId).DMT_LineOpportunity__c == 'O' ? cases.get(caseId).opportunity_id__r.DMT_Main_Holder_Name__c : cases.get(caseId).Account?.Name;
                 substep.startDate = task.CreatedDate.format('dd/MMM/yyyy HH:mm:ss');
                 substep.endDate = task.DMT_Completed_Date_Time__c != null ? task.DMT_Completed_Date_Time__c.format('dd/MMM/yyyy HH:mm:ss') : (task.CompletedDateTime != null ? task.CompletedDateTime.format('dd/MMM/yyyy HH:mm:ss')  : '');
                 substep.user = task.DMT_UserClosedTask__c != null ? task.DMT_UserClosedTask__r.Name : task.LastModifiedBy.Name;
@@ -157,7 +236,7 @@ public without sharing class DMT_Case_Steps_Controller {
                 substep.lineOppStatus = cases.get(caseId).DMT_LineOpportunity__c == 'O' ? cases.get(caseId).opportunity_id__r.StageName : cases.get(caseId).DMT_Line__r.Status__c;
                 //Added fields of OpportunityId and LineId, also added the group Client Name
                 substep.lineOppId = cases.get(caseId).DMT_LineOpportunity__c == 'O' ? cases.get(caseId).opportunity_id__r.DMT_Opp_Id__c : cases.get(caseId).DMT_Line__r.Line_Id__c;
-                substep.groupClientName = cases.get(caseId).Account.DES_Client_Type__c == 'CIB Group' ? cases.get(caseId).Account.Name : cases.get(caseId).Account.DES_Main_Parent__r.Name;
+                substep.groupClientName = cases.get(caseId).DMT_LineOpportunity__c == 'O' ? cases.get(caseId).opportunity_id__r.DMT_Group_Name__c : (cases.get(caseId).Account.DES_Client_Type__c == 'CIB Group' ? cases.get(caseId).Account.Name : cases.get(caseId).Account.DES_Main_Parent__r.Name);
                 substep.caseStatus = cases.get(caseId).Status;
                 substep.taskSize = cases.get(caseId).Tasks.size();
 
@@ -733,21 +812,11 @@ public without sharing class DMT_Case_Steps_Controller {
      * @param newToProcess
      * @param oldCaseToProcess
      **/
+  // CIBGLOBALD-4801 - Enhancement to existing process: body reorganised for one record per call (Case checks before any query, Passport and Cases loaded once and reused by moveStatusToReadyToClose, newest Case per feature, DMT_Constants, Spanish debug lines removed); the approval sequencing (Business, then Risk with the other approval features in parallel for Opportunities) is unchanged
   public static void processStartNextCaseApproval(Case newToProcess, Case oldCaseToProcess){
-    system.debug('****** STARTING startNextCaseApproval *****');
-
-    Id recordTypeCaseApproval = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
-    Map<Id,Case> mapCasesToProcess = new Map<Id,Case>();
-    Set<Id> setLinesorOpportunitiesIds = new Set<Id>();
-
-    Map<Id, DMT_PassportLineWrapper> mapWrapperByLineorOpportunityId = new Map<Id, DMT_PassportLineWrapper>();
-    Map<Id,Passport__c> mapPassportRecordsByCaseId = new Map<Id,Passport__c>();
-    Map<Id,Map<String,Case>> mapFeaturesCasesByLineorOpportunityID = new  Map<Id,Map<String,Case>>();
-    if(newToProcess == null || oldCaseToProcess == null ){
+    if (newToProcess == null || oldCaseToProcess == null) {
       return;
     }
-
-    List<Task> listTaskRelated = DMT_Case_Steps_Selector.getTasksByCase(new Set<Id>{ newToProcess.Id });
 
     Id lineId = newToProcess.DMT_Line__c;
     Id oppId  = newToProcess.opportunity_id__c;
@@ -761,226 +830,175 @@ public without sharing class DMT_Case_Steps_Controller {
 
     Id contextId = isLineContext ? lineId : oppId;
 
-    if(newToProcess.RecordTypeId == recordTypeCaseApproval && newToProcess.IsClosed == true && !(newToProcess.isSet(Case.DMT_Closed_By_Passport__c) && newToProcess.DMT_Closed_By_Passport__c == true) && oldCaseToProcess.IsClosed == false && newToProcess.DMT_Passport_Sanction__c != null && newToProcess.DMT_Passport_Sanction__c.equalsIgnoreCase(DMT_Constants.APPROVAL)  && !listTaskRelated.isEmpty() && listTaskRelated[0].DMT_Step_Result__c == 'Yes' ) {
-      mapCasesToProcess.put(newToProcess.Id, newToProcess);
-      setLinesorOpportunitiesIds.add(contextId);
-    }
-
-    if(mapCasesToProcess.isEmpty()){
+    // CIBGLOBALD-4801 - Enhancement to existing process: the Case checks run before any query, so a Case save that does not close an approval Case costs no SOQL (was 1 Task query on every save through Case_After_Trigger_Flow)
+    Id recordTypeCaseApproval = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get(DMT_Constants.CASE_RT_APPROVAL).getRecordTypeId();
+    Boolean closesApprovalCase = newToProcess.RecordTypeId == recordTypeCaseApproval && newToProcess.IsClosed == true
+      && !(newToProcess.isSet(Case.DMT_Closed_By_Passport__c) && newToProcess.DMT_Closed_By_Passport__c == true)
+      && oldCaseToProcess.IsClosed == false
+      && newToProcess.DMT_Passport_Sanction__c != null && newToProcess.DMT_Passport_Sanction__c.equalsIgnoreCase(DMT_Constants.APPROVAL);
+    if (!closesApprovalCase) {
       return;
     }
 
-    List<Passport__c> listPassportRecords;
+    Set<Id> contextIds = new Set<Id>{ contextId };
+    List<Case> contextCases = isLineContext
+      ? DMT_Case_Steps_Selector.getApprovalCasesByLineIds(contextIds)
+      : DMT_Case_Steps_Selector.getApprovalCasesByOpportunityIds(contextIds);
 
-    if (isLineContext) {
-      listPassportRecords = DMT_Case_Steps_Selector.getPassportsByLineIds(setLinesorOpportunitiesIds);
-    } else {
-      listPassportRecords = DMT_Case_Steps_Selector.getPassportsByOpportunityIds(setLinesorOpportunitiesIds);
-    }
-
-    Map<Id, Case> mapCases = new Map<Id, Case>();
-    List<Case> casesList;
-
-    if (isLineContext) {
-      casesList = DMT_Case_Steps_Selector.getApprovalCasesByLineIds(setLinesorOpportunitiesIds);
-    } else {
-      casesList = DMT_Case_Steps_Selector.getApprovalCasesByOpportunityIds(setLinesorOpportunitiesIds);
-    }
-
-    for (Case c : casesList) {
-        mapCases.put(c.Id, c);
-    }
-    Map<Id,List<Case>> mapCasesByContextId = new Map<Id,List<Case>>();
-    for(Case c : mapCases.values()){
-      Id key = isLineContext ? c.DMT_Line__c : c.opportunity_id__c;
-      if(!mapCasesByContextId.containsKey(key)){
-        mapCasesByContextId.put(key, new List<Case>{c});
-      } else {
-        mapCasesByContextId.get(key).add(c);
+    // CIBGLOBALD-4801 - Enhancement to existing process: the latest step Task of the closed Case comes with the Case query (selector subquery) instead of a separate Task query
+    Case closedCase = null;
+    for (Case contextCase : contextCases) {
+      if (contextCase.Id == newToProcess.Id) {
+        closedCase = contextCase;
       }
     }
-
-    //Sacamos mapa ID linea --> Wrapper JSON Passport
-    for (Case iterationCase : mapCasesToProcess.values()) {
-      for(Passport__c passportRecord : listPassportRecords){
-        Id passportKey = isLineContext ? passportRecord.DMT_Line__c : passportRecord.Opportunity__c;
-        Id caseKey = isLineContext ? iterationCase.DMT_Line__c : iterationCase.opportunity_id__c;
-        if(passportKey == caseKey && passportRecord.DMT_Passport_Save__c != null){
-          if(!mapPassportRecordsByCaseId.containsKey(iterationCase.Id)){
-            mapPassportRecordsByCaseId.put(iterationCase.Id, passportRecord);
-            Id key = isLineContext ? iterationCase.DMT_Line__c : iterationCase.opportunity_id__c;
-            System.debug('********** Registro que falla case'+iterationCase);
-            System.debug('********** Registro que falla passport '+passportRecord);
-            System.debug('********** Registro que falla '+passportRecord.DMT_Passport_Save__c);
-            mapWrapperByLineorOpportunityId.put(key,  DMT_PassportLineWrapper.parseLinePassport(passportRecord.DMT_Passport_Save__c));
-          }
-        }
-      }
-
-    }
-
-    if(mapWrapperByLineorOpportunityId.isEmpty()){
-      system.debug('****** No passport wrappers found, exiting *****');
+    if (closedCase == null || closedCase.Tasks.isEmpty() || closedCase.Tasks[0].DMT_Step_Result__c != 'Yes') {
       return;
-
     }
 
-        Boolean isAutoWorkflowCase = isAutoWorkflowCaseForContext(
-            isOppContext && !isLineContext,
-            mapWrapperByLineorOpportunityId.get(contextId),
-            newToProcess
-        );
+    // CIBGLOBALD-4801 - Enhancement to existing process: one record per call, so the newest Passport with JSON is kept directly (no per-Case maps)
+    List<Passport__c> listPassportRecords = isLineContext
+      ? DMT_Case_Steps_Selector.getPassportsByLineIds(contextIds)
+      : DMT_Case_Steps_Selector.getPassportsByOpportunityIds(contextIds);
+    Passport__c contextPassport = null;
+    for (Passport__c passportRecord : listPassportRecords) {
+      if (contextPassport == null && passportRecord.DMT_Passport_Save__c != null) {
+        contextPassport = passportRecord;
+      }
+    }
+    if (contextPassport == null) {
+      return;
+    }
+    DMT_PassportLineWrapper passportWrapper = DMT_PassportLineWrapper.parseLinePassport(contextPassport.DMT_Passport_Save__c);
+    if (passportWrapper?.data?.features == null) {
+      return;
+    }
 
-    //Ahora vamos a por approver Ids de las features approval que no estan cerradas ( caso finished)
+    Boolean isAutoWorkflowCase = isAutoWorkflowCaseForContext(isOppContext && !isLineContext, passportWrapper, newToProcess);
+
+    // CIBGLOBALD-4801 - Enhancement to existing process: newest Case per feature (the selector returns newest first)
+    Map<String, Case> caseByFeatureId = new Map<String, Case>();
+    for (Case contextCase : contextCases) {
+      if (contextCase.DMT_Feature_Id__c != null && !caseByFeatureId.containsKey(contextCase.DMT_Feature_Id__c)) {
+        caseByFeatureId.put(contextCase.DMT_Feature_Id__c, contextCase);
+      }
+    }
+
+    // Approver Ids of the approval features, to know which ones are Business and which Risk
     List<String> approversIdList = new List<String>();
-
-    for(  Id currentContextId  :mapWrapperByLineorOpportunityId.keySet()){
-      for(DMT_PassportLineWrapper.feature featureIterating :mapWrapperByLineorOpportunityId.get(currentContextId).data.features){
-                Boolean isAutoWorkflowFeature = 'Y'.equalsIgnoreCase(featureIterating.autoWorkflowRequest);
-                if(featureIterating.passportSanction=='approval' && featureIterating.tasks != null && !featureIterating.tasks.isEmpty()
-                        && (!isAutoWorkflowCase || isAutoWorkflowFeature)
-                        && featureIterating.tasks[0].approvers != null && !featureIterating.tasks[0].approvers.isEmpty()){
-          approversIdList.add(featureIterating.tasks[0]?.approvers[0]?.Id);
-
-          for(Case caseIterating : mapCasesByContextId.get(currentContextId)){
-            if(String.valueOf(caseIterating.DMT_Feature_Id__c) == String.valueOf(featureIterating.id) ){
-              if(!mapFeaturesCasesByLineorOpportunityID.containsKey(currentContextId)){
-                mapFeaturesCasesByLineorOpportunityID.put(currentContextId, new Map<String,Case>{featureIterating.Id => caseIterating  });
-              }else{
-                mapFeaturesCasesByLineorOpportunityID.get(currentContextId).put(featureIterating.Id, caseIterating);
-              }
-            }
-          }
-
-        }
+    for (DMT_PassportLineWrapper.feature featureIterating : passportWrapper.data.features) {
+      Boolean isAutoWorkflowFeature = 'Y'.equalsIgnoreCase(featureIterating.autoWorkflowRequest);
+      if (featureIterating.passportSanction == APPROVAL_SANCTION && featureIterating.tasks != null && !featureIterating.tasks.isEmpty() // CIBGLOBALD-4801
+          && (!isAutoWorkflowCase || isAutoWorkflowFeature)
+          && featureIterating.tasks[0].approvers != null && !featureIterating.tasks[0].approvers.isEmpty()) {
+        approversIdList.add(featureIterating.tasks[0].approvers[0].Id);
       }
     }
+    Map<String, String> approverTypeMap = buildApproverTypeMap(DMT_Passport_Handler.getFeatureTypeByApproverType(approversIdList));
 
-    System.debug('Cuantos approevrs he detectado para features approval: '+approversIdList.size());
-    List<Map<String,String>> featureTypeByApprover = new  List<Map<String,String>>();
-    if(approversIdList!= null){
-      //Lista de mapas con los tipos de feature (Id) por approver
-      featureTypeByApprover = DMT_Passport_Handler.getFeatureTypeByApproverType(approversIdList);
-    }
-    Map<String, String> approverTypeMap = buildApproverTypeMap(featureTypeByApprover);
-
-    
-
-    /* * Ticket: CIBGLOBALD-3236
-     * Removed to restore total sequentiality for Risk features.
-     * if (isTriggeringCaseRisk(newToProcess, mapWrapperByLineorOpportunityId, approverTypeMap)) {
-        System.debug('****** El caso disparador (' + newToProcess.Id + ') es de tipo RISK. Se detiene el proceso. *****');
-        return;
-    }*/
-
-        //Se construye wrapper para encontrar las task siguiente y poder  generar el caso siguiente
-        //Para eso se va a iterar feature, y para cada feature se va a identificar estado del caso, si lo hay y tipo de feature
+    // One wrapper per approval feature with tasks: its Case (if any), type and order, to pick the next Case to start
     List<DMT_CaseFeatureWrapper> listCaseFeatureWrappers = new List<DMT_CaseFeatureWrapper>();
-        Boolean hasPendingAutoWorkflowFeature = false;
-        Boolean hasPendingManualFeature = false;
-    for(  Id currentContextId  :mapWrapperByLineorOpportunityId.keySet()){
-      for(DMT_PassportLineWrapper.feature iterateFeature :mapWrapperByLineorOpportunityId.get(currentContextId).data.features){
-        if(iterateFeature.passportSanction=='approval' && iterateFeature.tasks != null && !iterateFeature.tasks.isEmpty()){
-            System.debug('*Test Irene iterateFeature*'+ JSON.serializePretty(iterateFeature));
-          DMT_CaseFeatureWrapper cw = new DMT_CaseFeatureWrapper();
-          cw.lineId = currentContextId;
-          cw.featureId = String.valueOf(iterateFeature.id);
-          cw.featureName = iterateFeature.name;
-          cw.passportSanction = iterateFeature.passportSanction;
-          cw.autoWorkflowRequest = iterateFeature.autoWorkflowRequest;
-          cw.featureOrder = iterateFeature.orderNumber;
-          cw.externalLineid = mapWrapperByLineorOpportunityId.get(currentContextId).data.opportunityId;
-          Object untyped = JSON.deserializeUntyped(JSON.serialize(iterateFeature.tasks));
-          List<Map<String, Object>> taskListAsMaps = new List<Map<String, Object>>();
-          if (untyped instanceof List<Object>) {
-            for (Object o : (List<Object>) untyped) {
-              if (o instanceof Map<String, Object>) {
-                taskListAsMaps.add((Map<String, Object>) o);
-              }
-            }
-          }
-          cw.taskList = taskListAsMaps;
-          cw.featureType = (iterateFeature.tasks[0].approvers != null && !iterateFeature.tasks[0].approvers.isEmpty()) ? approverTypeMap.get(iterateFeature.tasks[0].approvers[0].Id) : null;
-          cw.approverId = (iterateFeature.tasks[0].approvers != null && !iterateFeature.tasks[0].approvers.isEmpty()) ? iterateFeature.tasks[0].approvers[0].Id : null;
-          System.debug('**task id**'  + iterateFeature.tasks[0].id);
-          cw.taskId = iterateFeature.tasks[0].id;
-          cw.myCase = mapFeaturesCasesByLineorOpportunityID.get(currentContextId).containsKey( iterateFeature.Id) ? mapFeaturesCasesByLineorOpportunityID.get(currentContextId).get(iterateFeature.Id): null;
-          cw.caseStatus =   cw.myCase != null ? cw.myCase.Status : null;
-          System.debug('**cw.myCase'  + JSON.serializePretty(cw.myCase));
+    Boolean hasPendingAutoWorkflowFeature = false;
+    Boolean hasPendingManualFeature = false;
+    for (DMT_PassportLineWrapper.feature iterateFeature : passportWrapper.data.features) {
+      if (iterateFeature.passportSanction != APPROVAL_SANCTION || iterateFeature.tasks == null || iterateFeature.tasks.isEmpty()) { // CIBGLOBALD-4801
+        continue;
+      }
+      DMT_CaseFeatureWrapper cw = new DMT_CaseFeatureWrapper();
+      cw.lineId = contextId;
+      cw.featureId = String.valueOf(iterateFeature.id);
+      cw.featureName = iterateFeature.name;
+      cw.passportSanction = iterateFeature.passportSanction;
+      cw.autoWorkflowRequest = iterateFeature.autoWorkflowRequest;
+      cw.featureOrder = iterateFeature.orderNumber;
+      cw.externalLineid = passportWrapper.data.opportunityId;
+      cw.taskList = toTaskMaps(iterateFeature.tasks);
+      Boolean hasApprover = iterateFeature.tasks[0].approvers != null && !iterateFeature.tasks[0].approvers.isEmpty();
+      cw.featureType = hasApprover ? approverTypeMap.get(iterateFeature.tasks[0].approvers[0].Id) : null;
+      cw.approverId = hasApprover ? iterateFeature.tasks[0].approvers[0].Id : null;
+      cw.taskId = iterateFeature.tasks[0].id;
+      cw.myCase = caseByFeatureId.get(cw.featureId);
+      cw.caseStatus = cw.myCase != null ? cw.myCase.Status : null;
 
-                    if (isAutoWorkflowCase) {
-                        Boolean isAutoWorkflowFeature = 'Y'.equalsIgnoreCase(iterateFeature.autoWorkflowRequest);
-                        if (cw.myCase == null) {
-                            if (isAutoWorkflowFeature) {
-                                listCaseFeatureWrappers.add(cw);
-                                hasPendingAutoWorkflowFeature = true;
-                            } else {
-                                hasPendingManualFeature = true;
-                            }
-                        } else if (!cw.myCase.IsClosed) {
-                            if (isAutoWorkflowFeature) {
-                                hasPendingAutoWorkflowFeature = true;
-                            } else {
-                                hasPendingManualFeature = true;
-                            }
-                        }
-                    } else if(cw.myCase == null || (cw.myCase != null && cw.myCase.IsClosed == false
-                            && (cw.featureType == 'Business' || cw.featureType == 'Risk')) ){
+      if (isAutoWorkflowCase) {
+        Boolean isAutoWorkflowFeature = 'Y'.equalsIgnoreCase(iterateFeature.autoWorkflowRequest);
+        if (cw.myCase == null) {
+          if (isAutoWorkflowFeature) {
             listCaseFeatureWrappers.add(cw);
+            hasPendingAutoWorkflowFeature = true;
+          } else {
+            hasPendingManualFeature = true;
+          }
+        } else if (!cw.myCase.IsClosed) {
+          if (isAutoWorkflowFeature) {
+            hasPendingAutoWorkflowFeature = true;
+          } else {
+            hasPendingManualFeature = true;
           }
         }
+      } else if (cw.myCase == null || (!cw.myCase.IsClosed
+          && (cw.featureType == DMT_Constants.APPROVER_TYPE_BUSINESS || cw.featureType == DMT_Constants.APPROVER_TYPE_RISK))) { // CIBGLOBALD-4801
+        listCaseFeatureWrappers.add(cw);
       }
     }
 
-    System.debug('**Lista listCaseFeatureWrappers 2'  + JSON.serializePretty(listCaseFeatureWrappers));
+    if (isAutoWorkflowCase) {
+      if (isOppContext && !hasPendingAutoWorkflowFeature && !hasPendingManualFeature) {
+        moveStatusToReadyToClose(contextPassport, contextCases); // CIBGLOBALD-4801
+      }
+      return;
+    }
 
-        if (isAutoWorkflowCase) {
-            if (isOppContext && !hasPendingAutoWorkflowFeature && !hasPendingManualFeature) {
-                moveStatusToReadyToClose(contextId);
-            }
-            return;
-        }
+    if (listCaseFeatureWrappers.isEmpty()) {
+      if (isOppContext) {
+        moveStatusToReadyToClose(contextPassport, contextCases); // CIBGLOBALD-4801
+      }
+      return;
+    }
 
-    List<DMT_CaseFeatureWrapper> listBussiness = new List<DMT_CaseFeatureWrapper>();
+    // Next feature: Business first; then Risk, with the other approval features in parallel (Opportunities only)
+    List<DMT_CaseFeatureWrapper> listBusiness = new List<DMT_CaseFeatureWrapper>(); // CIBGLOBALD-4801
     List<DMT_CaseFeatureWrapper> listRisk = new List<DMT_CaseFeatureWrapper>();
     List<DMT_CaseFeatureWrapper> listOther = new List<DMT_CaseFeatureWrapper>();
+    listCaseFeatureWrappers.sort();
+    for (DMT_CaseFeatureWrapper feature : listCaseFeatureWrappers) {
+      if (feature.featureType == DMT_Constants.APPROVER_TYPE_BUSINESS) { // CIBGLOBALD-4801
+        listBusiness.add(feature);
+      } else if (feature.featureType == DMT_Constants.APPROVER_TYPE_RISK) { // CIBGLOBALD-4801
+        listRisk.add(feature);
+      } else {
+        listOther.add(feature);
+      }
+    }
 
-    //Next feature:
-    if(!listCaseFeatureWrappers.isEmpty()){
-
-      listCaseFeatureWrappers.sort();
-      for(DMT_CaseFeatureWrapper feature :listCaseFeatureWrappers){
-        if(feature.featureType == 'Business'){
-          listBussiness.add(feature);
-        } else if(feature.featureType == 'Risk'){
-          listRisk.add(feature);
-                } else {
-                    listOther.add(feature);
+    if (!listBusiness.isEmpty()) {
+      enqueueStartCaseQueueable(listBusiness[0]);
+    } else if (!listRisk.isEmpty()) {
+      enqueueStartCaseQueueable(listRisk[0]);
+      // Other approval features (Financial Sponsor, Structured...) start in parallel with Risk, only for Opportunities
+      if (isOppContext) {
+        for (DMT_CaseFeatureWrapper otherFeature : listOther) {
+          enqueueStartCaseQueueable(otherFeature);
         }
       }
-
-      System.debug('*** Lista Negocio Size: ' + listBussiness.size());
-      System.debug('*** Lista Riesgo Size: ' + listRisk.size());
-        System.debug('*** Lista otras Features Size: ' + listOther.size());
-
-            if (listBussiness.size() > 0) {
-                DMT_CaseFeatureWrapper nextBusinessFeature = listBussiness[0];
-                enqueueStartCaseQueueable(nextBusinessFeature);
-        } else if(listRisk.size()>0){
-            DMT_CaseFeatureWrapper nextRiskFeature = listRisk[0];
-            enqueueStartCaseQueueable(nextRiskFeature);
-
-            // Lanzamiento en paralelo de features "Other" (Financial Sponsor, Estructurado, etc.)
-            // SOLO para Oportunidades; para Líneas el comportamiento se mantiene igual que antes (solo Risk)
-            if (isOppContext) {
-            for (DMT_CaseFeatureWrapper otherFeature : listOther) {
-                enqueueStartCaseQueueable(otherFeature);
-            }
-            }
-        }
-    }else if (isOppContext) {
-        moveStatusToReadyToClose(contextId);
     }
+  }
+
+  // CIBGLOBALD-4801 - Enhancement to existing process: passportSanction value of the approval features in the Passport JSON
+  private static final String APPROVAL_SANCTION = 'approval';
+
+  // CIBGLOBALD-4801 - Enhancement to existing process: Passport tasks as untyped maps (the shape StartCaseQueueable expects), shared instead of repeated inline
+  private static List<Map<String, Object>> toTaskMaps(Object tasks) {
+    List<Map<String, Object>> taskListAsMaps = new List<Map<String, Object>>();
+    Object untyped = JSON.deserializeUntyped(JSON.serialize(tasks));
+    if (untyped instanceof List<Object>) {
+      for (Object taskObject : (List<Object>) untyped) {
+        if (taskObject instanceof Map<String, Object>) {
+          taskListAsMaps.add((Map<String, Object>) taskObject);
+        }
+      }
+    }
+    return taskListAsMaps;
   }
 
     private static void enqueueStartCaseQueueable(DMT_CaseFeatureWrapper feature) {
@@ -1020,7 +1038,11 @@ public without sharing class DMT_Case_Steps_Controller {
 
         List<Case> existingCases = DMT_Case_Steps_Selector.getApprovalCasesByOpportunityIds(new Set<Id>{ contextId });
 
-        if (!existingCases.isEmpty()) return;
+        List<Case> existingApprovalPhaseCases = new List<Case>();
+        for (Case c : existingCases) {
+            if (c.DMT_Passport_Sanction__c == 'approval') existingApprovalPhaseCases.add(c);
+        }
+        if (!existingApprovalPhaseCases.isEmpty()) return;
 
         List<String> approversIdList = new List<String>();
         for (DMT_PassportLineWrapper.feature f : wrapper.data.features) {
@@ -1321,25 +1343,37 @@ public without sharing class DMT_Case_Steps_Controller {
         }
     }
 
-  @TestVisible
-    private static void moveStatusToReadyToClose(Id contextId) {
-        if (contextId == null) {
+    /**
+     * CIBGLOBALD-4801 - Moves the Opportunity from Approval to Ready to close after its last approval Case closed
+     * (processStartNextCaseApproval, called by Case_After_Trigger_Flow), only when every approval feature is approved
+     * and no Passport feature required for Ready to close blocks it (DMT_Semaphore_Logic). Otherwise the Opportunity
+     * stays in Approval and the user moves it from the path (dmt_custom_path_opp), which runs the same traffic light
+     * check. Uses the Passport and Cases already loaded (no query). A failing check logs the error and does not move.
+     */
+    @TestVisible
+    private static void moveStatusToReadyToClose(Passport__c passport, List<Case> contextCases) {
+        if (passport == null || passport.Opportunity__c == null || passport.Opportunity__r?.StageName != DMT_Constants.APPROVAL) {
             return;
         }
-
-        System.debug('Queries usadas before oppToUpdate: ' + Limits.getQueries());
-
-            List<Passport__c> passports = DMT_Case_Steps_Selector.getPassportsByOpportunityIds(new Set<Id>{ contextId });
-
-            if (!passports.isEmpty() && passports[0].Opportunity__r.StageName == DMT_Constants.APPROVAL) {
-                Opportunity oppToUpdate = new Opportunity(
-                    Id = contextId,
-                    StageName = DMT_Constants.READYTOCLOSE
-                );
-                update oppToUpdate;
+        try {
+            List<Object> features = DMT_Semaphore_Logic.getPassportFeatures(passport.DMT_Passport_Save__c);
+            if (!DMT_Semaphore_Logic.areApprovalFeaturesApproved(features, contextCases)) {
+                return;
             }
-
-        System.debug('Queries usadas after oppToUpdate: ' + Limits.getQueries());
+            List<String> blockingFeatureNames = DMT_Semaphore_Logic.getBlockingFeatureNames(features, contextCases, DMT_Constants.READYTOCLOSE);
+            if (!blockingFeatureNames.isEmpty()) {
+                System.debug(LoggingLevel.INFO, 'Opportunity ' + passport.Opportunity__c + ' stays in Approval, required features not met: ' + String.join(blockingFeatureNames, ', '));
+                return;
+            }
+        } catch (Exception e) {
+            DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
+                e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
+                'DMT_Case_Steps_Controller', 'moveStatusToReadyToClose', 'DMT', passport.Opportunity__c
+            ));
+            DMT_AsyncOrchestrator.flush();
+            return;
+        }
+        update new Opportunity(Id = passport.Opportunity__c, StageName = DMT_Constants.READYTOCLOSE);
     }
 
   /**
@@ -1511,80 +1545,28 @@ public without sharing class DMT_Case_Steps_Controller {
   }
 
   /**
-   * @description Validates if the DMT Line meets approval criteria based on Passport JSON data and Case status.
-   * @param lineId The ID of the DMT_Line__c record to validate.
-   * @return Boolean True if validation passes, False otherwise.
+   * CIBGLOBALD-4801 - True when the record has a Passport and every approval feature with tasks is approved (latest Case
+   * Finished, latest step Task Yes; DMT_Semaphore_Logic.areApprovalFeaturesApproved). Works for a DMT Line or an
+   * Opportunity. 2 SOQL (Passport, Cases with their latest Task). A failing check logs the error and returns false.
+   * Caller: DMT_Line_Helper.avoidPassingApproval (DMT_Line__c.DMT_Approval_Validation__c).
+   * @param lineId DMT_Line__c Id (an Opportunity Id also works)
    */
   @AuraEnabled
   public static Boolean checkApprovalValidation(Id lineId) {
-      try {
-          if (lineId == null) return false;
-
-          // 1. Retrieve Passport data associated with the Line
-          List<Passport__c> passportList = [SELECT DMT_Passport_Save__c FROM Passport__c WHERE DMT_Line__c = :lineId WITH USER_MODE LIMIT 1];
-
-          if (passportList.isEmpty() || String.isBlank(passportList[0].DMT_Passport_Save__c)) {
-              return false;
-          }
-
-          // 2. Parse JSON to identify required Approval Features
-          Set<String> approvalFeatureSet = new Set<String>();
-          Map<String, Object> root = (Map<String, Object>) JSON.deserializeUntyped(passportList[0].DMT_Passport_Save__c);
-          Map<String, Object> dataMap = (Map<String, Object>) root.get('data');
-
-          if (dataMap != null && dataMap.containsKey('features')) {
-              List<Object> rawFeatures = (List<Object>) dataMap.get('features');
-              for (Object featureObj : rawFeatures) {
-                  Map<String, Object> featureData = (Map<String, Object>) featureObj;
-                  String sanction = String.valueOf(featureData.get('passportSanction'));
-                  Object featId = featureData.get('id');
-
-                  if (featId != null && sanction != null && sanction.equalsIgnoreCase(DMT_Constants.APPROVAL)) {
-                      approvalFeatureSet.add(String.valueOf(featId));
-                  }
-              }
-          }
-
-          // 3. Retrieve existing Finished Approval Cases
-          List<Case> approvalCases = [SELECT Id, DMT_Feature_Id__c FROM Case WHERE DMT_Line__c = :lineId AND Status = :DMT_Constants.FINISHED AND DMT_Passport_Sanction__c = 'approval' WITH USER_MODE];
-
-          Set<String> approvalCasesSet = new Set<String>();
-          for (Case c : approvalCases) {
-              if (c.DMT_Feature_Id__c != null) {
-                  approvalCasesSet.add(c.DMT_Feature_Id__c);
-              }
-          }
-
-          // 4. Comparison Logic: Feature Sets must match
-          if (approvalFeatureSet.isEmpty()) {
-              return true;
-          }
-
-          if (!approvalCasesSet.equals(approvalFeatureSet)) {
-              return false;
-          }
-
-          // 5. Deep Step Validation via existing Controller logic
-          // We assume getCurrentStepsFromCases is a static method in this same class
-          List<WRAPPER_Step> stepGroups = getCurrentStepsFromCases(approvalCases);
-
-          if (stepGroups.isEmpty()) {
-              return false;
-          }
-
-          for (WRAPPER_Step step : stepGroups[0].subitems) {
-              if (step.rawresult != 'Yes') {
-                  return false; // Early exit if any step is not 'Yes'
-              }
-          }
-
-          return true;
-
-      } catch (Exception e) {
-          // Log error and return false to fail gracefully in the UI/Trigger
-          System.debug(LoggingLevel.ERROR, 'Error in checkApprovalValidation: ' + e.getMessage());
-          return false;
-      }
+    if (lineId == null) {
+      return false;
+    }
+    try {
+      DMT_Semaphore_Logic.RecordFeatureData data = DMT_Semaphore_Logic.loadFeatureData(new Set<Id>{ lineId }).get(lineId);
+      return data.hasPassport && DMT_Semaphore_Logic.areApprovalFeaturesApproved(data.features, data.cases);
+    } catch (Exception e) {
+      DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
+        e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
+        'DMT_Case_Steps_Controller', 'checkApprovalValidation', 'DMT', lineId
+      ));
+      DMT_AsyncOrchestrator.flush();
+      return false;
+    }
   }
 
     @AuraEnabled
@@ -1662,6 +1644,8 @@ public without sharing class DMT_Case_Steps_Controller {
         public String descriptionCase;
         @AuraEnabled
         public String committeeLabel;
+        @AuraEnabled
+        public String tipoFuncOperacionProd;
         //Added fields of OpportunityId and LineId, also added the group Client Name
         @AuraEnabled
         public String lineOppId;

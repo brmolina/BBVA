@@ -37,6 +37,21 @@ public with sharing class DMT_Features_Selector {
         return passports.isEmpty() ? null : passports[0];
     }
 
+    public static String getOpportunityClientDescriptionOfDeal(Id opportunityId) {
+        if (opportunityId == null) {
+            return null;
+        }
+        List<DMT_Opportunity_Client__c> clients = [
+            SELECT DMT_Description_Issues__c
+            FROM DMT_Opportunity_Client__c
+            WHERE DMT_MDE_Opportunity__c = :opportunityId
+            WITH USER_MODE
+            ORDER BY CreatedDate ASC
+            LIMIT 1
+        ];
+        return clients.isEmpty() ? null : clients[0].DMT_Description_Issues__c;
+    }
+
     public static Opportunity getOpportunityExternalIdById(String opportunityId) {
         List<Opportunity> opportunities = [
             SELECT DMT_Opp_Id__c

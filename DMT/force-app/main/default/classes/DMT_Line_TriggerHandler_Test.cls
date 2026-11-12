@@ -505,4 +505,75 @@ public with sharing class DMT_Line_TriggerHandler_Test {
         Assert.areNotEqual(DMT_Constants.CANCELLED, statusAfterAcquire, 'Taking the lock alone does not run the restart check');
         Assert.areEqual(DMT_Constants.CANCELLED, [SELECT Status FROM Task WHERE Id = :openTask.Id].Status, 'Releasing the lock runs the check and reopens the stale task');
     }
+
+    // ===== CIBGLOBALD-4801 - automatic move of a Line to Ready to close (DMT_Line_Helper.avoidPassingApproval) =====
+
+    // CIBGLOBALD-4801 - Line in Approval whose approval feature '20' is approved, plus the given extra Passport features
+    private static DMT_Line__c setupLineInApproval4801(String extraFeatures) {
+        DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+            DMT_Line__c.Line_Id__c => 'L4801-AUTO',
+            DMT_Line__c.Status__c => DMT_Constants.APPROVAL
+        });
+        String passportJson = '{"data":{"opportunityId":"L4801-AUTO","features":['
+            + '{"id":"20","name":"Business Approval","passportSanction":"approval","tasks":[{"id":"6"}]}'
+            + (String.isBlank(extraFeatures) ? '' : ',' + extraFeatures)
+            + ']}}';
+        DMT_UTIL.createPassportRecord(new Map<Schema.SObjectField, Object>{
+            Passport__c.DMT_Line__c => line.Id,
+            Passport__c.DMT_Passport_Save__c => passportJson
+        });
+        createFinishedFeatureCase4801(line.Id, '20', 'approval', 'Yes');
+        return line;
+    }
+
+    // CIBGLOBALD-4801 - Finished Approval Case of a Line feature with one step Task carrying the result
+    private static void createFinishedFeatureCase4801(Id lineId, String featureId, String passportSanction, String stepResult) {
+        Case featureCase = DMT_Test_DataFactory.generateCase(UserInfo.getUserId(), new Map<Schema.SObjectField, Object>{
+            Case.DMT_Line__c => lineId,
+            Case.DMT_Feature_Id__c => featureId,
+            Case.DMT_Passport_Sanction__c => passportSanction,
+            Case.Status => DMT_Constants.FINISHED
+        });
+        Id stepTaskRecordTypeId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get(DMT_Constants.TASK_RT_APPROVAL_STEP).getRecordTypeId();
+        DMT_Test_DataFactory.generateTasksWithOwner(UserInfo.getUserId(), stepTaskRecordTypeId, featureCase.Id, 1, new Map<Schema.SObjectField, Object>{
+            Task.Status => 'Completed',
+            Task.DMT_Step_Result__c => stepResult
+        });
+    }
+
+    // CIBGLOBALD-4801 - before-update call as the Line trigger makes it when the approval date is set (Trigger.new / Trigger.oldMap simulation)
+    private static DMT_Line__c runAvoidPassingApproval4801(DMT_Line__c line) {
+        DMT_Line__c oldLine = new DMT_Line__c(Id = line.Id, Status__c = DMT_Constants.APPROVAL);
+        DMT_Line__c newLine = new DMT_Line__c(Id = line.Id, Status__c = DMT_Constants.APPROVAL, DMT_Approval_Date__c = System.now());
+        Test.startTest();
+        new DMT_Line_Helper().avoidPassingApproval(new List<DMT_Line__c>{ newLine }, new Map<Id, DMT_Line__c>{ line.Id => oldLine }, 1);
+        Test.stopTest();
+        return newLine;
+    }
+
+    // CIBGLOBALD-4801 - approval approved but a passport feature required for Ready to close is not green: stays in Approval
+    @isTest
+    public static void testAvoidPassingApproval_RequiredFeatureNotGreen_StaysInApproval() {
+        DMT_Line__c line = setupLineInApproval4801(
+            '{"id":"226","name":"Asset Allocation Validation","passportSanction":"passport","stateName":"WHITE","requiredType":"Y",'
+            + '"requiredStatus":"READY TO CLOSE","requiredColorWorkflow":"GRE","tasks":[{"id":"9"}]}');
+
+        DMT_Line__c result = runAvoidPassingApproval4801(line);
+
+        Assert.isTrue(result.DMT_Approval_Validation__c, 'Every approval feature is approved');
+        Assert.areEqual(DMT_Constants.APPROVAL, result.Status__c, 'A required feature that is not green must block the automatic move');
+    }
+
+    // CIBGLOBALD-4801 - the same required feature approved: moves to Ready to close
+    @isTest
+    public static void testAvoidPassingApproval_RequiredFeatureGreen_MovesToReadyToClose() {
+        DMT_Line__c line = setupLineInApproval4801(
+            '{"id":"226","name":"Asset Allocation Validation","passportSanction":"passport","stateName":"WHITE","requiredType":"Y",'
+            + '"requiredStatus":"READY TO CLOSE","requiredColorWorkflow":"GRE","tasks":[{"id":"9"}]}');
+        createFinishedFeatureCase4801(line.Id, '226', 'passport', 'Yes');
+
+        DMT_Line__c result = runAvoidPassingApproval4801(line);
+
+        Assert.areEqual(DMT_Constants.READYTOCLOSE, result.Status__c, 'With every required feature green the Line must move to Ready to close');
+    }
 }

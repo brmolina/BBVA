@@ -371,6 +371,10 @@ public with sharing class DMT_Line_Helper{
                         } else{
                             relatedRisk = mapRskltByIdLineNonTreasury.get(line.Id);
                         }
+                        // Changes been made for CIBGLOBALD-4836: Resolve the selected DELE PLI for this Treasury line.
+                        DMT_Line_Product_Item__c selectedDepoLentPli = line.Product__c == 'Treasury Line'
+                            ? getUniqueSelectedDepoLentItem(mapPliByIdLine.get(line.Id))
+                            : null;
                         if (relatedRisk != null){
                             for (DMT_Risk_Line_Term__c rsk : relatedRisk){
                                 if (line.Product__c == 'Treasury Line'){
@@ -382,11 +386,23 @@ public with sharing class DMT_Line_Helper{
                                     System.debug('Initializing consolidated line for risk: ' + rsk.DMT_Risk_Type__c + ' with idRiskLineEquities: ' + idRiskLineEquities);
                                     System.debug('Initializing consolidated line for risk: ' + rsk.DMT_Risk_Type__c + ' with idRiskLineRepos: ' + idRiskLineRepos);
                                     System.debug('Initializing consolidated line for risk: ' +mapProdByProdCod);
-                                    initcLineRsk.g_global_product_family_id__c = !String.isBlank(mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_family__c) ? mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_family__c : rsk.g_global_product_family_id__c;
-                                    initcLineRsk.g_global_product_subfamily_id__c = !String.isBlank(mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_Subfamily__c) ? mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_Subfamily__c : rsk.g_global_product_subfamily_id__c;
-                                    initcLineRsk.g_global_product_category_id__c = !String.isBlank(mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_category__c) ? mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_category__c : rsk.g_global_product_category_id__c;
-                                    initcLineRsk.g_gbl_product_subcategory_id__c = !String.isBlank(mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_Subcategory__c) ? mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_Subcategory__c : rsk.g_gbl_product_subcategory_id__c;
-                                    initcLineRsk.g_global_product_id__c = !String.isBlank(mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Global_Product_Id__c) ? mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Global_Product_Id__c : rsk.g_global_product_id__c;
+                                    String riskType = rsk.DMT_Risk_Type__c;
+                                    Boolean useSelectedDepoLentPli = riskType == DMT_Constants.RSK_DEPOS && selectedDepoLentPli != null;
+                                    Product2 riskProduct = mapProdByProdCod.get(riskType);
+                                    // Changes been made for CIBGLOBALD-4836: Map selected DELE product classification onto Depos consolidated lines.
+                                    if (useSelectedDepoLentPli){
+                                        initcLineRsk.g_global_product_family_id__c = selectedDepoLentPli.Product__r.DMT_Product_family__c;
+                                        initcLineRsk.g_global_product_subfamily_id__c = selectedDepoLentPli.Product__r.DMT_Product_Subfamily__c;
+                                        initcLineRsk.g_global_product_category_id__c = selectedDepoLentPli.Product__r.DMT_Product_category__c;
+                                        initcLineRsk.g_gbl_product_subcategory_id__c = selectedDepoLentPli.Product__r.DMT_Product_Subcategory__c;
+                                        initcLineRsk.g_global_product_id__c = selectedDepoLentPli.Product__r.DMT_Global_Product_Id__c;
+                                    } else{
+                                        initcLineRsk.g_global_product_family_id__c = !String.isBlank(riskProduct.DMT_Product_family__c) ? riskProduct.DMT_Product_family__c : rsk.g_global_product_family_id__c;
+                                        initcLineRsk.g_global_product_subfamily_id__c = !String.isBlank(riskProduct.DMT_Product_Subfamily__c) ? riskProduct.DMT_Product_Subfamily__c : rsk.g_global_product_subfamily_id__c;
+                                        initcLineRsk.g_global_product_category_id__c = !String.isBlank(riskProduct.DMT_Product_category__c) ? riskProduct.DMT_Product_category__c : rsk.g_global_product_category_id__c;
+                                        initcLineRsk.g_gbl_product_subcategory_id__c = !String.isBlank(riskProduct.DMT_Product_Subcategory__c) ? riskProduct.DMT_Product_Subcategory__c : rsk.g_gbl_product_subcategory_id__c;
+                                        initcLineRsk.g_global_product_id__c = !String.isBlank(riskProduct.DMT_Global_Product_Id__c) ? riskProduct.DMT_Global_Product_Id__c : rsk.g_global_product_id__c;
+                                    }
                                     // initcLineRsk.g_global_product_subfamily_id__c = mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_Subfamily__c;
                                     // initcLineRsk.g_global_product_category_id__c = mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_category__c;
                                     // initcLineRsk.g_gbl_product_subcategory_id__c = mapProdByProdCod.get(rsk.DMT_Risk_Type__c).DMT_Product_Subcategory__c;
@@ -396,8 +412,6 @@ public with sharing class DMT_Line_Helper{
                                     initcLineRsk.gf_period_until_line_day_number__c = rsk.DMT_End_Term__c != null ? Decimal.valueOf(rsk.DMT_End_Term__c) : null;
                                     initcLineRsk.status__c = line.DMT_Status_Completed__c;
                                     initcLineRsk.gf_condition_line_amount__c = rsk.DMT_Amount__c;
-                                    String riskType = rsk.DMT_Risk_Type__c;
-
                                     Integer currentRiskLine =
                                         riskType == 'Depos' ? idRiskLineDepos :
                                         riskType == 'Equities' ? idRiskLineEquities :
@@ -431,7 +445,9 @@ public with sharing class DMT_Line_Helper{
                                     //initcLineRsk.gf_prev_renewal_priority_line_id__c = rsk.DMT_Parent_Product__r.gf_group_priority_line_id__c;
                                     initcLineRsk.gf_revolvence_pd_days_number__c = rsk.gf_revolvence_pd_days_number__c;
                                     initcLineRsk.gf_break_cl_days_number__c = rsk.gf_break_cl_days_number__c;
-                                    initcLineRsk.g_expert_criteria_risk_type__c = rsk.DMT_Risk_Type__c == 'Equities' ? 'WWRX' : '';
+                                    initcLineRsk.g_expert_criteria_risk_type__c = riskType == DMT_Constants.RSK_EQUITY
+                                        ? 'WWRX'
+                                        : useSelectedDepoLentPli ? selectedDepoLentPli.Product_Code_Value__c : '';
 
                                     //idRiskLine++;
                                     cLines.add(initcLineRsk);
@@ -824,6 +840,28 @@ public with sharing class DMT_Line_Helper{
         return mapPLRReturn;
     }
 
+    // Changes been made for CIBGLOBALD-4836: Use only one selected DELE PLI as the Depos classification source.
+    private static DMT_Line_Product_Item__c getUniqueSelectedDepoLentItem(List<DMT_Line_Product_Item__c> productItems){
+        DMT_Line_Product_Item__c selectedItem;
+        if (productItems == null){
+            return null;
+        }
+
+        for (DMT_Line_Product_Item__c productItem : productItems){
+            if (productItem.Product__c == null || productItem.Product__r == null ||
+                productItem.DMT_DerivativeRestriction__c != true ||
+                String.isBlank(productItem.Product_Code_Value__c) ||
+                !productItem.Product_Code_Value__c.trim().equalsIgnoreCase(DMT_Constants.PRODUCT_DEPO_LENT_RESTRICTION)){
+                continue;
+            }
+            if (selectedItem != null){
+                return null;
+            }
+            selectedItem = productItem;
+        }
+        return selectedItem;
+    }
+
     public Map<String, List<DMT_Consolidated_Line__c>> getpreviousConsoLines(Map<Id, DMT_Line__c> mapLinesC){
         Map<String, DMT_Line__c> lineIdMap = new Map<String, DMT_Line__c>();
         for (Id key : mapLinesC.keySet()){
@@ -1069,6 +1107,8 @@ public with sharing class DMT_Line_Helper{
                     for (Database.Error err : saveResults[i].getErrors()) {
                         if (err.getStatusCode() == StatusCode.UNABLE_TO_LOCK_ROW) {
                             lockRetryLines.add(parentToClosed[i]);
+                        }else{
+                            lockRetryLines.add(parentToClosed[i]);
                         }
                     }
                 }
@@ -1228,10 +1268,23 @@ public with sharing class DMT_Line_Helper{
     public void avoidPassingApproval(List<DMT_Line__c> newLines, Map<Id, DMT_Line__c> oldMapLines, Integer triggerSize){
         if (triggerSize == 1 && ((oldMapLines.values()[0].Status__c == newLines[0].Status__c && oldMapLines.values()[0].DMT_Approval_Date__c != newLines[0].DMT_Approval_Date__c) || ((newLines[0].Status__c == DMT_Constants.READYTOCLOSE || newLines[0].Status__c == DMT_Constants.CLOSED) && oldMapLines.values()[0].Status__c != newLines[0].Status__c))){
 
-            newLines[0].DMT_Approval_Validation__c = DMT_Case_Steps_Controller.checkApprovalValidation(newLines[0].Id);
+            // CIBGLOBALD-4801 - One load of Passport + Cases (2 SOQL) gives both the approval flag and the Ready to close traffic light check; the automatic move to Ready to close also needs no required Passport feature blocking it (DMT_Semaphore_Logic). A failing check logs the error, leaves the flag false and does not move.
+            Boolean blockedByRequiredFeatures = true;
+            try {
+                DMT_Semaphore_Logic.RecordFeatureData featureData = DMT_Semaphore_Logic.loadFeatureData(new Set<Id>{ newLines[0].Id }).get(newLines[0].Id);
+                newLines[0].DMT_Approval_Validation__c = featureData.hasPassport
+                    && DMT_Semaphore_Logic.areApprovalFeaturesApproved(featureData.features, featureData.cases);
+                blockedByRequiredFeatures = !DMT_Semaphore_Logic.getBlockingFeatureNames(featureData.features, featureData.cases, DMT_Constants.READYTOCLOSE).isEmpty();
+            } catch (Exception e) {
+                newLines[0].DMT_Approval_Validation__c = false;
+                DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
+                    e.getMessage(), e.getStackTraceString(), e.getLineNumber(), e.getTypeName(),
+                    'DMT_Line_Helper', 'avoidPassingApproval', 'DMT', newLines[0].Id
+                ));
+            }
 
-            if (newLines[0].DMT_Approval_Validation__c && newLines[0].Status__c == DMT_Constants.APPROVAL && newLines[0].dmt_line_template_type__c != 'OP'){
-                newLines[0].Status__c = DMT_Constants.READYTOCLOSE;                
+            if (newLines[0].DMT_Approval_Validation__c && !blockedByRequiredFeatures && newLines[0].Status__c == DMT_Constants.APPROVAL && newLines[0].dmt_line_template_type__c != 'OP'){ // CIBGLOBALD-4801
+                newLines[0].Status__c = DMT_Constants.READYTOCLOSE;
             }
         }
     }
@@ -1613,7 +1666,8 @@ public with sharing class DMT_Line_Helper{
             if (linesToRetry == null || linesToRetry.isEmpty()) {
                 return;
             }
-            Database.update(linesToRetry, false);
+            DMT_WithoutSharingDAO.updateRecords(linesToRetry);
+
         }
     }
 

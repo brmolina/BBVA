@@ -1,0 +1,12 @@
+CIBGLOBALD-4801 - Required Passport features block the move to Ready to close for Opportunities and Lines
+
+The automatic move from Approval to Ready to close only checked the approval features. It now also requires every Passport feature with requiredType Y and requiredStatus READY TO CLOSE, whatever its passportSanction, to meet its traffic light rule (requiredColorCapability, requiredColorWorkflow, colorLogicalOperatorType). When one does not, the Opportunity or Line stays in Approval. The stage paths apply the same rule when the user moves the record.
+
+- DMT_Semaphore_Logic: loadFeatureData, getBlockingFeatureNames, areApprovalFeaturesApproved and resolveWorkflowColor (moved from DMT_FeaturesController). A Finished Case without step result is grey, as in the Passport cards. Approval features without tasks are not counted.
+- DMT_Case_Steps_Selector: the approval Case queries return the latest DMT_Step_Approval Task of each Case.
+- DMT_Case_Steps_Controller: moveStatusToReadyToClose checks the approval features and the required features before moving the Opportunity; checkApprovalValidation works for Opportunities and Lines.
+- DMT_Line_Helper.avoidPassingApproval: the automatic move of the Line also needs no required feature blocking it.
+- DMT_FeaturesController.validateSemaphoreRulesForStageChange: same rule, accepts Opportunity and Line Ids, and blocks the move when the check cannot run.
+- dmt_custom_path_line: the Line path runs the check before every status change. dmt_custom_path_opp: the message names the required feature.
+- Enhancement to existing process: processStartNextCaseApproval runs no query for Case saves that do not close an approval Case (was 1 Task query per save), checkApprovalValidation runs 2 queries (was about 7) and moveStatusToReadyToClose none (was 1). Spanish debug lines removed.
+- Tests: DMT_FeaturesController_test, DMT_Case_Steps_Controller_Test and DMT_Line_TriggerHandler_Test cover blocked and allowed moves for Opportunities and Lines; test data from DMT_Test_DataFactory and DMT_UtilTestClass, Assert class in the touched files.
