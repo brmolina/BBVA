@@ -19,14 +19,19 @@ import getProfitabilityDetailFile from '@salesforce/apex/DMT_Profitability_utils
 
 // CIBGLOBALD-4711 - The decoded Profitability detail file is accepted as CSV when it is text (no NUL byte, no ZIP/XLSX
 // or PDF signature) and its first line contains a column separator.
-// PENDING (CIBGLOBALD-4711): rule built from the service spec only (its example file is placeholder text). Review it
-// against a real file from Epsilon (separator, header row, encoding).
 const CSV_SEPARATOR_PATTERN = /[;,\t]/;
 const CSV_SNIFF_LENGTH = 1024;
 const BINARY_SIGNATURES = ['PK', '%PDF'];
+// CIBGLOBALD-4711 - Epsilon returns the detail as an Excel workbook (.xlsx: a ZIP whose entries include xl/); it is saved as .xlsx.
+// The download Blob uses application/octet-stream: Lightning security rejects the Excel and text/csv MIME types
+// ('unsupported MIME type'); the file type comes from the .xlsx / .csv extension.
+const ZIP_SIGNATURE = 'PK\u0003\u0004';
+const XLSX_ENTRY_PREFIX = 'xl/';
+const XLSX_SNIFF_LENGTH = 8192;
+const DOWNLOAD_MIME_TYPE = 'application/octet-stream'; // CIBGLOBALD-4711
 const DETAIL_FAILED_MESSAGE = 'The profitability detail could not be downloaded.';
 const DETAIL_UNREADABLE_MESSAGE = 'The file returned by the profitability detail service could not be read.';
-const DETAIL_NOT_CSV_MESSAGE = 'The file returned by the profitability detail service is not a CSV file.';
+const DETAIL_NOT_CSV_MESSAGE = 'The file returned by the profitability detail service is not a CSV or Excel file.'; // CIBGLOBALD-4711
 
 function base64ToBytes(base64) {
     const byteChars = atob(base64);
@@ -47,6 +52,16 @@ function isCsvText(byteArray) {
     }
     const firstLine = head.replace(/^\u00EF\u00BB\u00BF/, '').split(/\r?\n/)[0];
     return CSV_SEPARATOR_PATTERN.test(firstLine);
+}
+
+// CIBGLOBALD-4711 - True when the bytes are an Excel workbook: ZIP signature and an xl/ entry name in the first entries.
+function isXlsxWorkbook(byteArray) {
+    const length = Math.min(byteArray.length, XLSX_SNIFF_LENGTH);
+    let head = '';
+    for (let i = 0; i < length; i++) {
+        head += String.fromCharCode(byteArray[i]);
+    }
+    return head.startsWith(ZIP_SIGNATURE) && head.includes(XLSX_ENTRY_PREFIX);
 }
 
 // Browser download of the bytes as they are (temporary object URL + anchor).
@@ -233,10 +248,10 @@ export default class Dmt_profitability_view extends NavigationMixin(LightningEle
     }
 
     /**
-     * CIBGLOBALD-4711 - Downloads the Profitability detail CSV from Epsilon (DMT_Profitability_utils
-     * .getProfitabilityDetailFile, service DMT_ProfitabilityDownloadDetail). The service returns the CSV in base64;
-     * the decoded bytes are saved unchanged, so Epsilon's columns, separators and encoding are kept. Throws an Error
-     * with the message to show when there is no file or it is not CSV text, so no empty or wrong file is downloaded.
+     * CIBGLOBALD-4711 - Downloads the Profitability detail file from Epsilon (DMT_Profitability_utils
+     * .getProfitabilityDetailFile, service DMT_ProfitabilityDownloadDetail). The service returns the file in base64:
+     * an Excel workbook is saved as .xlsx, CSV text as .csv; the decoded bytes are saved unchanged. Throws an Error
+     * with the message to show when there is no file or it is neither, so no empty or wrong file is downloaded.
      * Desktop only (dmt_passport_modal shows the button only on the Large form factor).
      */
     @api
@@ -251,10 +266,15 @@ export default class Dmt_profitability_view extends NavigationMixin(LightningEle
         } catch (error) {
             throw new Error(DETAIL_UNREADABLE_MESSAGE);
         }
+        // CIBGLOBALD-4711 - Excel workbook: same file name with the .xlsx extension (DMT_Profitability_utils builds it as .csv)
+        if (isXlsxWorkbook(byteArray)) {
+            saveFile(byteArray, DOWNLOAD_MIME_TYPE, result.fileName.replace(/\.csv$/i, '.xlsx')); // CIBGLOBALD-4711
+            return;
+        }
         if (!isCsvText(byteArray)) {
             throw new Error(DETAIL_NOT_CSV_MESSAGE);
         }
-        saveFile(byteArray, 'text/csv', result.fileName);
+        saveFile(byteArray, DOWNLOAD_MIME_TYPE, result.fileName); // CIBGLOBALD-4711
     }
 
     setLoading(value) {

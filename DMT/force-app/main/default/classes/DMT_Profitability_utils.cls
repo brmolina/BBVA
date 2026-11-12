@@ -275,7 +275,7 @@ public without sharing class DMT_Profitability_utils {
      * iaso__GBL_integration_service__mdt record DMT_ProfitabilityDownloadDetail (custom setting
      * iaso__GBL_Rest_Services_Url__c DMT_ProfitabilityDownloadDetail_INT, iaso__Enable_Log__c writes
      * iaso__GBL_Application_Log__c); call path getProfitabilityDetailFile -> DMT_Utils.callService ->
-     * DMT_HPG_Utils.callService. Response 200: {data: [{file: CSV in base64, opportunityVersion}]}.
+     * DMT_HPG_Utils.callService. Response 200: {data: [{file: Excel workbook or CSV in base64, opportunityVersion}]}.
      *
      * @param oppId Opportunity Id.
      * @return Map with 'success', 'fileBase64', 'fileName' and 'message' (error text or null).

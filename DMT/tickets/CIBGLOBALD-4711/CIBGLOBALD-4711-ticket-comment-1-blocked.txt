@@ -1,0 +1,14 @@
+Ticket bloqueado a la espera del análisis del equipo de Epsilon.
+
+Estado del desarrollo:
+- Botón Profitability Detail en el footer del modal de Profitability del Passport (LWC dmt_passport_modal y dmt_profitability_view), solo en desktop.
+- Llamada al servicio de Epsilon profitability_download_detail a través del API ASO DmtDownloadDetailsV0 (GET /dmt/v0/download-details?opportunityId=<Opportunity.DMT_Opp_Id__c>), desde la Apex class DMT_Profitability_utils (método getProfitabilityDetailFile), con el custom metadata iaso__GBL_integration_service__mdt DMT_ProfitabilityDownloadDetail.
+- El servicio devuelve el CSV en base64 y se descarga tal cual: no se recalcula ni se guarda nada.
+- Sin cálculo, sin datos (204/404) o con error del servicio se muestra el mensaje en el modal y no se descarga ningún fichero.
+- Pasos manuales de pre y post deployment preparados por entorno (DMTPRE2, PREPRO y PRO).
+
+Bloqueo:
+- En INT el servicio responde HTTP 500 technicalError 01211008#EL USUARIO NO TIENE PERMISOS PARA EJECUTAR LA TRANSACCION.
+- Salesforce se autentica con el granting ticket del usuario técnico USLHPG01 (INT y AUS); en PRO previsiblemente USLHPG02. Epsilon tiene que conceder a esos usuarios el permiso para ejecutar la transacción.
+- Contactada Fátima Paterna Roda (Epsilon). A la espera de su análisis.
+- Con la primera respuesta real se validará el formato del CSV (separador, cabecera y codificación).
