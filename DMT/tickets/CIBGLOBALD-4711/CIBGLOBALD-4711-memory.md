@@ -1,6 +1,6 @@
 ---
 name: CIBGLOBALD-4711
-description: "Profitability Detail CSV button (Epsilon ASO download-details); deployed to DMT_TCM_DEV 2026-10-22, tests 23/23; live test pending"
+description: "Profitability Detail download (ASO download-details): Epsilon returns XLSX, LWC downloads .xlsx/.csv; tested OK 2026-11-11; commit msg 2 + ticket note done"
 metadata:
   type: project
 ---
@@ -35,5 +35,13 @@ BLOCKER: Jimmy Tonato replaced DMT_Test_DataFactory (08:22 UTC) + DMT_UtilTestCl
 **2026-10-23 PAUSED:** everything committed (c6433e6b on 4711), pushed, merged into main (a8e88225), main pushed. Waiting for the service team (Epsilon permission 01211008 for USLHPG01, via Diego). On resume: retest the button on 006KE000003Qx30YAC, check the real CSV against isCsvText (PENDING marker in dmt_profitability_view.js) and replace the mock with real data, then commit message + Spanish technical note for the work repo.
 
 **2026-10-23 BLOCKED:** user contacted Fatima Paterna Roda (Epsilon) directly; waiting for her analysis. Blocked comment for the ticket drafted (Spanish, development state + 01211008 permission block, USLHPG01 INT/AUS, USLHPG02 PRO expected).
+
+**2026-11-11 RESUMED (Diego moved the ticket to test):** permission error is gone in INT. Live CLI calls in DMT_TCM_DEV: ESCD26OPP00004361ES -> 200 OK, data[0].file = base64 of an XLSX workbook (PK zip, xl/sharedStrings.xml, docProps/core.xml) -> our isCsvText rejects it -> UI 'The file returned by the profitability detail service is not a CSV file.' (check working as designed; service returns Excel, not CSV). ESCD26OPP00004148ES (opp 006KE000003Qx30YAC) -> 400 functionalError 00000009#DOWNLOAD ERROR -> UI shows that message. iaso log keeps only ~5000 chars of the body. DMTPRE2: no download-details logs. Decision asked to user: download .xlsx as is / convert to CSV / ask Epsilon for CSV.
+
+**2026-11-11 FIX (user chose option 1):** dmt_profitability_view detects the file type: isXlsxWorkbook (ZIP PK 03 04 + 'xl/' entry in the first 8192 bytes) -> saved as .xlsx (MIME spreadsheetml, name from Apex with .csv replaced); else isCsvText -> .csv; else 'not a CSV or Excel file'. PENDING marker removed. DMT_Profitability_utils doc comment: file = Excel workbook or CSV. Detection tested in node against the real Epsilon bytes (xlsx), CSV mock (csv), PDF and plain text (rejected). Deployed RunSpecifiedTests: Succeeded 2/2, 24/24; org = local. NOT committed yet: shared tree was on branch 4801 (other session) -> commit to 4711 via plumbing when the user asks. Waiting for the user's browser retest (ESCD26OPP00004361ES returns a file).
+
+**2026-11-11 FIX 2:** user retest gave 'unsupported MIME type' (Lightning security only allows some Blob MIME types: Excel spreadsheetml and text/csv rejected; application/pdf ok). saveFile now uses DOWNLOAD_MIME_TYPE = application/octet-stream for both .xlsx and .csv (marked // CIBGLOBALD-4711). LWC deployed: Succeeded 1/1, org = local. Test class unchanged by these fixes. Waiting for user retest.
+
+**2026-11-11 TESTED OK by the user (xlsx download).** Commit message 2 (fix only) in -commit-message-2.txt. Ticket comments saved: -ticket-comment-1-blocked.txt (posted 2026-10-23) and -ticket-comment-2-excel-fix.txt (delta only; the full note I first drafted repeated comment 1 and was deleted). Personal repo: fix files not committed yet (tree on 4801).
 
 **Status:** analysis only. Nothing retrieved/edited/deployed. Blocked on the service contract (params, response format, columns, iaso config).

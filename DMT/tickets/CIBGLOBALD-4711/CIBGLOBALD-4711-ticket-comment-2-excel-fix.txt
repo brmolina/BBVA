@@ -1,0 +1,23 @@
+Actualización: el servicio de Epsilon ya responde en INT (resuelto el error de permisos 01211008).
+
+Cambios desde el comentario anterior:
+- Epsilon devuelve el detalle como libro Excel (.xlsx) en data[0].file (base64), no como CSV. La descarga detecta el formato: Excel (firma ZIP con entradas xl/) se descarga como ProfitabilityDetail_<DMT_Opp_Id__c>_v<opportunityVersion>.xlsx; si llegara texto CSV, como .csv. Cualquier otro contenido muestra The file returned by the profitability detail service is not a CSV or Excel file. y no se descarga nada.
+- El Blob de descarga se crea como application/octet-stream porque la seguridad de Lightning rechaza los MIME types de Excel y text/csv (error unsupported MIME type).
+- Para un cálculo sin detalle en Epsilon, el servicio responde 400 functionalError 00000009#DOWNLOAD ERROR y el modal muestra The profitability detail could not be downloaded. 00000009#DOWNLOAD ERROR.
+- Cada llamada queda en iaso__GBL_Application_Log__c (Enable Log activado en el custom setting del servicio):
+  SELECT CreatedDate, CreatedBy.Name, iaso__Message_LTA__c FROM iaso__GBL_Application_Log__c WHERE Name = 'DMT_ProfitabilityDownloadDetail' ORDER BY CreatedDate DESC
+
+Cómo encontrar una Opportunity para probar
+- El botón Profitability Detail está activo cuando el Passport guardado de la Opportunity (Passport__c.DMT_Passport_Save__c, JSON) tiene la feature Profitability Engine con resultados (profitability.results no vacío). La llamada a Epsilon usa el campo Opportunity Id (DMT_Opp_Id__c) de la Opportunity.
+- Todos los Passports contienen el texto Profitability Engine, así que no sirve para filtrar. Solo los que tienen resultados contienen regulatoryEad (campo de cada fila de results).
+- DMT_Passport_Save__c no se puede filtrar en SOQL. En Salesforce Inspector:
+  1. Data Export, ejecutar:
+     SELECT Opportunity__c, Opportunity__r.Name, Opportunity__r.DMT_Opp_Id__c, LastModifiedDate, DMT_Passport_Save__c FROM Passport__c WHERE Opportunity__r.DMT_Opp_Id__c != null ORDER BY LastModifiedDate DESC LIMIT 400
+  2. En el cuadro de filtro de los resultados escribir regulatoryEad. Quedan solo las Opportunities con resultados de Profitability.
+  3. Abrir una de ellas (Opportunity__c). En el panel del Passport, la fila Profitability Engine tiene semáforo y el modal de Profitability muestra la tabla Summary.
+- Desde Salesforce no se puede saber si Epsilon tiene detalle para un cálculo: si responde 00000009#DOWNLOAD ERROR, probar con otra Opportunity de la lista filtrada.
+
+Cómo probar
+1. En el modal de Profitability de esa Opportunity, pulsar Profitability Detail.
+2. Se descarga ProfitabilityDetail_<DMT_Opp_Id__c>_v<versión>.xlsx y se abre en Excel.
+3. En iaso__GBL_Application_Log__c (query anterior), la llamada muestra el opportunityId de la Opportunity y la respuesta HTTP 200.

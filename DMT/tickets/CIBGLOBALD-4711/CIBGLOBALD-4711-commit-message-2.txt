@@ -1,0 +1,6 @@
+CIBGLOBALD-4711 - Profitability Detail download accepts the Excel file returned by Epsilon
+
+- dmt_profitability_view: isXlsxWorkbook detects an Excel workbook (ZIP signature plus an xl/ entry in the first 8192 bytes) and saves it as .xlsx (file name from DMT_Profitability_utils with the extension changed); CSV text is still saved as .csv; any other content shows 'The file returned by the profitability detail service is not a CSV or Excel file.'
+- dmt_profitability_view: both downloads create the Blob as application/octet-stream, since Lightning security rejects the Excel and text/csv MIME types ('unsupported MIME type')
+- dmt_profitability_view: pending note on the CSV format removed, the format is now known from a real Epsilon response
+- DMT_Profitability_utils: getProfitabilityDetailFile doc comment says the file is an Excel workbook or CSV
