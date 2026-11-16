@@ -1,0 +1,13 @@
+CIBGLOBALD-4613 - Ajuste tras la prueba en DMTPRE2: registros de restriccion duplicados en MX
+
+- En DMTPRE2 el custom metadata DMT_OperationalRestrictionsTRSR__mdt tiene activos, para el mismo producto MX, el registro antiguo sin flags layout2 y el registro _MX_2 con flag (IRSW_MX e IRSW_MX_2, FOEX_MX y FOEX_MX_2, CCSW_MX y CCSW_MX_2, BOSP_MX y BOSP_MX_2, EQSP_MX y EQSP_MX_2, DELE_MX y DELE_MX_2, REAC_MX y REAC_MX_2).
+- DMT_LineFeatureGenCons_Calc se quedaba con el ultimo registro devuelto por la query, sin ORDER BY. En DMTPRE2 era el antiguo para FX, CCS, IRS, BOSP y EQSP, y esos productos no aparecian en Line amount informed for restricted products aunque la tabla Derivatives no tuviera importe.
+- Nuevo metodo DMT_LineFeatureGenCons_Calc.getTableRestrictionsByProduct: si un producto tiene los dos registros activos, restricGreaterTerm y restrictionWithoutAmount usan el que tiene flag layout2 (DMT_Derivatives_layout2__c, DMT_Depos_layout2__c o DMT_Repos_layout2__c), en cualquier orden. deriRestricNOFdDvp no cambia.
+- Test class DMT_LineFeatureGenCons_Calc_test: nuevo tableRestrictionLayout2WinsTest. testLineFeatureGenConsCalcIsCurrentLineRed cierra solo las Treasury lines de test, porque el Flow DMT_OTHER_Line_Validations ahora impide cerrar la linea OtherProducts de test sin customer.
+
+Como probar
+- Buscar una Treasury Line MX con un producto Derivatives habilitado (DERIVATIVES AVAILABLE PRODUCTS, checkbox DERIVATIVES LINE) y la AMOUNT de DERIVATIVES RISK LINE vacia:
+  SELECT Line__c, Line__r.Name, Name, Product_Code_Value__c FROM DMT_Line_Product_Item__c WHERE Line__r.Booking_Geography__c = 'MX' AND Line__r.RecordType.DeveloperName = 'TreasurySettlement' AND DMT_DerivativeRestriction__c = true AND Product_Code_Value__c IN ('IRSW','FOEX','CCSW','BOSP','EQSP','DBIC')
+  SELECT DMT_Risk_Type__c, DMT_Amount__c FROM DMT_Risk_Line_Term__c WHERE DMT_Line__c = '<Id de la linea>'
+- Pulsar Calculate Passport: YELLOW Line amount informed for restricted products con el producto y (Derivatives).
+- Registros duplicados de la org: SELECT DeveloperName, DMT_Operational_Restrictions_Name__c, isActive__c, DMT_Derivatives_layout2__c, DMT_Depos_layout2__c, DMT_Repos_layout2__c FROM DMT_OperationalRestrictionsTRSR__mdt WHERE Entific__c = 'MX'

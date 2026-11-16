@@ -1,0 +1,4 @@
+CIBGLOBALD-4613 - MX table checks use the layout2 restriction when a product has two active records
+
+- DMT_LineFeatureGenCons_Calc: new getTableRestrictionsByProduct. When a geography has two active DMT_OperationalRestrictionsTRSR__mdt records for the same product (one without layout2 flags and one with them, e.g. IRSW_MX and IRSW_MX_2 in DMTPRE2), restricGreaterTerm and restrictionWithoutAmount use the layout2 record whatever the query order. Before, the record returned last won, so in DMTPRE2 FX, CCS, IRS, BOSP and EQSP were never listed in 'Line amount informed for restricted products'. deriRestricNOFdDvp keeps its current map.
+- DMT_LineFeatureGenCons_Calc_test: new tableRestrictionLayout2WinsTest; testLineFeatureGenConsCalcIsCurrentLineRed closes only the Treasury test lines (isCurrentLine reads Treasury lines only), because Flow DMT_OTHER_Line_Validations now rejects closing the other-product test line without a customer.
