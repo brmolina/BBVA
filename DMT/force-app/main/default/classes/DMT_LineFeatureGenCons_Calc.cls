@@ -118,16 +118,17 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
             for (DMT_OperationalRestrictionsTRSR__mdt aux : listOperationalRestrictions) {
                 mapOpRestric.put(aux.DMT_Operational_Restrictions_Name__c, aux);
             }
+            Map<String, DMT_OperationalRestrictionsTRSR__mdt> mapTableRestric = getTableRestrictionsByProduct(listOperationalRestrictions); // CIBGLOBALD-4613
 
             mapFeatureResult.add(isCurrentLine(clientsCodeList, line.Start_Date__c, line));
-            mapFeatureResult.add(restricGreaterTerm(lineProductItems, lineRiskTerms, mapOpRestric)); // CIBGLOBALD-4613
+            mapFeatureResult.add(restricGreaterTerm(lineProductItems, lineRiskTerms, mapTableRestric)); // CIBGLOBALD-4613
             mapFeatureResult.add(deriRestricNOFdDvp(lineProductItems, mapOpRestric));
             if (line.Waiver__c == true) {
                 mapFeatureResult.add(waiverValidation(line, lineRiskTerms, lineProductItems)); // CIBGLOBALD-4613
             }
             mapFeatureResult.add(noSettlementAmount(lineProductItems, line));
             // CIBGLOBALD-4613 - MX: products enabled in a restriction table without amount in their line table; no row for other geographies
-            DMT_Wrapper_Passport_Abs.FeatureGenConsiderations restrictionAmount = restrictionWithoutAmount(lineProductItems, lineRiskTerms, mapOpRestric);
+            DMT_Wrapper_Passport_Abs.FeatureGenConsiderations restrictionAmount = restrictionWithoutAmount(lineProductItems, lineRiskTerms, mapTableRestric); // CIBGLOBALD-4613
             if (restrictionAmount != null) {
                 mapFeatureResult.add(restrictionAmount);
             }
@@ -376,6 +377,24 @@ public with sharing class DMT_LineFeatureGenCons_Calc {
             return DMT_Constants.RSK_REPOS;
         }
         return DMT_Constants.RSK_DERIVATIVES;
+    }
+
+    /**
+     * CIBGLOBALD-4613 - Operational restriction per product code (DMT_Operational_Restrictions_Name__c) for the MX
+     * table checks (restricGreaterTerm, restrictionWithoutAmount). A geography can have two active records for the
+     * same product, one without layout2 flags and one with them (e.g. IRSW_MX and IRSW_MX_2 in
+     * DMT_OperationalRestrictionsTRSR__mdt): the record with a layout2 flag is used, whatever the query order.
+     */
+    @TestVisible
+    private static Map<String, DMT_OperationalRestrictionsTRSR__mdt> getTableRestrictionsByProduct(List<DMT_OperationalRestrictionsTRSR__mdt> restrictions) {
+        Map<String, DMT_OperationalRestrictionsTRSR__mdt> restrictionsByProduct = new Map<String, DMT_OperationalRestrictionsTRSR__mdt>();
+        for (DMT_OperationalRestrictionsTRSR__mdt restriction : restrictions) {
+            String productCode = restriction.DMT_Operational_Restrictions_Name__c;
+            if (!restrictionsByProduct.containsKey(productCode) || isLayout2Restriction(restriction)) {
+                restrictionsByProduct.put(productCode, restriction);
+            }
+        }
+        return restrictionsByProduct;
     }
 
     // CIBGLOBALD-4613 - True when the restriction belongs to a table of the MX template (any layout2 flag set)

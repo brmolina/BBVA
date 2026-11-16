@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- CIBGLOBALD-4613 - DMTPRE2 fix (duplicate MX restrictions). Order arbitrary. -->
+    <types>
+        <members>DMT_LineFeatureGenCons_Calc</members>
+        <members>DMT_LineFeatureGenCons_Calc_test</members>
+        <name>ApexClass</name>
+    </types>
+    <version>65.0</version>
+</Package>

@@ -389,7 +389,7 @@ public with sharing class DMT_LineFeatureGenCons_Calc_test {
         TriggerBypass.setBypass();
         Test.startTest();
         // Setup: create a line and a duplicate client line
-        List<DMT_Line__c> lineList = [SELECT Id, DMT_Parent_Line__c, Status__c, Start_Date__c, Custom_Association__c, Closed__c, DMT_Status_Completed__c, RecordTypeId, Client_Code__c FROM DMT_Line__c WHERE Client_Code__c = 'ES0182054986618']; // CIBGLOBALD-4613
+        List<DMT_Line__c> lineList = [SELECT Id, DMT_Parent_Line__c, Status__c, Start_Date__c, Custom_Association__c, Closed__c, DMT_Status_Completed__c, RecordTypeId, Client_Code__c FROM DMT_Line__c WHERE Client_Code__c = 'ES0182054986618' AND Product__c = 'Treasury Line']; // CIBGLOBALD-4613
         System.debug('lineList, '+ lineList);
 
         for(DMT_Line__c line : lineList) {
@@ -612,6 +612,29 @@ public with sharing class DMT_LineFeatureGenCons_Calc_test {
         Test.stopTest();
 
         Assert.isNull(result, 'No validation for geographies without layout2 restrictions');
+    }
+
+    // CIBGLOBALD-4613 - Two active restrictions for the same product (without and with layout2 flag): the layout2 one is used in either order
+    @isTest
+    private static void tableRestrictionLayout2WinsTest() {
+        DMT_OperationalRestrictionsTRSR__mdt withoutFlags = new DMT_OperationalRestrictionsTRSR__mdt(DMT_Operational_Restrictions_Name__c = 'IRSW', DMT_Derivatives_layout2__c = false, DMT_Depos_layout2__c = false, DMT_Repos_layout2__c = false);
+        DMT_OperationalRestrictionsTRSR__mdt layout2 = new DMT_OperationalRestrictionsTRSR__mdt(DMT_Operational_Restrictions_Name__c = 'IRSW', DMT_Derivatives_layout2__c = true, DMT_Depos_layout2__c = false, DMT_Repos_layout2__c = false);
+        DMT_OperationalRestrictionsTRSR__mdt otherProduct = new DMT_OperationalRestrictionsTRSR__mdt(DMT_Operational_Restrictions_Name__c = 'LEBO', DMT_Derivatives_layout2__c = false, DMT_Depos_layout2__c = false, DMT_Repos_layout2__c = false);
+
+        Test.startTest();
+        Map<String, DMT_OperationalRestrictionsTRSR__mdt> layout2Last = DMT_LineFeatureGenCons_Calc.getTableRestrictionsByProduct(
+            new List<DMT_OperationalRestrictionsTRSR__mdt>{ withoutFlags, layout2, otherProduct });
+        Map<String, DMT_OperationalRestrictionsTRSR__mdt> layout2First = DMT_LineFeatureGenCons_Calc.getTableRestrictionsByProduct(
+            new List<DMT_OperationalRestrictionsTRSR__mdt>{ layout2, withoutFlags, otherProduct });
+        DMT_Wrapper_Passport_Abs.FeatureGenConsiderations result = DMT_LineFeatureGenCons_Calc.restrictionWithoutAmount(
+            new List<DMT_Line_Product_Item__c>{ buildProduct('IRSW', true, null) }, new List<DMT_Risk_Line_Term__c>(), layout2First);
+        Test.stopTest();
+
+        Assert.isTrue(layout2Last.get('IRSW').DMT_Derivatives_layout2__c, 'Layout2 record used when it comes last');
+        Assert.isTrue(layout2First.get('IRSW').DMT_Derivatives_layout2__c, 'Layout2 record used when it comes first');
+        Assert.areEqual(otherProduct, layout2First.get('LEBO'), 'Product with a single record keeps it');
+        Assert.areEqual(DMT_Constants.FEATURE_GC_STATE_YELLOW, result.state, 'IRSW enabled without Derivatives amount: ' + result.message);
+        Assert.isTrue(result.message.contains('IRSW product (' + DMT_Constants.RSK_DERIVATIVES + ')'), 'IRSW listed with its table: ' + result.message);
     }
 
     // CIBGLOBALD-4613 - MX maturity term: Depos and Repos products are compared with their own table terms
