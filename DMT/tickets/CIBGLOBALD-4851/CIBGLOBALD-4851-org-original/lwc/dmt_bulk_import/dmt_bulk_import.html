@@ -1,0 +1,359 @@
+<template>
+    <div class="bulk-import-container slds-p-around_medium">
+
+        <!-- Access check -->
+        <template lwc:if={hasAccess}>
+
+        <!-- STEP 1: LINES -->
+        <div class="slds-card slds-m-bottom_medium">
+            <div class="slds-card__header slds-grid slds-grid_align-spread">
+                <h2 class="slds-card__header-title">
+                    <span class="step-badge">1</span>
+                    Lines
+                </h2>
+                <!-- Update Line Status: moves the Draft lines of this import to the status informed in the file -->
+                <template lwc:if={showUpdateLineStatus}>
+                    <div class="slds-grid slds-grid_vertical-align-center">
+                        <lightning-helptext content="Updates the Draft lines of this import to the status informed in the file. Use it once lines and products are loaded."
+                                          class="slds-m-right_xx-small">
+                        </lightning-helptext>
+                        <template lwc:if={updateLineStatusBlockedMessage}>
+                            <lightning-helptext icon-name="utility:warning" flexibility="auto" content={updateLineStatusBlockedMessage}
+                                              class="slds-m-right_x-small">
+                            </lightning-helptext>
+                        </template>
+                        <lightning-button label="Update Line Status"
+                                         variant="brand-outline"
+                                         icon-name="utility:refresh"
+                                         disabled={updateLineStatusDisabled}
+                                         onclick={updateLineStatus}>
+                        </lightning-button>
+                    </div>
+                </template>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+
+                <!-- Line type selector -->
+                <div class="slds-m-bottom_small">
+                    <lightning-combobox
+                        label="Line Type"
+                        value={selectedRecordType}
+                        options={lineTypeOptions}
+                        onchange={handleLineTypeChange}>
+                    </lightning-combobox>
+                </div>
+
+                <!-- Lines drop zone — always visible; compact once rows are loaded -->
+                <div class={linesDropZoneClass}
+                     ondragover={handleDragOver}
+                     ondragleave={handleDragLeave}
+                     ondrop={handleLinesFileDrop}>
+                    <lightning-icon icon-name="utility:upload" size="small" class="slds-m-bottom_xx-small"></lightning-icon>
+                    <p class="slds-text-body_small">{linesDropZoneText}</p>
+                    <lightning-button label="Browse" variant="neutral" size="small"
+                                     onclick={openLinesFilePicker}
+                                     class="slds-m-top_xx-small">
+                    </lightning-button>
+                    <input type="file" accept=".csv,.xlsx,.xls"
+                           class="hidden-file-input"
+                           data-section="lines"
+                           onchange={handleFileInputChange} />
+                </div>
+
+                <!-- Table area (shown once rows exist) -->
+                <template lwc:if={linesHasFile}>
+
+                    <!-- Validation errors -->
+                    <template lwc:if={linesHasValidationErrors}>
+                        <div class="error-box slds-m-bottom_small">
+                            <p class="slds-text-color_error slds-text-title_caps slds-m-bottom_xx-small">
+                                Validation errors — fix the file and re-upload
+                            </p>
+                            <template for:each={linesValidationErrors} for:item="err">
+                                <p key={err.key} class="slds-text-body_small slds-text-color_error">{err.message}</p>
+                            </template>
+                        </div>
+                    </template>
+
+                    <!-- Preview table — persists after batch; Status column updates in-place -->
+                    <template lwc:if={linesShowPreview}>
+                        <template lwc:if={hasLinesEnrichedStats}>
+                            <div class="enriched-stats slds-m-bottom_x-small">
+                                <span class="status-badge-new slds-m-right_xx-small">{linesEnrichedStats.newCount} New</span>
+                                <span class="status-badge-update slds-m-right_xx-small">{linesEnrichedStats.updateCount} Will Update</span>
+                                <span class="status-badge-nochange">{linesEnrichedStats.noChangeCount} No Changes</span>
+                            </div>
+                        </template>
+                        <div class="preview-table-wrapper slds-m-bottom_small">
+                            <lightning-datatable
+                                key-field="__previewKey"
+                                data={linesPreviewRows}
+                                columns={linesPreviewColumns}
+                                hide-checkbox-column
+                                suppress-bottom-bar>
+                            </lightning-datatable>
+                        </div>
+                        <p class="slds-text-body_small slds-text-color_weak">{linesPreviewLabel}</p>
+                    </template>
+
+                    <!-- Submit + Start Over row -->
+                    <template lwc:if={linesShowSubmit}>
+                        <div class="submit-row slds-m-top_medium">
+                            <lightning-button label="Create / Update Lines"
+                                             variant="brand"
+                                             disabled={linesSubmitDisabled}
+                                             onclick={submitLines}>
+                            </lightning-button>
+                            <template lwc:if={hasAnyData}>
+                                <lightning-button label="Start Over"
+                                                 variant="destructive-text"
+                                                 onclick={resetAll}>
+                                </lightning-button>
+                            </template>
+                        </div>
+                    </template>
+
+                    <!-- Batch results shown inline — table above keeps its Status column -->
+                    <template lwc:if={linesIsDone}>
+                        <div class="results-summary slds-m-top_small slds-m-bottom_small">
+                            <span class="slds-badge slds-badge_lightest success-badge slds-m-right_x-small">
+                                {linesSuccessCount} Submitted
+                            </span>
+                            <span class="slds-badge slds-badge_lightest error-badge">
+                                {linesErrorCount} Failed
+                            </span>
+                            <template lwc:if={linesHasResultErrors}>
+                                <lightning-button label="Download Error Log"
+                                                 variant="neutral"
+                                                 icon-name="utility:download"
+                                                 class="slds-m-left_small"
+                                                 onclick={downloadLinesErrorLog}>
+                                </lightning-button>
+                            </template>
+                        </div>
+
+                        <template lwc:if={linesHasResultErrors}>
+                            <div class="result-errors-table-wrapper slds-m-top_small">
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col"><div class="slds-truncate">Row</div></th>
+                                            <th scope="col"><div class="slds-truncate">Line Id</div></th>
+                                            <th scope="col"><div class="slds-truncate">Name</div></th>
+                                            <th scope="col"><div class="slds-truncate">Error</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={linesResultErrors} for:item="err">
+                                            <tr key={err.row}>
+                                                <td>{err.row}</td>
+                                                <td>{err.id}</td>
+                                                <td>{err.label}</td>
+                                                <td class="slds-text-color_error">{err.message}</td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="slds-m-top_small">
+                                <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_x-small">
+                                    Fix the errors above, then drop the corrected file here to retry only the failed rows.
+                                </p>
+                                <div class={linesRetryDropZoneClass}
+                                     ondragover={handleRetryDragOver}
+                                     ondragleave={handleRetryDragLeave}
+                                     ondrop={handleRetryFileDrop}>
+                                    <lightning-icon icon-name="utility:refresh" size="small" class="slds-m-bottom_xx-small"></lightning-icon>
+                                    <p class="slds-text-body_small">Drop fixed file to retry failed rows</p>
+                                    <lightning-button label="Browse" variant="neutral" size="small"
+                                                     onclick={openRetryFilePicker}
+                                                     class="slds-m-top_xx-small">
+                                    </lightning-button>
+                                    <input type="file" accept=".csv,.xlsx,.xls"
+                                           class="hidden-file-input"
+                                           data-section="lines-retry"
+                                           onchange={handleRetryFileInputChange} />
+                                </div>
+                            </div>
+                        </template>
+                    </template>
+                </template>
+
+                <!-- Progress -->
+                <template lwc:if={linesIsProcessing}>
+                    <div class="slds-m-top_small">
+                        <lightning-progress-bar value={linesProgress} size="large"></lightning-progress-bar>
+                        <p class="slds-text-body_small slds-m-top_xx-small">
+                            Processing {linesProcessed} of {linesTotal} records&hellip;
+                        </p>
+                    </div>
+                </template>
+
+            </div>
+        </div>
+
+        <!-- STEP 2: PRODUCTS -->
+        <div class={productsCardClass}>
+            <div class="slds-card__header slds-grid">
+                <h2 class="slds-card__header-title">
+                    <span class="step-badge">2</span>
+                    Products
+                </h2>
+            </div>
+            <div class="slds-card__body slds-card__body_inner">
+
+                <template lwc:if={step2Disabled}>
+                    <p class="slds-text-color_weak">
+                        Load the lines file above — term records will appear here automatically.
+                    </p>
+                </template>
+
+                <template lwc:if={step2Visible}>
+
+                    <!-- Pre-existing products: Salesforce already has terms for some of these lines
+                         that aren't reflected in the products table yet (no file dropped for them,
+                         or the dropped file didn't cover them). Loading is opt-in, not automatic. -->
+                    <template lwc:if={showPreExistingProductsLink}>
+                        <div class="info-notice slds-m-bottom_small">
+                            <lightning-icon icon-name="utility:info" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                            <lightning-button variant="base" label={preExistingProductsLinkLabel} onclick={loadPreExistingProducts}></lightning-button>
+                        </div>
+                    </template>
+
+                    <!-- Drop zone — always visible; compact once rows are loaded -->
+                    <div class={productsDropZoneClass}
+                         ondragover={handleDragOver}
+                         ondragleave={handleDragLeave}
+                         ondrop={handleProductsFileDrop}>
+                        <lightning-icon icon-name="utility:upload" size="small" class="slds-m-bottom_xx-small"></lightning-icon>
+                        <p class="slds-text-body_small">{productsDropZoneText}</p>
+                        <lightning-button label="Browse" variant="neutral" size="small"
+                                         onclick={openProductsFilePicker}
+                                         class="slds-m-top_xx-small">
+                        </lightning-button>
+                        <input type="file" accept=".csv,.xlsx,.xls"
+                               class="hidden-file-input"
+                               data-section="products"
+                               onchange={handleFileInputChange} />
+                    </div>
+
+                    <!-- Table area — shown once rows exist -->
+                    <template lwc:if={productsHasFile}>
+
+                        <!-- Stat badges: same as lines -->
+                        <template lwc:if={hasProductsEnrichedStats}>
+                            <div class="enriched-stats slds-m-top_x-small slds-m-bottom_x-small">
+                                <span class="status-badge-new slds-m-right_xx-small">{productsEnrichedStats.newCount} New</span>
+                                <span class="status-badge-update slds-m-right_xx-small">{productsEnrichedStats.updateCount} Will Update</span>
+                                <span class="status-badge-nochange">{productsEnrichedStats.noChangeCount} No Changes</span>
+                            </div>
+                        </template>
+
+                        <!-- Validation errors -->
+                        <template lwc:if={productsHasValidationErrors}>
+                            <div class="error-box slds-m-bottom_small">
+                                <p class="slds-text-color_error slds-text-title_caps slds-m-bottom_xx-small">
+                                    Validation errors — fix the file and re-upload
+                                </p>
+                                <template for:each={productsValidationErrors} for:item="err">
+                                    <p key={err.key} class="slds-text-body_small slds-text-color_error">{err.message}</p>
+                                </template>
+                            </div>
+                        </template>
+
+                        <!-- Preview table — Status column updates in-place after batch -->
+                        <template lwc:if={productsShowPreview}>
+                            <div class="preview-table-wrapper slds-m-bottom_small">
+                                <lightning-datatable
+                                    key-field="__previewKey"
+                                    data={productsPreviewRows}
+                                    columns={productsPreviewColumns}
+                                    hide-checkbox-column
+                                    suppress-bottom-bar>
+                                </lightning-datatable>
+                            </div>
+                            <p class="slds-text-body_small slds-text-color_weak">{productsPreviewLabel}</p>
+                        </template>
+
+                        <!-- Submit button: always visible when rows exist; disabled when step 1 not done or all No Changes -->
+                        <template lwc:if={productsShowSubmit}>
+                            <div class="slds-m-top_medium">
+                                <lightning-button label="Create / Update Products"
+                                                 variant="brand"
+                                                 disabled={productsSubmitDisabled}
+                                                 onclick={submitProducts}>
+                                </lightning-button>
+                            </div>
+                        </template>
+
+                        <!-- Batch results — table above keeps its Status column -->
+                        <template lwc:if={productsIsDone}>
+                            <div class="results-summary slds-m-top_small slds-m-bottom_small">
+                                <span class="slds-badge slds-badge_lightest success-badge slds-m-right_x-small">
+                                    {productsSuccessCount} Submitted
+                                </span>
+                                <span class="slds-badge slds-badge_lightest error-badge">
+                                    {productsErrorCount} Failed
+                                </span>
+                                <template lwc:if={productsHasResultErrors}>
+                                    <lightning-button label="Download Error Log"
+                                                     variant="neutral"
+                                                     icon-name="utility:download"
+                                                     class="slds-m-left_small"
+                                                     onclick={downloadProductsErrorLog}>
+                                    </lightning-button>
+                                </template>
+                            </div>
+                            <template lwc:if={productsHasResultErrors}>
+                                <div class="result-errors-table-wrapper slds-m-top_small">
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col"><div class="slds-truncate">Row</div></th>
+                                                <th scope="col"><div class="slds-truncate">Term Id</div></th>
+                                                <th scope="col"><div class="slds-truncate">Line Id</div></th>
+                                                <th scope="col"><div class="slds-truncate">Error</div></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={productsResultErrors} for:item="err">
+                                                <tr key={err.row}>
+                                                    <td>{err.row}</td>
+                                                    <td>{err.id}</td>
+                                                    <td>{err.label}</td>
+                                                    <td class="slds-text-color_error">{err.message}</td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </template>
+                        </template>
+
+                    </template>
+
+                    <!-- Progress -->
+                    <template lwc:if={productsIsProcessing}>
+                        <div class="slds-m-top_small">
+                            <lightning-progress-bar value={productsProgress} size="large"></lightning-progress-bar>
+                            <p class="slds-text-body_small slds-m-top_xx-small">
+                                Processing {productsProcessed} of {productsTotal} records&hellip;
+                            </p>
+                        </div>
+                    </template>
+
+
+                </template>
+            </div>
+        </div>
+
+        </template>
+        <template lwc:else>
+            <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                <lightning-icon icon-name="utility:lock" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                You don't have permission to use this feature. Contact your administrator to request the DMT Line God permission.
+            </div>
+        </template>
+
+    </div>
+</template>

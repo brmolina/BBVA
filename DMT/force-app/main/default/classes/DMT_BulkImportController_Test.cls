@@ -1,12 +1,15 @@
 @isTest
 public class DMT_BulkImportController_Test {
 
+    // CIBGLOBALD-4851 - test data through DMT_UtilTestClass (DMT test architecture)
+    private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass();
+
     @TestSetup
     static void makeData() {
-        insert new Account(
-            Name             = 'Test Bulk Import Client',
-            g_customer_id__c = 'ES0182000125513'
-        );
+        DMT_UTIL.createAccount(new Map<Schema.SObjectField, Object>{ // CIBGLOBALD-4851
+            Account.Name             => 'Test Bulk Import Client',
+            Account.g_customer_id__c => 'ES0182000125513'
+        });
     }
 
     @isTest
@@ -39,12 +42,11 @@ public class DMT_BulkImportController_Test {
 
     @isTest
     static void testGetExistingLinesReturnsMatches() {
-        DMT_Line__c line = new DMT_Line__c(
-            Name          = 'Existing Line Test',
-            Line_Id__c    = 'CTRLTEST010',
-            DMT_Origin__c = 'BulkImport'
-        );
-        insert line;
+        DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{ // CIBGLOBALD-4851
+            DMT_Line__c.Name          => 'Existing Line Test',
+            DMT_Line__c.Line_Id__c    => 'CTRLTEST010',
+            DMT_Line__c.DMT_Origin__c => 'BulkImport'
+        });
 
         List<DMT_Line__c> result = DMT_BulkImportController.getExistingLines(
             new List<String>{ 'CTRLTEST010', 'NONEXISTENT' }
@@ -56,15 +58,18 @@ public class DMT_BulkImportController_Test {
 
     @isTest
     static void testGetExistingTermsForLinesReturnsMatches() {
-        DMT_Line__c line = new DMT_Line__c(
-            Name          = 'Parent Line for Terms',
-            Line_Id__c    = 'CTRLTEST011',
-            DMT_Origin__c = 'BulkImport'
-        );
-        insert line;
-        insert new List<DMT_Risk_Line_Term__c>{
-            new DMT_Risk_Line_Term__c(DMT_Line__c = line.Id, DMT_RiskLineTermId__c = 'CTRLTEST011-T01'),
-            new DMT_Risk_Line_Term__c(DMT_Line__c = line.Id, DMT_RiskLineTermId__c = 'CTRLTEST011-T02')
+        DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{ // CIBGLOBALD-4851
+            DMT_Line__c.Name          => 'Parent Line for Terms',
+            DMT_Line__c.Line_Id__c    => 'CTRLTEST011',
+            DMT_Line__c.DMT_Origin__c => 'BulkImport'
+        });
+        insert new List<DMT_Risk_Line_Term__c>{ // CIBGLOBALD-4851
+            DMT_UTIL.buildRiskLineTerm(new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => line.Id, DMT_Risk_Line_Term__c.DMT_RiskLineTermId__c => 'CTRLTEST011-T01'
+            }),
+            DMT_UTIL.buildRiskLineTerm(new Map<Schema.SObjectField, Object>{
+                DMT_Risk_Line_Term__c.DMT_Line__c => line.Id, DMT_Risk_Line_Term__c.DMT_RiskLineTermId__c => 'CTRLTEST011-T02'
+            })
         };
 
         List<DMT_Risk_Line_Term__c> result = DMT_BulkImportController.getExistingTermsForLines(
@@ -74,14 +79,34 @@ public class DMT_BulkImportController_Test {
         Assert.areEqual(2, result.size(), 'Should return both terms linked to the matching line, not be capped by lineIds.size()');
     }
 
+    // CIBGLOBALD-4851 - Line Product Items of the loaded lines are listed by Line_Id__c
+    @isTest
+    static void testGetExistingProductItemsForLinesReturnsMatches() {
+        DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+            DMT_Line__c.Name          => 'Parent Line for Product Items',
+            DMT_Line__c.Line_Id__c    => 'CTRLTEST014',
+            DMT_Line__c.DMT_Origin__c => 'BulkImport'
+        });
+        DMT_UTIL.createLineProductItemRecord(new Map<Schema.SObjectField, Object>{
+            DMT_Line_Product_Item__c.Line__c               => line.Id,
+            DMT_Line_Product_Item__c.Product_Code_Value__c => 'CTRLTEST014-P01'
+        });
+
+        List<DMT_Line_Product_Item__c> result = DMT_BulkImportController.getExistingProductItemsForLines(
+            new List<String>{ 'CTRLTEST014', 'NONEXISTENT' }
+        );
+
+        Assert.areEqual(1, result.size(), 'Should return only the product item of the matching line');
+        Assert.areEqual('CTRLTEST014', result[0].Line__r.Line_Id__c);
+    }
+
     @isTest
     static void testQueryCreatedLinesReturnsMatches() {
-        DMT_Line__c line = new DMT_Line__c(
-            Name          = 'Created Line Query Test',
-            Line_Id__c    = 'CTRLTEST012',
-            DMT_Origin__c = 'BulkImport'
-        );
-        insert line;
+        DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{ // CIBGLOBALD-4851
+            DMT_Line__c.Name          => 'Created Line Query Test',
+            DMT_Line__c.Line_Id__c    => 'CTRLTEST012',
+            DMT_Line__c.DMT_Origin__c => 'BulkImport'
+        });
 
         List<DMT_Line__c> result = DMT_BulkImportController.queryCreatedLines(
             new List<String>{ 'CTRLTEST012' }
@@ -93,17 +118,15 @@ public class DMT_BulkImportController_Test {
 
     @isTest
     static void testQueryCreatedTermsReturnsMatches() {
-        DMT_Line__c line = new DMT_Line__c(
-            Name          = 'Parent Line for Term Query',
-            Line_Id__c    = 'CTRLTEST013',
-            DMT_Origin__c = 'BulkImport'
-        );
-        insert line;
-        DMT_Risk_Line_Term__c term = new DMT_Risk_Line_Term__c(
-            DMT_Line__c           = line.Id,
-            DMT_RiskLineTermId__c  = 'CTRLTEST013-T01'
-        );
-        insert term;
+        DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{ // CIBGLOBALD-4851
+            DMT_Line__c.Name          => 'Parent Line for Term Query',
+            DMT_Line__c.Line_Id__c    => 'CTRLTEST013',
+            DMT_Line__c.DMT_Origin__c => 'BulkImport'
+        });
+        DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{ // CIBGLOBALD-4851
+            DMT_Risk_Line_Term__c.DMT_Line__c           => line.Id,
+            DMT_Risk_Line_Term__c.DMT_RiskLineTermId__c => 'CTRLTEST013-T01'
+        });
 
         List<DMT_Risk_Line_Term__c> result = DMT_BulkImportController.queryCreatedTerms(
             new List<String>{ 'CTRLTEST013-T01' }
@@ -115,12 +138,11 @@ public class DMT_BulkImportController_Test {
 
     @isTest
     static void testSubmitProductsEnqueuesBatch() {
-        DMT_Line__c parentLine = new DMT_Line__c(
-            Name          = 'Parent Line for Controller Test',
-            Line_Id__c    = 'CTRLTEST002',
-            DMT_Origin__c = 'BulkImport'
-        );
-        insert parentLine;
+        DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{ // CIBGLOBALD-4851
+            DMT_Line__c.Name          => 'Parent Line for Controller Test',
+            DMT_Line__c.Line_Id__c    => 'CTRLTEST002',
+            DMT_Line__c.DMT_Origin__c => 'BulkImport'
+        });
 
         List<Map<String, Object>> rows = new List<Map<String, Object>>{
             new Map<String, Object>{
@@ -148,20 +170,25 @@ public class DMT_BulkImportController_Test {
 
     @isTest
     static void testUpdateLineStatusLaunchesBatch() {
-        DMT_Line__c line = new DMT_Line__c(
-            Name                  = 'Update Line Status Test',
-            Line_Id__c            = 'CTRLTEST020',
-            DMT_Origin__c         = 'BulkImport',
-            Status__c             = 'Draft',
-            g_line_status_type__c = 'PR',
-            RecordTypeId          = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('OtherProducts').getRecordTypeId(),
+        DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{ // CIBGLOBALD-4851
+            DMT_Line__c.Name                  => 'Update Line Status Test',
+            DMT_Line__c.Line_Id__c            => 'CTRLTEST020',
+            DMT_Line__c.DMT_Origin__c         => 'BulkImport',
+            DMT_Line__c.Status__c             => 'Draft',
+            DMT_Line__c.g_line_status_type__c => 'PR',
+            DMT_Line__c.RecordTypeId          => Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('OtherProducts').getRecordTypeId(),
             // CompulsoryAmountLastLevel requires both set before an OtherProducts line can reach Proposal
-            Amount__c             = 100000,
-            DMT_LastLevelId__c    = '20200'
-        );
-        insert line;
+            DMT_Line__c.Amount__c             => 100000,
+            DMT_Line__c.DMT_LastLevelId__c    => '20200',
+            // CIBGLOBALD-4851 - Enhancement fix to existing process: a line needs a client to leave Draft
+            // ('you must select at least a customer'); the test failed in the org without it.
+            DMT_Line__c.Client__c             => [SELECT Id FROM Account WHERE g_customer_id__c = 'ES0182000125513' LIMIT 1].Id
+        });
         // CheckAmountsInLine (before-save flow) requires the products' total to cover the line's Amount__c
-        insert new DMT_Risk_Line_Term__c(DMT_Line__c = line.Id, DMT_Amount__c = 100000);
+        DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{ // CIBGLOBALD-4851
+            DMT_Risk_Line_Term__c.DMT_Line__c   => line.Id,
+            DMT_Risk_Line_Term__c.DMT_Amount__c => 100000
+        });
 
         Test.startTest();
             String asyncJobId = DMT_BulkImportController.updateLineStatus(new List<String>{ 'CTRLTEST020' });

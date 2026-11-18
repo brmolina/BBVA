@@ -32,12 +32,16 @@ public with sharing class DMT_BulkImportController {
 
     @AuraEnabled
     public static List<DMT_Line__c> getExistingLines(List<String> lineIds) {
+        // CIBGLOBALD-4851 - query adds the Treasury Lines file columns (DMT_Client_Entific__c to DMT_Client_Use__c),
+        // compared by the LWC (New / Will Update / No Changes)
         return [
             SELECT Id, Name, Line_Id__c, Status__c, CurrencyIsoCode, Booking_Geography__c,
                    Client__r.Name, Client_Code__c,
                    Start_Date__c, End_Date__c, DMT_LastLevelId__c,
                    DMT_Comments__c, DMT_ID_User__c, Breakclause_Frequency__c,
-                   g_line_status_type__c, Amount__c
+                   g_line_status_type__c, Amount__c,
+                   DMT_Client_Entific__c, Golden_Code__c, FD_Amount__c, DvP_Amount__c, First_Breakclause__c, Waiver__c,
+                   DMT_Mitigant_Agreement_comments__c, DMT_Additional_Restrictions__c, DMT_Client_Use__c
             FROM DMT_Line__c
             WHERE Line_Id__c IN :lineIds
             LIMIT :lineIds.size()
@@ -46,8 +50,10 @@ public with sharing class DMT_BulkImportController {
 
     @AuraEnabled
     public static List<DMT_Risk_Line_Term__c> getExistingTermsForLines(List<String> lineIds) {
+        // CIBGLOBALD-4851 - query adds Id and DMT_Risk_Type__c: the LWC lists every Risk Line Term of the loaded lines
+        // (Treasury Lines files identify a term by its risk type, not by DMT_RiskLineTermId__c)
         return [
-            SELECT DMT_RiskLineTermId__c, DMT_Line__r.Line_Id__c,
+            SELECT Id, DMT_Risk_Type__c, DMT_RiskLineTermId__c, DMT_Line__r.Line_Id__c,
                    DMT_Init_Term__c, DMT_End_Term__c, DMT_Amount__c, CurrencyIsoCode,
                    DMT_LastLevelId__c, DMT_ID_User__c,
                    g_global_product_family_id__c, g_global_product_subfamily_id__c,
@@ -58,6 +64,20 @@ public with sharing class DMT_BulkImportController {
                    gf_inscol_months_grace_number__c
             FROM DMT_Risk_Line_Term__c
             WHERE DMT_Line__r.Line_Id__c IN :lineIds
+        ];
+    }
+
+    /**
+     * CIBGLOBALD-4851 - Line Product Items of the loaded lines (Treasury Lines), listed by the LWC (dmt_bulk_import)
+     * next to the rows of the Line Product Items file: they are replaced when the file has rows for their line.
+     */
+    @AuraEnabled
+    public static List<DMT_Line_Product_Item__c> getExistingProductItemsForLines(List<String> lineIds) {
+        return [
+            SELECT Id, Line__r.Line_Id__c, Product_Code_Value__c, Max_Tenor_WC__c,
+                   DMT_DerivativeRestriction__c, DMT_FDRestriction__c, DMT_DVPRestriction__c
+            FROM DMT_Line_Product_Item__c
+            WHERE Line__r.Line_Id__c IN :lineIds
         ];
     }
 
