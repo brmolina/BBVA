@@ -11,21 +11,21 @@ public with sharing class DMT_OpportunityClientControllerTest {
     private static final String OPP_RT_DEV   = 'DMT_Opportunity';
 
     // ─── @TestSetup ───────────────────────────────────────────────────────────
-    // Crea un escenario de cliente de grupo reutilizable para todos los tests.
-    // generateOpportunity() internamente llama generateAccount(), que ya crea
-    // una Account con g_customer_id__c = 'TEST123'.
+    // Builds a reusable group client scenario for every test.
+    // generateOpportunity() calls generateAccount() internally, which already creates
+    // an Account with g_customer_id__c = 'TEST123'.
 
     @TestSetup
     static void setupTestData() {
         Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
 
-        // Forzar el tipo de estructura a Group para que el campo fórmula DES_Client_Type__c
-        // no resuelva a 'Subsidiary' (posible trigger/default en el org)
+        // Force the structure type to Group so that the formula field DES_Client_Type__c
+        // does not resolve to 'Subsidiary' (possible trigger/default in the org)
         Account setupAcc = [SELECT Id FROM Account WHERE Id = :opp.AccountId LIMIT 1];
         setupAcc.DES_Structure_Type__c = 'Group';
         update setupAcc;
 
-        // Asociación de la oportunidad con el alphaCode del cliente principal
+        // Opportunity association with the main client alphaCode
         Custom_Association_Opportunity__c assoc = new Custom_Association_Opportunity__c(
             Opportunity__c          = opp.Id,
             g_customer_id__c        = ALPHA_CODE,
@@ -33,7 +33,7 @@ public with sharing class DMT_OpportunityClientControllerTest {
         );
         insert assoc;
 
-        // Cliente DMT que une el alphaCode con la asociación
+        // DMT client that links the alphaCode with the association
         DMT_Opportunity_Client__c dmtClient = new DMT_Opportunity_Client__c(
             DMT_MDE_Opportunity__c           = opp.Id,
             Alpha_Code_Client__c             = ALPHA_CODE,
@@ -59,7 +59,7 @@ public with sharing class DMT_OpportunityClientControllerTest {
             .getRecordTypeId();
     }
 
-    // Crea una oportunidad adicional independiente (sin usar @TestSetup)
+    // Creates an additional standalone opportunity (without @TestSetup)
     private static Opportunity buildOrphanOpportunity(Id accountId, String oppIdCode) {
         Opportunity o = new Opportunity(
             Name                        = 'Test Opp ' + oppIdCode,
@@ -81,7 +81,7 @@ public with sharing class DMT_OpportunityClientControllerTest {
         return o;
     }
 
-    // ─── getOpportunityClientContext ─── GRUPO ────────────────────────────────
+    // ─── getOpportunityClientContext ─── GROUP ────────────────────────────────
 
     @isTest
     static void testGetOppClientContext_GroupClient_ReturnsResult() {
@@ -92,17 +92,17 @@ public with sharing class DMT_OpportunityClientControllerTest {
             DMT_OpportunityClientController.getOpportunityClientContext(opp.Id);
         Test.stopTest();
 
-        Assert.areNotEqual(null, result, 'El resultado no debe ser null');
+        Assert.areNotEqual(null, result, 'The result must not be null');
         Assert.areEqual(false, (Boolean) result.get('isSubsidiary'),
-            'Debe ser cliente de grupo (no subsidiaria)');
+            'Must be a group client (not a subsidiary)');
         Assert.areNotEqual(null, result.get('opportunity'),
-            'Debe retornar la oportunidad');
+            'Must return the opportunity');
         Assert.areNotEqual(null, result.get('recordData'),
-            'Debe retornar recordData');
+            'Must return recordData');
         Assert.areNotEqual(null, result.get('mainHolder'),
-            'Debe retornar el mainHolder DMT client');
+            'Must return the mainHolder DMT client');
         Assert.areNotEqual(null, result.get('priorRows'),
-            'Debe retornar priorRows');
+            'Must return priorRows');
     }
 
     @isTest
@@ -114,7 +114,7 @@ public with sharing class DMT_OpportunityClientControllerTest {
             WHERE Opportunity__c = :opp.Id LIMIT 1
         ];
 
-        // priorRows se construye desde DMT_Custom_Association_ClientOpportunity__c (multiholder)
+        // priorRows is built from DMT_Custom_Association_ClientOpportunity__c (multiholder)
         insert new DMT_Custom_Association_ClientOpportunity__c(
             DMT_Custom_Association_Opportunity__c = assoc.Id,
             DMT_g_customer_id__c                  = ALPHA_CODE
@@ -127,10 +127,10 @@ public with sharing class DMT_OpportunityClientControllerTest {
 
         List<Map<String, Object>> priorRows =
             (List<Map<String, Object>>) result.get('priorRows');
-        Assert.areNotEqual(null, priorRows, 'priorRows no debe ser null');
-        Assert.areEqual(1, priorRows.size(), 'Debe haber un elemento en priorRows');
+        Assert.areNotEqual(null, priorRows, 'priorRows must not be null');
+        Assert.areEqual(1, priorRows.size(), 'priorRows must have one element');
         Assert.areEqual(ALPHA_CODE, priorRows[0].get('customerId'),
-            'customerId en priorRows debe coincidir con el alphaCode');
+            'customerId in priorRows must match the alphaCode');
         
     }
 
@@ -144,20 +144,20 @@ public with sharing class DMT_OpportunityClientControllerTest {
         Test.stopTest();
 
         Map<String, Object> recordData = (Map<String, Object>) result.get('recordData');
-        Assert.areNotEqual(null, recordData, 'recordData no debe ser null');
+        Assert.areNotEqual(null, recordData, 'recordData must not be null');
 
-        // Verifica que cada clave del recordData tenga la estructura {currentValue, originalValue}
+        // Checks that each recordData key has the structure {currentValue, originalValue}
         Map<String, Object> counterpartEntry =
             (Map<String, Object>) recordData.get('Counterpart__c');
         Assert.areNotEqual(null, counterpartEntry,
-            'Counterpart__c debe estar en recordData');
+            'Counterpart__c must be in recordData');
         Assert.areEqual('Corporates', counterpartEntry.get('currentValue'),
-            'currentValue de Counterpart__c debe ser Corporates');
+            'Counterpart__c currentValue must be Corporates');
     }
 
     @isTest
     static void testGetOppClientContext_GroupClient_ExternalRatingDefaultsToNR() {
-        // Crea una oportunidad con un DMT client sin External_Rating__c
+        // Creates an opportunity with a DMT client without External_Rating__c
         Account acc = [SELECT Id FROM Account LIMIT 1];
         Opportunity opp2 = buildOrphanOpportunity(acc.Id, '11111');
 
@@ -168,7 +168,7 @@ public with sharing class DMT_OpportunityClientControllerTest {
         );
         insert assoc2;
 
-        // Crea un segundo DMT client sin rating externo; el código existe en Account.g_customer_id__c
+        // Creates a second DMT client without external rating; the code exists in Account.g_customer_id__c
         DMT_Opportunity_Client__c noRatingClient = new DMT_Opportunity_Client__c(
             DMT_MDE_Opportunity__c           = opp2.Id,
             Alpha_Code_Client__c             = ALPHA_CODE,
@@ -176,7 +176,7 @@ public with sharing class DMT_OpportunityClientControllerTest {
             Counterpart__c                   = 'Corporates',
             DMT_Sector__c                    = 'N',
             g_upd_lmscl_internal_ratg_type__c = '-A'
-            // External_Rating__c intencionalmente en blanco
+            // External_Rating__c intentionally blank
         );
         insert noRatingClient;
 
@@ -188,16 +188,16 @@ public with sharing class DMT_OpportunityClientControllerTest {
         Map<String, Object> recordData = (Map<String, Object>) result.get('recordData');
         Map<String, Object> extRatingEntry =
             (Map<String, Object>) recordData.get('External_Rating__c');
-        Assert.areNotEqual(null, extRatingEntry, 'External_Rating__c debe estar en recordData');
+        Assert.areNotEqual(null, extRatingEntry, 'External_Rating__c must be in recordData');
         Assert.areEqual('NR', extRatingEntry.get('currentValue'),
-            'External_Rating__c debe ser NR cuando está en blanco');
+            'External_Rating__c must be NR when blank');
     }
 
     // ─── getOpportunityClientContext ─── OVERRIDE CODE ───────────────────────
 
  
 
-    // ─── getOpportunityClientContext ─── SUBSIDIARIA ─────────────────────────
+    // ─── getOpportunityClientContext ─── SUBSIDIARY ─────────────────────────
 
     @isTest
     static void testGetOppClientContext_SubsidiaryClient_ReturnsIsSubsidiary() {
@@ -233,10 +233,10 @@ public with sharing class DMT_OpportunityClientControllerTest {
             DMT_OpportunityClientController.getOpportunityClientContext(subOpp.Id);
         Test.stopTest();
 
-        Assert.areNotEqual(null, result, 'El resultado no debe ser null');
+        Assert.areNotEqual(null, result, 'The result must not be null');
         Assert.areEqual(true, (Boolean) result.get('isSubsidiary'),
-            'Debe identificarse como subsidiaria');
-        Assert.areNotEqual(null, result.get('recordData'), 'Debe retornar recordData');
+            'Must be identified as a subsidiary');
+        Assert.areNotEqual(null, result.get('recordData'), 'Must return recordData');
     }
 
     @isTest
@@ -284,12 +284,12 @@ public with sharing class DMT_OpportunityClientControllerTest {
             DMT_OpportunityClientController.getOpportunityClientContext(prospectOpp.Id);
         Test.stopTest();
 
-        Assert.areNotEqual(null, result, 'El resultado no debe ser null');
+        Assert.areNotEqual(null, result, 'The result must not be null');
         Assert.areEqual(true, (Boolean) result.get('isSubsidiary'),
-            'Debe identificarse como subsidiaria prospect');
+            'Must be identified as a prospect subsidiary');
     }
 
-    // ─── getOpportunityClientContext ─── ERRORES ──────────────────────────────
+    // ─── getOpportunityClientContext ─── ERRORS ──────────────────────────────
 
     @isTest
     static void testGetOppClientContext_NullId_ThrowsAuraException() {
@@ -302,12 +302,12 @@ public with sharing class DMT_OpportunityClientControllerTest {
         }
         Test.stopTest();
         Assert.areEqual(true, threw,
-            'Debe lanzar AuraHandledException cuando el Id es null');
+            'Must throw AuraHandledException when the Id is null');
     }
 
     @isTest
     static void testGetOppClientContext_OppNotFound_ThrowsAuraException() {
-        // Id sintético que no existe en la BD
+        // Synthetic Id that does not exist in the database
         Id fakeOppId = '006000000000001AAA';
         Boolean threw = false;
         Test.startTest();
@@ -318,12 +318,12 @@ public with sharing class DMT_OpportunityClientControllerTest {
         }
         Test.stopTest();
         Assert.areEqual(true, threw,
-            'Debe lanzar AuraHandledException cuando la oportunidad no existe');
+            'Must throw AuraHandledException when the opportunity does not exist');
     }
 
     @isTest
     static void testGetOppClientContext_NoAssociation_ReturnsNullCustomerId() {
-        // Sin asociación → emptyClientInfo → result no null, customerId null
+        // No association → emptyClientInfo → result not null, customerId null
         Account acc = [SELECT Id FROM Account LIMIT 1];
         Opportunity orphanOpp = buildOrphanOpportunity(acc.Id, '55555');
 
@@ -332,14 +332,14 @@ public with sharing class DMT_OpportunityClientControllerTest {
             DMT_OpportunityClientController.getOpportunityClientContext(orphanOpp.Id);
         Test.stopTest();
 
-        Assert.areNotEqual(null, result, 'Debe retornar un resultado');
+        Assert.areNotEqual(null, result, 'Must return a result');
         Assert.areEqual(null, result.get('customerId'),
-            'customerId debe ser null cuando no hay asociación');
+            'customerId must be null when there is no association');
     }
 
     @isTest
     static void testGetOppClientContext_NoDmtClient_ReturnsNullMainHolder() {
-        // La asociación existe pero no hay DMT_Opportunity_Client__c para ese alphaCode
+        // The association exists but there is no DMT_Opportunity_Client__c for that alphaCode
         Account acc = [SELECT Id FROM Account LIMIT 1];
         Opportunity opp2 = buildOrphanOpportunity(acc.Id, '66666');
 
@@ -355,9 +355,9 @@ public with sharing class DMT_OpportunityClientControllerTest {
             DMT_OpportunityClientController.getOpportunityClientContext(opp2.Id);
         Test.stopTest();
 
-        Assert.areNotEqual(null, result, 'Debe retornar un resultado');
+        Assert.areNotEqual(null, result, 'Must return a result');
         Assert.areEqual(null, result.get('mainHolder'),
-            'mainHolder debe ser null cuando no existe DMT client para el alphaCode');
+            'mainHolder must be null when there is no DMT client for the alphaCode');
     }
 
     // ─── getOpportunityClientContext ─── PROSPECT GROUP ──────────────────────
@@ -412,12 +412,12 @@ public with sharing class DMT_OpportunityClientControllerTest {
             DMT_OpportunityClientController.getOpportunityClientContext(pgOpp.Id);
         Test.stopTest();
 
-        Assert.areNotEqual(null, result, 'El resultado no debe ser null');
+        Assert.areNotEqual(null, result, 'The result must not be null');
         Assert.areEqual(false, (Boolean) result.get('isSubsidiary'),
-            'Un Prospect Group no debe identificarse como subsidiaria');
+            'A Prospect Group must not be identified as a subsidiary');
     }
 
-    // ─── getMainHolderData ─── ÉXITO ─────────────────────────────────────────
+    // ─── getMainHolderData ─── SUCCESS ─────────────────────────────────────────
 
     @isTest
     static void testGetMainHolderData_Success_ReturnsExpectedKeys() {
@@ -428,17 +428,17 @@ public with sharing class DMT_OpportunityClientControllerTest {
             DMT_OpportunityClientController.getMainHolderData(opp.Id, ALPHA_CODE, null);
         Test.stopTest();
 
-        Assert.areNotEqual(null, result, 'El resultado no debe ser null');
+        Assert.areNotEqual(null, result, 'The result must not be null');
         Assert.areEqual(ALPHA_CODE, result.get('alphaCode'),
-            'alphaCode debe coincidir con el enviado');
+            'alphaCode must match the one sent');
         Assert.areNotEqual(null, result.get('mainBorrower'),
-            'mainBorrower debe estar presente');
+            'mainBorrower must be present');
         Assert.areNotEqual(null, result.get('recordData'),
-            'recordData debe estar presente');
+            'recordData must be present');
         Assert.isTrue(result.containsKey('serviceError'),
-            'Debe contener la clave serviceError');
+            'Must contain the serviceError key');
         Assert.isTrue(result.containsKey('serviceErrorMessage'),
-            'Debe contener la clave serviceErrorMessage');
+            'Must contain the serviceErrorMessage key');
     }
 
     @isTest
@@ -451,14 +451,14 @@ public with sharing class DMT_OpportunityClientControllerTest {
         Test.stopTest();
 
         Map<String, Object> recordData = (Map<String, Object>) result.get('recordData');
-        Assert.areNotEqual(null, recordData, 'recordData no debe ser null');
+        Assert.areNotEqual(null, recordData, 'recordData must not be null');
 
         Map<String, Object> counterpart = (Map<String, Object>) recordData.get('Counterpart__c');
-        Assert.areNotEqual(null, counterpart, 'Counterpart__c debe estar en recordData');
+        Assert.areNotEqual(null, counterpart, 'Counterpart__c must be in recordData');
         Assert.isTrue(counterpart.containsKey('currentValue'),
-            'Debe tener clave currentValue');
+            'Must have the currentValue key');
         Assert.isTrue(counterpart.containsKey('originalValue'),
-            'Debe tener clave originalValue');
+            'Must have the originalValue key');
     }
 
     @isTest
@@ -487,19 +487,19 @@ public with sharing class DMT_OpportunityClientControllerTest {
             DMT_OpportunityClientController.getMainHolderData(opp.Id, ALPHA_CODE, originalRecordTable);
         Test.stopTest();
 
-        Assert.areNotEqual(null, result, 'El resultado no debe ser null');
-        Assert.areEqual(ALPHA_CODE, result.get('alphaCode'), 'alphaCode debe coincidir');
+        Assert.areNotEqual(null, result, 'The result must not be null');
+        Assert.areEqual(ALPHA_CODE, result.get('alphaCode'), 'alphaCode must match');
         Map<String, Object> recordData = (Map<String, Object>) result.get('recordData');
-        Assert.areNotEqual(null, recordData, 'recordData debe estar presente');
+        Assert.areNotEqual(null, recordData, 'recordData must be present');
         Map<String, Object> camn = (Map<String, Object>) recordData.get('DMT_CAMN__c');
         Map<String, Object> camnOriginal = (Map<String, Object>) camn.get('originalValue');
-        Assert.areNotEqual(null, camnOriginal, 'CAMN originalValue debe ser un Map con value/label/compareValue');
-        Assert.areEqual('CAMN_DESC', camnOriginal.get('value'), 'Sin match en el catálogo A521, value debe ser la descripción cruda de HPG');
-        Assert.areEqual('CAMN_DESC', camnOriginal.get('label'), 'label debe ser la descripción cruda de HPG');
-        Assert.areEqual('CAMN_DESC', camnOriginal.get('compareValue'), 'compareValue debe ser la descripción cruda de HPG, usada para la comparación del warning en el LWC');
+        Assert.areNotEqual(null, camnOriginal, 'CAMN originalValue must be a Map with value/label/compareValue');
+        Assert.areEqual('CAMN_DESC', camnOriginal.get('value'), 'Without a match in catalog A521, value must be the raw HPG description');
+        Assert.areEqual('CAMN_DESC', camnOriginal.get('label'), 'label must be the raw HPG description');
+        Assert.areEqual('CAMN_DESC', camnOriginal.get('compareValue'), 'compareValue must be the raw HPG description, used for the warning comparison in the LWC');
     }
 
-    // ─── getMainHolderData ─── ERRORES ───────────────────────────────────────
+    // ─── getMainHolderData ─── ERRORS ───────────────────────────────────────
 
     @isTest
     static void testGetMainHolderData_NullOpportunityId_ThrowsAuraException() {
@@ -512,7 +512,7 @@ public with sharing class DMT_OpportunityClientControllerTest {
         }
         Test.stopTest();
         Assert.areEqual(true, threw,
-            'Debe lanzar AuraHandledException cuando opportunityId es null');
+            'Must throw AuraHandledException when opportunityId is null');
     }
 
     @isTest
@@ -527,7 +527,7 @@ public with sharing class DMT_OpportunityClientControllerTest {
         }
         Test.stopTest();
         Assert.areEqual(true, threw,
-            'Debe lanzar AuraHandledException cuando alphaCode es null');
+            'Must throw AuraHandledException when alphaCode is null');
     }
 
     @isTest
@@ -542,7 +542,7 @@ public with sharing class DMT_OpportunityClientControllerTest {
         }
         Test.stopTest();
         Assert.areEqual(true, threw,
-            'Debe lanzar AuraHandledException cuando alphaCode está vacío');
+            'Must throw AuraHandledException when alphaCode is empty');
     }
 
     @isTest
@@ -556,13 +556,13 @@ public with sharing class DMT_OpportunityClientControllerTest {
         }
         Test.stopTest();
         Assert.areEqual(true, threw,
-            'Debe lanzar AuraHandledException cuando ambos parámetros son null');
+            'Must throw AuraHandledException when both parameters are null');
     }
 
     @isTest
     static void testGetMainHolderData_WrongAlphaCode_ThrowsAuraException() {
-        // El RecordType debe ser explicitamente no-Prospect: para Prospect Group el clientId
-        // se resuelve desde la propia Account y nunca se consulta Local_Client__c.
+        // The RecordType must be explicitly non-Prospect: for Prospect Group the clientId
+        // is resolved from the Account itself and Local_Client__c is never queried.
         RecordType groupRT = [
             SELECT Id FROM RecordType
             WHERE  SObjectType = 'Account' AND DeveloperName = 'Group'
@@ -597,12 +597,12 @@ public with sharing class DMT_OpportunityClientControllerTest {
         }
         Test.stopTest();
         Assert.areEqual(true, threw,
-            'Debe lanzar AuraHandledException cuando no existe Local Client para el alphaCode');
+            'Must throw AuraHandledException when there is no Local Client for the alphaCode');
     }
 
     // ─── saveMainBorrowerFields ───────────────────────────────────────────────
 
-    // Helper para construir un mapa de fieldValues reutilizable
+    // Helper that builds a reusable fieldValues map
     private static Map<String, Object> buildFieldValues(String counterpart) {
         return new Map<String, Object>{
             'g_upd_lmscl_internal_ratg_type__c' => '-A',
@@ -645,7 +645,7 @@ public with sharing class DMT_OpportunityClientControllerTest {
             FROM Opportunity WHERE Id = :opp.Id
         ];
         Assert.areEqual(true, updatedOpp.DMT_Is_Change_in_Ready_to_close__c,
-            'El flag DMT_Is_Change_in_Ready_to_close__c debe activarse en Ready to close');
+            'The DMT_Is_Change_in_Ready_to_close__c flag must be set in Ready to close');
     }
 
     // CIBGLOBALD-4811 - the reopen check of both Client saves builds what the save writes and saves nothing;
@@ -705,7 +705,7 @@ public with sharing class DMT_OpportunityClientControllerTest {
             SELECT Counterpart__c FROM DMT_Opportunity_Client__c WHERE Id = :dmtClient.Id
         ];
         Assert.areEqual('Fin Inst-B', updated.Counterpart__c,
-            'La contraparte debe actualizarse con el valor enviado');
+            'The counterpart must be updated with the value sent');
     }
 
     
@@ -720,8 +720,8 @@ public with sharing class DMT_OpportunityClientControllerTest {
             WHERE Opportunity__c = :opp.Id LIMIT 1
         ];
 
-        // Registro existente en DMT_Custom_Association_ClientOpportunity__c sin DMT_g_entific_id__c
-        // (simula un registro creado antes del backfill) — debe actualizarse, no duplicarse.
+        // Existing DMT_Custom_Association_ClientOpportunity__c record without DMT_g_entific_id__c
+        // (simulates a record created before the backfill) — it must be updated, not duplicated.
         DMT_Custom_Association_ClientOpportunity__c existingMultiholder =
             new DMT_Custom_Association_ClientOpportunity__c(
                 DMT_Custom_Association_Opportunity__c = assoc.Id,
@@ -748,11 +748,11 @@ public with sharing class DMT_OpportunityClientControllerTest {
             WHERE DMT_Custom_Association_Opportunity__c = :assoc.Id
         ];
         Assert.areEqual(1, multiholders.size(),
-            'No debe crearse un duplicado, solo debe actualizarse el registro existente');
+            'No duplicate must be created, only the existing record must be updated');
         Assert.areEqual('ES', multiholders[0].DMT_g_entific_id__c,
-            'g_entific_id__c debe rellenarse en el backfill');
+            'g_entific_id__c must be filled by the backfill');
         Assert.areEqual(assoc.gf_customer_group_id__c, multiholders[0].DMT_gf_customer_group_id__c,
-            'gf_customer_group_id__c debe rellenarse desde la asociación');
+            'gf_customer_group_id__c must be filled from the association');
     }
 
     @isTest
@@ -760,8 +760,8 @@ public with sharing class DMT_OpportunityClientControllerTest {
         Account acc = [SELECT Id FROM Account LIMIT 1];
         Opportunity newOpp = buildOrphanOpportunity(acc.Id, '88888');
 
-        // Pre-crea la asociación para que associationId sea correcto en el upsert.
-        // gf_customer_group_id__c debe ser único — se usa un valor distinto al del @TestSetup.
+        // Pre-creates the association so that associationId is correct in the upsert.
+        // gf_customer_group_id__c must be unique — a value different from the @TestSetup one is used.
         Custom_Association_Opportunity__c newAssoc = new Custom_Association_Opportunity__c(
             Opportunity__c          = newOpp.Id,
             g_customer_id__c        = ALPHA_CODE,
@@ -785,9 +785,9 @@ public with sharing class DMT_OpportunityClientControllerTest {
             FROM DMT_Opportunity_Client__c
             WHERE DMT_MDE_Opportunity__c = :newOpp.Id
         ];
-        Assert.areEqual(1, created.size(), 'Debe crearse un DMT_Opportunity_Client__c');
+        Assert.areEqual(1, created.size(), 'One DMT_Opportunity_Client__c must be created');
         Assert.areEqual(ALPHA_CODE, created[0].Alpha_Code_Client__c,
-            'El alpha code del nuevo cliente debe coincidir');
+            'The new client alpha code must match');
     }
 
     @isTest
@@ -801,14 +801,14 @@ public with sharing class DMT_OpportunityClientControllerTest {
             WHERE Opportunity__c = :opp.Id LIMIT 1
         ];
 
-        // En el modelo multiholder los participantes viven en DMT_Custom_Association_ClientOpportunity__c.
-        // Se inserta uno que ya no vendrá en selectedClients y por tanto debe eliminarse.
+        // In the multiholder model the participants live in DMT_Custom_Association_ClientOpportunity__c.
+        // One is inserted that will not come in selectedClients and must therefore be deleted.
         insert new DMT_Custom_Association_ClientOpportunity__c(
             DMT_Custom_Association_Opportunity__c = assoc.Id,
             DMT_g_customer_id__c                  = 'TOREMOVE99'
         );
 
-        // Solo ALPHA_CODE en selectedClients — TOREMOVE99 debe eliminarse
+        // Only ALPHA_CODE in selectedClients — TOREMOVE99 must be deleted
         List<Object> selectedClients = new List<Object>{
             new Map<String, Object>{ 'customerId' => ALPHA_CODE }
         };
@@ -826,9 +826,9 @@ public with sharing class DMT_OpportunityClientControllerTest {
             WHERE DMT_Custom_Association_Opportunity__c = :assoc.Id
         ];
         Assert.areEqual(1, remaining.size(),
-            'Solo debe quedar el participante del main borrower');
+            'Only the main borrower participant must remain');
         Assert.areEqual(ALPHA_CODE, remaining[0].DMT_g_customer_id__c,
-            'El participante restante debe ser el main borrower');
+            'The remaining participant must be the main borrower');
     }
 
     @isTest
@@ -855,7 +855,7 @@ public with sharing class DMT_OpportunityClientControllerTest {
             LIMIT 1
         ];
         Assert.areEqual('NEWALPHACODE01', updatedAssoc.g_customer_id__c,
-            'La asociación debe actualizarse con el nuevo main borrower');
+            'The association must be updated with the new main borrower');
     }
 
     @isTest
@@ -881,13 +881,13 @@ public with sharing class DMT_OpportunityClientControllerTest {
         );
         Test.stopTest();
 
-        // La actualización usa USER_MODE; se verifica que el método completó sin error
-        // y que el passport sigue existiendo (la lógica de marcado depende de permisos FLS del perfil).
+        // The update uses USER_MODE; checks that the method completed without error
+        // and that the passport still exists (the flag logic depends on the profile FLS permissions).
         List<Passport__c> passportList = [
             SELECT Id FROM Passport__c WHERE Id = :passport.Id
         ];
         Assert.areEqual(1, passportList.size(),
-            'El passport debe seguir existiendo tras el guardado');
+            'The passport must still exist after the save');
     }
 
     @isTest
@@ -896,7 +896,7 @@ public with sharing class DMT_OpportunityClientControllerTest {
         DMT_Opportunity_Client__c dmtClient =
             [SELECT Id FROM DMT_Opportunity_Client__c LIMIT 1];
 
-        // Cliente secundario con campos HPG en el mapa
+        // Secondary client with HPG fields in the map
         Map<String, Object> secondaryClientMap = new Map<String, Object>{
             'customerId'                  => 'SECONDARY01',
             'updLmsclInternalRatgType'    => '-B',
@@ -927,8 +927,8 @@ public with sharing class DMT_OpportunityClientControllerTest {
             WHERE Opportunity__c = :opp.Id LIMIT 1
         ];
 
-        // El cliente secundario se persiste en DMT_Custom_Association_ClientOpportunity__c,
-        // no en DMT_Opportunity_Client__c (que es 1:1 con el main holder).
+        // The secondary client is stored in DMT_Custom_Association_ClientOpportunity__c,
+        // not in DMT_Opportunity_Client__c (which is 1:1 with the main holder).
         List<DMT_Custom_Association_ClientOpportunity__c> allClients = [
             SELECT DMT_g_customer_id__c
             FROM DMT_Custom_Association_ClientOpportunity__c
@@ -936,9 +936,9 @@ public with sharing class DMT_OpportunityClientControllerTest {
             ORDER BY DMT_g_customer_id__c
         ];
         Assert.areEqual(2, allClients.size(),
-            'Deben existir el main borrower y el cliente secundario como participantes');
+            'The main borrower and the secondary client must exist as participants');
         Assert.areEqual('SECONDARY01', allClients[0].DMT_g_customer_id__c,
-            'El primer participante ordenado debe ser el cliente secundario');
+            'The first sorted participant must be the secondary client');
 
         List<DMT_Opportunity_Client__c> mainHolders = [
             SELECT Alpha_Code_Client__c
@@ -946,7 +946,7 @@ public with sharing class DMT_OpportunityClientControllerTest {
             WHERE DMT_MDE_Opportunity__c = :opp.Id
         ];
         Assert.areEqual(1, mainHolders.size(),
-            'Solo debe existir el DMT_Opportunity_Client__c del main holder');
+            'Only the main holder DMT_Opportunity_Client__c must exist');
     }
 
     @isTest
@@ -954,8 +954,8 @@ public with sharing class DMT_OpportunityClientControllerTest {
         Account acc = [SELECT Id FROM Account LIMIT 1];
         Opportunity newOpp2 = buildOrphanOpportunity(acc.Id, '88889');
 
-        // La asociación existe pero con un alpha code diferente; el controlador la actualiza.
-        // gf_customer_group_id__c debe ser único — se usa un valor distinto al del @TestSetup.
+        // The association exists with a different alpha code; the controller updates it.
+        // gf_customer_group_id__c must be unique — a value different from the @TestSetup one is used.
         Custom_Association_Opportunity__c existingAssoc = new Custom_Association_Opportunity__c(
             Opportunity__c          = newOpp2.Id,
             g_customer_id__c        = 'OLD_ALPHA_CODE',
@@ -981,6 +981,6 @@ public with sharing class DMT_OpportunityClientControllerTest {
             LIMIT 1
         ];
         Assert.areEqual(ALPHA_CODE, updatedAssoc.g_customer_id__c,
-            'La asociación debe actualizarse con el nuevo main borrower alpha code');
+            'The association must be updated with the new main borrower alpha code');
     }
 }
