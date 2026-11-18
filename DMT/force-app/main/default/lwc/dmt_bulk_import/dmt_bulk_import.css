@@ -164,3 +164,15 @@
     align-items: center;
     justify-content: space-between;
 }
+/* CIBGLOBALD-4851 - child tables: Salesforce records that Process will delete */
+.status-badge-delete {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.875rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid #c23934;
+    color: #c23934;
+    background-color: #fef1ee;
+}

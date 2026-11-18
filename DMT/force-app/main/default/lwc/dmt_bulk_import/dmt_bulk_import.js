@@ -2,10 +2,11 @@ import { LightningElement, track } from 'lwc';
 import { loadScript } from 'lightning/platformResourceLoader';
 import { subscribe, unsubscribe, onError } from 'lightning/empApi';
 import SHEETJS from '@salesforce/resourceUrl/DMT_SheetJS';
+import LightningConfirm from 'lightning/confirm'; // CIBGLOBALD-4851
 import submitLinesApex       from '@salesforce/apex/DMT_BulkImportController.submitLines';
-import submitProductsApex    from '@salesforce/apex/DMT_BulkImportController.submitProducts';
 import getExistingLinesApex     from '@salesforce/apex/DMT_BulkImportController.getExistingLines';
 import getExistingTermsForLinesApex from '@salesforce/apex/DMT_BulkImportController.getExistingTermsForLines';
+import getExistingProductItemsForLinesApex from '@salesforce/apex/DMT_BulkImportController.getExistingProductItemsForLines'; // CIBGLOBALD-4851
 import queryCreatedLinesApex    from '@salesforce/apex/DMT_BulkImportController.queryCreatedLines';
 import updateLineStatusApex     from '@salesforce/apex/DMT_BulkImportController.updateLineStatus';
 import hasDMTLineGod    from '@salesforce/customPermission/DMT_Line_God';
@@ -28,24 +29,59 @@ const LINES_HEADERS = [
     'g_line_status_type__c', 'Status__c', 'g_expert_criteria_risk_type__c'
 ];
 
-const PRODUCTS_HEADERS = [
-    'Booking_Geography__c', 'Line_Id__c', 'Client_Code__c', 'Client__c',
-    'g_group_id', 'End_Date__c', 'Start_Date__c', 'DMT_LastLevelId__c',
-    'g_risk_level_clsfn_type__c', 'g_global_product_family_id__c',
-    'g_global_product_subfamily_id__c', 'g_global_product_category_id__c',
-    'g_gbl_product_subcategory_id__c', 'g_global_product_id__c',
-    'DMT_Risk_Line_Term__c DMT_Init_Term__c', 'DMT_Risk_Line_Term__c DMT_End_Term__c',
-    'DMT_Parent_Line__c', 'DMT_Risk_Line_Term__c DMT_Amount__c',
-    'CurrencyIsoCode', 'owner User id_user__c', 'DMT_Comments__c',
-    'Createbydate', 'Breakclause_Frequency__c', 'DMT_RiskLineTermId__c',
-    'gf_priority_line_id__c', 'Name',
-    'gf_group_priority_line_id__c', 'g_multioperation_ind_type__c',
-    'g_line_status_type__c', 'Status__c', 'g_expert_criteria_risk_type__c',
-    'g_amortization_type__c', 'gf_inscol_months_grace_number__c', 'gf_payment_frequency__c'
-];
+const LINES_REQUIRED    = ['Line_Id__c']; // CIBGLOBALD-4851 - only the org-required column; the client is checked in Apex (DMT_BulkImportBatch)
 
-const LINES_REQUIRED    = ['Line_Id__c', 'Name', 'Client_Code__c', 'Start_Date__c', 'End_Date__c', 'CurrencyIsoCode', 'Booking_Geography__c'];
-const PRODUCTS_REQUIRED = ['Line_Id__c', 'DMT_RiskLineTermId__c'];
+// CIBGLOBALD-4851 - DMT_Line__c columns compared with Salesforce (New / Will Update / No Changes), by type. Only the
+// columns present in the file are compared and saved (DMT_BulkImportBatch.LINE_FILE_FIELDS); a blank cell clears the field.
+const LINE_COMPARE_FIELDS = {
+    Name: 'text', Booking_Geography__c: 'text', DMT_Client_Entific__c: 'text', CurrencyIsoCode: 'text',
+    Start_Date__c: 'date', End_Date__c: 'date', Client_Code__c: 'text', Golden_Code__c: 'text',
+    FD_Amount__c: 'number', DvP_Amount__c: 'number', Breakclause_Frequency__c: 'text', First_Breakclause__c: 'text',
+    Waiver__c: 'boolean', DMT_Mitigant_Agreement_comments__c: 'text', DMT_Comments__c: 'text',
+    DMT_Additional_Restrictions__c: 'text', DMT_Client_Use__c: 'text', DMT_LastLevelId__c: 'text',
+    g_line_status_type__c: 'text', DMT_ID_User__c: 'text'
+};
+// CIBGLOBALD-4851 - a blank cell in these columns keeps the Salesforce value (DMT_BulkImportBatch.KEEP_WHEN_BLANK_FIELDS)
+const KEEP_WHEN_BLANK_FIELDS = ['First_Breakclause__c', 'Breakclause_Frequency__c'];
+// CIBGLOBALD-4851 - columns that only exist in child files (Risk Line Terms, Line Product Items): a pasted table with
+// one of them is not a Lines file.
+const CHILD_FILE_COLUMNS = ['g_amortization_type__c', 'Line__r.Line_Id__c', 'DMT_Line__r.Line_Id__c', 'Product_Code_Value__c', 'DMT_Risk_Type__c'];
+
+// CIBGLOBALD-4851 - child tables of the loaded lines. When a child file has rows for a line, every record of that object
+// on that line is deleted and the file rows are inserted (Process); a line without rows in the file keeps its records.
+// lineIdColumns: accepted names of the column that holds the parent Line_Id__c. fingerprint: columns that identify the
+// file type (wrong drop zone check). displayFields: columns always shown, filled from the Salesforce records.
+const CHILD_ZONES = {
+    rlt: {
+        label: 'Risk Line Terms',
+        sfRelationship: 'DMT_Line__r',
+        lineIdColumns: ['DMT_Line__r.Line_Id__c', 'Line_Id__c'],
+        fingerprint: ['DMT_Line__r.Line_Id__c', 'DMT_Risk_Type__c', 'DMT_RiskLineTermId__c', 'DMT_Init_Term__c', 'DMT_End_Term__c',
+                      'DMT_Risk_Line_Term__c DMT_Init_Term__c', 'DMT_Risk_Line_Term__c DMT_Amount__c', 'g_amortization_type__c'],
+        displayFields: ['DMT_Risk_Type__c', 'DMT_RiskLineTermId__c', 'DMT_Amount__c', 'CurrencyIsoCode', 'DMT_Init_Term__c',
+                        'DMT_End_Term__c', 'g_global_product_family_id__c', 'g_global_product_subfamily_id__c',
+                        'g_global_product_category_id__c']
+    },
+    lpi: {
+        label: 'Line Product Items',
+        sfRelationship: 'Line__r',
+        lineIdColumns: ['Line__r.Line_Id__c', 'Line_Id__c'],
+        fingerprint: ['Line__r.Line_Id__c', 'Product_Code_Value__c', 'Max_Tenor_WC__c', 'DMT_DerivativeRestriction__c',
+                      'DMT_FDRestriction__c', 'DMT_DVPRestriction__c'],
+        displayFields: ['Product_Code_Value__c', 'Max_Tenor_WC__c', 'DMT_DerivativeRestriction__c', 'DMT_FDRestriction__c',
+                        'DMT_DVPRestriction__c']
+    }
+};
+const CHILD_STATUS_NEW    = 'New';
+const CHILD_STATUS_DELETE = 'Will Be Deleted';
+const CHILD_STATUS_KEPT   = 'Kept';
+const CHILD_STATUS_CLASS  = {
+    [CHILD_STATUS_NEW]: 'slds-text-color_success', [CHILD_STATUS_DELETE]: 'slds-text-color_error', [CHILD_STATUS_KEPT]: 'slds-text-color_weak'
+};
+// Old Other Products files name the term columns 'DMT_Risk_Line_Term__c <field>'; the tables show them as <field>
+const TERM_COLUMN_PREFIX  = 'DMT_Risk_Line_Term__c ';
+const CHILD_ERROR_LIMIT   = 20;
+const emptyChildState = () => ({ fileName: '', fileRows: [], sfRows: [], errors: [] });
 
 // Fields that belong to DMT_Risk_Line_Term__c (confirmed by deploy errors + prefix convention)
 const TERM_COLS = new Set([
@@ -93,28 +129,10 @@ export default class DmtBulkImport extends LightningElement {
 
     // ── Section 2 state ──────────────────────────────────────────────────────
     pendingTermsFromLines  = [];
-    // Raw DMT_Risk_Line_Term__c records fetched alongside line enrichment (getExistingTermsForLines),
-    // kept regardless of whether the Lines file also embedded term columns — see
-    // preExistingProductsToLoad / loadPreExistingProducts.
-    existingTermsFromServer = [];
-    productsPreloaded      = false;
-    @track productsState = 'idle';
-    productsFileName     = '';
-    productsRowCount     = 0;
-    @track productsValidationErrors  = [];
-    @track productsPreviewColumns    = [];
-    @track productsPreviewRows       = [];
-    productsRows         = [];
-    productsJobId        = '';
-    productsTotal        = 0;
-    productsProcessed    = 0;
-    productsSuccessCount = 0;
-    productsErrorCount   = 0;
-    @track productsResultErrors      = [];
-    productsSubscription = null;
-
-    // Queried after products batch completes — shown as a result table with navigation links
-    @track productsCreatedRecords = null;
+    // CIBGLOBALD-4851 - child tables: per zone (rlt, lpi) the file rows (New) and the Salesforce records of the loaded
+    // lines (Will Be Deleted / Kept, computed in _childRowsFor)
+    @track childState = { rlt: emptyChildState(), lpi: emptyChildState() };
+    childDragZone = '';
 
     // ── Line type selection (record type for DMT_Line__c) ────────────────────
     selectedRecordType = 'TreasurySettlement';
@@ -132,7 +150,6 @@ export default class DmtBulkImport extends LightningElement {
 
     // ── Drag state ───────────────────────────────────────────────────────────
     linesDragging    = false;
-    productsDragging = false;
 
     // ── Constant exposed to template ─────────────────────────────────────────
     get previewRowLimit() { return PREVIEW_ROW_LIMIT; }
@@ -142,23 +159,6 @@ export default class DmtBulkImport extends LightningElement {
         return this.linesRowCount <= PREVIEW_ROW_LIMIT
             ? `Showing all ${this.linesRowCount} rows`
             : `Showing first ${PREVIEW_ROW_LIMIT} of ${this.linesRowCount} rows`;
-    }
-
-    get productsPreviewLabel() {
-        const count = this.productsRowCount <= PREVIEW_ROW_LIMIT
-            ? `Showing all ${this.productsRowCount} rows`
-            : `Showing first ${PREVIEW_ROW_LIMIT} of ${this.productsRowCount} rows`;
-        // Reflects the CURRENT rows, not just "was anything ever preloaded" — a row dropped from a
-        // file that happens to overlap a preloaded one replaces it (see _mergeTermRowsUpdate), so
-        // the preloaded count must be recomputed from productsRows each time, not a sticky flag.
-        const preloadedCount = this.productsRows.filter(r => r.__preloaded).length;
-        if (preloadedCount === 0) return count;
-        if (preloadedCount === this.productsRows.length) return `${count} — pre-loaded from lines file`;
-        return `${count}, ${preloadedCount} pre-loaded from lines file`;
-    }
-
-    get productsShowAddMore() {
-        return this.productsPreloaded && this.productsState === 'ready';
     }
 
     // ── Created-records result table columns ─────────────────────────────────
@@ -171,16 +171,6 @@ export default class DmtBulkImport extends LightningElement {
             { label: 'Status', fieldName: 'Status__c', type: 'text', initialWidth: 100 },
             { label: 'Currency', fieldName: 'CurrencyIsoCode', type: 'text', initialWidth: 90 },
             { label: 'Geography', fieldName: 'Booking_Geography__c', type: 'text', initialWidth: 100 }
-        ];
-    }
-
-    get productsCreatedColumns() {
-        return [
-            { label: 'Term ID', fieldName: 'termUrl', type: 'url',
-              typeAttributes: { label: { fieldName: 'DMT_RiskLineTermId__c' }, target: '_blank' }, initialWidth: 200 },
-            { label: 'Name', fieldName: 'Name', type: 'text', initialWidth: 200 },
-            { label: 'Line', fieldName: 'lineName', type: 'text', initialWidth: 200 },
-            { label: 'Line ID', fieldName: 'lineId', type: 'text', initialWidth: 160 }
         ];
     }
 
@@ -204,7 +194,6 @@ export default class DmtBulkImport extends LightningElement {
 
     disconnectedCallback() {
         this._unsubscribe(this.linesSubscription);
-        this._unsubscribe(this.productsSubscription);
         document.removeEventListener('paste', this._pasteHandler);
     }
 
@@ -217,7 +206,6 @@ export default class DmtBulkImport extends LightningElement {
     get linesShowPreview()          { return ['ready', 'submitting', 'processing', 'done'].includes(this.linesState); }
     get linesIsProcessing()         { return ['submitting', 'processing'].includes(this.linesState); }
     get linesShowSubmit()           { return ['ready', 'error', 'done'].includes(this.linesState); }
-    get productsShowSubmit()        { return ['ready', 'error', 'done'].includes(this.productsState); }
     get linesIsDone()               { return this.linesState === 'done'; }
     // Disabled when not ready OR when every row is already "No Changes"
     get linesSubmitDisabled()       {
@@ -240,86 +228,251 @@ export default class DmtBulkImport extends LightningElement {
     get hasLinesCreatedRecords()    { return this.linesCreatedRecords && this.linesCreatedRecords.length > 0; }
     get hasLinesEnrichedStats()     { return this.linesEnrichedStats !== null; }
 
-    get productsEnrichedStats() {
-        if (this.productsRows.length === 0) return null;
-        let newCount = 0, updateCount = 0, noChangeCount = 0;
-        this.productsRows.forEach(r => {
-            const s = r.__status || '';
-            if (s === 'New' || s === 'Created')              newCount++;
-            else if (s === 'Will Update' || s === 'Updated') updateCount++;
-            else if (s === 'No Changes')                     noChangeCount++;
-            // 'Existing' and 'Failed' rows are intentionally excluded from this summary
-        });
-        return { newCount, updateCount, noChangeCount };
-    }
-    get hasProductsEnrichedStats()  { return this.productsRows.length > 0; }
-
-    // Step 2 is ENABLED when lines were submitted, OR when all lines are No Changes (nothing to submit)
+    // Update Line Status is offered once the lines were submitted, or when every line is already No Changes
     get step2Enabled() {
         const allNoChanges = this.linesRows.length > 0 &&
                              this.linesState === 'ready' &&
                              this.linesRows.every(r => r.__status === 'No Changes');
         return (this.linesState === 'done' && this.linesSuccessCount > 0) || allNoChanges;
     }
-    // Step 2 is VISIBLE (read-only preview) as soon as products rows exist, even before lines are submitted
-    get step2Visible()              { return this.step2Enabled || this.productsRows.length > 0; }
-    // When visible but not yet submittable — show informational notice
-    get step2ReadOnly()             { return this.step2Visible && !this.step2Enabled; }
-    get step2Disabled()             { return !this.step2Enabled && this.productsRows.length === 0; }
-    get productsCardClass()         { return 'slds-card' + (this.step2Disabled ? ' section-disabled' : ''); }
 
-    get productsIsIdle()            { return this.productsState === 'idle'; }
-    get productsHasFile()           { return ['ready', 'error', 'submitting', 'processing', 'done'].includes(this.productsState); }
-    get productsHasValidationErrors() { return this.productsState === 'error' && this.productsValidationErrors.length > 0; }
-    get productsShowPreview()       { return ['ready', 'submitting', 'processing', 'done'].includes(this.productsState); }
-    get productsIsProcessing()      { return ['submitting', 'processing'].includes(this.productsState); }
-    get productsIsDone()            { return this.productsState === 'done'; }
-    // Disabled when: step 1 not done, OR state not ready, OR every row is No Changes/Existing
-    get productsSubmitDisabled()    {
-        return !this.step2Enabled ||
-               this.productsState !== 'ready' ||
-               this.productsRows.every(r => r.__status === 'No Changes' || r.__status === 'Existing');
-    }
-    get productsProgress()          { return this.productsTotal > 0 ? Math.round(this.productsProcessed / this.productsTotal * 100) : 0; }
-    get productsHasResultErrors()   { return this.productsResultErrors.length > 0; }
-    get productsDropZoneClass() {
-        return 'drop-zone' +
-            (this.productsDragging ? ' drop-zone_active'  : '') +
-            (this.productsRows.length > 0 ? ' drop-zone_compact' : '');
-    }
-    get productsDropZoneText() {
-        return this.productsRows.length > 0
-            ? `${this.productsRowCount} rows loaded — drop or paste (Ctrl+V) to add / update products`
-            : 'Drop Products XLSX or CSV here, or paste with Ctrl+V';
-    }
-    get hasProductsCreatedRecords() { return this.productsCreatedRecords && this.productsCreatedRecords.length > 0; }
+    // ── CIBGLOBALD-4851 - Child tables (Risk Line Terms, Line Product Items) ──
 
-    // ── Pre-existing products (Salesforce terms not yet reflected in productsRows) ─────────────
+    get isTreasury()        { return this.selectedRecordType === 'TreasurySettlement'; }
+    // The child zones open once the Lines table has rows: child rows are accepted only for those lines
+    get childrenEnabled()   { return this.linesRows.length > 0; }
+    get childrenDisabled()  { return !this.childrenEnabled; }
+    get childCardClass()    { return 'slds-card' + (this.childrenEnabled ? '' : ' section-disabled'); }
 
-    // Only the ones not already represented in productsRows — once a matching row is there
-    // (whether the user's own file or a prior click of this same link), it drops off this list,
-    // and once the list is empty the link disappears.
-    get preExistingProductsToLoad() {
-        if (this.existingTermsFromServer.length === 0) return [];
-        const loadedIds = new Set(this.productsRows.map(r => r['DMT_RiskLineTermId__c']).filter(Boolean));
-        return this.existingTermsFromServer.filter(t => !loadedIds.has(t.DMT_RiskLineTermId__c));
-    }
-    get showPreExistingProductsLink()  { return this.preExistingProductsToLoad.length > 0; }
-    get preExistingProductsLinkLabel() {
-        const n = this.preExistingProductsToLoad.length;
-        return `${n} pre-existing product${n === 1 ? '' : 's'} found for ${n === 1 ? 'this line' : 'these lines'} — click to load`;
+    // One entry per visible zone, rendered with for:each (Line Product Items only for Treasury lines)
+    get childSections() {
+        return Object.keys(CHILD_ZONES)
+            .filter(zone => zone !== 'lpi' || this.isTreasury)
+            .map(zone => {
+                const state = this.childState[zone];
+                const rows  = this._childRowsFor(zone);
+                const count = status => rows.filter(r => r.__status === status).length;
+                const label = CHILD_ZONES[zone].label;
+                return {
+                    key: zone,
+                    label,
+                    dropZoneClass: 'drop-zone drop-zone_compact' + (this.childDragZone === zone ? ' drop-zone_active' : ''),
+                    dropZoneText: state.fileRows.length > 0
+                        ? `${state.fileName}: ${state.fileRows.length} rows. Drop or paste (Ctrl+V) another ${label} file to replace them`
+                        : `Drop ${label} XLSX or CSV here, or paste with Ctrl+V`,
+                    hasErrors: state.errors.length > 0,
+                    errors: state.errors,
+                    hasRows: rows.length > 0,
+                    newCount: count(CHILD_STATUS_NEW),
+                    deleteCount: count(CHILD_STATUS_DELETE),
+                    keptCount: count(CHILD_STATUS_KEPT),
+                    columns: this._childColumns(zone, rows),
+                    rows: this._childDisplayRows(rows)
+                };
+            });
     }
 
-    loadPreExistingProducts() {
-        const toLoad = this.preExistingProductsToLoad;
-        if (toLoad.length === 0) return;
-        const sfRows = toLoad.map(t => ({ ...this._sfTermToRow(t), __status: 'Existing', __preloaded: true }));
-        const merged = this._mergeTermRows(this.productsRows, sfRows);
-        this.productsRows      = merged;
-        this.productsRowCount  = merged.length;
-        this.productsPreloaded = true;
-        if (this.productsState === 'idle') this.productsState = 'ready';
-        this._buildPreview(merged, this._termPreviewHeaders(PRODUCTS_HEADERS), 'products');
+    /**
+     * File rows (New) plus the Salesforce records of the loaded lines: Will Be Deleted when the file has rows for
+     * their line, Kept otherwise. Sorted by line, file rows first.
+     */
+    _childRowsFor(zone) {
+        const state   = this.childState[zone];
+        const covered = new Set(state.fileRows.map(r => r.__lineId));
+        const sfRows  = state.sfRows.map(r => ({ ...r, __status: covered.has(r.__lineId) ? CHILD_STATUS_DELETE : CHILD_STATUS_KEPT }));
+        return [...state.fileRows, ...sfRows]
+            .map((r, idx) => ({ r, idx }))
+            .sort((a, b) => a.r.__lineId.localeCompare(b.r.__lineId) || a.idx - b.idx)
+            .map(x => x.r);
+    }
+
+    _childColumns(zone, rows) {
+        const fields = [...CHILD_ZONES[zone].displayFields];
+        rows.forEach(r => Object.keys(r).forEach(k => { if (!k.startsWith('__') && !fields.includes(k)) fields.push(k); }));
+        return [
+            { label: 'Status', fieldName: '__status', type: 'text', initialWidth: 130,
+              cellAttributes: { class: { fieldName: '__statusClass' } } },
+            { label: 'Line_Id__c', fieldName: '__lineId', type: 'text', initialWidth: 180 },
+            ...fields.map(f => ({ label: f, fieldName: this._safeKey(f), type: 'text', initialWidth: 160 })),
+            { type: 'action', typeAttributes: { rowActions: this._childRowActions } }
+        ];
+    }
+
+    _childDisplayRows(rows) {
+        return rows.map(r => {
+            const flat = { __key: r.__key, __lineId: r.__lineId, __status: r.__status, __statusClass: CHILD_STATUS_CLASS[r.__status] };
+            Object.keys(r).forEach(k => {
+                if (k.startsWith('__')) return;
+                const v = r[k];
+                flat[this._safeKey(k)] = (v === null || v === undefined) ? '' : String(v);
+            });
+            return flat;
+        });
+    }
+
+    // Only file rows can be removed; Salesforce records follow the replace rule
+    _childRowActions = (row, doneCallback) => {
+        doneCallback([{ label: 'Remove row', name: 'remove', disabled: row.__status !== CHILD_STATUS_NEW }]);
+    };
+
+    handleChildRowAction(event) {
+        if (event.detail.action.name !== 'remove') return;
+        const zone  = event.target.dataset.zone;
+        const key   = event.detail.row.__key;
+        const state = this.childState[zone];
+        this._setChildState(zone, { fileRows: state.fileRows.filter(r => r.__key !== key) });
+    }
+
+    _setChildState(zone, changes) {
+        this.childState = { ...this.childState, [zone]: { ...this.childState[zone], ...changes } };
+    }
+
+    _resetChildren() {
+        this.childState = { rlt: emptyChildState(), lpi: emptyChildState() };
+    }
+
+    openChildFilePicker(event) {
+        const zone = event.target.dataset.zone;
+        this.template.querySelector(`input[data-zone="${zone}"]`).click();
+    }
+
+    handleChildFileInputChange(event) {
+        const file = event.target.files[0];
+        if (file) this._processFile(file, event.target.dataset.zone);
+        event.target.value = '';
+    }
+
+    handleChildDragOver(event) {
+        event.preventDefault();
+        const zone = event.currentTarget.dataset.zone;
+        if (this.childDragZone !== zone) this.childDragZone = zone; // dragover fires continuously: re-render only on change
+    }
+
+    handleChildDragLeave() {
+        this.childDragZone = '';
+    }
+
+    handleChildFileDrop(event) {
+        event.preventDefault();
+        this.childDragZone = '';
+        const file = event.dataTransfer.files[0];
+        if (file) this._processFile(file, event.currentTarget.dataset.zone);
+    }
+
+    /**
+     * File type from its columns: 'lines', 'rlt', 'lpi' or null. The old Other Products Lines file carries term columns
+     * too and is recognised by gf_cutoff_date.
+     */
+    _detectFileType(headers) {
+        const set = new Set(headers);
+        if (set.has('gf_cutoff_date')) return 'lines';
+        if (CHILD_ZONES.lpi.fingerprint.some(c => set.has(c))) return 'lpi';
+        if (CHILD_ZONES.rlt.fingerprint.some(c => set.has(c))) return 'rlt';
+        if (set.has('Line_Id__c')) return 'lines';
+        return null;
+    }
+
+    _zoneLabel(zone) {
+        return zone === 'lines' ? 'Lines' : CHILD_ZONES[zone].label;
+    }
+
+    /**
+     * Sends parsed rows to the zone they belong to. A file dropped in another zone than its columns say asks first
+     * (LightningConfirm) and, on OK, loads where it belongs.
+     */
+    async _routeParsedRows(rows, fileName, zone) {
+        if (rows.length === 0) {
+            this._zoneErrors(zone, [{ key: 'empty', message: 'The file contains no data rows.' }]);
+            return;
+        }
+        const detected = this._detectFileType(Object.keys(rows[0]).filter(k => k !== '__rowIndex'));
+        let target = zone;
+        if (detected && detected !== zone) {
+            const confirmed = await LightningConfirm.open({
+                label: 'Wrong drop zone',
+                message: `${fileName} looks like a ${this._zoneLabel(detected)} file, not a ${this._zoneLabel(zone)} file. Load it as ${this._zoneLabel(detected)}?`,
+                theme: 'warning'
+            });
+            if (!confirmed) return;
+            target = detected;
+        }
+        if (target === 'lines') this._onRowsParsed(rows, fileName, 'lines');
+        else this._loadChildFile(target, rows, fileName);
+    }
+
+    _zoneErrors(zone, errors) {
+        if (zone === 'lines') this._setValidationErrors('lines', errors);
+        else this._setChildState(zone, { errors });
+    }
+
+    /**
+     * A child file replaces that table's file rows. Rows without a line id, or for a line that is not in the Lines
+     * table, are rejected and listed.
+     */
+    _loadChildFile(zone, rows, fileName) {
+        const conf = CHILD_ZONES[zone];
+        if (zone === 'lpi' && !this.isTreasury) {
+            this._toast('Line Product Items not loaded', 'Line Product Items are only loaded for Treasury lines. Select Line Treasury as Line Type.');
+            return;
+        }
+        if (!this.childrenEnabled) {
+            this._toast(`${conf.label} not loaded`, 'Load the Lines file first: child rows are accepted only for the lines in the Lines table.');
+            return;
+        }
+        const headers      = Object.keys(rows[0]).filter(k => k !== '__rowIndex');
+        const lineIdColumn = conf.lineIdColumns.find(c => headers.includes(c));
+        if (!lineIdColumn) {
+            this._setChildState(zone, { errors: [{ key: 'line-id-column', message: `Missing column: ${conf.lineIdColumns.join(' or ')}` }] });
+            return;
+        }
+        const knownLineIds = new Set(this.linesRows.map(r => r['Line_Id__c']));
+        const accepted = [];
+        const rejected = [];
+        rows.forEach(row => {
+            const lineId = String(row[lineIdColumn] || '').trim();
+            if (!lineId) rejected.push(`Row ${row.__rowIndex}: ${lineIdColumn} is blank. Row not loaded.`);
+            else if (!knownLineIds.has(lineId)) rejected.push(`Row ${row.__rowIndex}: line ${lineId} is not in the Lines table. Row not loaded.`);
+            else accepted.push(this._fileRowToChild(zone, row, lineId));
+        });
+        const errors = rejected.slice(0, CHILD_ERROR_LIMIT).map((message, i) => ({ key: `rejected-${i}`, message }));
+        if (rejected.length > CHILD_ERROR_LIMIT) {
+            errors.push({ key: 'rejected-more', message: `${rejected.length - CHILD_ERROR_LIMIT} more rows not loaded.` });
+        }
+        this._setChildState(zone, { fileName, fileRows: accepted, errors });
+    }
+
+    // A file row keyed by field name: line id columns become __lineId, 'DMT_Risk_Line_Term__c <field>' becomes <field>
+    _fileRowToChild(zone, row, lineId) {
+        const child = { __key: `${zone}-file-${row.__rowIndex}`, __rowIndex: row.__rowIndex, __lineId: lineId, __status: CHILD_STATUS_NEW };
+        Object.keys(row).forEach(k => {
+            if (k === '__rowIndex' || CHILD_ZONES[zone].lineIdColumns.includes(k)) return;
+            child[k.startsWith(TERM_COLUMN_PREFIX) ? k.substring(TERM_COLUMN_PREFIX.length) : k] = row[k];
+        });
+        return child;
+    }
+
+    _setSfChildren(zone, records) {
+        const relationship = CHILD_ZONES[zone].sfRelationship;
+        const sfRows = (records || []).map(record => {
+            const child = { __key: record.Id, __sfId: record.Id, __lineId: record[relationship] ? record[relationship].Line_Id__c : '' };
+            Object.keys(record).forEach(k => { if (k !== 'Id' && k !== relationship) child[k] = record[k]; });
+            return child;
+        });
+        this._setChildState(zone, { sfRows });
+    }
+
+    // Old Other Products Lines file: its term columns are the Risk Line Terms file rows
+    _loadTermsFromLinesFile() {
+        if (this.pendingTermsFromLines.length === 0) return;
+        const rows = this.pendingTermsFromLines.map((t, i) => ({ ...t, __rowIndex: i + 2 }));
+        this._loadChildFile('rlt', rows, `${this.linesFileName} (term columns)`);
+    }
+
+    // Product amount per line in Salesforce now (Risk Line Terms), for the Update Line Status pre-check
+    _sfTermAmountForLine(lineId) {
+        return this.childState.rlt.sfRows
+            .filter(r => r.__lineId === lineId)
+            .reduce((sum, r) => sum + (parseFloat(r.DMT_Amount__c) || 0), 0);
     }
 
     // ── Update Line Status ────────────────────────────────────────────────────
@@ -333,7 +486,7 @@ export default class DmtBulkImport extends LightningElement {
             .map(r => r['Line_Id__c'])
             .filter(Boolean);
     }
-    get showUpdateLineStatus()      { return this.step2Enabled && !this.productsIsProcessing; }
+    get showUpdateLineStatus()      { return this.step2Enabled; } // CIBGLOBALD-4851
 
     // Record-type + target-status data requirements this predictive check mirrors (both are
     // currently-active, enforced server-side regardless of what this getter decides):
@@ -354,11 +507,8 @@ export default class DmtBulkImport extends LightningElement {
     // it does not need every line to be eligible, only at least one.
     get linesBlockingUpdateLineStatus() {
         const isTreasury = this.selectedRecordType === 'TreasurySettlement';
-        // Only rows already persisted in Salesforce count — 'New'/'Will Update' are still just
-        // parsed from the file and have not been submitted (Create / Update Products not clicked
-        // yet, or still in flight), and 'Failed' means the submission did not actually save. Counting
-        // those would tell the user a line is covered when the server still sees no term at all.
-        const PERSISTED_PRODUCT_STATUSES = new Set(['No Changes', 'Existing', 'Created', 'Updated']);
+        // CIBGLOBALD-4851 - only the Risk Line Terms in Salesforce count (child table records, _sfTermAmountForLine):
+        // file rows are not saved yet.
         return this.importedLineIds
             .map(lineId => this.linesRows.find(r => r['Line_Id__c'] === lineId))
             .filter(Boolean)
@@ -366,9 +516,7 @@ export default class DmtBulkImport extends LightningElement {
                 const code = line['g_line_status_type__c'];
                 if (!code || code === 'DR') return false; // stays Draft — no gate applies
 
-                const productsTotal = this.productsRows
-                    .filter(p => p['Line_Id__c'] === line['Line_Id__c'] && PERSISTED_PRODUCT_STATUSES.has(p.__status))
-                    .reduce((sum, p) => sum + (parseFloat(p['DMT_Risk_Line_Term__c DMT_Amount__c']) || 0), 0);
+                const productsTotal = this._sfTermAmountForLine(line['Line_Id__c']); // CIBGLOBALD-4851
 
                 if (isTreasury) {
                     return productsTotal <= 0;
@@ -426,10 +574,6 @@ export default class DmtBulkImport extends LightningElement {
         this.template.querySelector('input[data-section="lines"]').click();
     }
 
-    openProductsFilePicker() {
-        this.template.querySelector('input[data-section="products"]').click();
-    }
-
     handleFileInputChange(event) {
         const file    = event.target.files[0];
         const section = event.target.dataset.section;
@@ -439,17 +583,14 @@ export default class DmtBulkImport extends LightningElement {
 
     // ── Drag and drop ─────────────────────────────────────────────────────────
 
+    // CIBGLOBALD-4851 - Lines drop zone only; the child zones use handleChildDragOver / handleChildDragLeave
     handleDragOver(event) {
         event.preventDefault();
-        const section = this._sectionFromEvent(event);
-        if (section === 'lines')    this.linesDragging    = true;
-        if (section === 'products') this.productsDragging = true;
+        this.linesDragging = true;
     }
 
-    handleDragLeave(event) {
-        const section = this._sectionFromEvent(event);
-        if (section === 'lines')    this.linesDragging    = false;
-        if (section === 'products') this.productsDragging = false;
+    handleDragLeave() {
+        this.linesDragging = false;
     }
 
     handleLinesFileDrop(event) {
@@ -511,43 +652,13 @@ export default class DmtBulkImport extends LightningElement {
         }
     }
 
-    handleProductsFileDrop(event) {
-        event.preventDefault();
-        this.productsDragging = false;
-        const file = event.dataTransfer.files[0];
-        if (file) this._processFile(file, 'products');
-    }
-
-    // ── After products complete: allow uploading another CATEGORIAS file ───────
-
-    resetProductsForMore() {
-        this.productsCreatedRecords = null;
-        this.productsResultErrors   = [];
-        this.productsPreloaded      = false;
-        // productsRows was trimmed to failed-only rows in _handleProgressEvent;
-        // if empty, start fresh; if has failures, pre-load them for retry
-        if (this.productsRows.length > 0) {
-            this.productsState    = 'ready';
-            this.productsRowCount = this.productsRows.length;
-            this._buildPreview(this.productsRows, this._termPreviewHeaders(PRODUCTS_HEADERS), 'products');
-        } else {
-            this.productsState          = 'idle';
-            this.productsRowCount       = 0;
-            this.productsPreviewColumns = [];
-            this.productsPreviewRows    = [];
-            this.productsFileName       = '';
-        }
-    }
-
     // ── Start Over ────────────────────────────────────────────────────────────
 
-    get hasAnyData() { return this.linesRows.length > 0 || this.productsRows.length > 0; }
+    get hasAnyData() { return this.linesRows.length > 0; } // CIBGLOBALD-4851 - child rows exist only with lines
 
     resetAll() {
         this._unsubscribe(this.linesSubscription);
-        this._unsubscribe(this.productsSubscription);
         this.linesSubscription    = null;
-        this.productsSubscription = null;
 
         this.linesState            = 'idle';
         this.linesFileName         = '';
@@ -562,19 +673,7 @@ export default class DmtBulkImport extends LightningElement {
         this.linesErrorCount       = 0;
         this.linesFailedIds        = new Set();
         this.pendingTermsFromLines = [];
-        this.existingTermsFromServer = [];
-
-        this.productsState            = 'idle';
-        this.productsFileName         = '';
-        this.productsRowCount         = 0;
-        this.productsRows             = [];
-        this.productsValidationErrors = [];
-        this.productsPreviewColumns   = [];
-        this.productsPreviewRows      = [];
-        this.productsResultErrors     = [];
-        this.productsSuccessCount     = 0;
-        this.productsErrorCount       = 0;
-        this.productsPreloaded        = false;
+        this._resetChildren(); // CIBGLOBALD-4851
 
         this.lineStatusUpdateState    = 'idle';
     }
@@ -591,59 +690,24 @@ export default class DmtBulkImport extends LightningElement {
         this.linesPreviewRows      = [];
         this.linesEnrichedStats    = null;
         this.pendingTermsFromLines = [];
-        this.existingTermsFromServer = [];
-
-        // If Step 2 was pre-loaded from this lines file, clear it too
-        if (this.productsPreloaded) {
-            this.productsState            = 'idle';
-            this.productsFileName         = '';
-            this.productsRowCount         = 0;
-            this.productsRows             = [];
-            this.productsValidationErrors = [];
-            this.productsPreviewColumns   = [];
-            this.productsPreviewRows      = [];
-            this.productsPreloaded        = false;
-        }
-    }
-
-    clearProductsFile() {
-        this.productsState            = 'idle';
-        this.productsFileName         = '';
-        this.productsRowCount         = 0;
-        this.productsRows             = [];
-        this.productsValidationErrors = [];
-        this.productsPreviewColumns   = [];
-        this.productsPreviewRows      = [];
+        this._resetChildren(); // CIBGLOBALD-4851 - child rows belong to the lines
     }
 
     // ── Clipboard paste (Ctrl+V) ──────────────────────────────────────────────
 
     _processPastedText(text) {
-        const lines = text.split(/\r?\n/).filter(l => l.trim());
-        if (lines.length < 2) return;
-
-        // Detect delimiter: tab (Excel/Sheets), pipe (our format), or comma (exported CSV)
-        const delimiter = lines[0].includes('\t') ? '\t' : lines[0].includes('|') ? '|' : ',';
-
-        const headers = lines[0].split(delimiter).map(h => h.trim());
-        const rows = lines.slice(1).map((line, idx) => {
-            const values = line.split(delimiter);
-            const row = { __rowIndex: idx + 2 };
-            headers.forEach((h, i) => { row[h] = (values[i] !== undefined ? String(values[i]).trim() : ''); });
-            return row;
-        });
+        const rows = this._parseCSV(text); // CIBGLOBALD-4851 - same quote-aware parser as a dropped CSV
+        if (rows.length === 0) return;
+        const headers = Object.keys(rows[0]).filter(k => k !== '__rowIndex'); // CIBGLOBALD-4851
 
         // Bail silently if content doesn't look like a Salesforce data file at all
-        const headerSet = new Set(headers);
         if (!headers.some(h => h.includes('__c') || h === 'gf_cutoff_date')) return;
 
-        // Route by header fingerprint: gf_cutoff_date = lines file; g_amortization_type__c = products file
-        let section;
-        if (headerSet.has('gf_cutoff_date'))              section = 'lines';
-        else if (headerSet.has('g_amortization_type__c')) section = 'products';
+        // CIBGLOBALD-4851 - route by the columns (Lines, Risk Line Terms, Line Product Items)
+        const section = this._detectFileType(headers);
         if (!section) return;
-
-        this._onRowsParsed(rows, 'Clipboard', section);
+        if (section === 'lines') this._onRowsParsed(rows, 'Clipboard', section);
+        else this._loadChildFile(section, rows, 'Clipboard');
     }
 
     // ── File parsing ──────────────────────────────────────────────────────────
@@ -651,7 +715,7 @@ export default class DmtBulkImport extends LightningElement {
     _processFile(file, section) {
         const ext = file.name.split('.').pop().toLowerCase();
         if (!['csv', 'xlsx', 'xls'].includes(ext)) {
-            this._setValidationErrors(section, [{ key: 'ext', message: `File type .${ext} is not supported. Use CSV, XLSX or XLS.` }]);
+            this._zoneErrors(section, [{ key: 'ext', message: `File type .${ext} is not supported. Use CSV, XLSX or XLS.` }]); // CIBGLOBALD-4851
             return;
         }
 
@@ -660,32 +724,66 @@ export default class DmtBulkImport extends LightningElement {
         if (ext === 'csv') {
             reader.onload = e => {
                 const rows = this._parseCSV(e.target.result);
-                this._onRowsParsed(rows, file.name, section);
+                this._routeParsedRows(rows, file.name, section); // CIBGLOBALD-4851
             };
             reader.readAsText(file);
         } else {
             if (!this.sheetJsLoaded) {
-                this._setValidationErrors(section, [{ key: 'sheetjs', message: 'SheetJS library is still loading. Try again in a moment.' }]);
+                this._zoneErrors(section, [{ key: 'sheetjs', message: 'SheetJS library is still loading. Try again in a moment.' }]); // CIBGLOBALD-4851
                 return;
             }
             reader.onload = e => {
                 const rows = this._parseXLSX(e.target.result);
-                this._onRowsParsed(rows, file.name, section);
+                this._routeParsedRows(rows, file.name, section); // CIBGLOBALD-4851
             };
             reader.readAsArrayBuffer(file);
         }
     }
 
+    /**
+     * CIBGLOBALD-4851 - Delimited text (CSV file or pasted table) to row objects keyed by header. Values in double
+     * quotes may contain the delimiter, line breaks and doubled quotes (""), as Excel exports them. Delimiter from the
+     * header line: tab, pipe, semicolon (when there is no comma) or comma. Blank lines are skipped.
+     */
     _parseCSV(text) {
-        const lines = text.split(/\r?\n/).filter(l => l.trim());
-        if (lines.length < 2) return [];
-        const firstLine = lines[0];
-        const delimiter = firstLine.includes('\t') ? '\t' : firstLine.includes('|') ? '|' : ',';
-        const headers = firstLine.split(delimiter).map(h => h.trim());
-        return lines.slice(1).map((line, idx) => {
-            const values = line.split(delimiter);
+        const source    = String(text || '').replace(/^﻿/, '');
+        const firstLine = source.split(/\r?\n/, 1)[0] || '';
+        const delimiter = firstLine.includes('\t') ? '\t'
+            : firstLine.includes('|') ? '|'
+            : (firstLine.includes(';') && !firstLine.includes(',')) ? ';'
+            : ',';
+
+        const records = [];
+        let record = [];
+        let value = '';
+        let inQuotes = false;
+        for (let i = 0; i < source.length; i++) {
+            const ch = source[i];
+            if (inQuotes) {
+                if (ch === '"' && source[i + 1] === '"') { value += '"'; i++; }
+                else if (ch === '"') { inQuotes = false; }
+                else { value += ch; }
+            } else if (ch === '"') {
+                inQuotes = true;
+            } else if (ch === delimiter) {
+                record.push(value); value = '';
+            } else if (ch === '\n' || ch === '\r') {
+                if (ch === '\r' && source[i + 1] === '\n') i++;
+                record.push(value); value = '';
+                records.push(record); record = [];
+            } else {
+                value += ch;
+            }
+        }
+        record.push(value);
+        records.push(record);
+
+        const nonBlank = records.filter(r => r.some(v => v.trim() !== ''));
+        if (nonBlank.length < 2) return [];
+        const headers = nonBlank[0].map(h => h.trim());
+        return nonBlank.slice(1).map((values, idx) => {
             const row = { __rowIndex: idx + 2 };
-            headers.forEach((h, i) => { row[h] = (values[i] || '').trim(); });
+            headers.forEach((h, i) => { if (h) row[h] = (values[i] || '').trim(); });
             return row;
         });
     }
@@ -710,117 +808,51 @@ export default class DmtBulkImport extends LightningElement {
         });
     }
 
+    // CIBGLOBALD-4851 - Lines rows only: child files load through _loadChildFile (section kept for the callers)
     _onRowsParsed(rows, fileName, section) {
-        const expectedHeaders = section === 'lines' ? LINES_HEADERS  : PRODUCTS_HEADERS;
-        const requiredFields  = section === 'lines' ? LINES_REQUIRED : PRODUCTS_REQUIRED;
+        if (section !== 'lines') return;
 
-        if (section === 'lines') {
-            // Reject any rows missing Line_Id__c — it is the external key from the source system
-            const missingIdRows = rows.filter(r => !r['Line_Id__c'] || !String(r['Line_Id__c']).trim());
-            if (missingIdRows.length > 0) {
-                const rowNums = missingIdRows.map(r => `Row ${r.__rowIndex}`).join(', ');
-                this._setValidationErrors('lines', [{
-                    key: 'missing-line-id',
-                    message: `Line_Id__c is required for all rows but was blank in: ${rowNums}`
-                }]);
-                this.linesState = 'error';
-                return;
-            }
-
-            // Duplicate Line_Id__c detection — remove ALL occurrences and toast
-            const lineIdRows = {};
-            rows.forEach(r => {
-                const id = r['Line_Id__c'];
-                if (id) (lineIdRows[id] = lineIdRows[id] || []).push(r.__rowIndex);
-            });
-            const dupes = Object.entries(lineIdRows).filter(([, rns]) => rns.length > 1);
-            if (dupes.length > 0) {
-                const msg = dupes.map(([id, rns]) => `${id} (rows ${rns.join(', ')})`).join(' | ');
-                this._toast('Duplicate Line IDs detected', `Each Line ID must appear only once. Removed: ${msg}`, 'error');
-                const dupeSet = new Set(dupes.map(([id]) => id));
-                rows = rows.filter(r => !dupeSet.has(r['Line_Id__c']));
-            }
-            // Merge with existing rows (incoming overrides existing for same Line_Id__c)
-            const merged              = this._mergeLineRows(this.linesRows, rows);
-            this.linesFileName        = fileName;
-            this.linesRowCount        = merged.length;
-            this.linesRows            = merged;
-            this.pendingTermsFromLines = this._extractTermRows(merged);
-        } else {
-            // Duplicate DMT_RiskLineTermId__c detection — remove ALL occurrences and toast
-            const termIdRows = {};
-            rows.forEach(r => {
-                const id = r['DMT_RiskLineTermId__c'];
-                if (id) (termIdRows[id] = termIdRows[id] || []).push(r.__rowIndex);
-            });
-            const termDupes = Object.entries(termIdRows).filter(([, rns]) => rns.length > 1);
-            if (termDupes.length > 0) {
-                const msg = termDupes.map(([id, rns]) => `${id} (rows ${rns.join(', ')})`).join(' | ');
-                this._toast('Duplicate Term IDs detected', `Each Term ID must appear only once. Removed: ${msg}`, 'error');
-                const dupeSet = new Set(termDupes.map(([id]) => id));
-                rows = rows.filter(r => !dupeSet.has(r['DMT_RiskLineTermId__c']));
-            }
-            // For any Line_Id__c not in the lines table, extract the line data from the products
-            // row itself (the products file contains all line fields) and add it to the lines table
-            const knownLineIds = new Set(this.linesRows.map(r => r['Line_Id__c']).filter(Boolean));
-            const newLinesSeen = new Set();
-            const newLineRows  = [];
-            rows.forEach(r => {
-                const id = r['Line_Id__c'];
-                if (!id || knownLineIds.has(id) || newLinesSeen.has(id)) return;
-                newLinesSeen.add(id);
-                const lineRow = { __rowIndex: r.__rowIndex };
-                LINES_HEADERS.forEach(h => { lineRow[h] = r[h] || ''; });
-                newLineRows.push(lineRow);
-            });
-            if (newLineRows.length > 0) {
-                const mergedLines = this._mergeLineRows(this.linesRows, newLineRows);
-                this.linesRows             = mergedLines;
-                this.linesRowCount         = mergedLines.length;
-                this.pendingTermsFromLines = this._extractTermRows(mergedLines);
-                if (this.linesState === 'idle') {
-                    this.linesFileName = fileName;
-                    this.linesState    = 'ready';
-                }
-                this._buildPreview(mergedLines, this._linePreviewHeaders(LINES_HEADERS), 'lines');
-                this._enrichLinesPreview(mergedLines);
-            }
-            // Tag product status before merging
-            const existingTermIds = new Set(this.productsRows.map(r => r['DMT_RiskLineTermId__c']).filter(Boolean));
-            rows = rows.map(r => ({
-                ...r,
-                __status: existingTermIds.has(r['DMT_RiskLineTermId__c']) ? 'Will Update' : 'New'
-            }));
-            // Incoming file rows override existing rows for same term ID
-            const merged           = this._mergeTermRowsUpdate(this.productsRows, rows);
-            this.productsFileName  = fileName;
-            this.productsRowCount  = merged.length;
-            this.productsRows      = merged;
+        // Reject any rows missing Line_Id__c — it is the external key from the source system
+        const missingIdRows = rows.filter(r => !r['Line_Id__c'] || !String(r['Line_Id__c']).trim());
+        if (missingIdRows.length > 0) {
+            const rowNums = missingIdRows.map(r => `Row ${r.__rowIndex}`).join(', ');
+            this._setValidationErrors('lines', [{
+                key: 'missing-line-id',
+                message: `Line_Id__c is required for all rows but was blank in: ${rowNums}`
+            }]);
+            this.linesState = 'error';
+            return;
         }
 
-        const errors = this._validate(
-            section === 'lines' ? this.linesRows : this.productsRows,
-            expectedHeaders, requiredFields
-        );
+        // Duplicate Line_Id__c detection — remove ALL occurrences and toast
+        const lineIdRows = {};
+        rows.forEach(r => {
+            const id = r['Line_Id__c'];
+            if (id) (lineIdRows[id] = lineIdRows[id] || []).push(r.__rowIndex);
+        });
+        const dupes = Object.entries(lineIdRows).filter(([, rns]) => rns.length > 1);
+        if (dupes.length > 0) {
+            const msg = dupes.map(([id, rns]) => `${id} (rows ${rns.join(', ')})`).join(' | ');
+            this._toast('Duplicate Line IDs detected', `Each Line ID must appear only once. Removed: ${msg}`, 'error');
+            const dupeSet = new Set(dupes.map(([id]) => id));
+            rows = rows.filter(r => !dupeSet.has(r['Line_Id__c']));
+        }
+        // Merge with existing rows (incoming overrides existing for same Line_Id__c)
+        const merged              = this._mergeLineRows(this.linesRows, rows);
+        this.linesFileName        = fileName;
+        this.linesRowCount        = merged.length;
+        this.linesRows            = merged;
+        this.pendingTermsFromLines = this._extractTermRows(merged);
 
+        const errors = this._validate(this.linesRows, null, LINES_REQUIRED);
         if (errors.length > 0) {
-            this._setValidationErrors(section, errors);
-        } else {
-            this._setValidationErrors(section, []);
-            const previewHeaders = section === 'lines'
-                ? this._linePreviewHeaders(expectedHeaders)
-                : this._termPreviewHeaders(expectedHeaders);
-            const previewRows = section === 'lines' ? this.linesRows : this.productsRows;
-            this._buildPreview(previewRows, previewHeaders, section);
-            if (section === 'lines') {
-                this.linesState = 'ready';
-                this._enrichLinesPreview(this.linesRows);
-            }
-            if (section === 'products') {
-                this.productsState = 'ready';
-                this._enrichProductsPreview(this.productsRows);
-            }
+            this._setValidationErrors('lines', errors);
+            return;
         }
+        this._setValidationErrors('lines', []);
+        this._buildPreview(this.linesRows, this._linePreviewHeaders(this._linesFileHeaders()), 'lines');
+        this.linesState = 'ready';
+        this._enrichLinesPreview(this.linesRows);
     }
 
     // ── Validation ────────────────────────────────────────────────────────────
@@ -834,7 +866,8 @@ export default class DmtBulkImport extends LightningElement {
         }
 
         const actualHeaders = Object.keys(rows[0]).filter(k => k !== '__rowIndex');
-        const missing = expectedHeaders.filter(h => !actualHeaders.includes(h));
+        // CIBGLOBALD-4851 - null = header-driven file (Lines): only the required columns must be there
+        const missing = (expectedHeaders || requiredFields).filter(h => !actualHeaders.includes(h));
         if (missing.length > 0) {
             errors.push({ key: 'headers', message: `Missing columns: ${missing.join(', ')}` });
             return errors;
@@ -855,14 +888,11 @@ export default class DmtBulkImport extends LightningElement {
         return errors;
     }
 
+    // CIBGLOBALD-4851 - Lines only: child tables keep their own errors (_zoneErrors)
     _setValidationErrors(section, errors) {
-        if (section === 'lines') {
-            this.linesValidationErrors = errors;
-            this.linesState = errors.length > 0 ? 'error' : this.linesState;
-        } else {
-            this.productsValidationErrors = errors;
-            this.productsState = errors.length > 0 ? 'error' : this.productsState;
-        }
+        if (section !== 'lines') return;
+        this.linesValidationErrors = errors;
+        this.linesState = errors.length > 0 ? 'error' : this.linesState;
     }
 
     // ── Preview table builder ────────────────────────────────────────────────
@@ -884,12 +914,9 @@ export default class DmtBulkImport extends LightningElement {
             return flat;
         });
 
-        if (section === 'lines') {
+        if (section === 'lines') { // CIBGLOBALD-4851 - the child tables build their rows in childSections
             this.linesPreviewColumns = columns;
             this.linesPreviewRows    = tableRows;
-        } else {
-            this.productsPreviewColumns = columns;
-            this.productsPreviewRows    = tableRows;
         }
     }
 
@@ -901,14 +928,18 @@ export default class DmtBulkImport extends LightningElement {
         return TERM_COLS.has(col) || col.startsWith('DMT_Risk_Line_Term__c ');
     }
 
+    // CIBGLOBALD-4851 - the columns of the loaded Lines rows (header-driven), in file order
+    _linesFileHeaders() {
+        const headers = [];
+        this.linesRows.forEach(row => Object.keys(row).forEach(k => {
+            if (!k.startsWith('__') && !headers.includes(k)) headers.push(k);
+        }));
+        return headers;
+    }
+
     _linePreviewHeaders(headers) {
         const cols = headers.filter(h => !this._isTermCol(h));
         return ['Line_Id__c', ...cols.filter(h => h !== 'Line_Id__c')];
-    }
-
-    _termPreviewHeaders(headers) {
-        const cols = headers.filter(h => this._isTermCol(h) && h !== 'DMT_RiskLineTermId__c');
-        return ['Line_Id__c', 'DMT_RiskLineTermId__c', ...cols];
     }
 
     _extractTermRows(rows) {
@@ -944,23 +975,6 @@ export default class DmtBulkImport extends LightningElement {
         return [...updated, ...added];
     }
 
-    _mergeTermRows(existing, incoming) {
-        // Existing wins — used when CSV rows take precedence over SF-loaded rows
-        const seen = new Set(existing.map(r => r['DMT_RiskLineTermId__c']).filter(Boolean));
-        const toAdd = incoming.filter(r => {
-            const id = r['DMT_RiskLineTermId__c'];
-            return !id || !seen.has(id);
-        });
-        return [...existing, ...toAdd];
-    }
-
-    _mergeTermRowsUpdate(existing, incoming) {
-        // Incoming wins — used when a manually uploaded file should override existing rows
-        const incomingIds  = new Set(incoming.map(r => r['DMT_RiskLineTermId__c']).filter(Boolean));
-        const keepExisting = existing.filter(r => !incomingIds.has(r['DMT_RiskLineTermId__c']));
-        return [...incoming, ...keepExisting];
-    }
-
     // ── Post-batch: update status column in-place, table stays unchanged ─────
 
     _updateSubmissionStatuses(section, failedIds) {
@@ -980,22 +994,6 @@ export default class DmtBulkImport extends LightningElement {
             const statusMap = new Map(this.linesRows.map(r => [r['Line_Id__c'], r.__status]));
             this.linesPreviewRows = this.linesPreviewRows.map(row => ({
                 ...row, __status: statusMap.get(row['Line_Id__c']) || row.__status || ''
-            }));
-        } else {
-            this.productsRows = this.productsRows.map(r => {
-                if (r.__status === 'No Changes' || r.__status === 'Existing') return r;
-                if (failedIds.has(r['DMT_RiskLineTermId__c'])) return { ...r, __status: 'Failed' };
-                return { ...r, __status: r.__status === 'New' ? 'Created' : 'Updated' };
-            });
-            if (!this.productsPreviewColumns.some(c => c.fieldName === '__status')) {
-                this.productsPreviewColumns = [
-                    { label: 'Status', fieldName: '__status', type: 'text', initialWidth: 100, wrapText: false },
-                    ...this.productsPreviewColumns
-                ];
-            }
-            const statusMap = new Map(this.productsRows.map(r => [r['DMT_RiskLineTermId__c'], r.__status]));
-            this.productsPreviewRows = this.productsPreviewRows.map(row => ({
-                ...row, __status: statusMap.get(row['DMT_RiskLineTermId__c']) || row.__status || ''
             }));
         }
     }
@@ -1030,14 +1028,19 @@ export default class DmtBulkImport extends LightningElement {
         const lineIds = [...new Set(rows.map(r => r['Line_Id__c']).filter(Boolean))];
         if (lineIds.length === 0) return;
         try {
-            const [existingLines, existingTerms] = await Promise.all([
+            const [existingLines, existingTerms, existingItems] = await Promise.all([ // CIBGLOBALD-4851
                 getExistingLinesApex({ lineIds }),
-                getExistingTermsForLinesApex({ lineIds })
+                getExistingTermsForLinesApex({ lineIds }),
+                getExistingProductItemsForLinesApex({ lineIds }) // CIBGLOBALD-4851
             ]);
             // Guard: user may have cleared or resubmitted the file while we were loading
             if (this.linesState !== 'ready') return;
             this._applyLineEnrichment(rows, existingLines);
-            this._loadExistingTermsToStep2(existingTerms);
+            // CIBGLOBALD-4851 - Salesforce records of the loaded lines in the child tables; term columns of an old
+            // Other Products Lines file become the Risk Line Terms file rows
+            this._setSfChildren('rlt', existingTerms);
+            this._setSfChildren('lpi', existingItems);
+            this._loadTermsFromLinesFile();
         } catch (e) {
             // CIBGLOBALD-4157 - a failed enrichment call used to leave every row's __status
             // unset, which made _buildPreview's `rows.some(r => r.__status)` gate drop the
@@ -1046,56 +1049,10 @@ export default class DmtBulkImport extends LightningElement {
             // that the New/Update/No Changes comparison against Salesforce could not be made.
             console.error('enrichment query failed', e);
             this.linesRows = this.linesRows.map(r => ({ ...r, __status: r.__status || 'Unknown' }));
-            this._buildPreview(this.linesRows, this._linePreviewHeaders(LINES_HEADERS), 'lines');
+            this._buildPreview(this.linesRows, this._linePreviewHeaders(this._linesFileHeaders()), 'lines'); // CIBGLOBALD-4851
             this._toast(
                 'Could not check existing Salesforce data',
                 'The New / Will Update / No Changes status could not be determined for these lines. You can still proceed, but double-check for duplicates yourself.',
-                'warning'
-            );
-        }
-    }
-
-    /**
-     * Products-drop counterpart to _enrichLinesPreview: the synchronous tagging done inline in
-     * _onRowsParsed (New / Will Update, based only on whether the term ID is already sitting in
-     * the client-side table) is just a first guess for immediate feedback - it never checks
-     * Salesforce, so a term dropped into an empty table always reads "New" even when it already
-     * exists, and one that happens to already be on screen reads "Will Update" even when nothing
-     * about it actually changed. This corrects both, the same way _enrichLinesPreview corrects
-     * lines: queries the real records and re-tags via field comparison (_hasTermChanges).
-     */
-    async _enrichProductsPreview(rows) {
-        const lineIds = [...new Set(rows.map(r => r['Line_Id__c']).filter(Boolean))];
-        if (lineIds.length === 0) return;
-        try {
-            const existingTerms = await getExistingTermsForLinesApex({ lineIds });
-            // Guard: user may have cleared or resubmitted while this was loading
-            if (this.productsState !== 'ready') return;
-            const sfMap     = new Map((existingTerms || []).map(t => [t.DMT_RiskLineTermId__c, t]));
-            const lineIdSet = new Set(lineIds);
-            this.productsRows = this.productsRows.map(row => {
-                // Rows from another line batch not covered by this fetch, or already tagged
-                // 'Existing' by a preload source (not a file drop), are left untouched.
-                if (row.__preloaded || !lineIdSet.has(row['Line_Id__c'])) return row;
-                const sfTerm = sfMap.get(row['DMT_RiskLineTermId__c']);
-                let status;
-                if (!sfTerm)                                status = 'New';
-                else if (this._hasTermChanges(row, sfTerm)) status = 'Will Update';
-                else                                        status = 'No Changes';
-                return { ...row, __status: status };
-            });
-            this._buildPreview(this.productsRows, this._termPreviewHeaders(PRODUCTS_HEADERS), 'products');
-        } catch (e) {
-            // CIBGLOBALD-4157 - same fallback as _enrichLinesPreview's catch: keep whatever
-            // provisional status _onRowsParsed already guessed (New / Will Update) rather than
-            // losing it, and only default to 'Unknown' for rows that have none yet, so the
-            // Status column stays visible instead of disappearing entirely.
-            console.error('products enrichment query failed', e);
-            this.productsRows = this.productsRows.map(r => ({ ...r, __status: r.__status || 'Unknown' }));
-            this._buildPreview(this.productsRows, this._termPreviewHeaders(PRODUCTS_HEADERS), 'products');
-            this._toast(
-                'Could not check existing Salesforce data',
-                'The New / Will Update / No Changes status could not be determined for these products. You can still proceed, but double-check for duplicates yourself.',
                 'warning'
             );
         }
@@ -1116,20 +1073,8 @@ export default class DmtBulkImport extends LightningElement {
                 enriched.__statusClass = 'status-new';
                 newCount++;
             } else {
-                // Backfill empty CSV cells with existing SF values
-                if (!enriched['Name']                    && sf.Name)                    enriched['Name']                    = sf.Name;
-                if (!enriched['Booking_Geography__c']    && sf.Booking_Geography__c)    enriched['Booking_Geography__c']    = sf.Booking_Geography__c;
-                if (!enriched['Client_Code__c']          && sf.Client_Code__c)          enriched['Client_Code__c']          = sf.Client_Code__c;
-                if (!enriched['Client__c']               && sf.Client__r)               enriched['Client__c']               = sf.Client__r.Name;
-                if (!enriched['Start_Date__c']           && sf.Start_Date__c)           enriched['Start_Date__c']           = String(sf.Start_Date__c).substring(0, 10);
-                if (!enriched['End_Date__c']             && sf.End_Date__c)             enriched['End_Date__c']             = String(sf.End_Date__c).substring(0, 10);
-                if (!enriched['DMT_LastLevelId__c']      && sf.DMT_LastLevelId__c)      enriched['DMT_LastLevelId__c']      = sf.DMT_LastLevelId__c;
-                if (!enriched['CurrencyIsoCode']         && sf.CurrencyIsoCode)         enriched['CurrencyIsoCode']         = sf.CurrencyIsoCode;
-                if (!enriched['DMT_Comments__c']         && sf.DMT_Comments__c)         enriched['DMT_Comments__c']         = sf.DMT_Comments__c;
-                if (!enriched['Breakclause_Frequency__c']&& sf.Breakclause_Frequency__c) enriched['Breakclause_Frequency__c'] = sf.Breakclause_Frequency__c;
-                if (!enriched['g_line_status_type__c']   && sf.g_line_status_type__c)   enriched['g_line_status_type__c']   = sf.g_line_status_type__c;
-                if (!enriched['Status__c']               && sf.Status__c)               enriched['Status__c']               = sf.Status__c;
-
+                // CIBGLOBALD-4851 - no backfill of blank cells with the Salesforce values: a column in the file is
+                // saved as it is (a blank cell clears the field), a column not in the file is not touched.
                 enriched.__sfId = sf.Id;
 
                 if (this._hasLineChanges(enriched, sf)) {
@@ -1145,13 +1090,13 @@ export default class DmtBulkImport extends LightningElement {
             return enriched;
         });
 
-        // Update linesRows with backfilled values so submission uses them
+        // Update linesRows with the status tags so submission uses them
         this.linesRows = enrichedRows;
 
         // Rebuild preview: Line_Id__c is a URL column (clickable) when SF records exist, plain text otherwise.
         // lightning-datatable URL type renders nothing when the URL field is null, so we only use it
         // when at least one row already exists in SF (ensuring the label is always visible).
-        const previewHeaders  = this._linePreviewHeaders(LINES_HEADERS);
+        const previewHeaders  = this._linePreviewHeaders(this._linesFileHeaders()); // CIBGLOBALD-4851
         const nonIdHeaders    = previewHeaders.filter(h => h !== 'Line_Id__c');
         const hasAnyExisting  = enrichedRows.every(r => r.__sfId);
         const lineIdCol       = hasAnyExisting
@@ -1173,130 +1118,30 @@ export default class DmtBulkImport extends LightningElement {
         this.linesEnrichedStats = { newCount, updateCount, noChangeCount };
     }
 
+    /**
+     * CIBGLOBALD-4851 - True when a column of the file differs from the line in Salesforce. Only the columns present
+     * in the file are compared (LINE_COMPARE_FIELDS); a blank cell differs from a filled field because saving clears it.
+     * Status__c is never compared: DMT_BulkImportBatch ignores it (new lines start in Draft, existing ones keep theirs).
+     */
     _hasLineChanges(csvRow, sf) {
-        const sfDate = v => v ? String(v).substring(0, 10) : '';
-        const sfStr  = v => v != null ? String(v) : '';
-        const csv    = v => String(v || '').trim();
-        // Status__c: DMT_BulkImportBatch.buildLine treats a blank CSV value as "no opinion" -
-        // new lines default to Draft, existing ones keep whatever they already have - it is
-        // never overwritten to blank. Comparing it literally would flag every line as
-        // "Will Update" forever whenever the file (like this org's real import files) never
-        // carries a Status__c column value at all, even though nothing would actually change.
-        const csvStatus     = csv(csvRow['Status__c']);
-        const statusChanged = csvStatus !== '' && csvStatus !== sfStr(sf.Status__c);
-        return (
-            csv(csvRow['Name'])                     !== sfStr(sf.Name)                     ||
-            csv(csvRow['Booking_Geography__c'])      !== sfStr(sf.Booking_Geography__c)     ||
-            csv(csvRow['Client_Code__c'])            !== sfStr(sf.Client_Code__c)           ||
-            csv(csvRow['Start_Date__c'])             !== sfDate(sf.Start_Date__c)           ||
-            csv(csvRow['End_Date__c'])               !== sfDate(sf.End_Date__c)             ||
-            csv(csvRow['DMT_LastLevelId__c'])        !== sfStr(sf.DMT_LastLevelId__c)       ||
-            csv(csvRow['CurrencyIsoCode'])           !== sfStr(sf.CurrencyIsoCode)          ||
-            csv(csvRow['DMT_Comments__c'])           !== sfStr(sf.DMT_Comments__c)          ||
-            csv(csvRow['Breakclause_Frequency__c'])  !== sfStr(sf.Breakclause_Frequency__c) ||
-            csv(csvRow['g_line_status_type__c'])     !== sfStr(sf.g_line_status_type__c)    ||
-            statusChanged
-        );
-    }
-
-    _hasTermChanges(csvRow, sfTerm) {
-        const sfDate  = v => v ? String(v).substring(0, 10) : '';
-        const sfStr   = v => v != null ? String(v) : '';
-        const sfBool  = v => v ? '1' : '0';
-        const csv     = v => String(v || '').trim();
-        // Amount comparison: normalize to float to avoid "5000000.00" !== "5000000" false positives
-        const csvAmt  = v => { const s = csv(v); return s === '' ? null : parseFloat(s); };
-        // Unlike every other field here, this one was compared against sfTerm.DMT_Amount__c
-        // directly with no null/undefined normalizer - when the field is genuinely blank on both
-        // sides, Salesforce can hand back undefined rather than null for it (the same reason
-        // _sfTermToRow reads it via a truthy check, not != null), so a strict null !== undefined
-        // falsely flagged a real "No Changes" row as "Will Update".
-        const sfAmt   = v => (v === null || v === undefined) ? null : v;
-        return (
-            csv(csvRow['DMT_Risk_Line_Term__c DMT_Init_Term__c']) !== sfDate(sfTerm.DMT_Init_Term__c)                ||
-            csv(csvRow['DMT_Risk_Line_Term__c DMT_End_Term__c'])  !== sfDate(sfTerm.DMT_End_Term__c)                 ||
-            csvAmt(csvRow['DMT_Risk_Line_Term__c DMT_Amount__c']) !== sfAmt(sfTerm.DMT_Amount__c)                    ||
-            csv(csvRow['g_global_product_family_id__c'])           !== sfStr(sfTerm.g_global_product_family_id__c)   ||
-            csv(csvRow['g_global_product_subfamily_id__c'])        !== sfStr(sfTerm.g_global_product_subfamily_id__c)||
-            csv(csvRow['g_global_product_category_id__c'])         !== sfStr(sfTerm.g_global_product_category_id__c) ||
-            csv(csvRow['g_gbl_product_subcategory_id__c'])         !== sfStr(sfTerm.g_gbl_product_subcategory_id__c) ||
-            csv(csvRow['g_global_product_id__c'])                  !== sfStr(sfTerm.g_global_product_id__c)          ||
-            csv(csvRow['g_multioperation_ind_type__c'])            !== sfBool(sfTerm.g_multioperation_ind_type__c)   ||
-            csv(csvRow['g_expert_criteria_risk_type__c'])          !== sfStr(sfTerm.g_expert_criteria_risk_type__c)  ||
-            csv(csvRow['g_amortization_type__c'])                  !== sfStr(sfTerm.g_amortization_type__c)          ||
-            csv(csvRow['gf_payment_frequency__c'])                 !== sfStr(sfTerm.gf_payment_frequency__c)         ||
-            csv(csvRow['gf_group_priority_line_id__c'])            !== sfStr(sfTerm.gf_group_priority_line_id__c)    ||
-            csv(csvRow['gf_inscol_months_grace_number__c'])        !== sfStr(sfTerm.gf_inscol_months_grace_number__c)
-        );
-    }
-
-    _loadExistingTermsToStep2(existingTerms) {
-        // Keep the raw fetch regardless of what follows, so a link can offer these later even when
-        // the Lines file didn't embed term columns (the early-return below).
-        this.existingTermsFromServer = existingTerms || [];
-        if (this.pendingTermsFromLines.length === 0) return;
-        const sfMap  = new Map((existingTerms || []).map(t => [t.DMT_RiskLineTermId__c, t]));
-        // SF terms get "Existing" status; they are the current DB values
-        const sfRows = (existingTerms || []).map(t => ({ ...this._sfTermToRow(t), __status: 'Existing', __preloaded: true }));
-        // CSV terms: compare field-by-field against SF to determine status (all "New" if no SF terms).
-        // __preloaded: these came from columns embedded in the Lines file, not a Products file drop.
-        const csvTagged = this.pendingTermsFromLines.map(t => {
-            const sfTerm = sfMap.get(t['DMT_RiskLineTermId__c']);
-            let status;
-            if (!sfTerm)                              status = 'New';
-            else if (this._hasTermChanges(t, sfTerm)) status = 'Will Update';
-            else                                      status = 'No Changes';
-            return { ...t, __status: status, __preloaded: true };
-        });
-        // CSV takes precedence; SF fills in for lines not covered by CSV
-        const merged = this._mergeTermRows(csvTagged, sfRows);
-        if (merged.length === 0) return;
-        this.productsRows      = merged;
-        this.productsRowCount  = merged.length;
-        this.productsPreloaded = true;
-        this.productsState     = 'ready';
-        this._buildPreview(merged, this._termPreviewHeaders(LINES_HEADERS), 'products');
-    }
-
-    _sfTermToRow(term) {
-        const lineId = term.DMT_Line__r ? term.DMT_Line__r.Line_Id__c : '';
-        return {
-            '__rowIndex'                             : 0,
-            'Line_Id__c'                             : lineId,
-            'DMT_RiskLineTermId__c'                  : term.DMT_RiskLineTermId__c || '',
-            'DMT_Risk_Line_Term__c DMT_Init_Term__c' : term.DMT_Init_Term__c  ? String(term.DMT_Init_Term__c)  : '',
-            'DMT_Risk_Line_Term__c DMT_End_Term__c'  : term.DMT_End_Term__c   ? String(term.DMT_End_Term__c)   : '',
-            'DMT_Risk_Line_Term__c DMT_Amount__c'    : term.DMT_Amount__c     ? String(term.DMT_Amount__c)     : '',
-            'CurrencyIsoCode'                        : term.CurrencyIsoCode   || '',
-            'DMT_LastLevelId__c'                     : term.DMT_LastLevelId__c || '',
-            'owner User id_user__c'                  : term.DMT_ID_User__c    || '',
-            'g_global_product_family_id__c'          : term.g_global_product_family_id__c    || '',
-            'g_global_product_subfamily_id__c'       : term.g_global_product_subfamily_id__c || '',
-            'g_global_product_category_id__c'        : term.g_global_product_category_id__c  || '',
-            'g_gbl_product_subcategory_id__c'        : term.g_gbl_product_subcategory_id__c  || '',
-            'g_global_product_id__c'                 : term.g_global_product_id__c           || '',
-            'g_multioperation_ind_type__c'           : term.g_multioperation_ind_type__c ? '1' : '0',
-            'g_expert_criteria_risk_type__c'         : term.g_expert_criteria_risk_type__c   || '',
-            'g_amortization_type__c'                 : term.g_amortization_type__c           || '',
-            'gf_payment_frequency__c'                : term.gf_payment_frequency__c          || '',
-            'gf_group_priority_line_id__c'           : term.gf_group_priority_line_id__c     || '',
-            'gf_inscol_months_grace_number__c'       : term.gf_inscol_months_grace_number__c != null ? String(term.gf_inscol_months_grace_number__c) : '',
-            'Booking_Geography__c'                   : '',
-            'Client_Code__c'                         : '',
-            'Client__c'                              : '',
-            'g_group_id'                             : '',
-            'End_Date__c'                            : '',
-            'Start_Date__c'                          : '',
-            'g_risk_level_clsfn_type__c'             : '',
-            'DMT_Parent_Line__c'                     : '',
-            'DMT_Comments__c'                        : '',
-            'Createbydate'                           : '',
-            'Breakclause_Frequency__c'               : '',
-            'gf_priority_line_id__c'                 : '',
-            'Name'                                   : '',
-            'g_line_status_type__c'                  : '',
-            'Status__c'                              : ''
+        const text = v => (v === null || v === undefined) ? '' : String(v).trim();
+        const normalise = (type, v) => {
+            const s = text(v);
+            if (type === 'date') {
+                const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); // dd/mm/yyyy, also accepted by the Apex save
+                return dmy ? `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}` : s.substring(0, 10);
+            }
+            if (type === 'number')  return s === '' ? '' : String(Number(s.replace(',', '.')));
+            if (type === 'boolean') return ['true', '1', 'yes'].includes(s.toLowerCase()) ? 'true' : 'false';
+            return s;
         };
+        return Object.keys(LINE_COMPARE_FIELDS)
+            .filter(field => field in csvRow)
+            .filter(field => !(KEEP_WHEN_BLANK_FIELDS.includes(field) && text(csvRow[field]) === '')) // CIBGLOBALD-4851
+            .some(field => {
+                const type = LINE_COMPARE_FIELDS[field];
+                return normalise(type, csvRow[field]) !== normalise(type, sf[field]);
+            });
     }
 
     // ── Submit ────────────────────────────────────────────────────────────────
@@ -1326,29 +1171,6 @@ export default class DmtBulkImport extends LightningElement {
             });
     }
 
-    submitProducts() {
-        // Skip rows that don't need DML
-        const payload = this.productsRows
-            .filter(r => r.__status !== 'No Changes' && r.__status !== 'Existing')
-            .map(r => this._cleanRow(r));
-        if (payload.length === 0) return;
-
-        this.productsState     = 'submitting';
-        this.productsJobId     = this._newJobId();
-        this.productsProcessed = 0;
-        this.productsTotal     = payload.length;
-
-        this._subscribeProgress(this.productsJobId, 'products');
-
-        submitProductsApex({ rowsJson: JSON.stringify(payload), jobId: this.productsJobId })
-            .then(() => { this.productsState = 'processing'; })
-            .catch(e => {
-                console.error('submitProducts error', e);
-                this.productsState = 'idle';
-                this._unsubscribe(this.productsSubscription);
-            });
-    }
-
     // ── Platform Events ───────────────────────────────────────────────────────
 
     _subscribeProgress(jobId, section) {
@@ -1356,76 +1178,40 @@ export default class DmtBulkImport extends LightningElement {
             this._handleProgressEvent(event, jobId, section);
         }).then(sub => {
             if (section === 'lines')    this.linesSubscription    = sub;
-            if (section === 'products') this.productsSubscription = sub;
         });
     }
 
+    // CIBGLOBALD-4851 - Lines progress only (child rows are saved with Process)
     _handleProgressEvent(event, expectedJobId, section) {
         const payload = event.data.payload;
-        if (payload.Job_Id__c !== expectedJobId) return;
+        if (payload.Job_Id__c !== expectedJobId || section !== 'lines') return;
 
-        const processed = payload.Processed__c || 0;
-        const total     = payload.Total__c || 0;
-        const success   = payload.Success_Count__c || 0;
-        const errors    = payload.Error_Count__c || 0;
         const status    = payload.Status__c;
         const errJson   = payload.Errors_JSON__c || '[]';
 
-        if (section === 'lines') {
-            this.linesProcessed    = processed;
-            this.linesTotal        = total;
-            this.linesSuccessCount = success;
-            this.linesErrorCount   = errors;
-        } else {
-            this.productsProcessed    = processed;
-            this.productsTotal        = total;
-            this.productsSuccessCount = success;
-            this.productsErrorCount   = errors;
-        }
+        this.linesProcessed    = payload.Processed__c || 0;
+        this.linesTotal        = payload.Total__c || 0;
+        this.linesSuccessCount = payload.Success_Count__c || 0;
+        this.linesErrorCount   = payload.Error_Count__c || 0;
 
         if (status === 'COMPLETED' || status === 'FAILED') {
             let resultErrors = [];
             try { resultErrors = JSON.parse(errJson); } catch (e) {}
 
-            if (section === 'lines') {
-                this.linesResultErrors = resultErrors;
-                this.linesFailedIds    = new Set(resultErrors.map(e => e.id).filter(Boolean));
-                this.linesState        = 'done';
-                this._unsubscribe(this.linesSubscription);
+            this.linesResultErrors = resultErrors;
+            this.linesFailedIds    = new Set(resultErrors.map(e => e.id).filter(Boolean));
+            this.linesState        = 'done';
+            this._unsubscribe(this.linesSubscription);
 
-                // Update the Status column in the existing preview table — don't replace it
-                this._updateSubmissionStatuses('lines', this.linesFailedIds);
+            // Update the Status column in the existing preview table — don't replace it
+            this._updateSubmissionStatuses('lines', this.linesFailedIds);
 
-                // Backfill SF record IDs for newly created lines so their Line_Id__c becomes a clickable link
-                const createdIds = this.linesRows
-                    .filter(r => r.__status === 'Created')
-                    .map(r => r['Line_Id__c'])
-                    .filter(Boolean);
-                if (createdIds.length > 0) this._backfillCreatedLineUrls(createdIds);
-
-                // Add any pending terms not yet in the products table (e.g. for newly created lines).
-                // productsRows wins — it carries the enriched status; pendingTermsFromLines only fills gaps.
-                const pendingTagged = this.pendingTermsFromLines.map(t => ({ ...t, __status: t.__status || 'New', __preloaded: true }));
-                const merged = this._mergeTermRows(this.productsRows, pendingTagged);
-                if (merged.length > this.productsRows.length) {
-                    // Only update if new rows were actually added — don't touch enriched table otherwise
-                    this.productsRows      = merged;
-                    this.productsRowCount  = merged.length;
-                    this.productsPreloaded = true;
-                    if (this.productsState === 'idle') this.productsState = 'ready';
-                    this._buildPreview(merged, this._termPreviewHeaders(LINES_HEADERS), 'products');
-                }
-
-            } else {
-                this.productsResultErrors = resultErrors;
-                this.productsState        = 'done';
-                this._unsubscribe(this.productsSubscription);
-
-                const failedTermIds = new Set(resultErrors.map(e => e.id).filter(Boolean));
-
-                // Update the Status column in the existing preview table — don't replace it
-                this._updateSubmissionStatuses('products', failedTermIds);
-            }
+            // Backfill SF record IDs for newly created lines so their Line_Id__c becomes a clickable link
+            const createdIds = this.linesRows
+                .filter(r => r.__status === 'Created')
+                .map(r => r['Line_Id__c'])
+                .filter(Boolean);
+            if (createdIds.length > 0) this._backfillCreatedLineUrls(createdIds);
         }
     }
 
@@ -1434,12 +1220,6 @@ export default class DmtBulkImport extends LightningElement {
     downloadLinesErrorLog() {
         this._downloadCSV(this.linesResultErrors, 'lines_errors.csv',
             ['Row', 'Line_Id__c', 'Name', 'Error'],
-            e => [e.row, e.id, e.label, e.message]);
-    }
-
-    downloadProductsErrorLog() {
-        this._downloadCSV(this.productsResultErrors, 'products_errors.csv',
-            ['Row', 'Term_Id__c', 'Line_Id__c', 'Error'],
             e => [e.row, e.id, e.label, e.message]);
     }
 
@@ -1477,15 +1257,5 @@ export default class DmtBulkImport extends LightningElement {
         if (subscription) {
             unsubscribe(subscription).catch(e => console.error('unsubscribe error', e));
         }
-    }
-
-    _sectionFromEvent(event) {
-        const target = event.currentTarget;
-        if (target && target.classList.contains('drop-zone')) {
-            const cards = this.template.querySelectorAll('.slds-card');
-            if (cards[0] && cards[0].contains(target)) return 'lines';
-            if (cards[1] && cards[1].contains(target)) return 'products';
-        }
-        return null;
     }
 }
