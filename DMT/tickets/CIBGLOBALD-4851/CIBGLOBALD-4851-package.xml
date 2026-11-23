@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
-    <!-- CIBGLOBALD-4851 - order arbitrary: no member depends on an undeployed change of another -->
+    <!-- CIBGLOBALD-4851 - order: the test utility classes first (DMT_UtilTestClassBuild before DMT_UtilTestClass, both before the
+         tests that call buildTeamMember); the rest is arbitrary -->
     <types>
+        <members>DMT_UtilTestClassBuild</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>DMT_UtilTestClass</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>DMT_BatchSanctionAMIWEB</members>
+        <members>DMT_BatchSanctionAMIWEB_Test</members>
         <members>DMT_BulkImportBatch</members>
         <members>DMT_BulkImportBatch_Test</members>
         <members>DMT_BulkImportController</members>
         <members>DMT_BulkImportController_Test</members>
+        <members>DMT_BulkImportOuParticipantsBatch</members>
+        <members>DMT_BulkImportOuParticipantsBatch_Test</members>
         <name>ApexClass</name>
     </types>
     <types>

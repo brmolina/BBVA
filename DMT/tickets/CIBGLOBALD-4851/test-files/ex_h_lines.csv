@@ -1,0 +1,6 @@
+Line_Id__c,Name,Client_Code__c,Booking_Geography__c,CurrencyIsoCode,DMT_LastLevelId__c,DMT_Risk_Line_Term__c DMT_Amount__c,g_line_status_type__c
+EXH001,EX Stay Group Client,G00000000000200,ES,EUR,20200,100000,PR
+EXH002,EX Stay No Amount,ES0182000125513,ES,EUR,20200,,PR
+EXH003,EX Stay No Risk Type,ES0182000125513,ES,EUR,,100000,PR
+EXH004,EX Moves Proposal,ES0182000125513,ES,EUR,20200,100000,PR
+EXH005,EX Moves Approval,ES0182000125513,ES,EUR,20200,100000,AP

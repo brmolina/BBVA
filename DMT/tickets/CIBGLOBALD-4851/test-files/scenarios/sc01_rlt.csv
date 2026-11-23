@@ -1,0 +1,6 @@
+DMT_Line__r.Line_Id__c,DMT_Risk_Type__c,DMT_Amount__c,DMT_Init_Term__c,DMT_End_Term__c,g_global_product_family_id__c,g_global_product_subfamily_id__c,g_global_product_category_id__c
+SC01LIN00000001ES,Derivatives,100000.00,0,2,,,
+SC01LIN00000001ES,Derivatives,150000.00,2,30,,,
+SC01LIN00000001ES,Derivatives,200000.00,30,365,,,
+SC01LIN00000001ES,Depos,250000.00,365,1095,,,
+SC01LIN00000002ES,Derivatives,500000.00,0,365,,,

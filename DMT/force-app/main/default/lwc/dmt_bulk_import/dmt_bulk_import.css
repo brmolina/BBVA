@@ -176,3 +176,63 @@
     color: #c23934;
     background-color: #fef1ee;
 }
+
+/* CIBGLOBALD-4851 - removed row: message with Undo at the bottom of the screen */
+.undo-bar {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    background: #16325c;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* CIBGLOBALD-4851 - drop zone while a job runs on the lines: greyed, no drop */
+.drop-zone_disabled,
+.drop-zone_disabled:hover {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f3f3f3;
+}
+
+/* CIBGLOBALD-4851 - OU search list under the OU code input */
+.ou-search {
+    position: relative;
+}
+
+.ou-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 9100;
+    min-width: 100%;
+    margin-top: 2px;
+    padding: 0.25rem 0;
+    background: #ffffff;
+    border: 1px solid #c9c9c9;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+    list-style: none;
+}
+
+.ou-option {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.375rem 0.75rem;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.ou-option:hover {
+    background: #f3f3f3;
+}
+
+.ou-option_empty {
+    cursor: default;
+}

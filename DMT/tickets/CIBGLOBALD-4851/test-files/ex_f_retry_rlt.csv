@@ -1,0 +1,2 @@
+DMT_Line__r.Line_Id__c,DMT_Risk_Type__c,DMT_Amount__c,DMT_Init_Term__c,DMT_End_Term__c
+EXS003,Derivatives,100000,0,365

@@ -12,8 +12,9 @@ public class DMT_BulkImportController_Test {
         });
     }
 
+    // CIBGLOBALD-4851 - Process: one unit per line (DMT_BulkImportBatch.UNIT_*)
     @isTest
-    static void testSubmitLinesEnqueuesBatch() {
+    static void testProcessImportCreatesLine() {
         List<Map<String, Object>> rows = new List<Map<String, Object>>{
             new Map<String, Object>{
                 'Line_Id__c'             => 'CTRLTEST001',
@@ -28,16 +29,57 @@ public class DMT_BulkImportController_Test {
                 'DMT_Risk_Line_Term__c DMT_Amount__c' => '500000.0'
             }
         };
-        String rowsJson = JSON.serialize(rows);
+        String unitsJson = JSON.serialize(new List<Map<String, Object>>{ // CIBGLOBALD-4851
+            new Map<String, Object>{ DMT_BulkImportBatch.UNIT_LINE => rows[0], DMT_BulkImportBatch.UNIT_ROW_NUMBER => 2 }
+        });
         String jobId = 'job-ctrl-test-001';
 
         Test.startTest();
-            String returned = DMT_BulkImportController.submitLines(rowsJson, jobId, 'TreasurySettlement');
+            String returned = DMT_BulkImportController.processImport(unitsJson, jobId, 'TreasurySettlement'); // CIBGLOBALD-4851
         Test.stopTest();
 
-        Assert.areEqual(jobId, returned, 'submitLines should return the provided jobId');
+        Assert.isNotNull(returned, 'processImport returns the batch job Id'); // CIBGLOBALD-4851
+        Map<String, Object> state = DMT_BulkImportController.getJobState(returned); // CIBGLOBALD-4851
+        Assert.areEqual('Completed', state.get('status'), 'The screen reads the job state'); // CIBGLOBALD-4851
         List<DMT_Line__c> created = [SELECT Id FROM DMT_Line__c WHERE Line_Id__c = 'CTRLTEST001'];
         Assert.areEqual(1, created.size(), 'One line should have been created by the batch');
+    }
+
+    // CIBGLOBALD-4851 - profile and client type per client code for the LWC stay-in-Draft check
+    @isTest
+    static void testGetStatusContext() {
+        Map<String, Object> context = DMT_BulkImportController.getStatusContext(
+            new List<String>{ 'es0182000125513', 'NONEXISTENT', ' ' }
+        );
+
+        Assert.areEqual([SELECT Name FROM Profile WHERE Id = :UserInfo.getProfileId()].Name, context.get('profileName'),
+                        'Running user profile');
+        Map<String, String> clientTypeByCode = (Map<String, String>) context.get('clientTypeByCode');
+        Assert.areEqual(1, clientTypeByCode.size(), 'Only the code found is returned');
+        Assert.isTrue(clientTypeByCode.containsKey('ES0182000125513'), 'Codes are returned in upper case');
+        Map<String, String> recordTypeByCode = (Map<String, String>) context.get('clientRecordTypeByCode');
+        Assert.isTrue(recordTypeByCode.containsKey('ES0182000125513'), 'Client record type by code');
+        // CIBGLOBALD-4851 - the value checks of the save, by table and field, and the term picklist values
+        Map<String, Object> rules = (Map<String, Object>) context.get('fileValueRules');
+        Map<String, Object> fieldTypes = (Map<String, Object>) rules.get('fieldTypes');
+        Map<String, String> lineTypes = (Map<String, String>) fieldTypes.get('line');
+        Assert.areEqual('date', lineTypes.get('Start_Date__c'), 'Start_Date__c is checked as a date');
+        Assert.areEqual('number', lineTypes.get('FD_Amount__c'), 'FD_Amount__c is checked as a number');
+        Assert.areEqual('boolean', lineTypes.get('Waiver__c'), 'Waiver__c is checked as a checkbox');
+        Assert.isFalse(lineTypes.containsKey('Name'), 'Text columns are not checked');
+        Assert.areEqual('boolean', ((Map<String, String>) fieldTypes.get('lpi')).get('DMT_FDRestriction__c'), 'Line Product Item checkbox');
+        Map<String, List<String>> termDays = (Map<String, List<String>>) rules.get('termDays');
+        Assert.isTrue(termDays.get('DMT_Init_Term__c').contains('0'), 'Term picklist values');
+    }
+
+    // CIBGLOBALD-4851 - no custom association: empty list (the query runs and returns nothing)
+    @isTest
+    static void testGetCustomAssociationClientsWithoutAssociation() {
+        DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+            DMT_Line__c.Name => 'No Association Line', DMT_Line__c.Line_Id__c => 'CTRLTEST030', DMT_Line__c.DMT_Origin__c => 'BulkImport'
+        });
+        Assert.isTrue(DMT_BulkImportController.getCustomAssociationClients(new List<String>{ 'CTRLTEST030' }).isEmpty(),
+                      'A line without custom association has no clients');
     }
 
     @isTest
@@ -137,35 +179,42 @@ public class DMT_BulkImportController_Test {
     }
 
     @isTest
-    static void testSubmitProductsEnqueuesBatch() {
-        DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{ // CIBGLOBALD-4851
+    static void testProcessImportReplacesTerms() { // CIBGLOBALD-4851 - products only: the line is not updated
+        DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{ // CIBGLOBALD-4851
             DMT_Line__c.Name          => 'Parent Line for Controller Test',
             DMT_Line__c.Line_Id__c    => 'CTRLTEST002',
             DMT_Line__c.DMT_Origin__c => 'BulkImport'
         });
+        DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{ // CIBGLOBALD-4851 - replaced by the file row
+            DMT_Risk_Line_Term__c.DMT_Line__c           => line.Id,
+            DMT_Risk_Line_Term__c.DMT_RiskLineTermId__c => 'CTRLTEST002-OLD'
+        });
 
-        List<Map<String, Object>> rows = new List<Map<String, Object>>{
-            new Map<String, Object>{
-                'Line_Id__c'                             => 'CTRLTEST002',
-                'DMT_RiskLineTermId__c'                  => 'CTRLTEST002-T01',
-                'Name'                                   => 'Controller Test Term',
-                'DMT_Risk_Line_Term__c DMT_Init_Term__c' => '2026-01-01',
-                'DMT_Risk_Line_Term__c DMT_End_Term__c'  => '2027-01-01',
-                'DMT_Risk_Line_Term__c DMT_Amount__c'    => '250000.0',
-                'CurrencyIsoCode'                        => 'EUR',
-                'owner User id_user__c'                  => ''
-            }
+        // CIBGLOBALD-4851 - unit: line without changes, one Risk Line Terms file row
+        Map<String, Object> term = new Map<String, Object>{
+            'DMT_RiskLineTermId__c' => 'CTRLTEST002-T01',
+            'DMT_Init_Term__c'      => '0',
+            'DMT_End_Term__c'       => '365',
+            'DMT_Amount__c'         => '250000.0'
         };
-        String rowsJson = JSON.serialize(rows);
+        String unitsJson = JSON.serialize(new List<Map<String, Object>>{
+            new Map<String, Object>{
+                DMT_BulkImportBatch.UNIT_LINE        => new Map<String, Object>{ 'Line_Id__c' => 'CTRLTEST002' },
+                DMT_BulkImportBatch.UNIT_ROW_NUMBER  => 2,
+                DMT_BulkImportBatch.UNIT_UPDATE_LINE => false,
+                DMT_BulkImportBatch.UNIT_RLT         => new List<Object>{ term }
+            }
+        });
         String jobId = 'job-ctrl-test-002';
 
         Test.startTest();
-            String returned = DMT_BulkImportController.submitProducts(rowsJson, jobId);
+            String returned = DMT_BulkImportController.processImport(unitsJson, jobId, 'TreasurySettlement');
         Test.stopTest();
 
-        Assert.areEqual(jobId, returned, 'submitProducts should return the provided jobId');
-        List<DMT_Risk_Line_Term__c> terms = [SELECT Id FROM DMT_Risk_Line_Term__c WHERE DMT_RiskLineTermId__c = 'CTRLTEST002-T01'];
-        Assert.areEqual(1, terms.size(), 'One risk line term should have been created by the batch');
+        Assert.isNotNull(returned, 'processImport returns the batch job Id'); // CIBGLOBALD-4851
+        List<DMT_Risk_Line_Term__c> terms = [SELECT DMT_RiskLineTermId__c FROM DMT_Risk_Line_Term__c WHERE DMT_Line__c = :line.Id];
+        Assert.areEqual(1, terms.size(), 'The old term is deleted and the file row inserted');
+        Assert.areEqual('CTRLTEST002-T01', terms[0].DMT_RiskLineTermId__c, 'The remaining term is the file row');
     }
 
     @isTest
@@ -191,19 +240,27 @@ public class DMT_BulkImportController_Test {
         });
 
         Test.startTest();
-            String asyncJobId = DMT_BulkImportController.updateLineStatus(new List<String>{ 'CTRLTEST020' });
+            String asyncJobId = DMT_BulkImportController.updateLineStatus(new List<String>{ 'CTRLTEST020' }, 'job-ctrl-020'); // CIBGLOBALD-4851
         Test.stopTest();
 
         Assert.isNotNull(asyncJobId, 'updateLineStatus should return the batch job Id');
         DMT_Line__c updatedLine = [SELECT Status__c FROM DMT_Line__c WHERE Line_Id__c = 'CTRLTEST020'];
         Assert.areEqual('Proposal', updatedLine.Status__c, 'The line should be moved to the status informed in the file');
+        // CIBGLOBALD-4851 - the screen gets the result with its jobId
+        DMT_BulkImportProgress__e result = DMT_BulkImportBatch.publishedEvents[DMT_BulkImportBatch.publishedEvents.size() - 1];
+        Assert.areEqual('job-ctrl-020', result.Job_Id__c, 'Result published with the jobId of the screen');
+        Assert.areEqual(DMT_BulkImportBatch.PHASE_STATUS, result.Phase__c, 'Status phase');
+        Assert.areEqual(DMT_BulkImportBatch.EVENT_COMPLETED, result.Status__c, 'The job reports its end');
+        Assert.areEqual(1, result.Success_Count__c, 'One line moved');
+        // The screen finds a status job of this user started from the given job on
+        Assert.areEqual(asyncJobId, DMT_BulkImportController.getStatusJobAfterLoad(asyncJobId), 'Status job found');
     }
 
     @isTest
     static void testUpdateLineStatusRejectsEmptyList() {
         Boolean thrown = false;
         try {
-            DMT_BulkImportController.updateLineStatus(new List<String>());
+            DMT_BulkImportController.updateLineStatus(new List<String>(), 'job-ctrl-021'); // CIBGLOBALD-4851
         } catch (AuraHandledException e) {
             thrown = true;
         }

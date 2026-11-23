@@ -1,0 +1,4 @@
+DMT_Line__r.Line_Id__c,DMT_Risk_Type__c,DMT_Amount__c,DMT_Init_Term__c,DMT_End_Term__c
+TEST4851PW01,Derivatives,111111,0,30
+TEST4851PW01,Depos,222222,30,365
+TEST4851PW01,Repos,333333,0,90
