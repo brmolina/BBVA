@@ -1,0 +1,3 @@
+Name,RecordType:RecordType:Name,DMT_ID_User__c,Booking_Geography__c,DMT_Client_Entific__c,CurrencyIsoCode,Start_Date__c,End_Date__c,Client__r.DES_Group_Code__c,Client_Code__c,Line_Id__c,Golden_Code__c,FD_Amount__c,DvP_Amount__c,Breakclause_Frequency__c,First_Breakclause__c,Waiver__c,DMT_Mitigant_Agreement_comments__c,DMT_Comments__c,DMT_Additional_Restrictions__c,DMT_Client_Use__c,DMT_Origin__c
+SC01 Test 1,Treasury Line,O009201,ES,ES,EUR,2026-11-01,2027-11-30,,ES0182011178580,SC01LIN00000001ES,,1500000.50,750000.00,365,1095,FALSE,,Carga de prueba,,Cobertura.,IFIt
+SC01 Test 2,Treasury Line,O009201,ES,ES,EUR,2026-12-01,2028-12-31,,ES0182011178580,SC01LIN00000002ES,GOLDEN,3000000.00,0.00,730,1460,FALSE,,Prueba línea 2,,"Es string, puedes poner lo que quieras",

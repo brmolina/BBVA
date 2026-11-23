@@ -1,0 +1,6 @@
+Line_Id__c,Name,Client_Code__c,Booking_Geography__c,CurrencyIsoCode,DMT_LastLevelId__c,DMT_Risk_Line_Term__c DMT_Amount__c,g_line_status_type__c
+EXJ001,EX Result Moves,ES0182011178580,ES,EUR,20200,100000,PR
+EXJ002,EX Result Stays No Amount,ES0182011178580,ES,EUR,20200,,PR
+EXJ003,EX Result Approval,ES0182011178580,ES,EUR,20200,100000,AP
+EXJ004,EX Result Products Below Amount,ES0182011178580,ES,EUR,20200,900000,PR
+EXJ005,EX Result Term As Date,ES0182011178580,ES,EUR,20200,100000,PR

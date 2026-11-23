@@ -1,0 +1,5 @@
+DMT_Line__r.Line_Id__c,DMT_Risk_Type__c,DMT_Amount__c,DMT_Init_Term__c,DMT_End_Term__c,g_global_product_family_id__c,g_global_product_subfamily_id__c,g_global_product_category_id__c
+TEST26LIN00008860ES,Derivatives,100000.00,0,2,,,
+TEST26LIN00008860ES,Derivatives,150000.00,2,30,,,
+TEST26LIN00008860ES,Derivatives,200000.00,30,365,,,
+TEST26LIN00008860ES,Depos,250000.00,365,1095,,,

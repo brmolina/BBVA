@@ -1,0 +1,5 @@
+DMT_Line__r.Line_Id__c,DMT_Risk_Type__c,DMT_Amount__c,DMT_Init_Term__c,DMT_End_Term__c
+TEST26LIN00008860ES,Derivatives,100000,0,2
+TEST26LIN00008860ES,Depos,250000,365,1095
+TEST4851PW01,Derivatives,500000,0,365
+NOTINLOAD001,Derivatives,1,0,2

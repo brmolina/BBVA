@@ -1,0 +1,5 @@
+Line_Id__c,Name,Client_Code__c,Booking_Geography__c,CurrencyIsoCode,DMT_LastLevelId__c,DMT_Risk_Line_Term__c DMT_Amount__c,g_line_status_type__c
+EXH012,EX Stay No Amount,ES0182011178580,ES,EUR,20200,,PR
+EXH013,EX Fails No Risk Type,ES0182011178580,ES,EUR,,100000,PR
+EXH014,EX Moves Proposal,ES0182011178580,ES,EUR,20200,100000,PR
+EXH015,EX Moves Approval,ES0182011178580,ES,EUR,20200,100000,AP

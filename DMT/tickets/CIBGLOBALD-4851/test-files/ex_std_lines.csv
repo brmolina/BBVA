@@ -1,0 +1,3 @@
+Line_Id__c,Name,Client_Code__c,Booking_Geography__c,CurrencyIsoCode,g_line_status_type__c
+EXU001,EX Std User Approval,ES0182011178580,ES,EUR,AP
+EXU002,EX Std User Proposal,ES0182011178580,ES,EUR,PR

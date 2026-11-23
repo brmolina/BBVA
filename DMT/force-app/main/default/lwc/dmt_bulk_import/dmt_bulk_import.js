@@ -3,13 +3,28 @@ import { loadScript } from 'lightning/platformResourceLoader';
 import { subscribe, unsubscribe, onError } from 'lightning/empApi';
 import SHEETJS from '@salesforce/resourceUrl/DMT_SheetJS';
 import LightningConfirm from 'lightning/confirm'; // CIBGLOBALD-4851
-import submitLinesApex       from '@salesforce/apex/DMT_BulkImportController.submitLines';
+import processImportApex     from '@salesforce/apex/DMT_BulkImportController.processImport'; // CIBGLOBALD-4851
 import getExistingLinesApex     from '@salesforce/apex/DMT_BulkImportController.getExistingLines';
 import getExistingTermsForLinesApex from '@salesforce/apex/DMT_BulkImportController.getExistingTermsForLines';
 import getExistingProductItemsForLinesApex from '@salesforce/apex/DMT_BulkImportController.getExistingProductItemsForLines'; // CIBGLOBALD-4851
+import previewCompareUnsavedChangesApex from '@salesforce/apex/DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges'; // CIBGLOBALD-4851
+import addOuParticipantsApex from '@salesforce/apex/DMT_BulkImportController.addOuParticipants'; // CIBGLOBALD-4851
+import getStatusContextApex from '@salesforce/apex/DMT_BulkImportController.getStatusContext'; // CIBGLOBALD-4851
+import getCustomAssociationClientsApex from '@salesforce/apex/DMT_BulkImportController.getCustomAssociationClients'; // CIBGLOBALD-4851
+import getJobStateApex from '@salesforce/apex/DMT_BulkImportController.getJobState'; // CIBGLOBALD-4851
+import getStatusJobAfterLoadApex from '@salesforce/apex/DMT_BulkImportController.getStatusJobAfterLoad'; // CIBGLOBALD-4851
+import countMissingOuParticipantsApex from '@salesforce/apex/DMT_BulkImportController.countMissingOuParticipants'; // CIBGLOBALD-4851
+import searchOusApex            from '@salesforce/apex/DMT_BulkImportController.searchOus'; // CIBGLOBALD-4851
 import queryCreatedLinesApex    from '@salesforce/apex/DMT_BulkImportController.queryCreatedLines';
 import updateLineStatusApex     from '@salesforce/apex/DMT_BulkImportController.updateLineStatus';
 import hasDMTLineGod    from '@salesforce/customPermission/DMT_Line_God';
+// CIBGLOBALD-4851 - copies of the org rules a status move or a save must pass, and the value helpers they share; the
+// 'keep in sync' list of every copied rule is at the top of bulkImportRules.js
+import {
+    valueText, normaliseValue, TERM_COLUMN_PREFIX, termValue, stepRuleReasons, termContinuityReasons, prospectReasons,
+    otherProductsFlowReasons, productsTotalReasons, treasuryFlowReasons, approvalDataEditReasons, reasonText, reasonShortText,
+    logRuleReasons, rowSaveError // CIBGLOBALD-4851
+} from './bulkImportRules';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 // ─── Fixed column schemas ────────────────────────────────────────────────────
@@ -43,10 +58,10 @@ const LINE_COMPARE_FIELDS = {
 };
 // CIBGLOBALD-4851 - a blank cell in these columns keeps the Salesforce value (DMT_BulkImportBatch.KEEP_WHEN_BLANK_FIELDS)
 const KEEP_WHEN_BLANK_FIELDS = ['First_Breakclause__c', 'Breakclause_Frequency__c'];
-// CIBGLOBALD-4851 - columns that only exist in child files (Risk Line Terms, Line Product Items): a pasted table with
-// one of them is not a Lines file.
-const CHILD_FILE_COLUMNS = ['g_amortization_type__c', 'Line__r.Line_Id__c', 'DMT_Line__r.Line_Id__c', 'Product_Code_Value__c', 'DMT_Risk_Type__c'];
-
+// CIBGLOBALD-4851 - order of the line columns in the preview (the status code before the currency)
+const LINE_COLUMN_ORDER = ['Name', 'Booking_Geography__c', 'DMT_Client_Entific__c', 'g_line_status_type__c', 'CurrencyIsoCode',
+    ...Object.keys(LINE_COMPARE_FIELDS).filter(f => !['Name', 'Booking_Geography__c', 'DMT_Client_Entific__c', 'g_line_status_type__c',
+                                                     'CurrencyIsoCode'].includes(f))];
 // CIBGLOBALD-4851 - child tables of the loaded lines. When a child file has rows for a line, every record of that object
 // on that line is deleted and the file rows are inserted (Process); a line without rows in the file keeps its records.
 // lineIdColumns: accepted names of the column that holds the parent Line_Id__c. fingerprint: columns that identify the
@@ -54,16 +69,20 @@ const CHILD_FILE_COLUMNS = ['g_amortization_type__c', 'Line__r.Line_Id__c', 'DMT
 const CHILD_ZONES = {
     rlt: {
         label: 'Risk Line Terms',
+        objectApiName: 'DMT_Risk_Line_Term__c',
         sfRelationship: 'DMT_Line__r',
         lineIdColumns: ['DMT_Line__r.Line_Id__c', 'Line_Id__c'],
+        // The old 'DMT_Risk_Line_Term__c <field>' columns are not in it: a Lines file can carry the line amount in
+        // 'DMT_Risk_Line_Term__c DMT_Amount__c'; the old Products file is recognised by DMT_RiskLineTermId__c.
         fingerprint: ['DMT_Line__r.Line_Id__c', 'DMT_Risk_Type__c', 'DMT_RiskLineTermId__c', 'DMT_Init_Term__c', 'DMT_End_Term__c',
-                      'DMT_Risk_Line_Term__c DMT_Init_Term__c', 'DMT_Risk_Line_Term__c DMT_Amount__c', 'g_amortization_type__c'],
+                      'g_amortization_type__c'],
         displayFields: ['DMT_Risk_Type__c', 'DMT_RiskLineTermId__c', 'DMT_Amount__c', 'CurrencyIsoCode', 'DMT_Init_Term__c',
                         'DMT_End_Term__c', 'g_global_product_family_id__c', 'g_global_product_subfamily_id__c',
                         'g_global_product_category_id__c']
     },
     lpi: {
         label: 'Line Product Items',
+        objectApiName: 'DMT_Line_Product_Item__c',
         sfRelationship: 'Line__r',
         lineIdColumns: ['Line__r.Line_Id__c', 'Line_Id__c'],
         fingerprint: ['Line__r.Line_Id__c', 'Product_Code_Value__c', 'Max_Tenor_WC__c', 'DMT_DerivativeRestriction__c',
@@ -75,13 +94,38 @@ const CHILD_ZONES = {
 const CHILD_STATUS_NEW    = 'New';
 const CHILD_STATUS_DELETE = 'Will Be Deleted';
 const CHILD_STATUS_KEPT   = 'Kept';
+const CHILD_STATUS_CREATED = 'Created'; // CIBGLOBALD-4851 - after Process: the records the load inserted
 const CHILD_STATUS_CLASS  = {
-    [CHILD_STATUS_NEW]: 'slds-text-color_success', [CHILD_STATUS_DELETE]: 'slds-text-color_error', [CHILD_STATUS_KEPT]: 'slds-text-color_weak'
+    [CHILD_STATUS_NEW]: 'slds-text-color_success', [CHILD_STATUS_DELETE]: 'slds-text-color_error', [CHILD_STATUS_KEPT]: 'slds-text-color_weak',
+    [CHILD_STATUS_CREATED]: 'slds-text-color_success' // CIBGLOBALD-4851
 };
 // Old Other Products files name the term columns 'DMT_Risk_Line_Term__c <field>'; the tables show them as <field>
-const TERM_COLUMN_PREFIX  = 'DMT_Risk_Line_Term__c ';
 const CHILD_ERROR_LIMIT   = 20;
-const emptyChildState = () => ({ fileName: '', fileRows: [], sfRows: [], errors: [] });
+
+// CIBGLOBALD-4851 - status rules of the load (DMT_BulkImportBatch.planStatus, approved by Diego 2026-11-16)
+const STATUS_BY_CODE = { DR: 'Draft', PR: 'Proposal', AP: 'Approval', RC: 'Ready to close', CL: 'Closed', CW: 'Closed' };
+// File columns of the fields the validation rule AvoidEditNotDraft blocks outside Draft (DMT_BulkImportBatch.BLOCKED_OUTSIDE_DRAFT);
+// Client_Code__c stands for Client__c; Amount__c comes from the old amount column (_changedLineFields)
+const BLOCKED_FILE_COLUMNS = ['Name', 'Booking_Geography__c', 'CurrencyIsoCode', 'Start_Date__c', 'DvP_Amount__c', 'FD_Amount__c',
+                              'First_Breakclause__c', 'Breakclause_Frequency__c', 'Waiver__c', 'DMT_LastLevelId__c', 'Client_Code__c',
+                              'Amount__c'];
+const LEGACY_AMOUNT_COLUMN = 'DMT_Risk_Line_Term__c DMT_Amount__c';
+// CIBGLOBALD-4851 - background jobs of the screen. Events (DMT_BulkImportProgress__e, Phase__c set by
+// DMT_BulkImportBatch.publishEvent) bring the progress and the row messages; the end of each job is read by polling its
+// AsyncApexJob every POLL_MS (DMT_BulkImportController.getJobState), so a lost event never leaves the screen waiting.
+const PHASE_PROCESS = 'PROCESS'; // DMT_BulkImportBatch.IMPORT_TYPE_PROCESS
+const PHASE_STATUS = 'STATUS';
+const POLL_MS = 4000;
+const OU_SEARCH_MIN_CHARS = 2;      // CIBGLOBALD-4851 - OU search from this many characters (DMT_BulkImportController.searchOus)
+const OU_SEARCH_DELAY_MS = 300;     // CIBGLOBALD-4851 - search after the user stops typing
+const EVENT_GRACE_MS = 5000;        // after the job ends, time for its last event to bring the row messages
+const POLL_MAX_FAILURES = 5;        // consecutive failed polls before the screen gives up and says so
+const POLL_MAX_MS = 600000;       // CIBGLOBALD-4851 - a job followed longer than this: the screen reads the org and stops waiting
+const STATUS_JOB_FIND_MS = 60000;   // time for the status job started by a load to appear
+const JOB_END_STATES = ['Completed', 'Failed', 'Aborted'];
+// CIBGLOBALD-4851 - marked: Ids of Salesforce records the user removed one by one (that table not loaded)
+// CIBGLOBALD-4851 - lineIds: the lines a loaded table applies to (null = every line of the load)
+const emptyChildState = () => ({ fileName: '', fileRows: [], sfRows: [], errors: [], marked: [], lineIds: null });
 
 // Fields that belong to DMT_Risk_Line_Term__c (confirmed by deploy errors + prefix convention)
 const TERM_COLS = new Set([
@@ -144,7 +188,17 @@ export default class DmtBulkImport extends LightningElement {
         ];
     }
 
+    // CIBGLOBALD-4851 - one record type per load: locked once a file or paste is loaded, until Start Over
+    get lineTypeLocked() {
+        return this.isBusy || !this.linesIsIdle || Object.values(this.childState).some(state => !!state.fileName);
+    }
+
+    get lineTypeHelp() {
+        return this.lineTypeLocked && !this.isBusy ? 'Click Start Over to change the Line Type.' : null;
+    }
+
     handleLineTypeChange(event) {
+        if (this._waitForJob() || this.lineTypeLocked) return; // CIBGLOBALD-4851
         this.selectedRecordType = event.detail.value;
     }
 
@@ -186,6 +240,8 @@ export default class DmtBulkImport extends LightningElement {
         this._pasteHandler = (event) => {
             const active = document.activeElement;
             if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) return;
+            // CIBGLOBALD-4851 - nothing new is loaded while a job runs on the lines
+            if (this._waitForJob()) return;
             const text = event.clipboardData && event.clipboardData.getData('text');
             if (text) this._processPastedText(text);
         };
@@ -194,6 +250,7 @@ export default class DmtBulkImport extends LightningElement {
 
     disconnectedCallback() {
         this._unsubscribe(this.linesSubscription);
+        this._endAllWatches(); // CIBGLOBALD-4851
         document.removeEventListener('paste', this._pasteHandler);
     }
 
@@ -208,32 +265,28 @@ export default class DmtBulkImport extends LightningElement {
     get linesShowSubmit()           { return ['ready', 'error', 'done'].includes(this.linesState); }
     get linesIsDone()               { return this.linesState === 'done'; }
     // Disabled when not ready OR when every row is already "No Changes"
-    get linesSubmitDisabled()       {
-        return this.linesState !== 'ready' ||
-               this.linesRows.every(r => r.__status === 'No Changes');
-    }
     get linesProgress()             { return this.linesTotal > 0 ? Math.round(this.linesProcessed / this.linesTotal * 100) : 0; }
     get linesHasResultErrors()      { return this.linesResultErrors.length > 0; }
     get linesDropZoneClass()  {
         return 'drop-zone' +
             (this.linesDragging  ? ' drop-zone_active'  : '') +
-            (this.linesRows.length > 0 ? ' drop-zone_compact' : '');
+            (this.linesRows.length > 0 ? ' drop-zone_compact' : '') +
+            (this.isBusy ? ' drop-zone_disabled' : ''); // CIBGLOBALD-4851
     }
     get linesDropZoneText()   {
         return this.linesRows.length > 0
             ? `${this.linesRowCount} rows loaded — drop or paste (Ctrl+V) to add / update lines`
             : 'Drop Lines XLSX or CSV here, or paste with Ctrl+V';
     }
-    get linesRetryDropZoneClass()   { return 'drop-zone drop-zone_compact' + (this.linesRetryDragging ? ' drop-zone_active' : ''); }
+    get linesRetryDropZoneClass()   { return 'drop-zone drop-zone_compact' + (this.linesRetryDragging ? ' drop-zone_active' : '') + (this.isBusy ? ' drop-zone_disabled' : ''); } // CIBGLOBALD-4851
     get hasLinesCreatedRecords()    { return this.linesCreatedRecords && this.linesCreatedRecords.length > 0; }
     get hasLinesEnrichedStats()     { return this.linesEnrichedStats !== null; }
 
     // Update Line Status is offered once the lines were submitted, or when every line is already No Changes
     get step2Enabled() {
-        const allNoChanges = this.linesRows.length > 0 &&
-                             this.linesState === 'ready' &&
-                             this.linesRows.every(r => r.__status === 'No Changes');
-        return (this.linesState === 'done' && this.linesSuccessCount > 0) || allNoChanges;
+        // CIBGLOBALD-4851 - with a loaded table the button shows; updateLineStatusDisabled decides when it can be clicked
+        const loaded = this.linesRows.length > 0 && this.linesState === 'ready';
+        return (this.linesState === 'done' && (this.linesSuccessCount > 0 || this._loadJobCompleted)) || loaded; // CIBGLOBALD-4851
     }
 
     // ── CIBGLOBALD-4851 - Child tables (Risk Line Terms, Line Product Items) ──
@@ -256,7 +309,7 @@ export default class DmtBulkImport extends LightningElement {
                 return {
                     key: zone,
                     label,
-                    dropZoneClass: 'drop-zone drop-zone_compact' + (this.childDragZone === zone ? ' drop-zone_active' : ''),
+                    dropZoneClass: 'drop-zone drop-zone_compact' + (this.childDragZone === zone ? ' drop-zone_active' : '') + (this.isBusy ? ' drop-zone_disabled' : ''), // CIBGLOBALD-4851
                     dropZoneText: state.fileRows.length > 0
                         ? `${state.fileName}: ${state.fileRows.length} rows. Drop or paste (Ctrl+V) another ${label} file to replace them`
                         : `Drop ${label} XLSX or CSV here, or paste with Ctrl+V`,
@@ -266,6 +319,10 @@ export default class DmtBulkImport extends LightningElement {
                     newCount: count(CHILD_STATUS_NEW),
                     deleteCount: count(CHILD_STATUS_DELETE),
                     keptCount: count(CHILD_STATUS_KEPT),
+                    // CIBGLOBALD-4851 - after Process: Created / Deleted / Kept (_processedChildren)
+                    showResult: this._showChildResult,
+                    createdCount: count(CHILD_STATUS_CREATED),
+                    deletedCount: this._deletedChildCount(zone),
                     columns: this._childColumns(zone, rows),
                     rows: this._childDisplayRows(rows)
                 };
@@ -273,13 +330,28 @@ export default class DmtBulkImport extends LightningElement {
     }
 
     /**
-     * File rows (New) plus the Salesforce records of the loaded lines: Will Be Deleted when the file has rows for
-     * their line, Kept otherwise. Sorted by line, file rows first.
+     * File rows (New) plus the Salesforce records of the loaded lines: Will Be Deleted when that table is loaded (it
+     * replaces the records of every line of the load, _zoneLoaded), Kept when it is not. After Process only the lines
+     * that failed keep their file rows for a retry. Sorted by line, file rows first.
      */
     _childRowsFor(zone) {
         const state   = this.childState[zone];
-        const covered = new Set(state.fileRows.map(r => r.__lineId));
-        const sfRows  = state.sfRows.map(r => ({ ...r, __status: covered.has(r.__lineId) ? CHILD_STATUS_DELETE : CHILD_STATUS_KEPT }));
+        // CIBGLOBALD-4851 - requirement point 2 (Diego, 2026-11-13): a loaded table replaces the records of every line of
+        // the load, also the lines without rows in it
+        const covered = this._zoneLoaded(zone) && !this.linesIsDone
+            ? new Set(this.linesRows.map(r => r['Line_Id__c']).filter(lineId => this._zoneCovers(zone, lineId))) // CIBGLOBALD-4851
+            : new Set(state.fileRows.map(r => r.__lineId));
+        // CIBGLOBALD-4851 - after Process, the records of the lines whose products the load replaced were created by it
+        const created = this._showChildResult ? this._savedReplacedLines(zone) : new Set();
+        // CIBGLOBALD-4851 - only the records of the lines still in the load; a record removed one by one shows Will Be
+        // Deleted with Restore (__marked)
+        const loadedLines = new Set(this.linesRows.map(r => r['Line_Id__c']));
+        const marked  = new Set(state.marked || []);
+        const sfRows  = state.sfRows.filter(r => loadedLines.has(r.__lineId)).map(r => {
+            if (covered.has(r.__lineId)) return { ...r, __status: CHILD_STATUS_DELETE, __marked: false };
+            if (marked.has(r.__sfId))    return { ...r, __status: CHILD_STATUS_DELETE, __marked: true };
+            return { ...r, __status: created.has(r.__lineId) ? CHILD_STATUS_CREATED : CHILD_STATUS_KEPT, __marked: false };
+        });
         return [...state.fileRows, ...sfRows]
             .map((r, idx) => ({ r, idx }))
             .sort((a, b) => a.r.__lineId.localeCompare(b.r.__lineId) || a.idx - b.idx)
@@ -300,7 +372,8 @@ export default class DmtBulkImport extends LightningElement {
 
     _childDisplayRows(rows) {
         return rows.map(r => {
-            const flat = { __key: r.__key, __lineId: r.__lineId, __status: r.__status, __statusClass: CHILD_STATUS_CLASS[r.__status] };
+            const flat = { __key: r.__key, __lineId: r.__lineId, __status: r.__status, __statusClass: CHILD_STATUS_CLASS[r.__status],
+                           __marked: !!r.__marked }; // CIBGLOBALD-4851
             Object.keys(r).forEach(k => {
                 if (k.startsWith('__')) return;
                 const v = r[k];
@@ -310,21 +383,171 @@ export default class DmtBulkImport extends LightningElement {
         });
     }
 
-    // Only file rows can be removed; Salesforce records follow the replace rule
+    // CIBGLOBALD-4851 - a Salesforce record removed one by one (marked) or put back
+    _setMarked(zone, recordId, on) {
+        const marked = (this.childState[zone].marked || []).filter(id => id !== recordId);
+        if (on) marked.push(recordId);
+        this._setChildState(zone, { marked });
+    }
+
+    // CIBGLOBALD-4851 - Ids removed one by one, by line (none when the table is loaded: it replaces everything)
+    _markedByLine(zone) {
+        const byLine = new Map();
+        if (zone === 'lpi' && !this.isTreasury) return byLine; // CIBGLOBALD-4851
+        const marked = new Set(this.childState[zone].marked || []);
+        // CIBGLOBALD-4851 - a line the loaded table applies to has all its records replaced
+        this.childState[zone].sfRows.filter(r => marked.has(r.__sfId) && !this._zoneCovers(zone, r.__lineId)).forEach(r => {
+            if (!byLine.has(r.__lineId)) byLine.set(r.__lineId, []);
+            byLine.get(r.__lineId).push(r.__sfId);
+        });
+        return byLine;
+    }
+
+    // CIBGLOBALD-4851 - result of the last Process for the child tables: per zone the lines whose products were replaced
+    // and how many Salesforce records they had (deleted). Cleared when a new file is loaded.
+    get _showChildResult() { return this.linesIsDone && !!this._processedChildren; }
+
+    _savedReplacedLines(zone) {
+        const result = this._processedChildren && this._processedChildren[zone];
+        if (!result) return new Set();
+        return new Set([...result.lines].filter(lineId => !this.linesFailedIds.has(lineId)));
+    }
+
+    _deletedChildCount(zone) {
+        if (!this._showChildResult) return 0;
+        const result = this._processedChildren[zone];
+        return [...result.deletedByLine.entries()]
+            .filter(([lineId]) => !this.linesFailedIds.has(lineId))
+            .reduce((sum, [, count]) => sum + count, 0);
+    }
+
+    // CIBGLOBALD-4851 - at Process: the lines each zone replaces and their Salesforce records (to be deleted)
+    _snapshotChildChanges(units) {
+        this._processedChildren = {};
+        ['rlt', 'lpi'].forEach(zone => {
+            const lines = new Set(units.filter(u => u[zone]).map(u => u.line['Line_Id__c']));
+            const deletedByLine = new Map();
+            this.childState[zone].sfRows.filter(r => lines.has(r.__lineId))
+                .forEach(r => deletedByLine.set(r.__lineId, (deletedByLine.get(r.__lineId) || 0) + 1));
+            // records removed one by one
+            units.filter(u => u[zone + 'Delete']).forEach(u => {
+                const lineId = u.line['Line_Id__c'];
+                deletedByLine.set(lineId, (deletedByLine.get(lineId) || 0) + u[zone + 'Delete'].length);
+            });
+            this._processedChildren[zone] = { lines, deletedByLine };
+        });
+    }
+
+    // File rows can be removed; a Kept Salesforce record can be removed one by one (before Process) and put back with
+    // Restore; records a loaded table replaces cannot (CIBGLOBALD-4851)
     _childRowActions = (row, doneCallback) => {
-        doneCallback([{ label: 'Remove row', name: 'remove', disabled: row.__status !== CHILD_STATUS_NEW }]);
+        if (row.__marked) {
+            doneCallback([{ label: 'Restore', name: 'restore' }]);
+            return;
+        }
+        const removable = row.__status === CHILD_STATUS_NEW || (row.__status === CHILD_STATUS_KEPT && this.linesState === 'ready');
+        doneCallback([{ label: 'Remove row', name: 'remove', disabled: !removable }]);
     };
 
     handleChildRowAction(event) {
-        if (event.detail.action.name !== 'remove') return;
+        if (this._waitForJob()) return; // CIBGLOBALD-4851
         const zone  = event.target.dataset.zone;
         const key   = event.detail.row.__key;
+        // CIBGLOBALD-4851 - a Salesforce record removed one by one (Kept -> Will Be Deleted) and Restore
+        if (event.detail.action.name === 'restore') {
+            this._setMarked(zone, key, false);
+            return;
+        }
+        if (event.detail.action.name !== 'remove') return;
+        if (event.detail.row.__status === CHILD_STATUS_KEPT) {
+            this._setMarked(zone, key, true);
+            this._showUndo(`${CHILD_ZONES[zone].label} record of line ${event.detail.row.__lineId} will be deleted.`,
+                () => this._setMarked(zone, key, false));
+            return;
+        }
         const state = this.childState[zone];
+        // CIBGLOBALD-4851 - the removed row can be put back for 5 seconds (Undo)
+        const index = state.fileRows.findIndex(r => r.__key === key);
+        if (index < 0) return;
+        const removed = state.fileRows[index];
         this._setChildState(zone, { fileRows: state.fileRows.filter(r => r.__key !== key) });
+        this._showUndo(`${CHILD_ZONES[zone].label} row of line ${removed.__lineId} removed.`, () => {
+            const rows = [...this.childState[zone].fileRows];
+            rows.splice(Math.min(index, rows.length), 0, removed);
+            this._setChildState(zone, { fileRows: rows });
+        });
+    }
+
+    // ── CIBGLOBALD-4851 - Remove a line before Process (with its product rows of the files), Undo for 5 seconds ──────
+
+    _lineRowActions = (row, doneCallback) => {
+        doneCallback([{ label: 'Remove row', name: 'remove', disabled: this.linesState !== 'ready' }]);
+    };
+
+    handleLineRowAction(event) {
+        if (this._waitForJob()) return; // CIBGLOBALD-4851
+        if (event.detail.action.name !== 'remove' || this.linesState !== 'ready') return;
+        const lineId = event.detail.row['Line_Id__c'];
+        const index  = this.linesRows.findIndex(r => r['Line_Id__c'] === lineId);
+        if (index < 0) return;
+        const removedLine = this.linesRows[index];
+        const removedChildren = {};
+        ['rlt', 'lpi'].forEach(zone => {
+            removedChildren[zone] = this.childState[zone].fileRows.filter(r => r.__lineId === lineId);
+            if (removedChildren[zone].length > 0) {
+                this._setChildState(zone, { fileRows: this.childState[zone].fileRows.filter(r => r.__lineId !== lineId) });
+            }
+        });
+        this._setLineRows(this.linesRows.filter((r, i) => i !== index));
+        const childCount = removedChildren.rlt.length + removedChildren.lpi.length;
+        this._showUndo(`Line ${lineId} removed${childCount > 0 ? ` with its ${childCount} product row(s) of the files` : ''}.`, () => {
+            const rows = [...this.linesRows];
+            rows.splice(Math.min(index, rows.length), 0, removedLine);
+            this._setLineRows(rows);
+            ['rlt', 'lpi'].forEach(zone => {
+                if (removedChildren[zone].length > 0) {
+                    this._setChildState(zone, { fileRows: [...this.childState[zone].fileRows, ...removedChildren[zone]] });
+                }
+            });
+        });
+    }
+
+    // The Lines table after a remove / undo: same comparison with Salesforce, nothing queried again
+    _setLineRows(rows) {
+        this.linesRows = rows;
+        this.linesRowCount = rows.length;
+        if (this._sfLinesById) {
+            this._applyLineEnrichment(rows, [...this._sfLinesById.values()]);
+        } else {
+            const ids = new Set(rows.map(r => r['Line_Id__c']));
+            this.linesPreviewRows = this.linesPreviewRows.filter(p => ids.has(p['Line_Id__c']));
+        }
+    }
+
+    // A bar at the bottom of the screen with the message and Undo; it closes after 5 seconds
+    undoNotice = null;
+
+    _showUndo(message, undo) {
+        clearTimeout(this._undoTimer);
+        this.undoNotice = { message };
+        this._undoAction = undo;
+        // eslint-disable-next-line @lwc/lwc/no-async-operation
+        this._undoTimer = setTimeout(() => { this.undoNotice = null; this._undoAction = null; }, 5000);
+    }
+
+    handleUndo() {
+        if (this.isBusy) return; // CIBGLOBALD-4851
+        clearTimeout(this._undoTimer);
+        const undo = this._undoAction;
+        this.undoNotice = null;
+        this._undoAction = null;
+        if (undo) undo();
     }
 
     _setChildState(zone, changes) {
         this.childState = { ...this.childState, [zone]: { ...this.childState[zone], ...changes } };
+        // CIBGLOBALD-4851 - the products change the Status Change cells (products total, Ready to close recheck)
+        if (this.linesPreviewRows && this.linesPreviewRows.length > 0) this._refreshStatusCells();
     }
 
     _resetChildren() {
@@ -332,6 +555,7 @@ export default class DmtBulkImport extends LightningElement {
     }
 
     openChildFilePicker(event) {
+        if (this._waitForJob()) return; // CIBGLOBALD-4851
         const zone = event.target.dataset.zone;
         this.template.querySelector(`input[data-zone="${zone}"]`).click();
     }
@@ -354,6 +578,7 @@ export default class DmtBulkImport extends LightningElement {
 
     handleChildFileDrop(event) {
         event.preventDefault();
+        if (this._waitForJob()) return; // CIBGLOBALD-4851
         this.childDragZone = '';
         const file = event.dataTransfer.files[0];
         if (file) this._processFile(file, event.currentTarget.dataset.zone);
@@ -410,6 +635,8 @@ export default class DmtBulkImport extends LightningElement {
      * table, are rejected and listed.
      */
     _loadChildFile(zone, rows, fileName) {
+        this._processedChildren = null; // CIBGLOBALD-4851 - a new load: no Created / Deleted result
+        this._processedPlans = null; // CIBGLOBALD-4851
         const conf = CHILD_ZONES[zone];
         if (zone === 'lpi' && !this.isTreasury) {
             this._toast('Line Product Items not loaded', 'Line Product Items are only loaded for Treasury lines. Select Line Treasury as Line Type.');
@@ -438,7 +665,7 @@ export default class DmtBulkImport extends LightningElement {
         if (rejected.length > CHILD_ERROR_LIMIT) {
             errors.push({ key: 'rejected-more', message: `${rejected.length - CHILD_ERROR_LIMIT} more rows not loaded.` });
         }
-        this._setChildState(zone, { fileName, fileRows: accepted, errors });
+        this._setChildState(zone, { fileName, fileRows: accepted, errors, lineIds: null }); // CIBGLOBALD-4851
     }
 
     // A file row keyed by field name: line id columns become __lineId, 'DMT_Risk_Line_Term__c <field>' becomes <field>
@@ -455,24 +682,21 @@ export default class DmtBulkImport extends LightningElement {
         const relationship = CHILD_ZONES[zone].sfRelationship;
         const sfRows = (records || []).map(record => {
             const child = { __key: record.Id, __sfId: record.Id, __lineId: record[relationship] ? record[relationship].Line_Id__c : '' };
-            Object.keys(record).forEach(k => { if (k !== 'Id' && k !== relationship) child[k] = record[k]; });
+            // the parent lookup Id (DMT_Line__c / Line__c) comes with the relationship and is not shown
+            const lookupField = relationship.replace(/__r$/, '__c');
+            Object.keys(record).forEach(k => { if (k !== 'Id' && k !== relationship && k !== lookupField) child[k] = record[k]; });
             return child;
         });
-        this._setChildState(zone, { sfRows });
+        // CIBGLOBALD-4851 - marks of records that no longer exist (deleted by the load) are dropped
+        const ids = new Set(sfRows.map(r => r.__sfId));
+        this._setChildState(zone, { sfRows, marked: (this.childState[zone].marked || []).filter(id => ids.has(id)) });
     }
 
     // Old Other Products Lines file: its term columns are the Risk Line Terms file rows
     _loadTermsFromLinesFile() {
         if (this.pendingTermsFromLines.length === 0) return;
-        const rows = this.pendingTermsFromLines.map((t, i) => ({ ...t, __rowIndex: i + 2 }));
+        const rows = this.pendingTermsFromLines; // CIBGLOBALD-4851 - each term keeps the row of its line in the Lines file
         this._loadChildFile('rlt', rows, `${this.linesFileName} (term columns)`);
-    }
-
-    // Product amount per line in Salesforce now (Risk Line Terms), for the Update Line Status pre-check
-    _sfTermAmountForLine(lineId) {
-        return this.childState.rlt.sfRows
-            .filter(r => r.__lineId === lineId)
-            .reduce((sum, r) => sum + (parseFloat(r.DMT_Amount__c) || 0), 0);
     }
 
     // ── Update Line Status ────────────────────────────────────────────────────
@@ -488,89 +712,227 @@ export default class DmtBulkImport extends LightningElement {
     }
     get showUpdateLineStatus()      { return this.step2Enabled; } // CIBGLOBALD-4851
 
-    // Record-type + target-status data requirements this predictive check mirrors (both are
-    // currently-active, enforced server-side regardless of what this getter decides):
-    //   - TreasurySettlement, any line targeting a non-Draft code: DMT_TRSR_Line_Validations
-    //     requires at least one product term with a positive amount (or FD_Amount__c/DvP_Amount__c
-    //     on the line itself, which Bulk Import never sets). That flow has an admin / DMT_Line_God
-    //     bypass, but that bypass exists for ACCESS restrictions elsewhere in it, not this amount
-    //     check — it is intentionally NOT treated as a way around this requirement here, so the
-    //     button reflects what a real, non-privileged user will experience.
-    //   - OtherProducts, only lines targeting Proposal ('PR'): CompulsoryAmountLastLevel requires
-    //     Amount__c or DMT_LastLevelId__c populated, and CheckAmountsInLine requires the products'
-    //     total to cover the line's own Amount__c. Neither of those has any bypass.
-    // This is a best-effort mirror of the rules as they stand today, not a guarantee — a row can
-    // still come back Failed if the underlying data or rules have moved since this was written.
-    // Backend now does a per-row partial save (Database.update(lines, false)) in Bulk Import mode:
-    // one line failing validation is reported (email + exception log) without blocking the rest of
-    // the import. So the button only needs to stay disabled when NO line stands a chance at all -
-    // it does not need every line to be eligible, only at least one.
-    get linesBlockingUpdateLineStatus() {
-        const isTreasury = this.selectedRecordType === 'TreasurySettlement';
-        // CIBGLOBALD-4851 - only the Risk Line Terms in Salesforce count (child table records, _sfTermAmountForLine):
-        // file rows are not saved yet.
+    /**
+     * CIBGLOBALD-4851 - The lines the button moves: existing Draft lines whose code points to another status (plan
+     * byButton), with the plan of the moment of Process once processed; lines it already moved are left out. Lines
+     * Process moves itself are not the button's.
+     */
+    get _buttonPlans() {
+        const frozen = this._processedPlans && this.linesState !== 'ready';
         return this.importedLineIds
             .map(lineId => this.linesRows.find(r => r['Line_Id__c'] === lineId))
             .filter(Boolean)
-            .filter(line => {
-                const code = line['g_line_status_type__c'];
-                if (!code || code === 'DR') return false; // stays Draft — no gate applies
-
-                const productsTotal = this._sfTermAmountForLine(line['Line_Id__c']); // CIBGLOBALD-4851
-
-                if (isTreasury) {
-                    return productsTotal <= 0;
-                }
-                if (code !== 'PR') return false; // OtherProducts: only the Proposal code is gated
-                const lineAmount    = parseFloat(line['DMT_Risk_Line_Term__c DMT_Amount__c']) || 0;
-                const hasLastLevel  = !!(line['DMT_LastLevelId__c'] && String(line['DMT_LastLevelId__c']).trim());
-                const compulsoryOk  = lineAmount > 0 || hasLastLevel;
-                const rollupOk      = productsTotal >= lineAmount;
-                return !(compulsoryOk && rollupOk);
-            })
-            .map(line => line['Line_Id__c']);
+            .map(row => ({ row, plan: frozen ? (this._processedPlans.get(row['Line_Id__c']) || null) : this._statusPlan(row) }))
+            .filter(p => {
+                const result = this._statusResults ? this._statusResults.get(p.row['Line_Id__c']) : null;
+                return p.plan && p.plan.byButton && !(result && result.state === 'moved');
+            });
     }
 
-    // Informational — when SOME lines are still eligible, this does not block the click, it just
-    // names what will likely fail. When ALL lines are blocking there is no "rest" to proceed with,
-    // so the wording (and updateLineStatusDisabled below) must not imply otherwise.
+    get linesWithStatusCode() {
+        return this._buttonPlans.map(p => p.row);
+    }
+
+    // CIBGLOBALD-4851 - lines or products of the file not saved yet: the button reads the lines from Salesforce, so it
+    // waits for Process
+    get _hasUnsavedChanges() {
+        return this.linesState === 'ready' && this._buildUnits().length > 0;
+    }
+
+    // CIBGLOBALD-4851 - status of the line's code once saved: the file column when present, else the stored code
+    _savedCodeStatus(row) {
+        const sf = this._sfLinesById ? this._sfLinesById.get(row['Line_Id__c']) : null;
+        const code = 'g_line_status_type__c' in row ? row['g_line_status_type__c'] : (sf ? sf.g_line_status_type__c : '');
+        return STATUS_BY_CODE[valueText(code).toUpperCase()] || null;
+    }
+
+    // CIBGLOBALD-4851 - lines with a code that the org rules would reject (same check as Process, _stayDraftReasons):
+    // they are not sent, so no failure email; [{ lineId, reasons }]. Replaces the old products-amount pre-check: the
+    // Treasury flow DMT_TRSR_Line_Validations is skipped for DMT_Line_God, which this screen requires.
+    get linesBlockingUpdateLineStatus() {
+        return this._buttonPlans.filter(p => p.plan.stayDraft)
+            .map(p => ({ lineId: p.row['Line_Id__c'], reasons: p.plan.stayDraft })); // CIBGLOBALD-4851
+    }
+
     get updateLineStatusBlockedMessage() {
+        // CIBGLOBALD-4851 - why the button is disabled or what it will skip
+        if (this._backgroundJobRunning && this.lineStatusUpdateState === 'idle') {
+            return 'Wait: another job is running on these lines (Process, status move or Add OU).';
+        }
+        if (this._hasUnsavedChanges) {
+            return 'Process first: the file has lines or products not saved yet, and Update Line Status moves the lines as they are in Salesforce.';
+        }
         const blocking = this.linesBlockingUpdateLineStatus;
-        const total = this.importedLineIds.length;
         if (blocking.length === 0) return '';
-        const shown = blocking.slice(0, 5).join(', ') + (blocking.length > 5 ? `, +${blocking.length - 5} more` : '');
-        return blocking.length >= total
-            ? `All ${total} line(s) are missing the product amounts needed for this status update and would fail: ${shown}.`
-            : `${blocking.length} of ${total} line(s) are missing the product amounts needed for this status update and will likely be reported as failed: ${shown}. You can still proceed for the rest.`;
+        const shown = blocking.slice(0, 5).map(b => `${b.lineId} (${reasonText(b.reasons)})`).join(' | ')
+                      + (blocking.length > 5 ? ` | +${blocking.length - 5} more` : '');
+        return `${blocking.length} of ${this.linesWithStatusCode.length} line(s) with a status code will stay in Draft and are not sent: ${shown}.`;
     }
 
+    // CIBGLOBALD-4851 - enabled only with nothing left to save and at least one line it can move
     get updateLineStatusDisabled() {
-        return this.lineStatusUpdateState !== 'idle' ||
-               this.linesBlockingUpdateLineStatus.length >= this.importedLineIds.length;
+        const movable = this.linesWithStatusCode.length - this.linesBlockingUpdateLineStatus.length;
+        return this._backgroundJobRunning || this._hasUnsavedChanges || movable <= 0; // CIBGLOBALD-4851
     }
 
-    updateLineStatus() {
-        const lineIds = this.importedLineIds;
+    async updateLineStatus() {
+        const blocking = this.linesBlockingUpdateLineStatus; // CIBGLOBALD-4851
+        const blocked = new Set(blocking.map(b => b.lineId)); // CIBGLOBALD-4851
+        const lineIds = this.importedLineIds.filter(lineId => !blocked.has(lineId)); // CIBGLOBALD-4851
         if (lineIds.length === 0) return;
 
         this.lineStatusUpdateState = 'launching';
-        updateLineStatusApex({ lineIds })
+        // CIBGLOBALD-4851 - the lines with a code follow the job: events (Phase STATUS, this jobId) and the job state
+        const jobId = this._newJobId();
+        const moves = this.linesWithStatusCode
+            .filter(line => !blocked.has(line['Line_Id__c']))
+            .map(line => ({ lineId: line['Line_Id__c'], target: this._savedCodeStatus(line) }));
+        await this._watchStatusMoves(jobId, moves);
+        updateLineStatusApex({ lineIds, jobId }) // CIBGLOBALD-4851
             .then(asyncJobId => {
                 this.lineStatusUpdateState = 'launched';
-                this._toast('Update Line Status launched',
-                    `Draft lines of this import are being updated to the status informed in the file (job ${asyncJobId}). You will receive an email when it finishes.`,
-                    'success');
+                this._startStatusWait(moves, () => Promise.resolve(asyncJobId)); // CIBGLOBALD-4851
+                this._toast('Update Line Status running in the background', // CIBGLOBALD-4851
+                    `${moves.length} line(s) move to the status of their code. The result will show in the Validation / Status Change column.`,
+                    'info');
             })
             .catch(e => {
                 console.error('updateLineStatus error', e);
                 this.lineStatusUpdateState = 'idle';
+                this._endWatch(PHASE_STATUS); // CIBGLOBALD-4851
                 this._toast('Update Line Status failed', (e && e.body && e.body.message) || 'Unexpected error');
             });
+    }
+
+    // ── CIBGLOBALD-4851 - Add OU ──────────────────────────────────────────────
+    // One OU per load (Diego): after Process, the users of the OU with a DMT Read/Write role and each line's owner become
+    // participants (Edit, Approval Edit) of the lines of the load (DMT_BulkImportController.addOuParticipants).
+
+    ouCode  = '';
+    ouState = 'idle'; // idle | running | done
+    ouResultText = ''; // CIBGLOBALD-4851
+    ouOptions = null; // CIBGLOBALD-4851 - OU search result (null = no search)
+    ouOptionsOpen = false; // CIBGLOBALD-4851
+    ouResultIsError = false; // CIBGLOBALD-4851
+    // CIBGLOBALD-4851 - background status move: progress text and the result per Line_Id__c (_finishStatusMoves)
+    statusProgressText = '';
+    _statusMoves = []; // CIBGLOBALD-4851 - lines of the status move being followed
+    _statusDone = false; // CIBGLOBALD-4851
+    _statusResults = new Map();
+    _loadJobCompleted = false; // CIBGLOBALD-4851 - the load job Completed while its final event was lost (_onLoadJobDone)
+
+    // CIBGLOBALD-4851 - after Process, or before it when every line of the table already exists in Salesforce (a line to
+    // create gets its participants only once Process has created it)
+    get showAddOu() {
+        if (this.linesIsDone) return this.importedLineIds.length > 0;
+        return this.linesState === 'ready' && this.linesRows.length > 0 && !!this._sfLinesById
+               && this.linesRows.every(r => this._sfLinesById.has(r['Line_Id__c']));
+    }
+    get ouLocked()      { return this.ouState !== 'idle'; }
+    get ouResultClass() { // CIBGLOBALD-4851
+        const colour = this.ouState === 'running' ? 'slds-text-color_weak' : (this.ouResultIsError ? 'slds-text-color_error' : 'slds-text-color_success');
+        return 'slds-m-left_small slds-text-body_small ' + colour;
+    }
+    get addOuDisabled() { return this.ouLocked || !this.ouCode.trim() || this._backgroundJobRunning; } // CIBGLOBALD-4851
+
+    handleOuChange(event) {
+        this.ouCode = event.detail.value || '';
+        // CIBGLOBALD-4851 - OU search: from 2 characters, once the user stops typing
+        clearTimeout(this._ouSearchTimer);
+        const text = this.ouCode.trim();
+        if (text.length < OU_SEARCH_MIN_CHARS) {
+            this.ouOptions = null;
+            return;
+        }
+        // eslint-disable-next-line @lwc/lwc/no-async-operation
+        this._ouSearchTimer = setTimeout(() => this._searchOus(text), OU_SEARCH_DELAY_MS);
+    }
+
+    // CIBGLOBALD-4851 - up to 10 OUs that contain the text and have Read/Write users (the ones Add OU adds)
+    async _searchOus(text) {
+        try {
+            const found = await searchOusApex({ prefix: text });
+            if (text !== this.ouCode.trim()) return; // the user kept typing: a newer search follows
+            this.ouOptions = found.map(o => ({ code: o.code, users: `${o.users} user(s)` }));
+            this.ouOptionsOpen = true;
+        } catch (e) {
+            console.error('OU search failed', e);
+            this.ouOptions = null;
+        }
+    }
+
+    // CIBGLOBALD-4851 - the list under the OU input: the OUs found, or a line saying none was found
+    get showOuOptions()  { return this.ouOptionsOpen && !!this.ouOptions && !this.ouLocked; }
+    get ouOptionsEmpty() { return !!this.ouOptions && this.ouOptions.length === 0; }
+
+    handleOuPick(event) {
+        event.preventDefault(); // mousedown before the input blur, so the click is not lost
+        this.ouCode = event.currentTarget.dataset.code;
+        this.ouOptionsOpen = false;
+    }
+
+    handleOuFocus() {
+        if (this.ouOptions) this.ouOptionsOpen = true;
+    }
+
+    handleOuBlur() {
+        this.ouOptionsOpen = false;
+    }
+
+    handleOuKeyDown(event) {
+        if (event.key === 'Escape') this.ouOptionsOpen = false;
+    }
+
+    // The batch adds the participants in the background; the screen follows the job and, when it ends, checks in
+    // Salesforce that every OU user and owner is a participant (countMissingOuParticipants): success or the number missing
+    addOu() {
+        const lineIds = this.importedLineIds;
+        if (this.addOuDisabled || lineIds.length === 0) return;
+        const ouCode = this.ouCode.trim();
+        this.ouState = 'running';
+        this._ouLineIds = new Set(lineIds); // CIBGLOBALD-4851 - the lines this OU is added to
+        this.ouResultText = 'Adding participants…'; // CIBGLOBALD-4851
+        this.ouResultIsError = false; // CIBGLOBALD-4851
+        addOuParticipantsApex({ ouCode, lineIds })
+            .then(result => {
+                this._toast('Add OU running in the background', `Adding ${result.users} users to the ${lineIds.length} lines of the load.`, 'info');
+                this._pollJob('OU', () => Promise.resolve(result.asyncJobId), state => this._finishAddOu(ouCode, lineIds, result.users, state));
+            })
+            .catch(e => {
+                this.ouState = 'idle';
+                this.ouResultText = ''; // CIBGLOBALD-4851
+                this._toast('Add OU failed', (e && e.body && e.body.message) || 'Unexpected error');
+            });
+    }
+
+    async _finishAddOu(ouCode, lineIds, users, state) {
+        let missing = null;
+        try {
+            missing = await countMissingOuParticipantsApex({ ouCode, lineIds });
+        } catch (e) {
+            console.error('Add OU result check failed', e);
+        }
+        this.ouState = 'done';
+        // CIBGLOBALD-4851 - the result stays next to the Add OU button
+        this.ouResultText = missing === 0 ? `${users} participant(s) added to all ${lineIds.length} line(s).`
+            : missing === null ? 'Add OU ended but the result could not be checked. Check the participants of the lines.'
+            : `${missing} participant(s) missing or without Edit / Approval Edit. Check the exception log.`;
+        this.ouResultIsError = missing !== 0;
+        if (missing === 0) {
+            this._toast('Add OU finished', `${users} users added to all the lines of the load.`, 'success');
+        } else if (missing === null) {
+            this._toast('Add OU finished', `The job ended (${state.status}) but the result could not be checked. Check the participants of the lines.`, 'warning');
+        } else {
+            this._toast('Add OU finished with errors',
+                `${missing} participant(s) are missing or without Edit / Approval Edit.${state.extendedStatus ? ' ' + state.extendedStatus : ''} Check the exception log.`,
+                'error');
+        }
     }
 
     // ── File picker triggers ──────────────────────────────────────────────────
 
     openLinesFilePicker() {
+        if (this._waitForJob()) return; // CIBGLOBALD-4851
         this.template.querySelector('input[data-section="lines"]').click();
     }
 
@@ -595,6 +957,7 @@ export default class DmtBulkImport extends LightningElement {
 
     handleLinesFileDrop(event) {
         event.preventDefault();
+        if (this._waitForJob()) return; // CIBGLOBALD-4851
         this.linesDragging = false;
         const file = event.dataTransfer.files[0];
         if (file) this._processFile(file, 'lines');
@@ -611,12 +974,14 @@ export default class DmtBulkImport extends LightningElement {
 
     handleRetryFileDrop(event) {
         event.preventDefault();
+        if (this._waitForJob()) return; // CIBGLOBALD-4851
         this.linesRetryDragging = false;
         const file = event.dataTransfer.files[0];
         if (file) this._processRetryFile(file);
     }
 
     openRetryFilePicker() {
+        if (this._waitForJob()) return; // CIBGLOBALD-4851
         this.template.querySelector('input[data-section="lines-retry"]').click();
     }
 
@@ -657,6 +1022,8 @@ export default class DmtBulkImport extends LightningElement {
     get hasAnyData() { return this.linesRows.length > 0; } // CIBGLOBALD-4851 - child rows exist only with lines
 
     resetAll() {
+        if (this._waitForJob()) return; // CIBGLOBALD-4851
+        this._resetLoadState(); // CIBGLOBALD-4851
         this._unsubscribe(this.linesSubscription);
         this.linesSubscription    = null;
 
@@ -674,13 +1041,45 @@ export default class DmtBulkImport extends LightningElement {
         this.linesFailedIds        = new Set();
         this.pendingTermsFromLines = [];
         this._resetChildren(); // CIBGLOBALD-4851
-
+        this.ouCode  = ''; // CIBGLOBALD-4851
+        this.ouOptions = null; // CIBGLOBALD-4851
+        this.ouOptionsOpen = false; // CIBGLOBALD-4851
+        this.ouState = 'idle'; // CIBGLOBALD-4851
         this.lineStatusUpdateState    = 'idle';
+    }
+
+    /**
+     * CIBGLOBALD-4851 - Everything a load leaves behind (Start Over and a cleared Lines file): background follow-up
+     * (events, polls, results, plans), the Salesforce data of its lines (existing lines, client context, custom association
+     * clients), and an open Undo bar, whose Undo would otherwise put a row of the old load back.
+     */
+    _resetLoadState() {
+        this._endAllWatches();
+        this.ouResultText = '';
+        this.ouResultIsError = false;
+        this._ouLineIds = null;
+        this._loggedReasons = null;
+        this._processedChildren = null;
+        this._processedPlans = null;
+        this._statusResults = new Map();
+        this._statusMoves = [];
+        this._statusDone = false;
+        this._pendingMoves = [];
+        this._loadAsyncJobId = null;
+        this._loadJobCompleted = false;
+        this._sfLinesById = null;
+        this._statusContext = null;
+        this._associationClientsByLine = null;
+        this.statusProgressText = '';
+        clearTimeout(this._undoTimer);
+        this.undoNotice = null;
+        this._undoAction = null;
     }
 
     // ── Clear file ────────────────────────────────────────────────────────────
 
     clearLinesFile() {
+        this._resetLoadState(); // CIBGLOBALD-4851
         this.linesState            = 'idle';
         this.linesFileName         = '';
         this.linesRowCount         = 0;
@@ -778,11 +1177,14 @@ export default class DmtBulkImport extends LightningElement {
         record.push(value);
         records.push(record);
 
-        const nonBlank = records.filter(r => r.some(v => v.trim() !== ''));
+        // CIBGLOBALD-4851 - Enhancement fix to existing process: __rowIndex is the row in Excel (blank rows count, a quoted
+        // line break stays in its row); it used to count only the non-blank rows, so messages after a blank row were off
+        const nonBlank = records.map((values, idx) => ({ values, rowNumber: idx + 1 }))
+            .filter(r => r.values.some(v => v.trim() !== ''));
         if (nonBlank.length < 2) return [];
-        const headers = nonBlank[0].map(h => h.trim());
-        return nonBlank.slice(1).map((values, idx) => {
-            const row = { __rowIndex: idx + 2 };
+        const headers = nonBlank[0].values.map(h => h.trim());
+        return nonBlank.slice(1).map(({ values, rowNumber }) => {
+            const row = { __rowIndex: rowNumber }; // CIBGLOBALD-4851
             headers.forEach((h, i) => { if (h) row[h] = (values[i] || '').trim(); });
             return row;
         });
@@ -793,15 +1195,23 @@ export default class DmtBulkImport extends LightningElement {
         const workbook = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array', cellDates: true });
         const sheet    = workbook.Sheets[workbook.SheetNames[0]];
         // eslint-disable-next-line no-undef
-        const rawRows  = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
-        if (rawRows.length < 2) return [];
-        const headers = rawRows[0].map(h => String(h).trim());
-        return rawRows.slice(1).map((values, idx) => {
-            const row = { __rowIndex: idx + 2 };
+        // CIBGLOBALD-4851 - Enhancement fix to existing process: blank rows are kept so __rowIndex is the Excel row (the
+        // used range may start below row 1), then skipped like in a CSV file
+        const rawRows  = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', blankrows: true });
+        // eslint-disable-next-line no-undef
+        const firstRow = sheet['!ref'] ? XLSX.utils.decode_range(sheet['!ref']).s.r + 1 : 1;
+        const nonBlank = rawRows.map((values, idx) => ({ values, rowNumber: firstRow + idx }))
+            .filter(r => r.values.some(v => v !== undefined && v !== null && String(v).trim() !== ''));
+        if (nonBlank.length < 2) return [];
+        const headers = nonBlank[0].values.map(h => String(h).trim());
+        return nonBlank.slice(1).map(({ values, rowNumber }) => {
+            const row = { __rowIndex: rowNumber }; // CIBGLOBALD-4851
             headers.forEach((h, i) => {
                 const v = values[i];
+                // CIBGLOBALD-4851 - Enhancement fix to existing process: a date cell is the local midnight of that day;
+                // toISOString() turned it into UTC and saved the previous day (UTC+1 / UTC+2), so the local date is used.
                 row[h] = v instanceof Date
-                    ? v.toISOString().substring(0, 10)
+                    ? `${v.getFullYear()}-${String(v.getMonth() + 1).padStart(2, '0')}-${String(v.getDate()).padStart(2, '0')}`
                     : (v !== undefined && v !== null ? String(v).trim() : '');
             });
             return row;
@@ -811,6 +1221,8 @@ export default class DmtBulkImport extends LightningElement {
     // CIBGLOBALD-4851 - Lines rows only: child files load through _loadChildFile (section kept for the callers)
     _onRowsParsed(rows, fileName, section) {
         if (section !== 'lines') return;
+        this._processedChildren = null; // CIBGLOBALD-4851 - a new load: no Created / Deleted result
+        this._processedPlans = null; // CIBGLOBALD-4851
 
         // Reject any rows missing Line_Id__c — it is the external key from the source system
         const missingIdRows = rows.filter(r => !r['Line_Id__c'] || !String(r['Line_Id__c']).trim());
@@ -948,7 +1360,7 @@ export default class DmtBulkImport extends LightningElement {
         const dupeIds = [];
         const extracted = [];
         rows.forEach(row => {
-            const term = { 'Line_Id__c': row['Line_Id__c'] || '' };
+            const term = { 'Line_Id__c': row['Line_Id__c'] || '', __rowIndex: row.__rowIndex }; // CIBGLOBALD-4851
             termHeaders.forEach(h => { term[h] = row[h] || ''; });
             const id = term['DMT_RiskLineTermId__c'];
             if (!id) return;
@@ -977,11 +1389,18 @@ export default class DmtBulkImport extends LightningElement {
 
     // ── Post-batch: update status column in-place, table stays unchanged ─────
 
+    // CIBGLOBALD-4851 - Lines count bar after Process: what the load did (Status column), like the child tables
+    get linesResultStats() {
+        const count = status => this.linesRows.filter(r => r.__status === status).length;
+        return { createdCount: count('Created'), updatedCount: count('Updated'),
+                 noChangeCount: count('No Changes'), failedCount: count('Failed') };
+    }
+
     _updateSubmissionStatuses(section, failedIds) {
         if (section === 'lines') {
             this.linesRows = this.linesRows.map(r => {
+                if (failedIds.has(r['Line_Id__c'])) return { ...r, __status: 'Failed' }; // CIBGLOBALD-4851 - products-only lines can fail too
                 if (r.__status === 'No Changes') return r;
-                if (failedIds.has(r['Line_Id__c'])) return { ...r, __status: 'Failed' };
                 return { ...r, __status: r.__status === 'New' ? 'Created' : 'Updated' };
             });
             // Ensure status column is present in preview columns
@@ -1028,13 +1447,24 @@ export default class DmtBulkImport extends LightningElement {
         const lineIds = [...new Set(rows.map(r => r['Line_Id__c']).filter(Boolean))];
         if (lineIds.length === 0) return;
         try {
-            const [existingLines, existingTerms, existingItems] = await Promise.all([ // CIBGLOBALD-4851
+            const clientCodes = [...new Set(rows.map(r => valueText(r['Client_Code__c']).toUpperCase()).filter(Boolean))]; // CIBGLOBALD-4851
+            const [existingLines, existingTerms, existingItems, statusContext, associationClients] = await Promise.all([ // CIBGLOBALD-4851
                 getExistingLinesApex({ lineIds }),
                 getExistingTermsForLinesApex({ lineIds }),
-                getExistingProductItemsForLinesApex({ lineIds }) // CIBGLOBALD-4851
+                getExistingProductItemsForLinesApex({ lineIds }), // CIBGLOBALD-4851
+                getStatusContextApex({ clientCodes }), // CIBGLOBALD-4851
+                getCustomAssociationClientsApex({ lineIds }) // CIBGLOBALD-4851 - Custom lines (bulkImportRules.treasuryFlowReasons)
             ]);
             // Guard: user may have cleared or resubmitted the file while we were loading
             if (this.linesState !== 'ready') return;
+            this._statusContext = statusContext; // CIBGLOBALD-4851 - _stayDraftReasons
+            this._associationClientsByLine = new Map(); // CIBGLOBALD-4851 - bulkImportRules.treasuryFlowReasons
+            (associationClients || []).forEach(client => {
+                const lineId = client.Custom_Association__r && client.Custom_Association__r.DMT_Line__r
+                    ? client.Custom_Association__r.DMT_Line__r.Line_Id__c : '';
+                if (!this._associationClientsByLine.has(lineId)) this._associationClientsByLine.set(lineId, []);
+                this._associationClientsByLine.get(lineId).push(client);
+            });
             this._applyLineEnrichment(rows, existingLines);
             // CIBGLOBALD-4851 - Salesforce records of the loaded lines in the child tables; term columns of an old
             // Other Products Lines file become the Risk Line Terms file rows
@@ -1061,6 +1491,7 @@ export default class DmtBulkImport extends LightningElement {
     _applyLineEnrichment(csvRows, existingLines) {
         const sfMap = new Map();
         existingLines.forEach(rec => sfMap.set(rec.Line_Id__c, rec));
+        this._sfLinesById = sfMap; // CIBGLOBALD-4851 - status plan (_statusPlan) and reopen check
 
         let newCount = 0, updateCount = 0, noChangeCount = 0;
 
@@ -1097,21 +1528,31 @@ export default class DmtBulkImport extends LightningElement {
         // lightning-datatable URL type renders nothing when the URL field is null, so we only use it
         // when at least one row already exists in SF (ensuring the label is always visible).
         const previewHeaders  = this._linePreviewHeaders(this._linesFileHeaders()); // CIBGLOBALD-4851
-        const nonIdHeaders    = previewHeaders.filter(h => h !== 'Line_Id__c');
+        // CIBGLOBALD-4851 - the line columns in one order (LINE_COLUMN_ORDER): a file column shows the file value, the others
+        // the Salesforce value of existing lines (shown only, never saved); file columns this screen does not use, at the end
+        const standardHeaders = LINE_COLUMN_ORDER.filter(h => previewHeaders.includes(h) || sfMap.size > 0);
+        const nonIdHeaders    = [...standardHeaders, ...previewHeaders.filter(h => h !== 'Line_Id__c' && !LINE_COLUMN_ORDER.includes(h))];
         const hasAnyExisting  = enrichedRows.every(r => r.__sfId);
         const lineIdCol       = hasAnyExisting
             ? { label: 'Line_Id__c', fieldName: '__lineUrl', type: 'url',
                 typeAttributes: { label: { fieldName: 'Line_Id__c' }, target: '_blank' }, initialWidth: 200, wrapText: false }
             : { label: 'Line_Id__c', fieldName: 'Line_Id__c', type: 'text', initialWidth: 180, wrapText: false };
         this.linesPreviewColumns = [
+            { type: 'action', typeAttributes: { rowActions: this._lineRowActions } }, // CIBGLOBALD-4851 - Remove row
             { label: 'Status', fieldName: '__status', type: 'text', initialWidth: 100, wrapText: false },
+            // CIBGLOBALD-4851 - what the load does to the line's status (_statusPlan)
+            { label: 'Validation / Status Change', fieldName: '__statusPlan', type: 'text', initialWidth: 320, wrapText: true, // CIBGLOBALD-4851
+              cellAttributes: { iconName: { fieldName: '__statusPlanIcon' }, iconPosition: 'left',
+                                class: { fieldName: '__statusPlanClass' } } }, // CIBGLOBALD-4851
             lineIdCol,
             ...nonIdHeaders.map(h => ({ label: h, fieldName: this._safeKey(h), type: 'text', initialWidth: 160, wrapText: false }))
         ];
         this.linesPreviewRows = enrichedRows.slice(0, PREVIEW_ROW_LIMIT).map((row, idx) => {
-            const flat = { __previewKey: String(idx), __status: row.__status, 'Line_Id__c': row['Line_Id__c'] || '' };
+            const flat = { __previewKey: String(idx), __status: row.__status, 'Line_Id__c': row['Line_Id__c'] || '',
+                           ...this._statusCellFields(row) }; // CIBGLOBALD-4851
             flat.__lineUrl = row.__sfId ? (window.location.origin + '/' + row.__sfId) : null;
-            nonIdHeaders.forEach(h => { flat[this._safeKey(h)] = row[h] || ''; });
+            const sf = sfMap.get(row['Line_Id__c']); // CIBGLOBALD-4851
+            nonIdHeaders.forEach(h => { flat[this._safeKey(h)] = h in row ? (row[h] || '') : (sf ? valueText(sf[h]) : ''); }); // CIBGLOBALD-4851
             return flat;
         });
 
@@ -1124,51 +1565,473 @@ export default class DmtBulkImport extends LightningElement {
      * Status__c is never compared: DMT_BulkImportBatch ignores it (new lines start in Draft, existing ones keep theirs).
      */
     _hasLineChanges(csvRow, sf) {
-        const text = v => (v === null || v === undefined) ? '' : String(v).trim();
-        const normalise = (type, v) => {
-            const s = text(v);
-            if (type === 'date') {
-                const dmy = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); // dd/mm/yyyy, also accepted by the Apex save
-                return dmy ? `${dmy[3]}-${dmy[2].padStart(2, '0')}-${dmy[1].padStart(2, '0')}` : s.substring(0, 10);
-            }
-            if (type === 'number')  return s === '' ? '' : String(Number(s.replace(',', '.')));
-            if (type === 'boolean') return ['true', '1', 'yes'].includes(s.toLowerCase()) ? 'true' : 'false';
-            return s;
-        };
-        return Object.keys(LINE_COMPARE_FIELDS)
-            .filter(field => field in csvRow)
-            .filter(field => !(KEEP_WHEN_BLANK_FIELDS.includes(field) && text(csvRow[field]) === '')) // CIBGLOBALD-4851
-            .some(field => {
-                const type = LINE_COMPARE_FIELDS[field];
-                return normalise(type, csvRow[field]) !== normalise(type, sf[field]);
-            });
+        return this._changedLineFields(csvRow, sf).length > 0; // CIBGLOBALD-4851
     }
 
-    // ── Submit ────────────────────────────────────────────────────────────────
+    // CIBGLOBALD-4851 - the file columns (LINE_COMPARE_FIELDS) whose value differs from the line in Salesforce; the
+    // old amount column of the Other Products files (saved to Amount__c by DMT_BulkImportBatch.buildLine) counts as Amount__c
+    _changedLineFields(csvRow, sf) {
+        const changed = Object.keys(LINE_COMPARE_FIELDS)
+            .filter(field => field in csvRow)
+            .filter(field => !(KEEP_WHEN_BLANK_FIELDS.includes(field) && valueText(csvRow[field]) === ''))
+            .filter(field => {
+                const type = LINE_COMPARE_FIELDS[field];
+                return normaliseValue(type, csvRow[field]) !== normaliseValue(type, sf[field]);
+            });
+        if (LEGACY_AMOUNT_COLUMN in csvRow && valueText(csvRow[LEGACY_AMOUNT_COLUMN]) !== ''
+            && normaliseValue('number', csvRow[LEGACY_AMOUNT_COLUMN]) !== normaliseValue('number', sf.Amount__c)) {
+            changed.push('Amount__c');
+        }
+        return changed;
+    }
 
-    submitLines() {
-        // Only submit rows that actually need a DML — skip "No Changes"
-        const payload = this.linesRows
-            .filter(r => r.__status !== 'No Changes')
-            .map(r => this._cleanRow(r));
-        if (payload.length === 0) return;
+    /**
+     * CIBGLOBALD-4851 - What the load does to the line's status (same rules as DMT_BulkImportBatch.planStatus):
+     * { toDraft, from, target, checks } or null when the status is not touched. New line with a code other than DR:
+     * created in Draft, then moved to that status. Existing line not in Draft whose file changes a blocked field, or whose
+     * code points to another status: saved in Draft, then moved to the code's status (file value, else the stored one),
+     * or back to its previous status; a Closed line without a code stays in Draft. Existing Draft lines keep the Update
+     * Line Status button. The move is one update straight to the target (DMT_BatchSanctionAMIWEB), so the only checkpoint
+     * it passes is Draft to Proposal: checks = ['passport'] when the target is Proposal. Line staying in Ready to close
+     * with a change (line or products): ['readytoclose']. stayDraft = the reasons the move would be rejected
+     * (_stayDraftReasons): the line is saved but not moved (DMT_BulkImportBatch.UNIT_STAY_DRAFT) and nothing reopens.
+     */
+    _statusPlan(row) {
+        const plan = this._statusMove(row); // CIBGLOBALD-4851
+        if (!plan || !plan.target) return plan;
+        const reasons = this._stayDraftReasons(row, plan.target);
+        return reasons.length > 0 ? { ...plan, stayDraft: reasons, checks: [] } : plan;
+    }
+
+    // CIBGLOBALD-4851 - the status move of the load before the org rules check (see _statusPlan)
+    _statusMove(row) {
+        const sf       = this._sfLinesById ? this._sfLinesById.get(row['Line_Id__c']) : null;
+        const codeText = ('g_line_status_type__c' in row ? row['g_line_status_type__c'] : (sf ? sf.g_line_status_type__c : '')) || '';
+        const code       = String(codeText).trim().toUpperCase();
+        const codeStatus = STATUS_BY_CODE[code] || null;
+        if (!sf) {
+            return codeStatus && codeStatus !== 'Draft'
+                ? { toDraft: false, from: 'Draft', target: codeStatus, checks: codeStatus === 'Proposal' ? ['passport'] : [] } : null;
+        }
+        const current = sf.Status__c;
+        // CIBGLOBALD-4851 - an existing Draft line with a code is moved by the Update Line Status button, not by Process
+        if (current === 'Draft') {
+            return codeStatus && codeStatus !== 'Draft'
+                ? { toDraft: false, from: 'Draft', target: codeStatus, byButton: true, checks: [] } : null;
+        }
+        const changed  = this._changedLineFields(row, sf);
+        // CIBGLOBALD-4851 - a field blocked outside Draft (AvoidEditNotDraft), or a field the rule ApprovalProcessDataEdit
+        // rejects in the current status (it reads the new status): both are saved through Draft
+        const blocked  = BLOCKED_FILE_COLUMNS.some(column => changed.includes(column))
+                         || approvalDataEditReasons({ status: current, closed: sf.Closed__c, allowApprovalEdit: sf.DMT_Allow_Approval_Edit__c },
+                                                    changed, this.isTreasury).length > 0;
+        const codeMoves = codeStatus !== null && codeStatus !== current;
+        if (!blocked && !codeMoves) {
+            const productsChange = this._zoneCovers('rlt', row['Line_Id__c']) || this._zoneCovers('lpi', row['Line_Id__c']) // CIBGLOBALD-4851
+                                   || this._markedByLine('rlt').has(row['Line_Id__c']) || this._markedByLine('lpi').has(row['Line_Id__c']);
+            return current === 'Ready to close' && (changed.length > 0 || productsChange)
+                ? { toDraft: false, from: current, target: null, checks: ['readytoclose'] } : null;
+        }
+        let target = codeStatus || current;
+        if (!codeStatus && current === 'Closed') target = null;
+        return { toDraft: true, from: current, target, checks: target === 'Proposal' ? ['passport'] : [] };
+    }
+
+    _statusPlanLabel(plan) {
+        if (!plan) return '';
+        if (plan.toDraft) return `${plan.from} → Draft${plan.target ? ' → ' + plan.target : ''}`;
+        if (plan.target)  return `Draft → ${plan.target}`;
+        return '';
+    }
+
+    /**
+     * CIBGLOBALD-4851 - The Status Change cell (text, icon, SLDS text colour) of a row: the result of the background
+     * status move when there is one (_statusResults: moving / moved / not moved), else the plan of the load. A line the
+     * org rules would not let move (plan.stayDraft) shows a warning icon in red.
+     */
+    _statusCellFields(row) {
+        const result = this._statusResults ? this._statusResults.get(row['Line_Id__c']) : null;
+        let cell;
+        if (row.__status === 'Failed') {
+            cell = { text: 'Not saved, no status change', icon: 'utility:ban', cls: 'slds-text-color_weak' };
+        } else if (result && result.state === 'moving') {
+            cell = { text: `Moving to ${result.target}…`, icon: 'utility:clock', cls: 'slds-text-color_weak' };
+        } else if (result && result.state === 'moved') {
+            cell = { text: `Moved to ${result.target}`, icon: 'utility:success', cls: 'slds-text-color_success' };
+        } else if (result) {
+            cell = { text: `Not moved to ${result.target}: ${result.message}`, icon: 'utility:error', cls: 'slds-text-color_error' };
+        } else {
+            // CIBGLOBALD-4851 - from Process on, the plan of that moment (_processedPlans): the file rows become Salesforce
+            // records, and a plan computed again would describe a move that is not going to happen
+            const frozen = this._processedPlans && this.linesState !== 'ready';
+            const plan = frozen ? (this._processedPlans.get(row['Line_Id__c']) || null) : this._statusPlan(row);
+            // CIBGLOBALD-4851 - a row Process will reject (DMT_BulkImportBatch.buildUnit), shown before Process
+            const saveError = frozen ? null : this._saveError(row);
+            // CIBGLOBALD-4851 - the reason in a short sentence; the org message and its source go to the console once
+            if (saveError) {
+                this._logReasonsOnce(row['Line_Id__c'], 'will not be saved', [saveError]);
+                cell = { text: `Will not be saved: ${saveError.short}`, icon: 'utility:error', cls: 'slds-text-color_error' };
+            } else if (plan && plan.byButton && plan.stayDraft) {
+                // the button will not send it: the org rules would reject the move
+                this._logReasonsOnce(row['Line_Id__c'], `stays in Draft, Update Line Status will not move it to ${plan.target}`, plan.stayDraft);
+                cell = { text: `Stays in Draft, the button will not move it to ${plan.target}: ${reasonShortText(plan.stayDraft)}`,
+                         icon: 'utility:warning', cls: 'slds-text-color_error' };
+            } else if (plan && plan.byButton) {
+                cell = { text: `Draft → ${plan.target} when you click Update Line Status`, icon: 'utility:refresh', cls: 'slds-text-color_weak' };
+            } else if (plan && plan.stayDraft) {
+                const verb = this.linesIsDone ? 'Stayed' : 'Stays';
+                this._logReasonsOnce(row['Line_Id__c'], `stays in Draft, not moved to ${plan.target}`, plan.stayDraft);
+                cell = { text: `${plan.toDraft ? plan.from + ' → ' : ''}${verb} in Draft, not moved to ${plan.target}: ${reasonShortText(plan.stayDraft)}`,
+                         icon: 'utility:warning', cls: 'slds-text-color_error' };
+            } else {
+                const text = this._statusPlanLabel(plan);
+                cell = { text, icon: text ? 'utility:forward' : '', cls: '' };
+            }
+        }
+        return { __statusPlan: cell.text, __statusPlanIcon: cell.icon, __statusPlanClass: cell.cls };
+    }
+
+    /**
+     * CIBGLOBALD-4851 - The error Process would reject the row with (bulkImportRules.rowSaveError, a copy of
+     * DMT_BulkImportBatch.buildUnit), or null: the line columns when the line is saved (not No Changes, same as
+     * _buildUnits), its client (found by getStatusContext, the same query as the batch) and the product rows the load
+     * sends for it. Unknown context (getStatusContext failed): null, the batch still checks.
+     */
+    _saveError(row) {
+        const context = this._statusContext;
+        if (!context || !context.fileValueRules) return null;
+        const lineId = row['Line_Id__c'];
+        const sf = this._sfLinesById ? this._sfLinesById.get(lineId) : null;
+        const clientTypeByCode = context.clientTypeByCode || {};
+        const line = row.__status === 'No Changes' ? null
+            : { row, isNewLine: !sf, clientFound: code => code.toUpperCase() in clientTypeByCode };
+        const productRows = zone => (this._zoneCovers(zone, lineId) ? this._replacementRows(zone, lineId) : null);
+        return rowSaveError(line, productRows('rlt'), productRows('lpi'), context.fileValueRules);
+    }
+
+    // CIBGLOBALD-4851 - console.info of the reasons a cell shows (bulkImportRules.logRuleReasons), each reason once per line
+    // in a load, so the console has the org message and its source without repeating at every redraw
+    _logReasonsOnce(lineId, what, reasons) {
+        this._loggedReasons = this._loggedReasons || new Set();
+        const fresh = reasons.filter(r => !this._loggedReasons.has(`${lineId}|${what}|${r.message}`));
+        fresh.forEach(r => this._loggedReasons.add(`${lineId}|${what}|${r.message}`));
+        if (fresh.length > 0) logRuleReasons(lineId, what, fresh);
+    }
+
+    // CIBGLOBALD-4851 - redraws the Status Change cells of the preview rows (after a background result)
+    _refreshStatusCells() {
+        const rowsById = new Map(this.linesRows.map(r => [r['Line_Id__c'], r]));
+        this.linesPreviewRows = this.linesPreviewRows.map(flat => {
+            const row = rowsById.get(flat['Line_Id__c']);
+            return row ? { ...flat, ...this._statusCellFields(row) } : flat;
+        });
+    }
+
+    /**
+     * CIBGLOBALD-4851 - Why the org would reject moving the line from Draft to target after the load: the values the line
+     * has once saved (file column if present, else Salesforce), its products once saved, and the copies of the org rules
+     * in bulkImportRules.js (each names its exact source). Empty = the move is tried. Unknown context (getStatusContext
+     * failed): no reason, the move is tried.
+     */
+    _stayDraftReasons(row, target) {
+        const context = this._statusContext;
+        if (!context || !target || target === 'Draft') return [];
+        const lineId = row['Line_Id__c'];
+        const sf     = this._sfLinesById ? this._sfLinesById.get(lineId) : null;
+        const saved  = field => (field in row ? valueText(row[field]) : valueText(sf ? sf[field] : ''));
+        const code   = valueText('g_line_status_type__c' in row ? row['g_line_status_type__c'] : (sf ? sf.g_line_status_type__c : '')).toUpperCase();
+        const terms  = this._savedChildRows('rlt', lineId);
+        const reasons = [
+            ...stepRuleReasons(target, context.profileName),
+            ...termContinuityReasons(terms),
+            ...prospectReasons(target, code, this._savedClientRecordType(row, sf))
+        ];
+        const clientType = this._savedClientType(row, sf, saved);
+        if (this.isTreasury) {
+            const clients = (this._associationClientsByLine && this._associationClientsByLine.get(lineId)) || [];
+            return [...reasons, ...treasuryFlowReasons({
+                bookingGeography: saved('Booking_Geography__c'), endDate: saved('End_Date__c'), clientType,
+                fdAmount: saved('FD_Amount__c'), dvpAmount: saved('DvP_Amount__c'), waiver: saved('Waiver__c')
+            }, this._savedChildRows('lpi', lineId), terms, clients)];
+        }
+        // Other Products: the line amount comes from the old amount column of the file, else Salesforce
+        const amount = LEGACY_AMOUNT_COLUMN in row && valueText(row[LEGACY_AMOUNT_COLUMN]) !== ''
+            ? row[LEGACY_AMOUNT_COLUMN] : (sf ? sf.Amount__c : null);
+        const line = { clientType, typeOfRisk: saved('DMT_LastLevelId__c'), amount };
+        return [...reasons, ...otherProductsFlowReasons(line), ...productsTotalReasons(line, terms, target, code)];
+    }
+
+    // CIBGLOBALD-4851 - the products of the line once saved: the replacement rows when the load replaces them, else the
+    // Salesforce records
+    _savedChildRows(zone, lineId) {
+        return this._replacementRows(zone, lineId) || this.childState[zone].sfRows.filter(r => r.__lineId === lineId);
+    }
+
+    // CIBGLOBALD-4851 - DMT_Line__c.Client_Type__c once saved (formula order: Golden_Code__c, Custom_Association__c, client)
+    _savedClientType(row, sf, saved) {
+        if (saved('Golden_Code__c') !== '') return 'Golden';
+        if (sf && sf.Custom_Association__c) return 'Custom';
+        const code = valueText(row['Client_Code__c']).toUpperCase();
+        if (code) return this._statusContext.clientTypeByCode[code] || '';
+        return sf ? (sf.Client_Type__c || '') : '';
+    }
+
+    // CIBGLOBALD-4851 - record type DeveloperName of the line's client once saved (file Client_Code__c, else Salesforce)
+    _savedClientRecordType(row, sf) {
+        const code = valueText(row['Client_Code__c']).toUpperCase();
+        if (code) return (this._statusContext.clientRecordTypeByCode || {})[code] || '';
+        return sf && sf.Client__r && sf.Client__r.RecordType ? sf.Client__r.RecordType.DeveloperName || '' : '';
+    }
+
+    // ── Process ───────────────────────────────────────────────────────────────
+
+    /**
+     * CIBGLOBALD-4851 - One unit per line for DMT_BulkImportController.processImport (keys = DMT_BulkImportBatch.UNIT_*):
+     * the line row (updated unless No Changes) and, when that table has file rows for the line, its Risk Line Terms /
+     * Line Product Items rows (the line's records of that object are replaced). Lines with nothing to save are left out.
+     */
+    _buildUnits() {
+        const rltMarks = this._markedByLine('rlt'); // CIBGLOBALD-4851
+        const lpiMarks = this._markedByLine('lpi'); // CIBGLOBALD-4851
+        const units = [];
+        this.linesRows.forEach(row => {
+            const lineId     = row['Line_Id__c'];
+            const updateLine = row.__status !== 'No Changes';
+            const rltDelete = rltMarks.get(lineId); // CIBGLOBALD-4851 - records removed one by one
+            const lpiDelete = lpiMarks.get(lineId); // CIBGLOBALD-4851
+            const rltLoaded = this._zoneCovers('rlt', lineId); // CIBGLOBALD-4851
+            const lpiLoaded = this._zoneCovers('lpi', lineId); // CIBGLOBALD-4851
+            if (!updateLine && !rltLoaded && !lpiLoaded && !rltDelete && !lpiDelete) return; // CIBGLOBALD-4851
+            const unit = { line: this._cleanRow(row), rowNumber: row.__rowIndex, updateLine };
+            const plan = this._statusPlan(row); // CIBGLOBALD-4851 - a move the org rules would reject is not tried
+            if (plan && plan.stayDraft && !plan.byButton) unit.stayDraft = true; // CIBGLOBALD-4851
+            if (rltLoaded) unit.rlt = this._replacementRows('rlt', lineId); // CIBGLOBALD-4851 - maybe empty: all deleted
+            if (lpiLoaded) unit.lpi = this._replacementRows('lpi', lineId); // CIBGLOBALD-4851
+            if (rltDelete) unit.rltDelete = rltDelete; // CIBGLOBALD-4851 - DMT_BulkImportBatch.UNIT_RLT_DELETE
+            if (lpiDelete) unit.lpiDelete = lpiDelete; // CIBGLOBALD-4851 - DMT_BulkImportBatch.UNIT_LPI_DELETE
+            units.push(unit);
+        });
+        return units;
+    }
+
+    /**
+     * CIBGLOBALD-4851 - A products table is part of the load when a file or a pasted table was loaded in its zone (Line
+     * Product Items only for Treasury lines). Requirement point 2: then it is the complete list for every line of the load;
+     * a line without rows in it loses all its records of that object. A table not loaded leaves that object untouched.
+     */
+    _zoneLoaded(zone) {
+        // after Process the file rows are Salesforce records (only failed lines keep theirs for a retry)
+        return (zone !== 'lpi' || this.isTreasury) && !!this.childState[zone].fileName && !this.linesIsDone;
+    }
+
+    // CIBGLOBALD-4851 - the loaded table applies to this line (every line of the load, or after Process only the failed ones)
+    _zoneCovers(zone, lineId) {
+        const lineIds = this.childState[zone].lineIds;
+        return this._zoneLoaded(zone) && (!lineIds || lineIds.has(lineId));
+    }
+
+    // CIBGLOBALD-4851 - the rows the line will have of that object after the load: the file rows (maybe none) when the
+    // table is loaded, null when the object is not touched
+    _replacementRows(zone, lineId) {
+        if (this._zoneCovers(zone, lineId)) return this._fileRowsByLine(zone).get(lineId) || [];
+        const marked = this._markedByLine(zone).get(lineId);
+        if (!marked) return null;
+        // records removed one by one: the line keeps its other Salesforce records
+        return this.childState[zone].sfRows.filter(r => r.__lineId === lineId && !marked.includes(r.__sfId));
+    }
+
+    _fileRowsByLine(zone) {
+        const byLine = new Map();
+        this.childState[zone].fileRows.forEach(row => {
+            if (!byLine.has(row.__lineId)) byLine.set(row.__lineId, []);
+            byLine.get(row.__lineId).push(this._cleanRow(row));
+        });
+        return byLine;
+    }
+
+    // CIBGLOBALD-4851 - one background job at a time on the lines of the load: the load (Process), the status moves
+    // (Process or Update Line Status) and Add OU write the same lines, so each button waits for the others to finish
+    get _backgroundJobRunning() {
+        return this.linesState === 'submitting' || this.linesState === 'processing'
+               || this.lineStatusUpdateState !== 'idle' || this.ouState === 'running'
+               || (this._statusMoves.length > 0 && !this._statusDone);
+    }
+
+    // CIBGLOBALD-4851 - while a job runs the screen waits: loading controls disabled, drop zones greyed, paste, drop,
+    // row actions and Undo ignored; the progress bar and texts stay visible
+    get isBusy() { return this._backgroundJobRunning; }
+
+    // CIBGLOBALD-4851 - true (with a toast) when an action must wait for the running job
+    _waitForJob() {
+        if (!this.isBusy) return false;
+        this._toast('Please wait', this.busyText, 'info');
+        return true;
+    }
+
+    get busyText() {
+        if (this.linesState === 'submitting' || this.linesState === 'processing') return 'Processing the lines. Please wait until it finishes.';
+        if (this.ouState === 'running') return 'Adding the OU participants. Please wait until it finishes.';
+        return `${this.statusProgressText || 'Moving statuses.'} Please wait until it finishes.`;
+    }
+
+    get processDisabled() {
+        return this.linesState !== 'ready' || this._buildUnits().length === 0 || this._backgroundJobRunning; // CIBGLOBALD-4851
+    }
+
+    async processImport() {
+        const units = this._buildUnits();
+        if (units.length === 0) return;
 
         this.linesState     = 'submitting';
         this.linesJobId     = this._newJobId();
         this.linesProcessed = 0;
-        this.linesTotal     = payload.length;
+        this.linesTotal     = units.length;
         // New lines submitted → allow launching Update Line Status again for them
         this.lineStatusUpdateState = 'idle';
+        // CIBGLOBALD-4851 - one OU per load: an OU already added to every line of this Process stays (locked, with its
+        // result); lines it did not reach (pasted after Add OU) open Add OU again
+        const ouCoversLoad = this.ouState === 'done' && !!this._ouLineIds
+                             && this.linesRows.every(r => this._ouLineIds.has(r['Line_Id__c']));
+        if (!ouCoversLoad) {
+            this.ouState = 'idle';
+            this.ouResultText = '';
+        }
+
+        // CIBGLOBALD-4851 - features that will reopen (4811 check) and lines whose status continues in the background
+        const plans = this.linesRows.map(row => ({ row, plan: this._statusPlan(row) })).filter(p => p.plan);
+        this._processedPlans = new Map(plans.map(p => [p.row['Line_Id__c'], p.plan])); // CIBGLOBALD-4851 - frozen plans
+        this._snapshotChildChanges(units); // CIBGLOBALD-4851 - Created / Deleted badges after Process
+        // CIBGLOBALD-4851 - lines the status move after the load handles (only lines sent in a unit): its result comes with
+        // this jobId (Phase STATUS)
+        const sentLineIds = new Set(units.map(u => u.line['Line_Id__c']));
+        this._statusResults = new Map();
+        this._pendingMoves = plans.filter(p => p.plan.target && !p.plan.stayDraft && !p.plan.byButton && sentLineIds.has(p.row['Line_Id__c']))
+            .map(p => ({ lineId: p.row['Line_Id__c'], target: p.plan.target }));
+        if (this._pendingMoves.length > 0) {
+            await this._watchStatusMoves(this.linesJobId, this._pendingMoves);
+        }
+        const reopens = await this._previewReopens(plans);
+        if (reopens.length > 0) {
+            this._toast('Features that will reopen', reopens.join(' | '), 'warning');
+        }
 
         this._subscribeProgress(this.linesJobId, 'lines');
 
-        submitLinesApex({ rowsJson: JSON.stringify(payload), jobId: this.linesJobId, recordTypeName: this.selectedRecordType })
-            .then(() => { this.linesState = 'processing'; })
+        processImportApex({ unitsJson: JSON.stringify(units), jobId: this.linesJobId, recordTypeName: this.selectedRecordType })
+            .then(asyncJobId => {
+                this.linesState = 'processing';
+                this._loadJobCompleted = false; // CIBGLOBALD-4851
+                // CIBGLOBALD-4851 - the end of the load is also read from its job (_onLoadJobDone)
+                this._loadAsyncJobId = asyncJobId;
+                this._pollJob(PHASE_PROCESS, () => Promise.resolve(asyncJobId), state => this._onLoadJobDone(state));
+            })
             .catch(e => {
-                console.error('submitLines error', e);
+                console.error('processImport error', e);
                 this.linesState = 'idle';
                 this._unsubscribe(this.linesSubscription);
+                this._endWatch(PHASE_STATUS); // CIBGLOBALD-4851
+                this._toast('Process failed', (e && e.body && e.body.message) || 'Unexpected error');
             });
+    }
+
+    /**
+     * CIBGLOBALD-4851 - The 4811 check (DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges) for every checkpoint
+     * a line passes with this load: the line values the file changes and its product rows (Salesforce records replaced =
+     * deleted, file rows = new). One line at a time (9 SOQL per check). Saves nothing; a failed check counts as no reopen.
+     * @returns one entry per line with features to reopen: 'Line_Id__c: feature, feature'
+     */
+    async _previewReopens(plans) {
+        const results = [];
+        for (const { row, plan } of plans) {
+            const sf = this._sfLinesById ? this._sfLinesById.get(row['Line_Id__c']) : null;
+            if (!sf || plan.checks.length === 0) continue;
+            const unsavedValues = this._unsavedLineValues(row, sf);
+            const unsavedRows   = this._unsavedChildRows(row['Line_Id__c']);
+            const featureNames  = new Set();
+            for (const caseTypeToCheck of plan.checks) {
+                try {
+                    // eslint-disable-next-line no-await-in-loop
+                    const features = await previewCompareUnsavedChangesApex({ recordId: sf.Id, caseTypeToCheck, unsavedValues, unsavedRows });
+                    (features || []).forEach(f => featureNames.add(f.featureName));
+                } catch (e) {
+                    console.error('reopen check failed', row['Line_Id__c'], caseTypeToCheck, e);
+                }
+            }
+            if (featureNames.size > 0) results.push(`${row['Line_Id__c']}: ${[...featureNames].join(', ')}`);
+        }
+        return results;
+    }
+
+    // CIBGLOBALD-4851 - field API name -> value of the line fields the file changes, typed as the check expects
+    _unsavedLineValues(row, sf) {
+        const values = {};
+        this._changedLineFields(row, sf).filter(field => field !== 'Amount__c').forEach(field => {
+            const v = normaliseValue(LINE_COMPARE_FIELDS[field], row[field]);
+            values[field] = LINE_COMPARE_FIELDS[field] === 'boolean' ? v === 'true' : (v === '' ? null : v);
+        });
+        if (LEGACY_AMOUNT_COLUMN in row && valueText(row[LEGACY_AMOUNT_COLUMN]) !== '') {
+            values.Amount__c = normaliseValue('number', row[LEGACY_AMOUNT_COLUMN]);
+        }
+        return values;
+    }
+
+    // CIBGLOBALD-4851 - product rows of the line as the check expects ({objectApiName, rowId, values, deleted})
+    _unsavedChildRows(lineId) {
+        const rows = [];
+        Object.keys(CHILD_ZONES).forEach(zone => {
+            if (zone === 'lpi' && !this.isTreasury) return;
+            const objectApiName = CHILD_ZONES[zone].objectApiName;
+            // CIBGLOBALD-4851 - records removed one by one: only those are deleted, nothing new
+            const marked = this._markedByLine(zone).get(lineId);
+            if (marked) {
+                marked.forEach(rowId => rows.push({ objectApiName, rowId, deleted: true }));
+                return;
+            }
+            const fileRows = this._replacementRows(zone, lineId); // CIBGLOBALD-4851 - every record replaced when loaded
+            if (!fileRows) return;
+            this.childState[zone].sfRows
+                .filter(r => r.__lineId === lineId)
+                .forEach(r => rows.push({ objectApiName, rowId: r.__sfId, deleted: true }));
+            fileRows.forEach(fileRow => {
+                const values = {};
+                Object.keys(fileRow).forEach(k => {
+                    const v = valueText(fileRow[k]);
+                    if (/^(true|false)$/i.test(v))            values[k] = v.toLowerCase() === 'true';
+                    else if (/^-?\d+([.,]\d+)?$/.test(v))    values[k] = v.replace(',', '.');
+                    else                                      values[k] = v === '' ? null : v;
+                });
+                rows.push({ objectApiName, values });
+            });
+        });
+        return rows;
+    }
+
+    /**
+     * CIBGLOBALD-4851 - After Process: the file rows of the lines saved are now Salesforce records, so the child tables
+     * reload from Salesforce; file rows of failed lines stay for a retry.
+     */
+    async _reloadChildrenAfterProcess(failedIds) {
+        ['rlt', 'lpi'].forEach(zone => {
+            const state = this.childState[zone];
+            const fileRows = state.fileRows.filter(r => failedIds.has(r.__lineId));
+            // the file's rejected-row messages belong to the rows just saved; the table now applies only to the failed
+            // lines (their retry), and to no line when none failed, so a later paste of lines does not replace the
+            // products of the lines just saved
+            const retry = failedIds.size > 0 && !!state.fileName;
+            this._setChildState(zone, { fileRows, errors: fileRows.length > 0 ? state.errors : [],
+                                        fileName: retry ? state.fileName : '', lineIds: retry ? new Set(failedIds) : null });
+        });
+        const lineIds = this.linesRows.map(r => r['Line_Id__c']).filter(Boolean);
+        try {
+            const [terms, items] = await Promise.all([
+                getExistingTermsForLinesApex({ lineIds }),
+                getExistingProductItemsForLinesApex({ lineIds })
+            ]);
+            this._setSfChildren('rlt', terms);
+            this._setSfChildren('lpi', items);
+        } catch (e) {
+            console.error('reload children failed', e);
+        }
     }
 
     // ── Platform Events ───────────────────────────────────────────────────────
@@ -1181,10 +2044,37 @@ export default class DmtBulkImport extends LightningElement {
         });
     }
 
-    // CIBGLOBALD-4851 - Lines progress only (child rows are saved with Process)
+    /**
+     * CIBGLOBALD-4851 - The load job ended (polled). When its COMPLETED event did not arrive within EVENT_GRACE_MS, the
+     * screen ends Process anyway: the job state is shown and the row-by-row result is missing (lost event); the status
+     * move of the load is still followed by its job.
+     */
+    _onLoadJobDone(state) {
+        // eslint-disable-next-line @lwc/lwc/no-async-operation
+        setTimeout(() => {
+            if (this.linesState !== 'processing') return;
+            this._unsubscribe(this.linesSubscription);
+            this.linesState = 'done';
+            this._loadJobCompleted = state.status === 'Completed'; // Update Line Status and Add OU stay available
+            const failed = state.status !== 'Completed' || state.errors > 0;
+            // CIBGLOBALD-4851 - an Unknown job (not readable, or still running after POLL_MAX_MS) says why
+            const detail = state.status === 'Unknown' ? `Job status unknown (${state.extendedStatus})`
+                : `Job ${state.status}${state.errors ? `, ${state.errors} failed part(s): ${state.extendedStatus}` : ''}`;
+            this._toast(failed ? 'The load ended with errors' : 'The load ended',
+                `${detail}. The row by row result did not reach the screen: check the lines in Salesforce.`,
+                failed ? 'error' : 'warning');
+            this._reloadChildrenAfterProcess(this.linesFailedIds); // CIBGLOBALD-4851 - the product tables as they are in Salesforce
+            const moves = this._pendingMoves || [];
+            if (moves.length > 0) this._startStatusWait(moves, this._statusJobOfLoad(this._loadAsyncJobId));
+        }, EVENT_GRACE_MS);
+    }
+
+    // CIBGLOBALD-4851 - progress of Process (lines and their products, one unit per line)
     _handleProgressEvent(event, expectedJobId, section) {
         const payload = event.data.payload;
         if (payload.Job_Id__c !== expectedJobId || section !== 'lines') return;
+        // CIBGLOBALD-4851 - the status move after the load reports with the same jobId (Phase STATUS, _watchStatusMoves)
+        if (payload.Phase__c !== PHASE_PROCESS) return;
 
         const status    = payload.Status__c;
         const errJson   = payload.Errors_JSON__c || '[]';
@@ -1212,7 +2102,214 @@ export default class DmtBulkImport extends LightningElement {
                 .map(r => r['Line_Id__c'])
                 .filter(Boolean);
             if (createdIds.length > 0) this._backfillCreatedLineUrls(createdIds);
+            this._reloadChildrenAfterProcess(this.linesFailedIds); // CIBGLOBALD-4851
+            // CIBGLOBALD-4851 - automatic status change after the load (DMT_BatchSanctionAMIWEB), one line at a time: the
+            // lines saved now wait for its result (Phase STATUS); the failed ones were not saved, so they do not move
+            const moves = (this._pendingMoves || []).filter(m => !this.linesFailedIds.has(m.lineId));
+            if (moves.length === 0) {
+                this._endWatch(PHASE_STATUS);
+            } else {
+                this._startStatusWait(moves, this._statusJobOfLoad(this._loadAsyncJobId));
+                this._toast('Status update running in the background',
+                    `${moves.length} line(s) move to their status: ${moves.map(m => `${m.lineId} (${m.target})`).join(', ')}. The result will show in the Validation / Status Change column.`,
+                    'info');
+            }
         }
+    }
+
+    // ── CIBGLOBALD-4851 - Background results (status move, Update Line Status, Add OU) ──────────────────────────────
+
+    /**
+     * Follows one job (key PROCESS / STATUS / OU): every POLL_MS reads its AsyncApexJob (getJobState) and calls onDone
+     * with the state once it is Completed, Failed or Aborted. getAsyncId resolves the job Id (null while it does not exist
+     * yet). After POLL_MAX_FAILURES failed reads, or when the job never appears, onDone gets status 'Unknown'.
+     */
+    _pollJob(key, getAsyncId, onDone) {
+        this._stopPoll(key);
+        const poll = { timer: null, failures: 0, started: Date.now() }; // CIBGLOBALD-4851
+        this._polls = this._polls || {};
+        this._polls[key] = poll;
+        const finish = state => {
+            if (this._polls[key] !== poll) return;
+            this._stopPoll(key);
+            onDone(state);
+        };
+        const tick = async () => {
+            if (this._polls[key] !== poll) return;
+            try {
+                const asyncJobId = await getAsyncId();
+                if (asyncJobId === false) {
+                    finish({ status: 'Unknown', errors: 0, extendedStatus: 'the job did not start' });
+                    return;
+                }
+                if (asyncJobId) {
+                    const state = await getJobStateApex({ asyncJobId });
+                    poll.failures = 0;
+                    if (JOB_END_STATES.includes(state.status)) {
+                        finish(state);
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error('job state read failed', key, e);
+                poll.failures++;
+                if (poll.failures >= POLL_MAX_FAILURES) {
+                    finish({ status: 'Unknown', errors: 0, extendedStatus: 'the job state could not be read' });
+                    return;
+                }
+            }
+            // CIBGLOBALD-4851 - safety net: the screen does not wait for ever; the onDone handlers read the result from the org
+            if (Date.now() - poll.started > POLL_MAX_MS) {
+                finish({ status: 'Unknown', errors: 0, extendedStatus: 'still running after 10 minutes' });
+                return;
+            }
+            // eslint-disable-next-line @lwc/lwc/no-async-operation
+            poll.timer = setTimeout(tick, POLL_MS);
+        };
+        // eslint-disable-next-line @lwc/lwc/no-async-operation
+        poll.timer = setTimeout(tick, POLL_MS);
+    }
+
+    _stopPoll(key) {
+        const poll = this._polls && this._polls[key];
+        if (!poll) return;
+        clearTimeout(poll.timer);
+        delete this._polls[key];
+    }
+
+    // The status job a load started (DMT_BulkImportController.getStatusJobAfterLoad); false when it does not appear
+    // within STATUS_JOB_FIND_MS
+    _statusJobOfLoad(loadAsyncJobId) {
+        const started = Date.now();
+        let found = null;
+        return async () => {
+            if (found) return found;
+            found = await getStatusJobAfterLoadApex({ loadAsyncJobId });
+            if (!found && Date.now() - started > STATUS_JOB_FIND_MS) return false;
+            return found;
+        };
+    }
+
+    /**
+     * Subscribes to the events of one background job (Job_Id__c + Phase__c of DMT_BulkImportProgress__e): progress and
+     * row messages. One subscription per phase. Returns false when the subscription fails (the job is still followed by
+     * polling).
+     */
+    async _watchJob(jobId, phase, onEvent) {
+        this._endWatch(phase);
+        const watch = { jobId, sub: null };
+        this._watches = this._watches || {};
+        this._watches[phase] = watch;
+        try {
+            watch.sub = await subscribe(EVENT_CHANNEL, -1, event => {
+                const payload = event.data.payload;
+                if (payload.Job_Id__c !== jobId || payload.Phase__c !== phase || this._watches[phase] !== watch) return;
+                onEvent(payload);
+            });
+            return true;
+        } catch (e) {
+            console.error('background result subscription failed', phase, e);
+            delete this._watches[phase];
+            return false;
+        }
+    }
+
+    _endWatch(phase) {
+        const watch = this._watches && this._watches[phase];
+        if (!watch) return;
+        this._unsubscribe(watch.sub);
+        delete this._watches[phase];
+    }
+
+    _endAllWatches() {
+        this._endWatch(PHASE_STATUS);
+        [PHASE_PROCESS, PHASE_STATUS, 'OU'].forEach(key => this._stopPoll(key));
+    }
+
+    /**
+     * Events of the status move of the given lines ({ lineId, target }): progress in statusProgressText; the COMPLETED /
+     * FAILED event ends it with the row messages (_finishStatusMoves). The job is followed by _startStatusWait.
+     */
+    async _watchStatusMoves(jobId, moves) {
+        // the list can shrink when the load ends (_startStatusWait drops the lines that failed to save)
+        this._statusMoves = moves;
+        return this._watchJob(jobId, PHASE_STATUS, payload => {
+            if (payload.Status__c === 'IN_PROGRESS') {
+                this.statusProgressText = `Moving statuses: ${payload.Processed__c || 0} of ${this._statusMoves.length} line(s) done.`;
+                return;
+            }
+            this._finishStatusMoves(this._statusMoves, this._parseErrors(payload.Errors_JSON__c),
+                payload.Status__c === 'FAILED' ? { status: 'Failed', errors: 1, extendedStatus: '' } : null);
+        });
+    }
+
+    // The lines wait for their move (cells 'Moving'); the job (getAsyncId) is polled and, when it ends without the final
+    // event, the result is read from Salesforce
+    _startStatusWait(moves, getAsyncId) {
+        this._statusMoves = moves;
+        this._statusDone = false;
+        moves.forEach(m => this._statusResults.set(m.lineId, { state: 'moving', target: m.target }));
+        this.statusProgressText = `Moving statuses: 0 of ${moves.length} line(s) done.`;
+        this._refreshStatusCells();
+        this._pollJob(PHASE_STATUS, getAsyncId, state => {
+            // eslint-disable-next-line @lwc/lwc/no-async-operation
+            setTimeout(() => this._finishStatusMoves(this._statusMoves, [], state), EVENT_GRACE_MS);
+        });
+    }
+
+    /**
+     * The end of a status move (event or job), once: the status of each line is read from Salesforce, so the cell shows
+     * what really happened (moved, or not moved with the row message, the job's error, or the line's current status). One
+     * final toast: success when every line moved, error otherwise.
+     */
+    async _finishStatusMoves(moves, errors, jobState) {
+        if (this._statusDone) return;
+        this._statusDone = true;
+        this._endWatch(PHASE_STATUS);
+        this._stopPoll(PHASE_STATUS);
+        const messageById = new Map(errors.filter(e => e.id).map(e => [e.id, e.message]));
+        const general = [...errors.filter(e => !e.id).map(e => e.message),
+                         jobState && jobState.extendedStatus ? jobState.extendedStatus : ''].filter(Boolean).join(' ');
+        const statusById = new Map();
+        let readFailed = false;
+        try {
+            const records = await getExistingLinesApex({ lineIds: moves.map(m => m.lineId) });
+            records.forEach(r => statusById.set(r.Line_Id__c, r.Status__c));
+            // CIBGLOBALD-4851 - the screen keeps the lines as they are now (a moved line is no longer a Draft line to move)
+            if (this._sfLinesById) records.forEach(r => this._sfLinesById.set(r.Line_Id__c, r));
+        } catch (e) {
+            console.error('status result read failed', e);
+            readFailed = true;
+        }
+        const notMoved = [];
+        moves.forEach(m => {
+            const now = statusById.get(m.lineId);
+            if (!readFailed && now === m.target) {
+                this._statusResults.set(m.lineId, { state: 'moved', target: m.target });
+                return;
+            }
+            const message = messageById.get(m.lineId)
+                || general
+                || (readFailed ? 'the status could not be read; check the email'
+                    : now && now !== 'Draft' ? `the line is in ${now} (only Draft lines are moved)` : `the line is in ${now || 'an unknown status'}`);
+            this._statusResults.set(m.lineId, { state: 'failed', target: m.target, message });
+            notMoved.push(`${m.lineId}: ${message}`);
+        });
+        this.statusProgressText = '';
+        this._refreshStatusCells();
+        // CIBGLOBALD-4851 - the button is free again; it enables when some line can move and nothing is left to save
+        if (this.lineStatusUpdateState === 'launched') this.lineStatusUpdateState = 'idle';
+        const moved = moves.length - notMoved.length;
+        if (notMoved.length === 0) {
+            this._toast('Status update finished', `${moved} line(s) moved to their status.`, 'success');
+        } else {
+            this._toast(jobState && jobState.status !== 'Completed' ? 'Status update failed' : 'Status update finished with errors',
+                `${moved} moved, ${notMoved.length} not moved: ${notMoved.slice(0, 5).join(' | ')}${notMoved.length > 5 ? ' | ...' : ''}`, 'error');
+        }
+    }
+
+    _parseErrors(errorsJson) {
+        try { return JSON.parse(errorsJson || '[]'); } catch (e) { return []; }
     }
 
     // ── Error log download ────────────────────────────────────────────────────
@@ -1240,7 +2337,10 @@ export default class DmtBulkImport extends LightningElement {
     // ── Utilities ─────────────────────────────────────────────────────────────
 
     _toast(title, message, variant = 'error') {
-        this.dispatchEvent(new ShowToastEvent({ title, message, variant, mode: 'sticky' }));
+        // CIBGLOBALD-4851 - errors and warnings stay until closed; success and info close by themselves, so they do not
+        // pile up (Lightning shows only a few toasts at a time and hides the newest)
+        const mode = variant === 'error' || variant === 'warning' ? 'sticky' : 'dismissible';
+        this.dispatchEvent(new ShowToastEvent({ title, message, variant, mode }));
     }
 
     _newJobId() {
@@ -1255,7 +2355,9 @@ export default class DmtBulkImport extends LightningElement {
 
     _unsubscribe(subscription) {
         if (subscription) {
-            unsubscribe(subscription).catch(e => console.error('unsubscribe error', e));
+            // CIBGLOBALD-4851 - Enhancement fix to existing process: empApi unsubscribe needs a callback
+            // ('Invalid or missing callback' in the console after every load)
+            unsubscribe(subscription, () => {});
         }
     }
 }

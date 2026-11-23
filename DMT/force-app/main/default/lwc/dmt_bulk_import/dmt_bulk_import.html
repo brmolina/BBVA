@@ -39,6 +39,8 @@
                         label="Line Type"
                         value={selectedRecordType}
                         options={lineTypeOptions}
+                        disabled={lineTypeLocked}
+                        field-level-help={lineTypeHelp}
                         onchange={handleLineTypeChange}>
                     </lightning-combobox>
                 </div>
@@ -50,7 +52,7 @@
                      ondrop={handleLinesFileDrop}>
                     <lightning-icon icon-name="utility:upload" size="small" class="slds-m-bottom_xx-small"></lightning-icon>
                     <p class="slds-text-body_small">{linesDropZoneText}</p>
-                    <lightning-button label="Browse" variant="neutral" size="small"
+                    <lightning-button label="Browse" variant="neutral" size="small" disabled={isBusy}
                                      onclick={openLinesFilePicker}
                                      class="slds-m-top_xx-small">
                     </lightning-button>
@@ -79,9 +81,18 @@
                     <template lwc:if={linesShowPreview}>
                         <template lwc:if={hasLinesEnrichedStats}>
                             <div class="enriched-stats slds-m-bottom_x-small">
-                                <span class="status-badge-new slds-m-right_xx-small">{linesEnrichedStats.newCount} New</span>
-                                <span class="status-badge-update slds-m-right_xx-small">{linesEnrichedStats.updateCount} Will Update</span>
-                                <span class="status-badge-nochange">{linesEnrichedStats.noChangeCount} No Changes</span>
+                                <!-- CIBGLOBALD-4851 - after Process: what the load did -->
+                                <template lwc:if={linesIsDone}>
+                                    <span class="status-badge-new slds-m-right_xx-small">{linesResultStats.createdCount} Created</span>
+                                    <span class="status-badge-update slds-m-right_xx-small">{linesResultStats.updatedCount} Updated</span>
+                                    <span class="status-badge-nochange slds-m-right_xx-small">{linesResultStats.noChangeCount} No Changes</span>
+                                    <span class="status-badge-delete">{linesResultStats.failedCount} Failed</span>
+                                </template>
+                                <template lwc:else>
+                                    <span class="status-badge-new slds-m-right_xx-small">{linesEnrichedStats.newCount} New</span>
+                                    <span class="status-badge-update slds-m-right_xx-small">{linesEnrichedStats.updateCount} Will Update</span>
+                                    <span class="status-badge-nochange">{linesEnrichedStats.noChangeCount} No Changes</span>
+                                </template>
                             </div>
                         </template>
                         <div class="preview-table-wrapper slds-m-bottom_small">
@@ -89,6 +100,7 @@
                                 key-field="__previewKey"
                                 data={linesPreviewRows}
                                 columns={linesPreviewColumns}
+                                onrowaction={handleLineRowAction}
                                 hide-checkbox-column
                                 suppress-bottom-bar>
                             </lightning-datatable>
@@ -99,14 +111,16 @@
                     <!-- Submit + Start Over row -->
                     <template lwc:if={linesShowSubmit}>
                         <div class="submit-row slds-m-top_medium">
-                            <lightning-button label="Create / Update Lines"
+                            <!-- CIBGLOBALD-4851 - Process: saves the lines and replaces their products (one batch) -->
+                            <lightning-button label="Process"
                                              variant="brand"
-                                             disabled={linesSubmitDisabled}
-                                             onclick={submitLines}>
+                                             disabled={processDisabled}
+                                             onclick={processImport}>
                             </lightning-button>
                             <template lwc:if={hasAnyData}>
                                 <lightning-button label="Start Over"
                                                  variant="destructive-text"
+                                                 disabled={isBusy}
                                                  onclick={resetAll}>
                                 </lightning-button>
                             </template>
@@ -122,6 +136,10 @@
                             <span class="slds-badge slds-badge_lightest error-badge">
                                 {linesErrorCount} Failed
                             </span>
+                            <!-- CIBGLOBALD-4851 - progress of the status move in the background -->
+                            <template lwc:if={statusProgressText}>
+                                <span class="slds-m-left_small slds-text-body_small slds-text-color_weak">{statusProgressText}</span>
+                            </template>
                             <template lwc:if={linesHasResultErrors}>
                                 <lightning-button label="Download Error Log"
                                                  variant="neutral"
@@ -165,7 +183,7 @@
                                      ondrop={handleRetryFileDrop}>
                                     <lightning-icon icon-name="utility:refresh" size="small" class="slds-m-bottom_xx-small"></lightning-icon>
                                     <p class="slds-text-body_small">Drop fixed file to retry failed rows</p>
-                                    <lightning-button label="Browse" variant="neutral" size="small"
+                                    <lightning-button label="Browse" variant="neutral" size="small" disabled={isBusy}
                                                      onclick={openRetryFilePicker}
                                                      class="slds-m-top_xx-small">
                                     </lightning-button>
@@ -177,6 +195,51 @@
                             </div>
                         </template>
                     </template>
+                </template>
+
+                <!-- CIBGLOBALD-4851 - Add OU: Read/Write participants of one OU (and each line's owner) on the lines of this load -->
+                <template lwc:if={showAddOu}>
+                    <div class="slds-grid slds-grid_vertical-align-end slds-m-top_small">
+                        <!-- CIBGLOBALD-4851 - OU search: from 2 characters, up to 10 OUs with their Read/Write users -->
+                        <div class="ou-search slds-m-right_x-small">
+                            <lightning-input label="OU code"
+                                             value={ouCode}
+                                             disabled={ouLocked}
+                                             autocomplete="off"
+                                             onchange={handleOuChange}
+                                             onfocus={handleOuFocus}
+                                             onblur={handleOuBlur}
+                                             onkeydown={handleOuKeyDown}>
+                            </lightning-input>
+                            <template lwc:if={showOuOptions}>
+                                <ul class="ou-options" role="listbox" aria-label="OU codes">
+                                    <template for:each={ouOptions} for:item="option">
+                                        <li key={option.code} role="option" class="ou-option" data-code={option.code}
+                                            onmousedown={handleOuPick}>
+                                            <span>{option.code}</span>
+                                            <span class="slds-text-color_weak slds-m-left_small">{option.users}</span>
+                                        </li>
+                                    </template>
+                                    <template lwc:if={ouOptionsEmpty}>
+                                        <li class="ou-option ou-option_empty slds-text-color_weak">No OU with active Read/Write users contains this code</li>
+                                    </template>
+                                </ul>
+                            </template>
+                        </div>
+                        <lightning-helptext content="Adds the active users of this OU with a DMT Read/Write role, and each line's owner, as participants with Edit and Approval Edit on every line of this load. One OU per load."
+                                            class="slds-m-right_x-small">
+                        </lightning-helptext>
+                        <lightning-button label="Add OU"
+                                          variant="brand-outline"
+                                          icon-name="utility:adduser"
+                                          disabled={addOuDisabled}
+                                          onclick={addOu}>
+                        </lightning-button>
+                        <!-- CIBGLOBALD-4851 - result of Add OU -->
+                        <template lwc:if={ouResultText}>
+                            <span class={ouResultClass}>{ouResultText}</span>
+                        </template>
+                    </div>
                 </template>
 
                 <!-- Progress -->
@@ -222,7 +285,7 @@
                                  ondrop={handleChildFileDrop}>
                                 <lightning-icon icon-name="utility:upload" size="small" class="slds-m-bottom_xx-small"></lightning-icon>
                                 <p class="slds-text-body_small">{section.dropZoneText}</p>
-                                <lightning-button label="Browse" variant="neutral" size="small"
+                                <lightning-button label="Browse" variant="neutral" size="small" disabled={isBusy}
                                                  data-zone={section.key}
                                                  onclick={openChildFilePicker}
                                                  class="slds-m-top_xx-small">
@@ -243,9 +306,17 @@
 
                             <template lwc:if={section.hasRows}>
                                 <div class="enriched-stats slds-m-top_x-small slds-m-bottom_x-small">
-                                    <span class="status-badge-new slds-m-right_xx-small">{section.newCount} New</span>
-                                    <span class="status-badge-delete slds-m-right_xx-small">{section.deleteCount} Will Be Deleted</span>
-                                    <span class="status-badge-nochange">{section.keptCount} Kept</span>
+                                    <!-- CIBGLOBALD-4851 - after Process: what the load did -->
+                                    <template lwc:if={section.showResult}>
+                                        <span class="status-badge-new slds-m-right_xx-small">{section.createdCount} Created</span>
+                                        <span class="status-badge-delete slds-m-right_xx-small">{section.deletedCount} Deleted</span>
+                                        <span class="status-badge-nochange">{section.keptCount} Kept</span>
+                                    </template>
+                                    <template lwc:else>
+                                        <span class="status-badge-new slds-m-right_xx-small">{section.newCount} New</span>
+                                        <span class="status-badge-delete slds-m-right_xx-small">{section.deleteCount} Will Be Deleted</span>
+                                        <span class="status-badge-nochange">{section.keptCount} Kept</span>
+                                    </template>
                                 </div>
                                 <div class="preview-table-wrapper">
                                     <lightning-datatable
@@ -275,6 +346,14 @@
             <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
                 <lightning-icon icon-name="utility:lock" size="x-small" class="slds-m-right_x-small"></lightning-icon>
                 You don't have permission to use this feature. Contact your administrator to request the DMT Line God permission.
+            </div>
+        </template>
+
+        <!-- CIBGLOBALD-4851 - removed row: message with Undo, closes after 5 seconds -->
+        <template lwc:if={undoNotice}>
+            <div class="undo-bar" role="status">
+                <span class="slds-m-right_medium">{undoNotice.message}</span>
+                <lightning-button label="Undo" variant="inverse" onclick={handleUndo}></lightning-button>
             </div>
         </template>
 

@@ -1,0 +1,3 @@
+Line_Id__c,Name,Client_Code__c,Booking_Geography__c,CurrencyIsoCode,Start_Date__c,End_Date__c,First_Breakclause__c,Breakclause_Frequency__c,DMT_Comments__c,g_line_status_type__c
+TEST26LIN00008860ES,Test 1 PW,G00000000000200,ES,EUR,2026-01-01,2027-01-01,,,"Comment, with comma",
+TEST4851PW01,PW New Line,ES0182000125513,ES,EUR,01/11/2026,01/11/2027,365,365,New line from Playwright,DR

@@ -11,7 +11,8 @@ Baseline for rollback: CIBGLOBALD-4851-org-original/ (rollback = remove only our
 - One Process button. DML per chunk of lines: one mixed insert (new lines, RLT, LPI, parents first via Line_Id__c reference), one update (existing lines), one mixed delete (old RLT, LPI). Savepoint per chunk, fallback line by line: a line and its children are all-or-nothing.
 - DMT_BulkImportBatch without sharing.
 - Non-Draft lines (Diego, 2026-11-13): move to Draft, apply the changes, then return the line to its previous status, or to the status given in g_line_status_type__c when that column has a value.
-- Approval restart: mimic CIBGLOBALD-4811. Preview check (DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges) and LightningConfirm warning before Process; when only children change, a no-change Line update so the trigger re-compares against the closed tasks' snapshots.
+- Approval restart: mimic CIBGLOBALD-4811. Preview check (DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges) before Process, result shown in a TOAST only (no dialog); when only children change on a Ready to close line, a no-change Line update so the trigger re-compares against the closed tasks' snapshots.
+- Status change mechanism (user, 2026-11-18): REUSE DMT_BatchSanctionAMIWEB (the Update Line Status logic) and JUMP straight to the target status, one line per transaction. No step-by-step walk.
 
 ## Org facts for the non-Draft path (DMT_TCM_DEV code, read 2026-11-13)
 - Gate: DMT_Line_Helper.restartApprovalTasksOnLineResubmission (TreasurySettlement + OtherProducts only):
@@ -20,7 +21,7 @@ Baseline for rollback: CIBGLOBALD-4851-org-original/ (rollback = remove only our
   3. Ready to close -> Ready to close (not only the edit lock taken) -> 'readytoclose' Cases
   Going back to Draft is no checkpoint. Entering Ready to close from Approval is no checkpoint.
 - VR AvoidEditNotDraft (blocked when not Draft, except Desktop Integration / System Administrator profiles, DMT_Allow_Approval_Edit__c, DMT_Cancel__c): Name, Booking_Geography__c, CurrencyIsoCode, Start_Date__c, DvP_Amount__c, FD_Amount__c, Repos_Limit__c, Repos_Limit_6M__c, First_Breakclause__c, Breakclause_Frequency__c, Waiver__c, Client__c, Amount__c, DMT_LastLevelId__c.
-- VR Go_through_each_step (same profile bypass, NOT bypassed by DMT_Line_God): Approval only from Proposal / Ready to close / Closed; Ready to close only from Approval / Closed; Closed only from Ready to close (or Approval when not PE). So Draft back to Approval = Draft -> Proposal -> Approval; back to Ready to close = Draft -> Proposal -> Approval -> Ready to close (one update per step).
+- VR Go_through_each_step (same profile bypass, NOT bypassed by DMT_Line_God): Approval only from Proposal / Ready to close / Closed; Ready to close only from Approval / Closed; Closed only from Ready to close (or Approval when not PE). A jump past Proposal fails for users without those profiles (accepted: error reported per line in the Update Line Status email).
 - VR NotBackFromApproval / DMT_NotEditCloseLine: bypassed by DMT_Line_God.
 - DMT_Line_Helper.enqueueAutoWorkflowOnStatusChange (4477): every entry into Proposal / Approval / Ready to close starts the auto-start feature Cases that do not exist yet (async).
 - Check: DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges(recordId, caseTypeToCheck, unsavedValues, unsavedRows); unsavedRows {objectApiName, rowId, values}, new row = no rowId, deleted row = deleted true. One record per call.
@@ -34,11 +35,12 @@ Baseline for rollback: CIBGLOBALD-4851-org-original/ (rollback = remove only our
 5. g_line_status_type__c column absent -> field untouched; column present and blank -> field cleared.
 6. (Diego, 2026-11-16) Target status of a line sent to Draft = the value of g_line_status_type__c AFTER the load (file value when the column comes, otherwise the value already stored); only when that is blank -> the original Status__c.
 
-## Non-Draft rules (user, 2026-11-13)
-- Go to Draft ONLY when the file changes a blocked field (value differs from the org). Children only = status kept, no Draft.
-- Return to the previous status or to g_line_status_type__c, walking the steps.
-- Before Process: per affected line the LWC builds the payload (line values from the file, RLT/LPI rows: deleted + new) and calls the check for each checkpoint the line will pass: Proposal = passport; Approval = passport + approval; Ready to close = passport + approval + readytoclose (the last one also when only children change, followed by recheckReadyToCloseLine). Proposal / Approval with children only: no checkpoint, nothing reopens.
-- No confirm dialog: Process goes ahead, a toast lists the features that will reopen.
+## Non-Draft rules and who moves the status (user, 2026-11-13, corrected 2026-11-18)
+- Go to Draft ONLY when the file changes a blocked field (value differs from the org) or the code points to another status. Children only = status kept, no Draft.
+- After Process, automatic (DMT_BatchSanctionAMIWEB load mode, jump, scope 1): new lines with a code != DR (Diego rule 1); lines the load sent to Draft, back to the code's status or their previous status.
+- Existing lines already in Draft before the load, with a code: the Update Line Status button (ticket requirement 3, production behaviour). The button is also the retry for automatic moves that failed (the line stays Draft with its code; AMIWEB only picks Draft lines, so no line runs twice). A line going back to its previous status without code cannot be retried by the button: load it again.
+- No dialog. Reopen check before Process, toast only: 'passport' when the final status is Proposal; 'readytoclose' when a line stays in Ready to close with a change (line or products), followed by the no-change Line update.
+- 2026-11-18 drift corrected: stage 4 was first built with a new step-by-step batch (DMT_BulkImportStatusBatch) and an extra 'approval' check, following the old 'walking the steps' line of this plan instead of the later agreement (jump, reuse). Replaced the same day; the class was deleted from the org.
 
 ## Stage 0 - Confirm in the org (dry-run throwaway test, runAs BBVA Standard User + DMT_Line_God, nothing saved)
 - The step walk per original status (Proposal, Approval, Ready to close, Closed) passes all VRs and the cost per line (SOQL, DML, CPU, queueables).
@@ -72,6 +74,13 @@ Baseline for rollback: CIBGLOBALD-4851-org-original/ (rollback = remove only our
 - LWC: old Products step (products table, Create / Update Products button, pre-existing products link, products enrichment/compare, products progress) REMOVED; saving children comes with Process (stage 3). New Products card: Risk Line Terms table (always) + Line Product Items table (Treasury only); childState per zone {fileName, fileRows, sfRows, errors}; statuses New (file) / Will Be Deleted (SF record of a line with file rows) / Kept (other SF records); per-row 'Remove row' on New rows only; file replaces that zone's file rows; rows for lines not in the Lines table (or blank line id) rejected and listed (max 20 + count); wrong-zone LightningConfirm by column fingerprint (_detectFileType: gf_cutoff_date -> lines, LPI columns -> lpi, RLT columns -> rlt, Line_Id__c -> lines); paste routes the same way; old OL Lines file term columns become the RLT file rows; legacy 'DMT_Risk_Line_Term__c <field>' columns shown as <field>; Update Line Status amount pre-check uses the SF Risk Line Terms (_sfTermAmountForLine).
 - Replace rule applied per line: Salesforce records are Will Be Deleted only for lines with >=1 row in that file.
 
+**Stage 3 DONE 2026-11-18 - deploy 0AfgN000003aZiHSAU Succeeded (21/21: batch 17/328 uncovered, controller 0/32), LWC follow-up 0AfgN000003aYawSAE. Playwright E2E OK.**
+- Controller: processImport(unitsJson, jobId, recordTypeName) replaces submitLines / submitProducts; batch size UNITS_PER_CHUNK = 10.
+- Batch: one unit per line {line, rowNumber, updateLine, rlt?, lpi?}; key present = replace that object for the line. Per chunk: user + existing line + client queries, old children (2 queries), then delete old children -> insert [new lines, RLT, LPI] (children by Line_Id__c reference) -> update existing lines, under a savepoint; failure -> rollback and line by line (records cloned for the retry). Child fields whitelisted (RLT_FILE_FIELDS, LPI_FILE_FIELDS), typed by putValue. Unit rejected before DML (client, invalid value) -> whole line and its products untouched. Old products path (processProducts, buildTerm, IMPORT_TYPE_LINES/PRODUCTS) removed.
+- LWC: Process button (replaces Create / Update Lines); units built from lines + child file rows; products-only lines sent with updateLine false; after the run the child tables reload from Salesforce, file rows kept only for failed lines; unsubscribe fixed (empApi callback, Enhancement fix).
+- Tests: units() helper for the line tests; new tests: replace products of an existing line, new line with products, failed line keeps old products while the other line saves, full chunk of 10 lines.
+- E2E (Playwright, DMT_TCM_DEV): TEST26LIN00008860ES 6 RLT + 5 LPI replaced by 2 RLT + 2 LPI, TEST4851PW01 1 RLT; both lines No Changes (products-only units); 0 failed.
+
 ## Stage 3 - Process (Apex batch rewrite)
 - One Process call sends lines + children; batch chunked by line; the 3 statements; savepoint per chunk with line-by-line fallback; server re-checks Line_Ids; result per line; progress event per chunk after the result is final, COMPLETED at finish.
 - Test: errors mid-chunk keep the old children (no loss), counts per line, limits at 50 lines.
@@ -79,6 +88,14 @@ Baseline for rollback: CIBGLOBALD-4851-org-original/ (rollback = remove only our
 ## Stage 4 - Non-Draft lines (rules above)
 - Draft only for blocked-field changes; apply; walk back to the previous status or g_line_status_type__c.
 - Check per line before Process + toast; recheckReadyToCloseLine for Ready to close lines with child-only changes.
+
+**Stage 4 DONE 2026-11-18 - deploy 0AfgN000003aw5NSAQ Succeeded (29/29: batch 21/379, AMIWEB 8/68, controller 0/32 uncovered). DMT_BulkImportStatusBatch (+_Test) deleted from the org (0AfgN000003awF3SAI). Playwright E2E OK.**
+- Controller without sharing (preview must see every line / product the load saves or deletes; Line and Account Private).
+- DMT_BulkImportBatch.planStatus (Diego's rules): new line + code != DR -> target = code's status; existing non-Draft line with a BLOCKED_OUTSIDE_DRAFT change or a code pointing to another status -> saved in Draft, target = code's status (code after the load) or its previous status; Closed without code stays Draft; existing Draft lines untouched (button). finish -> DMT_BatchSanctionAMIWEB(Map<Line_Id__c, target>) scope 1 (not launched in tests; lastStatusTargets @TestVisible). Products only on a Ready to close line -> no-change Line update in the same update statement. Child VRs AvoidEditNotDraft fire only on child UPDATE (ISCHANGED LastModifiedDate): delete + insert not blocked.
+- DMT_BatchSanctionAMIWEB: new constructor (Map target status by Line_Id__c): Draft BulkImport lines of the map, status from the map (works without code), same partial save / log / email. Nightly and button modes unchanged.
+- DMT_BatchSanctionAMIWEB_Test: System.assert -> Assert; new testBulkImportLoadModeUsesTargetStatus (DMT_UtilTestClass data); Enhancement fix to existing process: 3 tests already failed in the org (no client on the Bulk Import lines; factory terms without DMT_Risk_Type__c and line without Amount__c / DMT_LastLevelId__c for the nightly test) -> fixed in our test class only (shared factory not touched). Remaining manual line inserts in the pre-existing methods (buildBulkImportLine, badLine) left as they were.
+- LWC: Status Change column (_statusPlan); 4811 check before Process: passport (target Proposal) and readytoclose (staying in Ready to close); warning toast; info toast after Process with the lines moving automatically.
+- E2E: TEST4851PW01 Proposal + rename + blank code -> Draft -> Proposal (jump); new TEST4851PW03 code PR -> Proposal; one AMIWEB job, 2 lines, 0 errors. Reopen toast not exercised: TL lines in DEV have no feature Cases.
 
 ## Stage 5 - Update Line Status button for TL
 - Verify DMT_BatchSanctionAMIWEB Bulk Import mode with TL lines (already no record type filter) and how it fits with the Stage 4 restore.
@@ -98,6 +115,12 @@ Baseline for rollback: CIBGLOBALD-4851-org-original/ (rollback = remove only our
   6. Team_Role__c = 'User-Defined'.
   7. Result: one message, 'X users added to all the lines of the load'. X includes the line owners (user, 2026-11-16).
 - Test OU from Diego: 00025828. DEV: 14 users, 11 active, all with DMT_Riesgos Global;DMT_Negocio Local (Read/Write) -> 11 expected. DMTPRE2: same, 11 active.
+
+**Stage 7 DONE 2026-11-19 - deploy 0AfgN000003bDRBSA2 Succeeded (12/12: OU batch 4/65, controller 1/48 uncovered). Playwright E2E OK.**
+- DMT_BulkImportController.addOuParticipants(ouCode, lineIds): blank OU / OU without write users -> error, nothing added; returns distinct users added (OU users + line owners); launches DMT_BulkImportOuParticipantsBatch (scope 20 lines).
+- DMT_BulkImportOuParticipantsBatch (new): writeUsersOfOu = active users with DES_LevelUO_10__c = OU and a DMT_User_Role__c role whose DES_User_Roles__mdt access is Read/Write (no role hardcoded, DMT_Utils.splitString). Per line: OU users + owner (User owners only). New participant Edit + Approval Edit + User-Defined; existing (every copy) Read/blank -> Edit, Edit/All kept, Approval Edit true; others untouched. Row failures logged. 'All' participants cannot be created through the share flow on DMT_TeamMember__c (Read/Edit only): the batch never creates them, only keeps them.
+- LWC: OU code input + Add OU button after Process, lines = importedLineIds (non-failed); locked after one success (one OU per load), unlocked by the next Process / Start Over; toast 'X users added to all the lines of the load.'
+- E2E: OU 00025828 on TEST4851PW01 / PW03 -> 12 participants each (11 OU users + owner), Edit / Approval Edit / User-Defined; second run no duplicates. Evidence DMT_TCM_DEV-add-ou-users-added-toast-CIBGLOBALD-4851.jpg.
 
 ## Stage 6 - Tests, manifest, wrap-up
 - Test classes per DMT test architecture (Factory-first, createX/buildX, overrides, audit). Manifest in the ticket folder. Playwright E2E with screenshots in the ticket folder (not committed).

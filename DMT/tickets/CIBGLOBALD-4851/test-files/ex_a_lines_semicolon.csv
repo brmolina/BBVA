@@ -1,0 +1,11 @@
+﻿Line_Id__c;Name;Client_Code__c;Booking_Geography__c;CurrencyIsoCode;Start_Date__c;End_Date__c;FD_Amount__c;DMT_Comments__c
+EXL001;EX Customer Code;ES0182000125513;ES;EUR;2026-01-01;2027-01-01;1000;"Line one, with comma"
+EXL002;EX Group Code;g00000000000200;ES;EUR;2026-01-01;2027-01-01;1000;"Two
+lines and ""quotes"""
+EXL003;EX Unknown Client;XXNOPE999;ES;EUR;2026-01-01;2027-01-01;1000;rejected
+EXL004;EX No Client;;ES;EUR;2026-01-01;2027-01-01;1000;rejected
+EXL005;EX Bad Date;ES0182000125513;ES;EUR;next year;2027-01-01;1000;rejected
+
+EXL006;EX Comma Decimal;ES0182000125513;ES;EUR;01/11/2026;01/11/2027;1500,50;dd/mm/yyyy
+EXL007;EX Duplicate;ES0182000125513;ES;EUR;2026-01-01;2027-01-01;1000;dup
+EXL007;EX Duplicate;ES0182000125513;ES;EUR;2026-01-01;2027-01-01;1000;dup

@@ -1,33 +1,161 @@
-public with sharing class DMT_BulkImportController {
+// CIBGLOBALD-4851 - without sharing, like DMT_BulkImportBatch: the preview must find every line and product the load will
+// save or delete (DMT_Line__c and Account are Private); the screen (LWC dmt_bulk_import) requires DMT_Line_God.
+public without sharing class DMT_BulkImportController { // CIBGLOBALD-4851
+    // CIBGLOBALD-4851 - OU search of the Add OU input (searchOus)
+    private static final Integer OU_SEARCH_MIN_CHARS = 2; // guard for direct calls; the screen (dmt_bulk_import) does not call under it
+    private static final Integer OU_SEARCH_MAX = 10;
 
+    /**
+     * CIBGLOBALD-4851 - Process button (LWC dmt_bulk_import): saves the lines of the load and replaces their products.
+     * unitsJson = one unit per line (keys in DMT_BulkImportBatch.UNIT_*); progress and errors come back through the
+     * DMT_BulkImportProgress__e event with this jobId. Returns the AsyncApexJob Id: the screen follows the job with
+     * getJobState, so it ends even when an event is lost.
+     */
     @AuraEnabled
-    public static String submitLines(String rowsJson, String jobId, String recordTypeName) {
-        List<Map<String, Object>> rows = deserializeRows(rowsJson);
-        DMT_BulkImportBatch batch = new DMT_BulkImportBatch(rows, jobId, DMT_BulkImportBatch.IMPORT_TYPE_LINES, recordTypeName);
-        Database.executeBatch(batch, 50);
-        return jobId;
+    public static String processImport(String unitsJson, String jobId, String recordTypeName) {
+        List<Map<String, Object>> units = deserializeRows(unitsJson);
+        Id asyncJobId = Database.executeBatch(new DMT_BulkImportBatch(units, jobId, recordTypeName), DMT_BulkImportBatch.UNITS_PER_CHUNK);
+        return String.valueOf(asyncJobId);
     }
 
+    /**
+     * CIBGLOBALD-4851 - State of a background job of the screen (Process, status move, Add OU), polled by the LWC
+     * dmt_bulk_import until it is Completed, Failed or Aborted: status, errors (chunks that failed), extendedStatus (first
+     * error), processed / total (chunks).
+     */
     @AuraEnabled
-    public static String submitProducts(String rowsJson, String jobId) {
-        List<Map<String, Object>> rows = deserializeRows(rowsJson);
-        DMT_BulkImportBatch batch = new DMT_BulkImportBatch(rows, jobId, DMT_BulkImportBatch.IMPORT_TYPE_PRODUCTS, null);
-        Database.executeBatch(batch, 50);
-        return jobId;
+    public static Map<String, Object> getJobState(String asyncJobId) {
+        AsyncApexJob job = [SELECT Status, NumberOfErrors, ExtendedStatus, JobItemsProcessed, TotalJobItems
+                            FROM AsyncApexJob WHERE Id = :asyncJobId];
+        return new Map<String, Object>{
+            'status'         => job.Status,
+            'errors'         => job.NumberOfErrors,
+            'extendedStatus' => job.ExtendedStatus,
+            'processed'      => job.JobItemsProcessed,
+            'total'          => job.TotalJobItems
+        };
+    }
+
+    /**
+     * CIBGLOBALD-4851 - The status move a load started (DMT_BulkImportBatch.finish launches DMT_BatchSanctionAMIWEB): the
+     * first DMT_BatchSanctionAMIWEB job the same user created after the load job, or null while there is none yet.
+     */
+    @AuraEnabled
+    public static String getStatusJobAfterLoad(String loadAsyncJobId) {
+        AsyncApexJob load = [SELECT CreatedById, CreatedDate FROM AsyncApexJob WHERE Id = :loadAsyncJobId];
+        List<AsyncApexJob> jobs = [SELECT Id FROM AsyncApexJob
+                                   WHERE ApexClass.Name = 'DMT_BatchSanctionAMIWEB' AND JobType = 'BatchApex'
+                                     AND CreatedById = :load.CreatedById AND CreatedDate >= :load.CreatedDate
+                                   ORDER BY CreatedDate ASC LIMIT 1];
+        return jobs.isEmpty() ? null : String.valueOf(jobs[0].Id);
     }
 
     /**
      * Update Line Status action: moves the Draft lines of the current import to the status
      * informed in the file (g_line_status_type__c), reusing DMT_BatchSanctionAMIWEB in Bulk Import mode.
-     * Returns the AsyncApexJob Id.
+     * Returns the AsyncApexJob Id. CIBGLOBALD-4851 - jobId: the job publishes its progress and result for the screen
+     * (DMT_BulkImportProgress__e, Phase STATUS).
      */
     @AuraEnabled
-    public static String updateLineStatus(List<String> lineIds) {
+    public static String updateLineStatus(List<String> lineIds, String jobId) { // CIBGLOBALD-4851
         if (lineIds == null || lineIds.isEmpty()) {
             throw new AuraHandledException('There are no imported lines to update.');
         }
-        Id asyncJobId = Database.executeBatch(new DMT_BatchSanctionAMIWEB(new Set<String>(lineIds)), 50);
+        Id asyncJobId = Database.executeBatch(new DMT_BatchSanctionAMIWEB(new Set<String>(lineIds), jobId), 50); // CIBGLOBALD-4851
         return String.valueOf(asyncJobId);
+    }
+
+    /**
+     * CIBGLOBALD-4851 - Add OU button (LWC dmt_bulk_import): adds the active users of the OU with a DMT Read/Write role,
+     * and each line's owner, as Read/Write participants with Approval Edit to the lines of the load
+     * (DMT_BulkImportOuParticipantsBatch). Returns users = the number of distinct users added (OU users plus line
+     * owners) and asyncJobId = the batch job, which the screen follows (getJobState) before checking the result
+     * (countMissingOuParticipants).
+     * @param ouCode  User.DES_LevelUO_10__c value typed by the user
+     * @param lineIds Line_Id__c of the lines processed on the screen
+     */
+    @AuraEnabled
+    public static Map<String, Object> addOuParticipants(String ouCode, List<String> lineIds) {
+        if (String.isBlank(ouCode)) {
+            throw new AuraHandledException('Enter an OU code.');
+        }
+        if (lineIds == null || lineIds.isEmpty()) {
+            throw new AuraHandledException('There are no imported lines to add participants to.');
+        }
+        String code = ouCode.trim();
+        Set<Id> ouUserIds = DMT_BulkImportOuParticipantsBatch.writeUsersOfOu(code);
+        if (ouUserIds.isEmpty()) {
+            throw new AuraHandledException('OU ' + code + ' has no active users with a DMT Read/Write role.');
+        }
+        Set<Id> addedUserIds = new Set<Id>(ouUserIds);
+        for (DMT_Line__c line : [SELECT OwnerId FROM DMT_Line__c WHERE Line_Id__c IN :lineIds]) {
+            if (line.OwnerId.getSObjectType() == User.SObjectType) {
+                addedUserIds.add(line.OwnerId);
+            }
+        }
+        Id asyncJobId = Database.executeBatch(new DMT_BulkImportOuParticipantsBatch(ouUserIds, new Set<String>(lineIds)),
+                                              DMT_BulkImportOuParticipantsBatch.LINES_PER_CHUNK);
+        return new Map<String, Object>{ 'users' => addedUserIds.size(), 'asyncJobId' => String.valueOf(asyncJobId) };
+    }
+
+    /**
+     * CIBGLOBALD-4851 - OU search of the Add OU input (LWC dmt_bulk_import): the first OU_SEARCH_MAX OU codes
+     * (User.DES_LevelUO_10__c), in alphabetical order, that contain the typed text and have active users with a DMT
+     * Read/Write role, with how many (DMT_BulkImportOuParticipantsBatch.writeUserCountByOu, the users Add OU adds).
+     * Nothing under OU_SEARCH_MIN_CHARS characters.
+     * @param prefix text typed in the OU code input
+     * @return one map per OU: code, users
+     */
+    @AuraEnabled
+    public static List<Map<String, Object>> searchOus(String prefix) {
+        List<Map<String, Object>> result = new List<Map<String, Object>>();
+        String text = prefix == null ? '' : prefix.trim();
+        if (text.length() < OU_SEARCH_MIN_CHARS) {
+            return result;
+        }
+        // the typed text is literal: LIKE wildcards in it are escaped
+        String likePattern = '%' + text.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_') + '%';
+        Map<String, Integer> countByOu = DMT_BulkImportOuParticipantsBatch.writeUserCountByOu(likePattern, OU_SEARCH_MAX);
+        List<String> ouCodes = new List<String>(countByOu.keySet());
+        ouCodes.sort();
+        for (String ouCode : ouCodes) {
+            result.add(new Map<String, Object>{ 'code' => ouCode, 'users' => countByOu.get(ouCode) });
+        }
+        return result;
+    }
+
+    /**
+     * CIBGLOBALD-4851 - Result check of Add OU, read from Salesforce: how many (line, user) pairs of the load are still not a
+     * participant with AccessLevel__c Edit or All and DMT_ApprovalEdit__c. Users = the OU's Read/Write users
+     * (DMT_BulkImportOuParticipantsBatch.writeUsersOfOu) plus each line's owner. 0 = everything was added.
+     */
+    @AuraEnabled
+    public static Integer countMissingOuParticipants(String ouCode, List<String> lineIds) {
+        Set<Id> ouUserIds = DMT_BulkImportOuParticipantsBatch.writeUsersOfOu(ouCode == null ? null : ouCode.trim());
+        Map<Id, Set<Id>> expectedByLine = new Map<Id, Set<Id>>();
+        Set<Id> allUserIds = new Set<Id>(ouUserIds);
+        for (DMT_Line__c line : [SELECT Id, OwnerId FROM DMT_Line__c WHERE Line_Id__c IN :lineIds]) {
+            Set<Id> userIds = new Set<Id>(ouUserIds);
+            if (line.OwnerId.getSObjectType() == User.SObjectType) {
+                userIds.add(line.OwnerId);
+                allUserIds.add(line.OwnerId);
+            }
+            expectedByLine.put(line.Id, userIds);
+        }
+        Integer missing = 0;
+        for (Set<Id> userIds : expectedByLine.values()) {
+            missing += userIds.size();
+        }
+        Set<String> found = new Set<String>();
+        for (DMT_TeamMember__c member : [SELECT Line__c, User__c FROM DMT_TeamMember__c
+                                         WHERE Line__c IN :expectedByLine.keySet() AND User__c IN :allUserIds
+                                           AND AccessLevel__c IN ('Edit', 'All') AND DMT_ApprovalEdit__c = true]) {
+            String key = String.valueOf(member.Line__c) + ':' + String.valueOf(member.User__c);
+            if (expectedByLine.get(member.Line__c).contains(member.User__c) && found.add(key)) {
+                missing--;
+            }
+        }
+        return missing;
     }
 
     @AuraEnabled
@@ -41,10 +169,60 @@ public with sharing class DMT_BulkImportController {
                    DMT_Comments__c, DMT_ID_User__c, Breakclause_Frequency__c,
                    g_line_status_type__c, Amount__c,
                    DMT_Client_Entific__c, Golden_Code__c, FD_Amount__c, DvP_Amount__c, First_Breakclause__c, Waiver__c,
-                   DMT_Mitigant_Agreement_comments__c, DMT_Additional_Restrictions__c, DMT_Client_Use__c
+                   DMT_Mitigant_Agreement_comments__c, DMT_Additional_Restrictions__c, DMT_Client_Use__c,
+                   Client_Type__c, Custom_Association__c, Client__r.RecordType.DeveloperName, Closed__c, // CIBGLOBALD-4851
+                   DMT_Allow_Approval_Edit__c // CIBGLOBALD-4851
             FROM DMT_Line__c
             WHERE Line_Id__c IN :lineIds
             LIMIT :lineIds.size()
+        ];
+    }
+
+    /**
+     * CIBGLOBALD-4851 - What the LWC (dmt_bulk_import, _stayDraftReasons) needs to tell which lines will stay in Draft
+     * after the load: profileName = the running user's profile (validation rule DMT_Line__c.Go_through_each_step) and
+     * clientTypeByCode = the line client type (DMT_Line__c.Client_Type__c formula) of each Client_Code__c in upper case
+     * (DMT_BulkImportBatch.clientTypeOf, flow DMT_OTHER_Line_Validations); clientRecordTypeByCode = the client's record type
+     * DeveloperName (a Prospect client cannot be closed Won, DMT_Line_Helper.blockReadyToCloseWithProspectInMultiholder);
+     * fileValueRules = the typed file columns and term picklist values the save checks (DMT_BulkImportBatch.fileValueRules).
+     */
+    @AuraEnabled
+    public static Map<String, Object> getStatusContext(List<String> clientCodes) {
+        Map<String, String> clientTypeByCode = new Map<String, String>();
+        Map<String, String> clientRecordTypeByCode = new Map<String, String>();
+        Set<String> codes = new Set<String>();
+        for (String code : clientCodes == null ? new List<String>() : clientCodes) {
+            if (String.isNotBlank(code)) {
+                codes.add(code.trim().toUpperCase());
+            }
+        }
+        Map<String, Account> accountByCode = DMT_BulkImportBatch.accountsByClientCode(codes);
+        for (String code : accountByCode.keySet()) {
+            clientTypeByCode.put(code, DMT_BulkImportBatch.clientTypeOf(accountByCode.get(code)));
+            Account client = accountByCode.get(code);
+            clientRecordTypeByCode.put(code, client.RecordType == null ? null : client.RecordType.DeveloperName);
+        }
+        return new Map<String, Object>{
+            'profileName'      => [SELECT Name FROM Profile WHERE Id = :UserInfo.getProfileId()].Name,
+            'clientTypeByCode' => clientTypeByCode,
+            'clientRecordTypeByCode' => clientRecordTypeByCode,
+            'fileValueRules'   => DMT_BulkImportBatch.fileValueRules() // CIBGLOBALD-4851 - value checks of the save, before Process
+        };
+    }
+
+    /**
+     * CIBGLOBALD-4851 - Custom association clients of the loaded lines (Custom_Association__c.DMT_Line__c), for the LWC
+     * dmt_bulk_import to mirror the Custom-line checks of the flow DMT_TRSR_Line_Validations (getCustomAssociation,
+     * getCustomAssociationClientsLoop): client count, amounts and term.
+     */
+    @AuraEnabled
+    public static List<Custom_Association_Client__c> getCustomAssociationClients(List<String> lineIds) {
+        return [
+            SELECT Id, Custom_Association__c, Custom_Association__r.DMT_Line__r.Line_Id__c,
+                   DMT_Amount__c, DMT_FDAmount__c, DMT_DVPAmount__c, DMT_Term__c
+            FROM Custom_Association_Client__c
+            WHERE Custom_Association__r.DMT_Line__r.Line_Id__c IN :lineIds
+            ORDER BY Custom_Association__c, CreatedDate
         ];
     }
 
