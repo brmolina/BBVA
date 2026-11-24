@@ -15,7 +15,7 @@ public with sharing class DMT_BatchSanctionAMIWEB_Test {
     }
 
     private static Id bulkImportClientId() {
-return [SELECT Id FROM Account WHERE Name = :BULK_IMPORT_CLIENT_NAME LIMIT 1].Id;
+        return [SELECT Id FROM Account WHERE Name = :BULK_IMPORT_CLIENT_NAME LIMIT 1].Id;
     }
 
     @isTest
@@ -126,7 +126,7 @@ return [SELECT Id FROM Account WHERE Name = :BULK_IMPORT_CLIENT_NAME LIMIT 1].Id
         Id otherProductsRtId = Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('OtherProducts').getRecordTypeId();
         DMT_Line__c goodLine = buildBulkImportLine('BITEST006', 'PR', otherProductsRtId);
         // CIBGLOBALD-4851 - built through DMT_UtilTestClass (DMT test architecture)
-        DMT_Line__c badLine = DMT_UTIL.buildLine(new Map<Schema.SObjectField, Object>{
+        DMT_Line__c badLine = DMT_UTIL.buildLine(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name                  => 'Bulk Import Status Test BITEST007',
             DMT_Line__c.Line_Id__c            => 'BITEST007',
             DMT_Line__c.DMT_Origin__c         => 'BulkImport',
@@ -164,14 +164,13 @@ return [SELECT Id FROM Account WHERE Name = :BULK_IMPORT_CLIENT_NAME LIMIT 1].Id
         Id clientId = bulkImportClientId();
         List<DMT_Line__c> lines = new List<DMT_Line__c>();
         for (String lineId : new List<String>{ 'BITEST008', 'BITEST009', 'BITEST010' }) {
-            lines.add(DMT_UTIL.buildLine(new Map<Schema.SObjectField, Object>{
+            lines.add(DMT_UTIL.buildLine(clientId, new Map<Schema.SObjectField, Object>{
                 DMT_Line__c.Name                  => 'Bulk Import Load Test ' + lineId,
                 DMT_Line__c.Line_Id__c            => lineId,
                 DMT_Line__c.DMT_Origin__c         => 'BulkImport',
                 DMT_Line__c.Status__c             => 'Draft',
                 DMT_Line__c.g_line_status_type__c => lineId == 'BITEST009' ? 'PR' : null,
                 DMT_Line__c.RecordTypeId          => otherProductsRtId,
-                DMT_Line__c.Client__c             => clientId,
                 DMT_Line__c.Amount__c             => 100000,
                 DMT_Line__c.DMT_LastLevelId__c    => '20200'
             }));
@@ -205,14 +204,13 @@ return [SELECT Id FROM Account WHERE Name = :BULK_IMPORT_CLIENT_NAME LIMIT 1].Id
 
     // CIBGLOBALD-4851 - built through DMT_UtilTestClass (DMT test architecture); memory only, the caller inserts the list
     private static DMT_Line__c buildBulkImportLine(String lineId, String statusCode, Id recordTypeId) {
-        return DMT_UTIL.buildLine(new Map<Schema.SObjectField, Object>{
+        return DMT_UTIL.buildLine(bulkImportClientId(), new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name                  => 'Bulk Import Status Test ' + lineId,
             DMT_Line__c.Line_Id__c            => lineId,
             DMT_Line__c.DMT_Origin__c         => 'BulkImport',
             DMT_Line__c.Status__c             => 'Draft',
             DMT_Line__c.g_line_status_type__c => statusCode,
             DMT_Line__c.RecordTypeId          => recordTypeId,
-            DMT_Line__c.Client__c             => bulkImportClientId(),
             // CompulsoryAmountLastLevel requires both set before an OtherProducts line can reach Proposal
             DMT_Line__c.Amount__c             => 100000,
             DMT_Line__c.DMT_LastLevelId__c    => '20200'
@@ -225,7 +223,7 @@ return [SELECT Id FROM Account WHERE Name = :BULK_IMPORT_CLIENT_NAME LIMIT 1].Id
     private static void insertMatchingRiskLineTerm(List<DMT_Line__c> lines) {
         List<DMT_Risk_Line_Term__c> terms = new List<DMT_Risk_Line_Term__c>();
         for (DMT_Line__c line : lines) {
-terms.add(DMT_UTIL.buildRiskLineTerm(new Map<Schema.SObjectField, Object>{
+            terms.add(DMT_UTIL.buildRiskLineTerm(new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.DMT_Line__c   => line.Id,
                 DMT_Risk_Line_Term__c.DMT_Amount__c => 100000
             }));

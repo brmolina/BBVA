@@ -65,7 +65,7 @@ global without sharing class DMT_BatchSanctionAMIWEB implements Database.Batchab
      */
     public DMT_BatchSanctionAMIWEB(Map<String, String> targetStatusByLineId, String jobId) {
         this.targetStatusByLineId = targetStatusByLineId;
-progressJobId = jobId;
+        progressJobId = jobId;
         bulkImportLineIds = targetStatusByLineId.keySet();
         query = 'SELECT Id, Name, Line_Id__c, Status__c, Closed__c, DMT_Status_Completed__c, g_line_status_type__c FROM DMT_Line__c WHERE Status__c = \'Draft\' AND DMT_Origin__c = \'BulkImport\' AND Line_Id__c IN :lineIds';
     }
@@ -80,7 +80,7 @@ progressJobId = jobId;
     global void execute(Database.BatchableContext bc, List<DMT_Line__c> lines) {
 
         for (DMT_Line__c line : lines) {
-line.Status__c = targetStatusByLineId != null
+            line.Status__c = targetStatusByLineId != null
                 ? targetStatusByLineId.get(line.Line_Id__c)
                 : STATUS_BY_CODE.get(line.g_line_status_type__c);
             if(line.g_line_status_type__c == 'CW'){
@@ -103,13 +103,13 @@ line.Status__c = targetStatusByLineId != null
             Database.SaveResult[] results = Database.update(lines, false);
             for (Integer i = 0; i < results.size(); i++) {
                 if (results[i].isSuccess()) {
-bulkImportSuccessCount++;
+                    bulkImportSuccessCount++;
                 }
                 if (!results[i].isSuccess() && bulkImportFailureCount < MAX_FAILURES_REPORTED) {
                     DMT_Line__c failedLine = lines[i];
                     String message = results[i].getErrors().isEmpty() ? 'Unknown error' : results[i].getErrors()[0].getMessage();
                     bulkImportFailures.add(failedLine.Line_Id__c + ' (' + failedLine.Name + '): ' + message);
-bulkImportErrorRows.add(new Map<String, Object>{
+                    bulkImportErrorRows.add(new Map<String, Object>{
                         'id' => failedLine.Line_Id__c, 'label' => failedLine.Name, 'message' => message
                     });
                     DMT_AsyncOrchestrator.enqueue(new DMT_LogExceptionPayload(
@@ -142,7 +142,7 @@ bulkImportErrorRows.add(new Map<String, Object>{
     }
 
     global void finish(Database.BatchableContext bc) {
-AsyncApexJob a = [SELECT Id, Status, NumberOfErrors, JobItemsProcessed, TotalJobItems, CreatedBy.Email, ExtendedStatus FROM AsyncApexJob WHERE Id = :bc.getJobId()];
+        AsyncApexJob a = [SELECT Id, Status, NumberOfErrors, JobItemsProcessed, TotalJobItems, CreatedBy.Email, ExtendedStatus FROM AsyncApexJob WHERE Id = :bc.getJobId()];
         // CIBGLOBALD-4851 - the result for the screen goes first, so a failure in the email cannot hide it; a chunk that
         // failed without a row result (limit, unhandled exception) is reported with the job's first error
         if (progressJobId != null) {

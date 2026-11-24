@@ -33,16 +33,16 @@ public class DMT_BulkImportBatch_Test {
         };
 
         Test.startTest();
-DMT_BulkImportBatch batch = new DMT_BulkImportBatch(units(rows), 'job-test-001', 'TreasurySettlement');
+            DMT_BulkImportBatch batch = new DMT_BulkImportBatch(units(rows), 'job-test-001', 'TreasurySettlement');
             Database.executeBatch(batch, 50);
         Test.stopTest();
 
-List<DMT_Line__c> created = [SELECT Id, Line_Id__c, Name, DMT_Origin__c, Status__c, Client__r.g_customer_id__c FROM DMT_Line__c WHERE Line_Id__c IN ('TESTLIN001', 'TESTLIN002')];
+        List<DMT_Line__c> created = [SELECT Id, Line_Id__c, Name, DMT_Origin__c, Status__c, Client__r.g_customer_id__c FROM DMT_Line__c WHERE Line_Id__c IN ('TESTLIN001', 'TESTLIN002')];
         Assert.areEqual(2, created.size(), 'Two lines should have been created');
         for (DMT_Line__c line : created) {
             Assert.areEqual('BulkImport', line.DMT_Origin__c, 'Origin should be BulkImport');
-Assert.areEqual('Draft', line.Status__c, 'New lines are created in Draft');
-Assert.areEqual(CUSTOMER_CODE, line.Client__r.g_customer_id__c, 'Client resolved from the customer code');
+            Assert.areEqual('Draft', line.Status__c, 'New lines are created in Draft');
+            Assert.areEqual(CUSTOMER_CODE, line.Client__r.g_customer_id__c, 'Client resolved from the customer code');
         }
 
         // AfterCreateLine flow must create the Passport for imported lines, same as for manually created ones
@@ -59,8 +59,8 @@ Assert.areEqual(CUSTOMER_CODE, line.Client__r.g_customer_id__c, 'Client resolved
 
         // Both runs inside one startTest/stopTest — Apex only allows one pair per test method
         Test.startTest();
-Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-002a', 'TreasurySettlement'), 50);
-Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-002b', 'TreasurySettlement'), 50);
+            Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-002a', 'TreasurySettlement'), 50);
+            Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-002b', 'TreasurySettlement'), 50);
         Test.stopTest();
 
         List<DMT_Line__c> result = [SELECT Id FROM DMT_Line__c WHERE Line_Id__c = 'TESTLIN003'];
@@ -75,7 +75,7 @@ Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-002b', 'Tre
         };
 
         Test.startTest();
-Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-003', 'TreasurySettlement'), 50);
+            Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-003', 'TreasurySettlement'), 50);
         Test.stopTest();
 
         Assert.areEqual(0, [SELECT COUNT() FROM DMT_Line__c WHERE Line_Id__c = 'TESTLIN004'], 'A line whose client is not found must not be created');
@@ -89,7 +89,7 @@ Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-003', 'Trea
         };
 
         Test.startTest();
-Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-006', 'TreasurySettlement'), 50);
+            Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-006', 'TreasurySettlement'), 50);
         Test.stopTest();
 
         DMT_Line__c line = [SELECT Client__r.DES_Group_Code__c FROM DMT_Line__c WHERE Line_Id__c = 'TESTLIN006'];
@@ -103,7 +103,7 @@ Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-006', 'Trea
         row.remove('Client_Code__c');
 
         Test.startTest();
-Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>>{ row }), 'job-test-007', 'TreasurySettlement'), 50);
+            Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>>{ row }), 'job-test-007', 'TreasurySettlement'), 50);
         Test.stopTest();
 
         Assert.areEqual(0, [SELECT COUNT() FROM DMT_Line__c WHERE Line_Id__c = 'TESTLIN007'], 'A new line without client code must not be created');
@@ -113,25 +113,25 @@ Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>
     // the status is kept, and no client code is needed
     @isTest
     static void testLinesImportExistingLineOnlyWritesPresentColumns() {
-        DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name => 'Existing Line', DMT_Line__c.Line_Id__c => 'TESTLIN008',
             DMT_Line__c.Status__c => 'Draft', DMT_Line__c.DMT_Comments__c => 'Keep me',
             DMT_Line__c.g_line_status_type__c => 'PR',
-DMT_Line__c.First_Breakclause__c => '365', DMT_Line__c.Breakclause_Frequency__c => '365'
+            DMT_Line__c.First_Breakclause__c => '365', DMT_Line__c.Breakclause_Frequency__c => '365'
         });
         Map<String, Object> row = new Map<String, Object>{
             'Line_Id__c'            => 'TESTLIN008',
             'Name'                  => 'Existing Line Renamed',
             'g_line_status_type__c' => '',
-'First_Breakclause__c'  => '',
-'Breakclause_Frequency__c' => ''
+            'First_Breakclause__c'  => '',
+            'Breakclause_Frequency__c' => ''
         };
 
         Test.startTest();
-Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>>{ row }), 'job-test-008', 'TreasurySettlement'), 50);
+            Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>>{ row }), 'job-test-008', 'TreasurySettlement'), 50);
         Test.stopTest();
 
-DMT_Line__c line = [SELECT Name, DMT_Comments__c, g_line_status_type__c, Status__c, First_Breakclause__c, Breakclause_Frequency__c
+        DMT_Line__c line = [SELECT Name, DMT_Comments__c, g_line_status_type__c, Status__c, First_Breakclause__c, Breakclause_Frequency__c
                             FROM DMT_Line__c WHERE Line_Id__c = 'TESTLIN008'];
         // blank break clause cells keep the values in Salesforce
         Assert.areEqual('365', line.First_Breakclause__c, 'A blank First_Breakclause__c keeps the value');
@@ -155,7 +155,7 @@ DMT_Line__c line = [SELECT Name, DMT_Comments__c, g_line_status_type__c, Status_
         invalid.put('End_Date__c', 'next year');
 
         Test.startTest();
-Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>>{ valid, invalid }), 'job-test-009', 'TreasurySettlement'), 50);
+            Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>>{ valid, invalid }), 'job-test-009', 'TreasurySettlement'), 50);
         Test.stopTest();
 
         DMT_Line__c line = [SELECT Start_Date__c, Golden_Code__c, FD_Amount__c, DvP_Amount__c, Waiver__c, DMT_Client_Use__c, DMT_Origin__c
@@ -176,7 +176,7 @@ Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>
     // file rows; the line is not updated
     @isTest
     static void testProcessReplacesProductsOfExistingLine() {
-        DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_Line__c line = DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name => 'Replace Products Line', DMT_Line__c.Line_Id__c => 'TESTLIN011', DMT_Line__c.DMT_Origin__c => 'BulkImport'
         });
         insert new List<SObject>{
@@ -210,10 +210,10 @@ Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>
     // they belong to the unit's line
     @isTest
     static void testProcessDeletesSingleRecordsOfTheLine() {
-        DMT_Line__c line  = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_Line__c line  = DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name => 'Single Delete Line', DMT_Line__c.Line_Id__c => 'TESTLIN022', DMT_Line__c.DMT_Origin__c => 'BulkImport'
         });
-        DMT_Line__c other = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_Line__c other = DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name => 'Other Line', DMT_Line__c.Line_Id__c => 'TESTLIN023', DMT_Line__c.DMT_Origin__c => 'BulkImport'
         });
         List<DMT_Risk_Line_Term__c> terms = new List<DMT_Risk_Line_Term__c>{
@@ -239,7 +239,7 @@ Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>
     // the table not loaded (key absent) leaves that object untouched
     @isTest
     static void testProcessEmptyTableDeletesAllProducts() {
-        DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_Line__c line = DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name => 'Empty Table Line', DMT_Line__c.Line_Id__c => 'TESTLIN021', DMT_Line__c.DMT_Origin__c => 'BulkImport'
         });
         insert new List<SObject>{
@@ -281,7 +281,7 @@ Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>
     // (chunk rolled back, then saved line by line)
     @isTest
     static void testProcessFailedLineKeepsOldProducts() {
-        DMT_Line__c failing = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_Line__c failing = DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name => 'Failing Line', DMT_Line__c.Line_Id__c => 'TESTLIN013', DMT_Line__c.DMT_Origin__c => 'BulkImport'
         });
         DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{
@@ -357,15 +357,14 @@ Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>
     // comment) is saved in Draft with the change and moves back to Approval, like a blocked field
     @isTest
     static void testProcessSendsApprovalDataChangeToDraft() {
-        DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_UTIL.createLineRecord(customerId(), new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name               => 'Approval Line TESTLIN018',
             DMT_Line__c.Line_Id__c         => 'TESTLIN018',
             DMT_Line__c.DMT_Origin__c      => 'BulkImport',
             DMT_Line__c.Status__c          => 'Approval',
             DMT_Line__c.RecordTypeId       => Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('TreasurySettlement').getRecordTypeId(),
             DMT_Line__c.Amount__c          => 100000,
-            DMT_Line__c.DMT_LastLevelId__c => '20200',
-            DMT_Line__c.Client__c          => [SELECT Id FROM Account WHERE g_customer_id__c = :CUSTOMER_CODE LIMIT 1].Id
+            DMT_Line__c.DMT_LastLevelId__c => '20200'
         });
         Map<String, Object> unit = buildUnit(new Map<String, Object>{ 'Line_Id__c' => 'TESTLIN018', 'DMT_Comments__c' => 'Changed in Approval' },
                                              true, null, null);
@@ -484,7 +483,7 @@ Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>
             DMT_BulkImportBatch batch = new DMT_BulkImportBatch(
                 new List<Map<String, Object>>(),
                 'job-test-005',
-'TreasurySettlement'
+                'TreasurySettlement'
             );
             Database.executeBatch(batch, 50);
         Test.stopTest();
@@ -517,18 +516,22 @@ Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>
         };
     }
 
+    // the client of the test lines (the subsidiary created in makeData)
+    private static Id customerId() {
+        return [SELECT Id FROM Account WHERE g_customer_id__c = :CUSTOMER_CODE LIMIT 1].Id;
+    }
+
     // an Other Products line created in Proposal (moving it there before Test.stopTest fails: its
     // customer selection is set up asynchronously)
     private static DMT_Line__c createProposalLine(String lineId) {
-        DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_Line__c line = DMT_UTIL.createLineRecord(customerId(), new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name               => 'Proposal Line ' + lineId,
             DMT_Line__c.Line_Id__c         => lineId,
             DMT_Line__c.DMT_Origin__c      => 'BulkImport',
             DMT_Line__c.Status__c          => 'Proposal',
             DMT_Line__c.RecordTypeId       => Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('OtherProducts').getRecordTypeId(),
             DMT_Line__c.Amount__c          => 100000,
-            DMT_Line__c.DMT_LastLevelId__c => '20200',
-            DMT_Line__c.Client__c          => [SELECT Id FROM Account WHERE g_customer_id__c = :CUSTOMER_CODE LIMIT 1].Id
+            DMT_Line__c.DMT_LastLevelId__c => '20200'
         });
         DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{
             DMT_Risk_Line_Term__c.DMT_Line__c => line.Id, DMT_Risk_Line_Term__c.DMT_Amount__c => 100000

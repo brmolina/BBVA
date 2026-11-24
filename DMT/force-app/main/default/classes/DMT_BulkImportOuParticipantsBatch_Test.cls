@@ -27,22 +27,22 @@ private class DMT_BulkImportOuParticipantsBatch_Test {
                 buildOuUser(profileId, 'otherou', OTHER_OU, writeRole, true)
             };
         }
-        DMT_Line__c lineOne = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_Line__c lineOne = DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name => 'OU Line One', DMT_Line__c.Line_Id__c => LINE_ONE, DMT_Line__c.DMT_Origin__c => 'BulkImport'
         });
-        DMT_Line__c lineTwo = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_Line__c lineTwo = DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name => 'OU Line Two', DMT_Line__c.Line_Id__c => LINE_TWO, DMT_Line__c.DMT_Origin__c => 'BulkImport'
         });
         // The OU writer is already a participant: Read on line one, Edit on line two, both without Approval Edit ('All'
         // cannot be created here: the share flow on DMT_TeamMember__c only accepts Read / Edit).
-        // Built through DMT_UtilTestClass.buildTeamMember, one insert.
+        // Built through DMT_UtilTestClass.buildTeamMemberRecord, one insert.
         Id writerId = [SELECT Id FROM User WHERE Alias = 'ouwriter' LIMIT 1].Id;
         insert new List<DMT_TeamMember__c>{
-            DMT_UTIL.buildTeamMember(new Map<Schema.SObjectField, Object>{
+            DMT_UTIL.buildTeamMemberRecord(new Map<Schema.SObjectField, Object>{
                 DMT_TeamMember__c.Line__c => lineOne.Id, DMT_TeamMember__c.User__c => writerId,
                 DMT_TeamMember__c.AccessLevel__c => 'Read', DMT_TeamMember__c.DMT_ApprovalEdit__c => false
             }),
-            DMT_UTIL.buildTeamMember(new Map<Schema.SObjectField, Object>{
+            DMT_UTIL.buildTeamMemberRecord(new Map<Schema.SObjectField, Object>{
                 DMT_TeamMember__c.Line__c => lineTwo.Id, DMT_TeamMember__c.User__c => writerId,
                 DMT_TeamMember__c.AccessLevel__c => 'Edit', DMT_TeamMember__c.DMT_ApprovalEdit__c => false
             })

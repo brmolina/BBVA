@@ -1,6 +1,6 @@
 /*----------------------------------------------------------------------------------------------
 ================================================================================
-DMT_UtilTestClass - DMT Test Data Facade
+DMT_UtilTestClass - DMT Test Data
 ================================================================================
 TYPE:Apex@TestUtilityFacade(@IsTest)
 DOMAIN:DMT
@@ -62,12 +62,12 @@ History
 -------
 2026-10-19  Added DMT architecture/AI operating contract aligned with DES conventions.
             Explicitly prohibited unchanged DES passthrough APIs in the DMT facade.
-2026-11-19  CIBGLOBALD-4851 - Added the DMT_TeamMember__c build/create pair.
 ================================================================================
 ----------------------------------------------------------------------------------------------*/
 
 @IsTest
 public class DMT_UtilTestClass {
+    private static final DES_UtilTestClass DES_UTIL = new DES_UtilTestClass();
 
     // ─── 2. HELPER METHODS ──────────────────────────────────────────────────
 
@@ -86,14 +86,9 @@ public class DMT_UtilTestClass {
     public Account buildAccount(Map<Schema.SObjectField, Object> overrides) {
         return DMT_UtilTestClassBuild.buildAccount(overrides);
     }
-
     /** @legacy  */
-    public Case buildCase(Id ownerId) {
-        return DMT_UtilTestClassBuild.buildCase(ownerId);
-    }
-    /** @legacy  */
-    public Case buildCase(Id ownerId, Map<Schema.SObjectField, Object> overrides) {
-        return DMT_UtilTestClassBuild.buildCase(ownerId, overrides);
+    public Case buildCase(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildCase(overrides);
     }
 
     public Opportunity buildOpportunity(Id accountId) {
@@ -104,12 +99,29 @@ public class DMT_UtilTestClass {
         return DMT_UtilTestClassBuild.buildOpportunity(accountId, overrides);
     }
 
-    public OpportunityLineItem buildOppLineItem(Id opportunityId, Id pricebookEntryId) {
-        return DMT_UtilTestClassBuild.buildOppLineItem(opportunityId, pricebookEntryId);
+    /** @legacy  */
+    public PricebookEntry buildPricebookEntryRecord(Id productId) {
+        return DMT_UtilTestClassBuild.buildPricebookEntry(productId);
     }
-
-    public OpportunityLineItem buildOppLineItem(Id opportunityId, Id pricebookEntryId, Map<Schema.SObjectField, Object> overrides) {
-        return DMT_UtilTestClassBuild.buildOppLineItem(opportunityId, pricebookEntryId, overrides);
+    /** @legacy  */
+    public PricebookEntry buildPricebookEntryRecord(Id productId, Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildPricebookEntry(productId, overrides);
+    }
+    /** @legacy  */
+    public CIB_User_Org__c buildCustomSettingRecord() {
+        return DMT_UtilTestClassBuild.buildCustomSetting();
+    }
+    /** @legacy  */
+    public CIB_User_Org__c buildCustomSettingRecord(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildCustomSetting(overrides);
+    }
+    /** @legacy  */
+    public iaso__GBL_Rest_Services_Url__c buildRestServiceUrlSettingRecord() {
+        return DMT_UtilTestClassBuild.buildRestServiceUrlSetting();
+    }
+    /** @legacy  */
+    public iaso__GBL_Rest_Services_Url__c buildRestServiceUrlSettingRecord(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildRestServiceUrlSetting(overrides);
     }
     /** @legacy  */
     public Task buildTask(Id ownerId, Id whatId) {
@@ -119,11 +131,11 @@ public class DMT_UtilTestClass {
     public Task buildTask(Id ownerId, Id whatId, Map<Schema.SObjectField, Object> overrides) {
         return DMT_UtilTestClassBuild.buildTask(ownerId, whatId, overrides);
     }
-
+    /** @legacy  */
     public User buildUser(String profileId) {
         return DMT_UtilTestClassBuild.buildUser(profileId);
     }
-
+    /** @legacy  */
     public User buildUser(String profileId, Map<Schema.SObjectField, Object> overrides) {
         return DMT_UtilTestClassBuild.buildUser(profileId, overrides);
     }
@@ -136,20 +148,13 @@ public class DMT_UtilTestClass {
         return DMT_UtilTestClassBuild.buildApprover(overrides);
     }
 
-    public DMT_Approver_Member__c buildApproverMember(Id approverId, Id userId) {
-        return DMT_UtilTestClassBuild.buildApproverMember(approverId, userId);
+
+    public DMT_Approver_Member__c buildApproverMember(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildApproverMember(overrides);
     }
 
-    public DMT_Approver_Member__c buildApproverMember(Id approverId, Id userId, Map<Schema.SObjectField, Object> overrides) {
-        return DMT_UtilTestClassBuild.buildApproverMember(approverId, userId, overrides);
-    }
-
-    public DMT_Approver_Type__c buildApproverType(String externalId) {
-        return DMT_UtilTestClassBuild.buildApproverType(externalId);
-    }
-
-    public DMT_Approver_Type__c buildApproverType(String externalId, Map<Schema.SObjectField, Object> overrides) {
-        return DMT_UtilTestClassBuild.buildApproverType(externalId, overrides);
+    public DMT_Approver_Type__c buildApproverType(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildApproverType(overrides);
     }
 
     public DMT_ApproversView__c buildApproversView() {
@@ -158,6 +163,31 @@ public class DMT_UtilTestClass {
 
     public DMT_ApproversView__c buildApproversView(Map<Schema.SObjectField, Object> overrides) {
         return DMT_UtilTestClassBuild.buildApproversView(overrides);
+    }
+
+    /** @legacy  */
+    public Attachment buildAttachment(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildAttachment(overrides);
+    }
+    /** @legacy  */
+    public Group buildGroup() {
+        return DMT_UtilTestClassBuild.buildGroup();
+    }
+    /** @legacy  */
+    public Group buildGroup(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildGroup(overrides);
+    }
+    /** @legacy  */
+    public QueueSObject buildQueueSObject(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildQueueSObject(overrides);
+    }
+    /** @legacy  */
+    public GroupMember buildGroupMember(Id groupId, Id userOrGroupId) {
+        return DMT_UtilTestClassBuild.buildGroupMember(groupId, userOrGroupId);
+    }
+    /** @legacy  */
+    public GroupMember buildGroupMember(Id groupId, Id userOrGroupId, Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildGroupMember(groupId, userOrGroupId, overrides);
     }
 
     public DMT_Consolidated_Line__c buildConsolidatedLine(String lineId) {
@@ -216,20 +246,20 @@ public class DMT_UtilTestClass {
         return DMT_UtilTestClassBuild.buildFeature(overrides);
     }
 
-    public DMT_Global_Structure__c buildGlobalStructure(String opportunityId) {
-        return DMT_UtilTestClassBuild.buildGlobalStructure(opportunityId);
+    public DMT_Fuature_Rule__c buildFuatureRuleRecord() {
+        return DMT_UtilTestClassBuild.buildFuatureRule();
     }
 
-    public DMT_Global_Structure__c buildGlobalStructure(String opportunityId, Map<Schema.SObjectField, Object> overrides) {
-        return DMT_UtilTestClassBuild.buildGlobalStructure(opportunityId, overrides);
+    public DMT_Fuature_Rule__c buildFuatureRuleRecord(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildFuatureRule(overrides);
     }
 
-    public DMT_Items__c buildItem(Id viewId) {
-        return DMT_UtilTestClassBuild.buildItem(viewId);
+    public DMT_Global_Structure__c buildGlobalStructure(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildGlobalStructure(overrides);
     }
 
-    public DMT_Items__c buildItem(Id viewId, Map<Schema.SObjectField, Object> overrides) {
-        return DMT_UtilTestClassBuild.buildItem(viewId, overrides);
+    public DMT_Items__c buildItem(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildItem(overrides);
     }
     /** @legacy  */
     public Local_Client__c buildLocalClient(Id accountId, String alphaCode) {
@@ -240,12 +270,22 @@ public class DMT_UtilTestClass {
         return DMT_UtilTestClassBuild.buildLocalClient(accountId, alphaCode, overrides);
     }
 
-    public DMT_Line__c buildLine() {
-        return DMT_UtilTestClassBuild.buildLine();
+    public DMT_Line__c buildLine(Id accountId) {
+        return DMT_UtilTestClassBuild.buildLine(accountId);
+
     }
 
-    public DMT_Line__c buildLine(Map<Schema.SObjectField, Object> overrides) {
-        return DMT_UtilTestClassBuild.buildLine(overrides);
+    public DMT_Line__c buildLine(Id accountId, Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildLine(accountId, overrides);
+
+    }
+
+    public DMT_Line__Share buildLineShareRecord() {
+        return DMT_UtilTestClassBuild.buildLineShare();
+    }
+
+    public DMT_Line__Share buildLineShareRecord(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildLineShare(overrides);
     }
 
     public DMT_Line_Product_Item__c buildLineProductItem() {
@@ -256,12 +296,36 @@ public class DMT_UtilTestClass {
         return DMT_UtilTestClassBuild.buildLineProductItem(overrides);
     }
 
+    public DMT_line_status_process__c buildLineStatusProcessRecord() {
+        return DMT_UtilTestClassBuild.buildLineStatusProcess();
+    }
+
+    public DMT_line_status_process__c buildLineStatusProcessRecord(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildLineStatusProcess(overrides);
+    }
+
     public DMT_Opportunity_Client__c buildOpportunityClient(String opportunityId) {
         return DMT_UtilTestClassBuild.buildOpportunityClient(opportunityId);
     }
 
     public DMT_Opportunity_Client__c buildOpportunityClient(String opportunityId, Map<Schema.SObjectField, Object> overrides) {
         return DMT_UtilTestClassBuild.buildOpportunityClient(opportunityId, overrides);
+    }
+
+    public DMT_Opportunity_Money__c buildOpportunityMoneyRecord() {
+        return DMT_UtilTestClassBuild.buildOpportunityMoney();
+    }
+
+    public DMT_Opportunity_Money__c buildOpportunityMoneyRecord(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildOpportunityMoney(overrides);
+    }
+
+    public DMT_Opportunity_Business_Plan__c buildOpportunityBusinessPlan(Id opportunityId) {
+        return DMT_UtilTestClassBuild.buildOpportunityBusinessPlan(opportunityId);
+    }
+
+    public DMT_Opportunity_Business_Plan__c buildOpportunityBusinessPlan(Id opportunityId, Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildOpportunityBusinessPlan(opportunityId, overrides);
     }
 
     public DMT_Opportunity_Mitigant__c buildOpportunityMitigant(Id opportunityLineItemId) {
@@ -312,6 +376,22 @@ public class DMT_UtilTestClass {
         return DMT_UtilTestClassBuild.buildTaskRelationship(fromTaskTypeId, toTaskTypeId, overrides);
     }
 
+    public DMT_TeamMember__c buildTeamMemberRecord() {
+        return DMT_UtilTestClassBuild.buildTeamMember();
+    }
+
+    public DMT_TeamMember__c buildTeamMemberRecord(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildTeamMember(overrides);
+    }
+    /** @legacy  */
+    public DES_BBVA_Management_team__c buildManagementTeamRecord() {
+        return DMT_UtilTestClassBuild.buildManagementTeam();
+    }
+    /** @legacy  */
+    public DES_BBVA_Management_team__c buildManagementTeamRecord(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildManagementTeam(overrides);
+    }
+
     public DMT_Task_Type__c buildTaskType() {
         return DMT_UtilTestClassBuild.buildTaskType();
     }
@@ -344,13 +424,20 @@ public class DMT_UtilTestClass {
         return DMT_UtilTestClassBuild.buildTaxonomyValue(externalId, catalog, overrides);
     }
 
-    // CIBGLOBALD-4851 - DMT_TeamMember__c (line participant), memory only
-    public DMT_TeamMember__c buildTeamMember() {
-        return DMT_UtilTestClassBuild.buildTeamMember();
+    public DMT_NotificationSubscription__c buildNotificationSubscriptionRecord() {
+        return DMT_UtilTestClassBuild.buildNotificationSubscription();
     }
 
-    public DMT_TeamMember__c buildTeamMember(Map<Schema.SObjectField, Object> overrides) {
-        return DMT_UtilTestClassBuild.buildTeamMember(overrides);
+    public DMT_NotificationSubscription__c buildNotificationSubscriptionRecord(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildNotificationSubscription(overrides);
+    }
+
+    public DMT_Banking_Pool_Structure__c buildBankingPoolStructureRecord() {
+        return DMT_UtilTestClassBuild.buildBankingPoolStructure();
+    }
+
+    public DMT_Banking_Pool_Structure__c buildBankingPoolStructureRecord(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildBankingPoolStructure(overrides);
     }
 
     public DMT_Underlying__c buildUnderlying(Id opportunityLineItemId) {
@@ -386,13 +473,8 @@ public class DMT_UtilTestClass {
     public Account createAccount(Map<Schema.SObjectField, Object> overrides) {
         return (Account) insertAndReturn(buildAccount(overrides));
     }
-    /** @legacy  */
-    public Case createCaseRecord(Id ownerId) {
-        return (Case) insertAndReturn(buildCase(ownerId));
-    }
-    /** @legacy  */
-    public Case createCaseRecord(Id ownerId, Map<Schema.SObjectField, Object> overrides) {
-        return (Case) insertAndReturn(buildCase(ownerId, overrides));
+    public Case createCaseRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (Case) insertAndReturn(buildCase(overrides));
     }
 
     public Opportunity createOpportunityForAccount(Id accountId) {
@@ -402,13 +484,29 @@ public class DMT_UtilTestClass {
     public Opportunity createOpportunityForAccount(Id accountId, Map<Schema.SObjectField, Object> overrides) {
         return (Opportunity) insertAndReturn(buildOpportunity(accountId, overrides));
     }
-
-    public OpportunityLineItem createOppLineItemRecord(Id opportunityId, Id pricebookEntryId) {
-        return (OpportunityLineItem) insertAndReturn(buildOppLineItem(opportunityId, pricebookEntryId));
+    /** @legacy  */
+    public PricebookEntry createPricebookEntryRecord(Id productId) {
+        return (PricebookEntry) insertAndReturn(buildPricebookEntryRecord(productId));
     }
-
-    public OpportunityLineItem createOppLineItemRecord(Id opportunityId, Id pricebookEntryId, Map<Schema.SObjectField, Object> overrides) {
-        return (OpportunityLineItem) insertAndReturn(buildOppLineItem(opportunityId, pricebookEntryId, overrides));
+    /** @legacy  */
+    public PricebookEntry createPricebookEntryRecord(Id productId, Map<Schema.SObjectField, Object> overrides) {
+        return (PricebookEntry) insertAndReturn(buildPricebookEntryRecord(productId, overrides));
+    }
+    /** @legacy  */
+    public CIB_User_Org__c createCustomSettingRecord() {
+        return (CIB_User_Org__c) insertAndReturn(buildCustomSettingRecord());
+    }
+    /** @legacy  */
+    public CIB_User_Org__c createCustomSettingRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (CIB_User_Org__c) insertAndReturn(buildCustomSettingRecord(overrides));
+    }
+    /** @legacy  */
+    public iaso__GBL_Rest_Services_Url__c createRestServiceUrlSettingRecord() {
+        return (iaso__GBL_Rest_Services_Url__c) insertAndReturn(buildRestServiceUrlSettingRecord());
+    }
+    /** @legacy  */
+    public iaso__GBL_Rest_Services_Url__c createRestServiceUrlSettingRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (iaso__GBL_Rest_Services_Url__c) insertAndReturn(buildRestServiceUrlSettingRecord(overrides));
     }
     /** @legacy  */
     public Task createTaskRecord(Id ownerId, Id whatId) {
@@ -418,11 +516,9 @@ public class DMT_UtilTestClass {
     public Task createTaskRecord(Id ownerId, Id whatId, Map<Schema.SObjectField, Object> overrides) {
         return (Task) insertAndReturn(buildTask(ownerId, whatId, overrides));
     }
-
     public User createUserRecord(String profileId) {
         return (User) insertAndReturn(buildUser(profileId));
     }
-
     public User createUserRecord(String profileId, Map<Schema.SObjectField, Object> overrides) {
         return (User) insertAndReturn(buildUser(profileId, overrides));
     }
@@ -435,20 +531,16 @@ public class DMT_UtilTestClass {
         return (DMT_Approver__c) insertAndReturn(buildApprover(overrides));
     }
 
-    public DMT_Approver_Member__c createApproverMemberRecord(Id approverId, Id userId) {
-        return (DMT_Approver_Member__c) insertAndReturn(buildApproverMember(approverId, userId));
+    public DMT_Approver_Member__c createApproverMemberRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (DMT_Approver_Member__c) insertAndReturn(buildApproverMember(overrides));
     }
 
-    public DMT_Approver_Member__c createApproverMemberRecord(Id approverId, Id userId, Map<Schema.SObjectField, Object> overrides) {
-        return (DMT_Approver_Member__c) insertAndReturn(buildApproverMember(approverId, userId, overrides));
+    public DMT_Approver_Type__c createApproverTypeRecord() {
+        return (DMT_Approver_Type__c) insertAndReturn(buildApproverType(null));
     }
 
-    public DMT_Approver_Type__c createApproverTypeRecord(String externalId) {
-        return (DMT_Approver_Type__c) insertAndReturn(buildApproverType(externalId));
-    }
-
-    public DMT_Approver_Type__c createApproverTypeRecord(String externalId, Map<Schema.SObjectField, Object> overrides) {
-        return (DMT_Approver_Type__c) insertAndReturn(buildApproverType(externalId, overrides));
+    public DMT_Approver_Type__c createApproverTypeRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (DMT_Approver_Type__c) insertAndReturn(buildApproverType(overrides));
     }
 
     public DMT_ApproversView__c createApproversViewRecord() {
@@ -457,6 +549,32 @@ public class DMT_UtilTestClass {
 
     public DMT_ApproversView__c createApproversViewRecord(Map<Schema.SObjectField, Object> overrides) {
         return (DMT_ApproversView__c) insertAndReturn(buildApproversView(overrides));
+    }
+
+    /** @legacy  */
+    public Attachment createAttachmentRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (Attachment) insertAndReturn(buildAttachment(overrides));
+    }
+    /** @legacy  */
+    public Group createGroupRecord() {
+        return (Group) insertAndReturn(buildGroup());
+    }
+    /** @legacy  */
+    public Group createGroupRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (Group) insertAndReturn(buildGroup(overrides));
+    }
+
+    /** @legacy  */
+    public QueueSObject createQueueSObjectRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (QueueSObject) insertAndReturn(buildQueueSObject(overrides));
+    }
+    /** @legacy  */
+    public GroupMember createGroupMemberRecord(Id groupId, Id userOrGroupId) {
+        return (GroupMember) insertAndReturn(buildGroupMember(groupId, userOrGroupId));
+    }
+    /** @legacy  */
+    public GroupMember createGroupMemberRecord(Id groupId, Id userOrGroupId, Map<Schema.SObjectField, Object> overrides) {
+        return (GroupMember) insertAndReturn(buildGroupMember(groupId, userOrGroupId, overrides));
     }
 
     public DMT_Consolidated_Line__c createConsolidatedLineRecord(String lineId) {
@@ -474,6 +592,16 @@ public class DMT_UtilTestClass {
     public DMT_Currency_Provision__c createCurrencyProvisionRecord(Id riskLineTermId, Map<Schema.SObjectField, Object> overrides) {
         return (DMT_Currency_Provision__c) insertAndReturn(buildCurrencyProvision(riskLineTermId, overrides));
     }
+    /** @legacy  */
+    public ContentVersion createContentVersionRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (ContentVersion) insertAndReturn(DES_UtilTestClassBuild.buildContentVersion(overrides));
+    }
+    
+    /** @legacy  */
+    public ContentDocumentLink createContentDocumentLinkRecord(Id linkedEntityId, Id contentDocumentId, Map<Schema.SObjectField, Object> overrides) {
+        return (ContentDocumentLink) insertAndReturn(DES_UtilTestClassBuild.buildContentDocumentLink(linkedEntityId, contentDocumentId, overrides));
+    }
+
     /** @legacy  */
     public Custom_Association__c createCustomAssociationRecord(Id lineId, Id accountId) {
         return (Custom_Association__c) insertAndReturn(buildCustomAssociation(lineId, accountId));
@@ -521,20 +649,21 @@ public class DMT_UtilTestClass {
         return (DMT_Feature__c) insertAndReturn(buildFeature(overrides));
     }
 
-    public DMT_Global_Structure__c createGlobalStructureRecord(String opportunityId) {
-        return (DMT_Global_Structure__c) insertAndReturn(buildGlobalStructure(opportunityId));
+    public DMT_Fuature_Rule__c createFuatureRuleRecord() {
+        return (DMT_Fuature_Rule__c) insertAndReturn(buildFuatureRuleRecord());
     }
 
-    public DMT_Global_Structure__c createGlobalStructureRecord(String opportunityId, Map<Schema.SObjectField, Object> overrides) {
-        return (DMT_Global_Structure__c) insertAndReturn(buildGlobalStructure(opportunityId, overrides));
+    public DMT_Fuature_Rule__c createFuatureRuleRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (DMT_Fuature_Rule__c) insertAndReturn(buildFuatureRuleRecord(overrides));
     }
 
-    public DMT_Items__c createItemRecord(Id viewId) {
-        return (DMT_Items__c) insertAndReturn(buildItem(viewId));
+
+    public DMT_Global_Structure__c createGlobalStructureRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (DMT_Global_Structure__c) insertAndReturn(buildGlobalStructure(overrides));
     }
 
-    public DMT_Items__c createItemRecord(Id viewId, Map<Schema.SObjectField, Object> overrides) {
-        return (DMT_Items__c) insertAndReturn(buildItem(viewId, overrides));
+    public DMT_Items__c createItemRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (DMT_Items__c) insertAndReturn(buildItem(overrides));
     }
     /** @legacy  */
     public Local_Client__c createLocalClientRecord(Id accountId, String alphaCode) {
@@ -545,17 +674,29 @@ public class DMT_UtilTestClass {
         return (Local_Client__c) insertAndReturn(buildLocalClient(accountId, alphaCode, overrides));
     }
 
-    public DMT_Line__c createLineRecord() {
+    public DMT_Line__c createLineRecord(Id accountId) {
         return (DMT_Line__c) insertAndReturn(
-            buildLine()
+            buildLine(accountId)
         );
     }
 
-    public DMT_Line__c createLineRecord(
+    public DMT_Line__c createLineRecord(Id accountId, Map<Schema.SObjectField, Object> overrides) {
+        return (DMT_Line__c) insertAndReturn(
+           buildLine(accountId, overrides)
+        );
+    }
+
+    public DMT_Line__Share createLineShareRecord() {
+        return (DMT_Line__Share) insertAndReturn(
+            buildLineShareRecord()
+        );
+    }
+
+    public DMT_Line__Share createLineShareRecord(
         Map<Schema.SObjectField, Object> overrides
     ) {
-        return (DMT_Line__c) insertAndReturn(
-            buildLine(overrides)
+        return (DMT_Line__Share) insertAndReturn(
+            buildLineShareRecord(overrides)
         );
     }
 
@@ -573,12 +714,42 @@ public class DMT_UtilTestClass {
         );
     }
 
+    public DMT_line_status_process__c createLineStatusProcessRecord() {
+        return (DMT_line_status_process__c) insertAndReturn(
+            buildLineStatusProcessRecord()
+        );
+    }
+
+    public DMT_line_status_process__c createLineStatusProcessRecord(
+        Map<Schema.SObjectField, Object> overrides
+    ) {
+        return (DMT_line_status_process__c) insertAndReturn(
+            buildLineStatusProcessRecord(overrides)
+        );
+    }
+
     public DMT_Opportunity_Client__c createOpportunityClientRecord(String opportunityId) {
         return (DMT_Opportunity_Client__c) insertAndReturn(buildOpportunityClient(opportunityId));
     }
 
     public DMT_Opportunity_Client__c createOpportunityClientRecord(String opportunityId, Map<Schema.SObjectField, Object> overrides) {
         return (DMT_Opportunity_Client__c) insertAndReturn(buildOpportunityClient(opportunityId, overrides));
+    }
+
+    public DMT_Opportunity_Money__c createOpportunityMoneyRecord() {
+        return (DMT_Opportunity_Money__c) insertAndReturn(buildOpportunityMoneyRecord());
+    }
+
+    public DMT_Opportunity_Money__c createOpportunityMoneyRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (DMT_Opportunity_Money__c) insertAndReturn(buildOpportunityMoneyRecord(overrides));
+    }
+
+    public DMT_Opportunity_Business_Plan__c createOpportunityBusinessPlanRecord(Id opportunityId) {
+        return (DMT_Opportunity_Business_Plan__c) insertAndReturn(buildOpportunityBusinessPlan(opportunityId));
+    }
+
+    public DMT_Opportunity_Business_Plan__c createOpportunityBusinessPlanRecord(Id opportunityId, Map<Schema.SObjectField, Object> overrides) {
+        return (DMT_Opportunity_Business_Plan__c) insertAndReturn(buildOpportunityBusinessPlan(opportunityId, overrides));
     }
 
     public DMT_Opportunity_Mitigant__c createOpportunityMitigantRecord(Id opportunityLineItemId) {
@@ -635,6 +806,22 @@ public class DMT_UtilTestClass {
         return (DMT_Task_Relationship__c) insertAndReturn(buildTaskRelationship(fromTaskTypeId, toTaskTypeId, overrides));
     }
 
+    public DMT_TeamMember__c createTeamMemberRecord() {
+        return (DMT_TeamMember__c) insertAndReturn(buildTeamMemberRecord());
+    }
+
+    public DMT_TeamMember__c createTeamMemberRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (DMT_TeamMember__c) insertAndReturn(buildTeamMemberRecord(overrides));
+    }
+    /** @legacy  */
+    public DES_BBVA_Management_team__c createManagementTeamRecord() {
+        return (DES_BBVA_Management_team__c) insertAndReturn(buildManagementTeamRecord());
+    }
+    /** @legacy  */
+    public DES_BBVA_Management_team__c createManagementTeamRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (DES_BBVA_Management_team__c) insertAndReturn(buildManagementTeamRecord(overrides));
+    }
+
     public DMT_Task_Type__c createTaskTypeRecord() {
         return (DMT_Task_Type__c) insertAndReturn(buildTaskType());
     }
@@ -667,13 +854,20 @@ public class DMT_UtilTestClass {
         return (DMT_Taxonomy_Values__c) insertAndReturn(buildTaxonomyValue(externalId, catalog, overrides));
     }
 
-    // CIBGLOBALD-4851 - DMT_TeamMember__c (line participant), one insert
-    public DMT_TeamMember__c createTeamMemberRecord() {
-        return (DMT_TeamMember__c) insertAndReturn(buildTeamMember());
+    public DMT_NotificationSubscription__c createNotificationSubscriptionRecord() {
+        return (DMT_NotificationSubscription__c) insertAndReturn(buildNotificationSubscriptionRecord());
     }
 
-    public DMT_TeamMember__c createTeamMemberRecord(Map<Schema.SObjectField, Object> overrides) {
-        return (DMT_TeamMember__c) insertAndReturn(buildTeamMember(overrides));
+    public DMT_NotificationSubscription__c createNotificationSubscriptionRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (DMT_NotificationSubscription__c) insertAndReturn(buildNotificationSubscriptionRecord(overrides));
+    }
+
+    public DMT_Banking_Pool_Structure__c createBankingPoolStructureRecord() {
+        return (DMT_Banking_Pool_Structure__c) insertAndReturn(buildBankingPoolStructureRecord());
+    }
+
+    public DMT_Banking_Pool_Structure__c createBankingPoolStructureRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (DMT_Banking_Pool_Structure__c) insertAndReturn(buildBankingPoolStructureRecord(overrides));
     }
 
     public DMT_Underlying__c createUnderlyingRecord(Id opportunityLineItemId) {
@@ -690,6 +884,10 @@ public class DMT_UtilTestClass {
 
     public DMT_Warranty__c createWarrantyRecord(Id riskLineTermId, Map<Schema.SObjectField, Object> overrides) {
         return (DMT_Warranty__c) insertAndReturn(buildWarranty(riskLineTermId, overrides));
+    }
+
+    public SObject createDynamicSObjectRecord(SObject record) {
+        return insertAndReturn(record);
     }
 
     public DMT_X_Sell__c createXSellRecord(Id opportunityId) {
@@ -731,5 +929,18 @@ public class DMT_UtilTestClass {
 
     public DMT_TaskStatusWhenCompleted__c createTaskStatusWhenCompletedRecord(Map<Schema.SObjectField, Object> overrides) {
         return (DMT_TaskStatusWhenCompleted__c) insertAndReturn(buildTaskStatusWhenCompleted(overrides));
+    }
+    /** @legacy  */
+    public SER_EUR_Currency_exchange_rate__c buildCurrencyExchangeRateRecord() {
+        return DMT_UtilTestClassBuild.buildCurrencyExchangeRateRecord();
+    }
+    /** @legacy  */
+    public SER_EUR_Currency_exchange_rate__c buildCurrencyExchangeRateRecord(Map<Schema.SObjectField, Object> overrides) {
+        return DMT_UtilTestClassBuild.buildCurrencyExchangeRateRecord(overrides);
+    }
+
+    /** @legacy  */
+    public SER_EUR_Currency_exchange_rate__c createCurrencyExchangeRateRecord(Map<Schema.SObjectField, Object> overrides) {
+        return (SER_EUR_Currency_exchange_rate__c) insertAndReturn(buildCurrencyExchangeRateRecord(overrides));
     }
 }
