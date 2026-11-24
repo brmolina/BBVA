@@ -1,14 +1,18 @@
+/**
+ * @description Tests of DMT_BulkImportBatch. CIBGLOBALD-4851: products replacement, client codes, status rules (through
+ * Draft and back), value checks and events.
+ */
 @isTest
 public class DMT_BulkImportBatch_Test {
 
-    // CIBGLOBALD-4851 - test data through DMT_UtilTestClass (DMT test architecture)
+    // test data through DMT_UtilTestClass (DMT test architecture)
     private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass();
     private static final String CUSTOMER_CODE = 'ES0182000125513';
     private static final String GROUP_CODE    = 'G0TEST4851GROUP';
 
     @TestSetup
     static void makeData() {
-        // CIBGLOBALD-4851 - a subsidiary (customer code) and a group (group code), one insert
+        // a subsidiary (customer code) and a group (group code), one insert
         insert new List<Account>{
             DMT_UTIL.buildAccount(new Map<Schema.SObjectField, Object>{
                 Account.Name => 'Test Bulk Import Client', Account.g_customer_id__c => CUSTOMER_CODE, Account.DES_Group_Code__c => null
@@ -29,16 +33,16 @@ public class DMT_BulkImportBatch_Test {
         };
 
         Test.startTest();
-            DMT_BulkImportBatch batch = new DMT_BulkImportBatch(units(rows), 'job-test-001', 'TreasurySettlement'); // CIBGLOBALD-4851
+DMT_BulkImportBatch batch = new DMT_BulkImportBatch(units(rows), 'job-test-001', 'TreasurySettlement');
             Database.executeBatch(batch, 50);
         Test.stopTest();
 
-        List<DMT_Line__c> created = [SELECT Id, Line_Id__c, Name, DMT_Origin__c, Status__c, Client__r.g_customer_id__c FROM DMT_Line__c WHERE Line_Id__c IN ('TESTLIN001', 'TESTLIN002')]; // CIBGLOBALD-4851
+List<DMT_Line__c> created = [SELECT Id, Line_Id__c, Name, DMT_Origin__c, Status__c, Client__r.g_customer_id__c FROM DMT_Line__c WHERE Line_Id__c IN ('TESTLIN001', 'TESTLIN002')];
         Assert.areEqual(2, created.size(), 'Two lines should have been created');
         for (DMT_Line__c line : created) {
             Assert.areEqual('BulkImport', line.DMT_Origin__c, 'Origin should be BulkImport');
-            Assert.areEqual('Draft', line.Status__c, 'New lines are created in Draft'); // CIBGLOBALD-4851
-            Assert.areEqual(CUSTOMER_CODE, line.Client__r.g_customer_id__c, 'Client resolved from the customer code'); // CIBGLOBALD-4851
+Assert.areEqual('Draft', line.Status__c, 'New lines are created in Draft');
+Assert.areEqual(CUSTOMER_CODE, line.Client__r.g_customer_id__c, 'Client resolved from the customer code');
         }
 
         // AfterCreateLine flow must create the Passport for imported lines, same as for manually created ones
@@ -55,15 +59,15 @@ public class DMT_BulkImportBatch_Test {
 
         // Both runs inside one startTest/stopTest — Apex only allows one pair per test method
         Test.startTest();
-            Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-002a', 'TreasurySettlement'), 50); // CIBGLOBALD-4851
-            Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-002b', 'TreasurySettlement'), 50); // CIBGLOBALD-4851
+Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-002a', 'TreasurySettlement'), 50);
+Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-002b', 'TreasurySettlement'), 50);
         Test.stopTest();
 
         List<DMT_Line__c> result = [SELECT Id FROM DMT_Line__c WHERE Line_Id__c = 'TESTLIN003'];
         Assert.areEqual(1, result.size(), 'Upsert should not create duplicates');
     }
 
-    // CIBGLOBALD-4851 - a client code that is neither a customer nor a group code rejects the row (was: line saved without client)
+    // a client code that is neither a customer nor a group code rejects the row (was: line saved without client)
     @isTest
     static void testLinesImportRejectsUnknownClient() {
         List<Map<String, Object>> rows = new List<Map<String, Object>>{
@@ -71,13 +75,13 @@ public class DMT_BulkImportBatch_Test {
         };
 
         Test.startTest();
-            Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-003', 'TreasurySettlement'), 50); // CIBGLOBALD-4851
+Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-003', 'TreasurySettlement'), 50);
         Test.stopTest();
 
         Assert.areEqual(0, [SELECT COUNT() FROM DMT_Line__c WHERE Line_Id__c = 'TESTLIN004'], 'A line whose client is not found must not be created');
     }
 
-    // CIBGLOBALD-4851 - Client_Code__c can be a group code
+    // Client_Code__c can be a group code
     @isTest
     static void testLinesImportResolvesGroupCode() {
         List<Map<String, Object>> rows = new List<Map<String, Object>>{
@@ -85,27 +89,27 @@ public class DMT_BulkImportBatch_Test {
         };
 
         Test.startTest();
-            Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-006', 'TreasurySettlement'), 50); // CIBGLOBALD-4851
+Database.executeBatch(new DMT_BulkImportBatch(units(rows), 'job-test-006', 'TreasurySettlement'), 50);
         Test.stopTest();
 
         DMT_Line__c line = [SELECT Client__r.DES_Group_Code__c FROM DMT_Line__c WHERE Line_Id__c = 'TESTLIN006'];
         Assert.areEqual(GROUP_CODE, line.Client__r.DES_Group_Code__c, 'Client resolved from the group code, case-insensitive');
     }
 
-    // CIBGLOBALD-4851 - a new line needs Client_Code__c
+    // a new line needs Client_Code__c
     @isTest
     static void testLinesImportRejectsNewLineWithoutClientCode() {
         Map<String, Object> row = buildLineRow('TESTLIN007', 'Test Line No Client', CUSTOMER_CODE, 'ES');
         row.remove('Client_Code__c');
 
         Test.startTest();
-            Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>>{ row }), 'job-test-007', 'TreasurySettlement'), 50); // CIBGLOBALD-4851
+Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>>{ row }), 'job-test-007', 'TreasurySettlement'), 50);
         Test.stopTest();
 
         Assert.areEqual(0, [SELECT COUNT() FROM DMT_Line__c WHERE Line_Id__c = 'TESTLIN007'], 'A new line without client code must not be created');
     }
 
-    // CIBGLOBALD-4851 - existing line: a column not in the file is not touched, a blank cell clears the field,
+    // existing line: a column not in the file is not touched, a blank cell clears the field,
     // the status is kept, and no client code is needed
     @isTest
     static void testLinesImportExistingLineOnlyWritesPresentColumns() {
@@ -113,23 +117,23 @@ public class DMT_BulkImportBatch_Test {
             DMT_Line__c.Name => 'Existing Line', DMT_Line__c.Line_Id__c => 'TESTLIN008',
             DMT_Line__c.Status__c => 'Draft', DMT_Line__c.DMT_Comments__c => 'Keep me',
             DMT_Line__c.g_line_status_type__c => 'PR',
-            DMT_Line__c.First_Breakclause__c => '365', DMT_Line__c.Breakclause_Frequency__c => '365' // CIBGLOBALD-4851
+DMT_Line__c.First_Breakclause__c => '365', DMT_Line__c.Breakclause_Frequency__c => '365'
         });
         Map<String, Object> row = new Map<String, Object>{
             'Line_Id__c'            => 'TESTLIN008',
             'Name'                  => 'Existing Line Renamed',
             'g_line_status_type__c' => '',
-            'First_Breakclause__c'  => '', // CIBGLOBALD-4851
-            'Breakclause_Frequency__c' => '' // CIBGLOBALD-4851
+'First_Breakclause__c'  => '',
+'Breakclause_Frequency__c' => ''
         };
 
         Test.startTest();
-            Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>>{ row }), 'job-test-008', 'TreasurySettlement'), 50); // CIBGLOBALD-4851
+Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>>{ row }), 'job-test-008', 'TreasurySettlement'), 50);
         Test.stopTest();
 
-        DMT_Line__c line = [SELECT Name, DMT_Comments__c, g_line_status_type__c, Status__c, First_Breakclause__c, Breakclause_Frequency__c // CIBGLOBALD-4851
+DMT_Line__c line = [SELECT Name, DMT_Comments__c, g_line_status_type__c, Status__c, First_Breakclause__c, Breakclause_Frequency__c
                             FROM DMT_Line__c WHERE Line_Id__c = 'TESTLIN008'];
-        // CIBGLOBALD-4851 - blank break clause cells keep the values in Salesforce
+        // blank break clause cells keep the values in Salesforce
         Assert.areEqual('365', line.First_Breakclause__c, 'A blank First_Breakclause__c keeps the value');
         Assert.areEqual('365', line.Breakclause_Frequency__c, 'A blank Breakclause_Frequency__c keeps the value');
         Assert.areEqual('Existing Line Renamed', line.Name, 'A column in the file is written');
@@ -138,7 +142,7 @@ public class DMT_BulkImportBatch_Test {
         Assert.areEqual('Draft', line.Status__c, 'An existing line keeps its status');
     }
 
-    // CIBGLOBALD-4851 - Treasury Lines file values typed from the field describe; an invalid value rejects the row
+    // Treasury Lines file values typed from the field describe; an invalid value rejects the row
     @isTest
     static void testLinesImportTypesTreasuryColumns() {
         Map<String, Object> valid = buildLineRow('TESTLIN009', 'Test Line Typed', CUSTOMER_CODE, 'ES');
@@ -151,7 +155,7 @@ public class DMT_BulkImportBatch_Test {
         invalid.put('End_Date__c', 'next year');
 
         Test.startTest();
-            Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>>{ valid, invalid }), 'job-test-009', 'TreasurySettlement'), 50); // CIBGLOBALD-4851
+Database.executeBatch(new DMT_BulkImportBatch(units(new List<Map<String, Object>>{ valid, invalid }), 'job-test-009', 'TreasurySettlement'), 50);
         Test.stopTest();
 
         DMT_Line__c line = [SELECT Start_Date__c, Golden_Code__c, FD_Amount__c, DvP_Amount__c, Waiver__c, DMT_Client_Use__c, DMT_Origin__c
@@ -166,9 +170,9 @@ public class DMT_BulkImportBatch_Test {
         Assert.areEqual(0, [SELECT COUNT() FROM DMT_Line__c WHERE Line_Id__c = 'TESTLIN010'], 'An invalid date rejects the row');
     }
 
-    // ── PROCESS: products (CIBGLOBALD-4851) ──────────────────────────────────
+    // ── PROCESS: products ──────────────────────────────────
 
-    // CIBGLOBALD-4851 - existing line, products only: all its Risk Line Terms and Line Product Items are replaced by the
+    // existing line, products only: all its Risk Line Terms and Line Product Items are replaced by the
     // file rows; the line is not updated
     @isTest
     static void testProcessReplacesProductsOfExistingLine() {
@@ -202,7 +206,7 @@ public class DMT_BulkImportBatch_Test {
         Assert.areEqual('Replace Products Line', [SELECT Name FROM DMT_Line__c WHERE Id = :line.Id].Name, 'The line is not updated');
     }
 
-    // CIBGLOBALD-4851 - records removed one by one on the screen (UNIT_RLT_DELETE): only those are deleted, and only when
+    // records removed one by one on the screen (UNIT_RLT_DELETE): only those are deleted, and only when
     // they belong to the unit's line
     @isTest
     static void testProcessDeletesSingleRecordsOfTheLine() {
@@ -231,7 +235,7 @@ public class DMT_BulkImportBatch_Test {
         Assert.areEqual(1, [SELECT COUNT() FROM DMT_Risk_Line_Term__c WHERE Id = :terms[2].Id], 'A record of another line is never deleted');
     }
 
-    // CIBGLOBALD-4851 - a loaded table without rows for the line (empty list): all its records of that object are deleted;
+    // a loaded table without rows for the line (empty list): all its records of that object are deleted;
     // the table not loaded (key absent) leaves that object untouched
     @isTest
     static void testProcessEmptyTableDeletesAllProducts() {
@@ -255,7 +259,7 @@ public class DMT_BulkImportBatch_Test {
         Assert.areEqual(1, [SELECT COUNT() FROM DMT_Line_Product_Item__c WHERE Line__c = :line.Id], 'Table not loaded: items untouched');
     }
 
-    // CIBGLOBALD-4851 - new line created together with its products (children point to it by Line_Id__c in the same insert);
+    // new line created together with its products (children point to it by Line_Id__c in the same insert);
     // a unit without the Line Product Items key keeps that object untouched
     @isTest
     static void testProcessCreatesLineWithProducts() {
@@ -273,7 +277,7 @@ public class DMT_BulkImportBatch_Test {
         Assert.areEqual(2, [SELECT COUNT() FROM DMT_Risk_Line_Term__c WHERE DMT_Line__c = :line.Id], 'Both terms inserted under the new line');
     }
 
-    // CIBGLOBALD-4851 - a line whose products fail keeps its old products; the other line of the chunk is saved
+    // a line whose products fail keeps its old products; the other line of the chunk is saved
     // (chunk rolled back, then saved line by line)
     @isTest
     static void testProcessFailedLineKeepsOldProducts() {
@@ -301,7 +305,7 @@ public class DMT_BulkImportBatch_Test {
                         'The other line of the chunk is saved with its product');
     }
 
-    // CIBGLOBALD-4851 - a full chunk (UNITS_PER_CHUNK new lines, each with 2 terms and 1 product item) in one execute
+    // a full chunk (UNITS_PER_CHUNK new lines, each with 2 terms and 1 product item) in one execute
     @isTest
     static void testProcessFullChunk() {
         List<Map<String, Object>> units = new List<Map<String, Object>>();
@@ -322,9 +326,9 @@ public class DMT_BulkImportBatch_Test {
         Assert.areEqual(lines, [SELECT COUNT() FROM DMT_Line_Product_Item__c WHERE Line__r.Line_Id__c LIKE 'TESTCHUNK%'], 'Every product item created');
     }
 
-    // ── PROCESS: status rules (CIBGLOBALD-4851) ──────────────────────────────
+    // ── PROCESS: status rules ──────────────────────────────
 
-    // CIBGLOBALD-4851 - a Proposal line whose file changes a field blocked outside Draft is saved in Draft with the change
+    // a Proposal line whose file changes a field blocked outside Draft is saved in Draft with the change
     // (DMT_BatchSanctionAMIWEB moves it back afterwards)
     @isTest
     static void testProcessSendsBlockedChangeToDraft() {
@@ -342,14 +346,14 @@ public class DMT_BulkImportBatch_Test {
         Assert.areEqual('Renamed In Proposal', line.Name, 'The blocked field is saved');
         Assert.areEqual('Proposal', DMT_BulkImportBatch.lastStatusTargets.get('TESTLIN015'),
                         'The line moves back to its previous status (no code) after the load');
-        // CIBGLOBALD-4851 - the screen is told the status move started for one line
+        // the screen is told the status move started for one line
         DMT_BulkImportProgress__e statusEvent = DMT_BulkImportBatch.publishedEvents[DMT_BulkImportBatch.publishedEvents.size() - 1];
         Assert.areEqual(DMT_BulkImportBatch.PHASE_STATUS, statusEvent.Phase__c, 'Status phase after the load');
         Assert.areEqual(DMT_BulkImportBatch.EVENT_IN_PROGRESS, statusEvent.Status__c, 'The status move is running');
         Assert.areEqual(1, statusEvent.Total__c, 'One line to move');
     }
 
-    // CIBGLOBALD-4851 - a Treasury line in Approval whose file changes a field of the rule ApprovalProcessDataEdit (the
+    // a Treasury line in Approval whose file changes a field of the rule ApprovalProcessDataEdit (the
     // comment) is saved in Draft with the change and moves back to Approval, like a blocked field
     @isTest
     static void testProcessSendsApprovalDataChangeToDraft() {
@@ -378,7 +382,7 @@ public class DMT_BulkImportBatch_Test {
                         'The line moves back to Approval after the load');
     }
 
-    // CIBGLOBALD-4851 - stayDraft (the LWC found the org rules would reject the move): saved in Draft, not moved
+    // stayDraft (the LWC found the org rules would reject the move): saved in Draft, not moved
     @isTest
     static void testProcessStayDraftSkipsMove() {
         createProposalLine('TESTLIN017');
@@ -397,7 +401,7 @@ public class DMT_BulkImportBatch_Test {
         Assert.isFalse(DMT_BulkImportBatch.lastStatusTargets.containsKey('TESTLIN017'), 'The line is not moved after the load');
     }
 
-    // CIBGLOBALD-4851 - client type of a line by its client (DMT_Line__c.Client_Type__c formula without golden / custom)
+    // client type of a line by its client (DMT_Line__c.Client_Type__c formula without golden / custom)
     @isTest
     static void testClientTypeOf() {
         Map<String, Account> accounts = DMT_BulkImportBatch.accountsByClientCode(new Set<String>{ CUSTOMER_CODE, GROUP_CODE });
@@ -411,7 +415,7 @@ public class DMT_BulkImportBatch_Test {
         Assert.isTrue(DMT_BulkImportBatch.accountsByClientCode(new Set<String>()).isEmpty(), 'No codes, no query');
     }
 
-    // CIBGLOBALD-4851 - a field allowed outside Draft keeps the status
+    // a field allowed outside Draft keeps the status
     @isTest
     static void testProcessKeepsStatusForAllowedField() {
         createProposalLine('TESTLIN016');
@@ -427,14 +431,14 @@ public class DMT_BulkImportBatch_Test {
         Assert.areEqual('Proposal', line.Status__c, 'An allowed field keeps the status');
         Assert.areEqual('Allowed in Proposal', line.DMT_Comments__c, 'The allowed field is saved');
         Assert.isTrue(DMT_BulkImportBatch.lastStatusTargets.isEmpty(), 'No status change');
-        // CIBGLOBALD-4851 - no line to move: the status phase ends at once
+        // no line to move: the status phase ends at once
         DMT_BulkImportProgress__e statusEvent = DMT_BulkImportBatch.publishedEvents[DMT_BulkImportBatch.publishedEvents.size() - 1];
         Assert.areEqual(DMT_BulkImportBatch.PHASE_STATUS, statusEvent.Phase__c, 'Status phase after the load');
         Assert.areEqual(DMT_BulkImportBatch.EVENT_COMPLETED, statusEvent.Status__c, 'Nothing to move');
         Assert.areEqual(0, statusEvent.Total__c, 'No line to move');
     }
 
-    // CIBGLOBALD-4851 - the status code is saved in upper case (DMT_BatchSanctionAMIWEB sets Closed__c only for CW / CL)
+    // the status code is saved in upper case (DMT_BatchSanctionAMIWEB sets Closed__c only for CW / CL)
     @isTest
     static void testLinesImportSavesCodeInUpperCase() {
         Map<String, Object> row = buildLineRow('TESTLIN020', 'Lower Case Code', CUSTOMER_CODE, 'ES');
@@ -448,7 +452,7 @@ public class DMT_BulkImportBatch_Test {
                         'Code saved in upper case');
     }
 
-    // CIBGLOBALD-4851 - a term that is not a value of the picklist of days rejects the line; 365.0 is saved as 365
+    // a term that is not a value of the picklist of days rejects the line; 365.0 is saved as 365
     @isTest
     static void testProcessChecksTermDays() {
         List<Map<String, Object>> units = new List<Map<String, Object>>{
@@ -480,7 +484,7 @@ public class DMT_BulkImportBatch_Test {
             DMT_BulkImportBatch batch = new DMT_BulkImportBatch(
                 new List<Map<String, Object>>(),
                 'job-test-005',
-                'TreasurySettlement' // CIBGLOBALD-4851
+'TreasurySettlement'
             );
             Database.executeBatch(batch, 50);
         Test.stopTest();
@@ -513,7 +517,7 @@ public class DMT_BulkImportBatch_Test {
         };
     }
 
-    // CIBGLOBALD-4851 - an Other Products line created in Proposal (moving it there before Test.stopTest fails: its
+    // an Other Products line created in Proposal (moving it there before Test.stopTest fails: its
     // customer selection is set up asynchronously)
     private static DMT_Line__c createProposalLine(String lineId) {
         DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
@@ -532,7 +536,7 @@ public class DMT_BulkImportBatch_Test {
         return line;
     }
 
-    // CIBGLOBALD-4851 - Process units (DMT_BulkImportBatch.UNIT_*): the payload the LWC sends, one per line
+    // Process units (DMT_BulkImportBatch.UNIT_*): the payload the LWC sends, one per line
     private static List<Map<String, Object>> units(List<Map<String, Object>> lineRows) {
         List<Map<String, Object>> result = new List<Map<String, Object>>();
         for (Map<String, Object> row : lineRows) {
@@ -541,7 +545,7 @@ public class DMT_BulkImportBatch_Test {
         return result;
     }
 
-    // CIBGLOBALD-4851 - terms / items null = that object is not in the load for the line
+    // terms / items null = that object is not in the load for the line
     private static Map<String, Object> buildUnit(Map<String, Object> lineRow, Boolean updateLine, List<Object> terms, List<Object> items) {
         Map<String, Object> unit = new Map<String, Object>{
             DMT_BulkImportBatch.UNIT_LINE        => lineRow,
@@ -553,7 +557,7 @@ public class DMT_BulkImportBatch_Test {
         return unit;
     }
 
-    // CIBGLOBALD-4851 - Risk Line Terms / Line Product Items file rows as the LWC sends them (keyed by field name)
+    // Risk Line Terms / Line Product Items file rows as the LWC sends them (keyed by field name)
     private static Map<String, Object> buildTermFileRow(String riskType, String amount, String initTerm, String endTerm) {
         return new Map<String, Object>{
             'DMT_Risk_Type__c' => riskType, 'DMT_Amount__c' => amount, 'DMT_Init_Term__c' => initTerm, 'DMT_End_Term__c' => endTerm

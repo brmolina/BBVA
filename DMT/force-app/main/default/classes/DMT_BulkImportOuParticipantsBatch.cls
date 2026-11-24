@@ -32,14 +32,14 @@ public without sharing class DMT_BulkImportOuParticipantsBatch implements Databa
     }
 
     /**
-     * @description CIBGLOBALD-4851 - Active users of the OU (User.DES_LevelUO_10__c) with at least one DMT role whose
+     * @description Active users of the OU (User.DES_LevelUO_10__c) with at least one DMT role whose
      * DES_User_Roles__mdt access level is Read/Write.
      */
     public static Set<Id> writeUsersOfOu(String ouCode) {
-        Set<String> writeRoles = writeRoleNames(); // CIBGLOBALD-4851
+Set<String> writeRoles = writeRoleNames();
         Set<Id> userIds = new Set<Id>();
         for (User ouUser : [SELECT Id, DMT_User_Role__c FROM User WHERE IsActive = true AND DES_LevelUO_10__c = :ouCode]) {
-            if (hasWriteRole(ouUser, writeRoles)) { // CIBGLOBALD-4851
+if (hasWriteRole(ouUser, writeRoles)) {
                 userIds.add(ouUser.Id);
             }
         }
@@ -47,7 +47,7 @@ public without sharing class DMT_BulkImportOuParticipantsBatch implements Databa
     }
 
     /**
-     * @description CIBGLOBALD-4851 - OU search of the Add OU input (DMT_BulkImportController.searchOus): Read/Write users
+     * @description OU search of the Add OU input (DMT_BulkImportController.searchOus): Read/Write users
      * (same rule as writeUsersOfOu) per OU, for the first maxOus OU codes in alphabetical order that match likePattern
      * and have at least one. Users are read sorted by OU, so the scan stops at the next OU and each count is complete.
      * @param likePattern SOQL LIKE pattern, the typed text already escaped, between '%' (contains)
@@ -73,7 +73,7 @@ public without sharing class DMT_BulkImportOuParticipantsBatch implements Databa
         return countByOu;
     }
 
-    // CIBGLOBALD-4851 - DMT roles whose DES_User_Roles__mdt access level is Read/Write
+    // DMT roles whose DES_User_Roles__mdt access level is Read/Write
     private static Set<String> writeRoleNames() {
         Set<String> writeRoles = new Set<String>();
         for (DES_User_Roles__mdt role : [SELECT DES_Role_Developer_Name__c FROM DES_User_Roles__mdt
@@ -83,7 +83,7 @@ public without sharing class DMT_BulkImportOuParticipantsBatch implements Databa
         return writeRoles;
     }
 
-    // CIBGLOBALD-4851 - the user has at least one of those roles (User.DMT_User_Role__c, ';' separated)
+    // the user has at least one of those roles (User.DMT_User_Role__c, ';' separated)
     private static Boolean hasWriteRole(User ouUser, Set<String> writeRoles) {
         if (String.isBlank(ouUser.DMT_User_Role__c)) {
             return false;

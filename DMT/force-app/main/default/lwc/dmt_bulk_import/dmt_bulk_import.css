@@ -1,3 +1,7 @@
+/*
+ * CIBGLOBALD-4851 - SLDS 2 ready: colours, borders, radius and shadows use the SLDS global styling hooks
+ * (--slds-g-*), each with an SLDS 1 fallback value.
+ */
 .bulk-import-container {
     max-width: 1400px;
 }
@@ -8,9 +12,9 @@
     justify-content: center;
     width: 1.75rem;
     height: 1.75rem;
-    border-radius: 50%;
-    background-color: #0070d2;
-    color: #fff;
+    border-radius: var(--slds-g-radius-circle, 50%);
+    background-color: var(--slds-g-color-accent-1, #0070d2);
+    color: var(--slds-g-color-on-accent-1, #fff);
     font-size: 0.875rem;
     font-weight: 700;
     margin-right: 0.5rem;
@@ -21,8 +25,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 2px dashed #dddbda;
-    border-radius: 0.5rem;
+    border: var(--slds-g-sizing-border-2, 2px) dashed var(--slds-g-color-border-1, #dddbda);
+    border-radius: var(--slds-g-radius-border-2, 0.5rem);
     padding: 2rem;
     text-align: center;
     cursor: pointer;
@@ -32,14 +36,18 @@
 
 .drop-zone:hover,
 .drop-zone_active {
-    border-color: #0070d2;
-    background-color: #f3f8ff;
+    border-color: var(--slds-g-color-border-accent-1, #0070d2);
+    background-color: var(--slds-g-color-surface-container-2, #f3f3f3);
 }
 
+/* once rows are loaded the zone is a one-line bar above its table; the whole section takes the drop */
 .drop-zone_compact {
-    min-height: 80px;
-    padding: 1rem;
-    border-color: #c23934;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-height: 0;
+    padding: 0.375rem 0.75rem;
+    text-align: left;
 }
 
 .hidden-file-input {
@@ -50,15 +58,15 @@
     display: flex;
     align-items: center;
     padding: 0.5rem 0.75rem;
-    background-color: #f3f3f3;
-    border-radius: 0.25rem;
+    background-color: var(--slds-g-color-surface-container-2, #f3f3f3);
+    border-radius: var(--slds-g-radius-border-2, 0.25rem);
 }
 
 .error-box {
     padding: 0.75rem;
-    background-color: #fef1ee;
-    border-left: 3px solid #c23934;
-    border-radius: 0.25rem;
+    background-color: var(--slds-g-color-surface-container-2, #f3f3f3);
+    border-left: 3px solid var(--slds-g-color-border-error-1, #c23934);
+    border-radius: var(--slds-g-radius-border-2, 0.25rem);
     max-height: 200px;
     overflow-y: auto;
 }
@@ -66,16 +74,16 @@
 .preview-table-wrapper {
     max-height: 260px;
     overflow-y: auto;
-    border: 1px solid #dddbda;
-    border-radius: 0.25rem;
+    border: var(--slds-g-sizing-border-1, 1px) solid var(--slds-g-color-border-1, #dddbda);
+    border-radius: var(--slds-g-radius-border-2, 0.25rem);
 }
 
 .result-errors-table-wrapper {
     overflow-x: auto;
     max-height: 300px;
     overflow-y: auto;
-    border: 1px solid #dddbda;
-    border-radius: 0.25rem;
+    border: var(--slds-g-sizing-border-1, 1px) solid var(--slds-g-color-border-1, #dddbda);
+    border-radius: var(--slds-g-radius-border-2, 0.25rem);
 }
 
 .results-summary {
@@ -86,15 +94,15 @@
 }
 
 .success-badge {
-    color: #2e844a;
-    background-color: #e8f5e9;
-    border-color: #2e844a;
+    color: var(--slds-g-color-success-1, #2e844a);
+    background-color: var(--slds-g-color-surface-1, #fff);
+    border-color: var(--slds-g-color-border-success-1, #2e844a);
 }
 
 .error-badge {
-    color: #c23934;
-    background-color: #fef1ee;
-    border-color: #c23934;
+    color: var(--slds-g-color-error-1, #c23934);
+    background-color: var(--slds-g-color-surface-1, #fff);
+    border-color: var(--slds-g-color-border-error-1, #c23934);
 }
 
 .section-disabled {
@@ -106,9 +114,9 @@
     display: flex;
     align-items: center;
     padding: 0.5rem 0.75rem;
-    background-color: #e8f5e9;
-    border-left: 3px solid #2e844a;
-    border-radius: 0.25rem;
+    background-color: var(--slds-g-color-surface-container-2, #f3f3f3);
+    border-left: 3px solid var(--slds-g-color-border-success-1, #2e844a);
+    border-radius: var(--slds-g-radius-border-2, 0.25rem);
     flex-wrap: wrap;
     gap: 0.25rem;
 }
@@ -117,9 +125,9 @@
     display: flex;
     align-items: center;
     padding: 0.5rem 0.75rem;
-    background-color: #f0f9ff;
-    border-left: 3px solid #0070d2;
-    border-radius: 0.25rem;
+    background-color: var(--slds-g-color-surface-container-2, #f3f3f3);
+    border-left: 3px solid var(--slds-g-color-border-accent-1, #0070d2);
+    border-radius: var(--slds-g-radius-border-2, 0.25rem);
 }
 
 .enriched-stats {
@@ -131,32 +139,41 @@
 
 .status-badge-new,
 .status-badge-update,
-.status-badge-nochange {
+.status-badge-nochange,
+.status-badge-delete {
     display: inline-flex;
     align-items: center;
     padding: 0.125rem 0.5rem;
-    border-radius: 0.875rem;
+    border-radius: var(--slds-g-radius-border-pill, 0.875rem);
     font-size: 0.75rem;
     font-weight: 600;
-    border: 1px solid;
+    border: var(--slds-g-sizing-border-1, 1px) solid;
 }
 
+/* status badges: solid fill with its on-colour text, as the SLDS theme classes (slds-theme_success / warning / error) */
 .status-badge-new {
-    color: #2e844a;
-    background-color: #e8f5e9;
-    border-color: #2e844a;
+    color: var(--slds-g-color-on-success-1, #fff);
+    background-color: var(--slds-g-color-success-container-1, #2e844a);
+    border-color: var(--slds-g-color-success-container-1, #2e844a);
 }
 
 .status-badge-update {
-    color: #855800;
-    background-color: #fff3e0;
-    border-color: #c07200;
+    color: var(--slds-g-color-on-warning-1, #181818);
+    background-color: var(--slds-g-color-warning-container-1, #dd7a01);
+    border-color: var(--slds-g-color-warning-container-1, #dd7a01);
 }
 
 .status-badge-nochange {
-    color: #514f4d;
-    background-color: #f3f3f3;
-    border-color: #a8a8a8;
+    color: var(--slds-g-color-on-surface-3, #181818);
+    background-color: var(--slds-g-color-surface-container-2, #f3f3f3);
+    border-color: var(--slds-g-color-border-1, #c9c9c9);
+}
+
+/* child tables: Salesforce records that Process will delete */
+.status-badge-delete {
+    color: var(--slds-g-color-on-error-1, #fff);
+    background-color: var(--slds-g-color-error-container-1, #ba0517);
+    border-color: var(--slds-g-color-error-container-1, #ba0517);
 }
 
 .submit-row {
@@ -164,20 +181,8 @@
     align-items: center;
     justify-content: space-between;
 }
-/* CIBGLOBALD-4851 - child tables: Salesforce records that Process will delete */
-.status-badge-delete {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.125rem 0.5rem;
-    border-radius: 0.875rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border: 1px solid #c23934;
-    color: #c23934;
-    background-color: #fef1ee;
-}
 
-/* CIBGLOBALD-4851 - removed row: message with Undo at the bottom of the screen */
+/* removed row: message with Undo at the bottom of the screen (colours from slds-theme_inverse) */
 .undo-bar {
     position: fixed;
     bottom: 1.5rem;
@@ -187,52 +192,23 @@
     display: flex;
     align-items: center;
     padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
-    background: #16325c;
-    color: #ffffff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    border-radius: var(--slds-g-radius-border-2, 0.25rem);
+    box-shadow: var(--slds-g-shadow-2, 0 2px 6px rgba(0, 0, 0, 0.3));
 }
 
-/* CIBGLOBALD-4851 - drop zone while a job runs on the lines: greyed, no drop */
+/* drop zone while a job runs on the lines: greyed, no drop */
 .drop-zone_disabled,
 .drop-zone_disabled:hover {
     opacity: 0.5;
     cursor: not-allowed;
-    background: #f3f3f3;
+    background: var(--slds-g-color-surface-container-2, #f3f3f3);
 }
 
-/* CIBGLOBALD-4851 - OU search list under the OU code input */
+/* OU search: the SLDS dropdown and listbox under the OU code input */
 .ou-search {
     position: relative;
 }
 
-.ou-options {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    z-index: 9100;
+.ou-search .slds-dropdown {
     min-width: 100%;
-    margin-top: 2px;
-    padding: 0.25rem 0;
-    background: #ffffff;
-    border: 1px solid #c9c9c9;
-    border-radius: 0.25rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
-    list-style: none;
-}
-
-.ou-option {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.375rem 0.75rem;
-    white-space: nowrap;
-    cursor: pointer;
-}
-
-.ou-option:hover {
-    background: #f3f3f3;
-}
-
-.ou-option_empty {
-    cursor: default;
 }

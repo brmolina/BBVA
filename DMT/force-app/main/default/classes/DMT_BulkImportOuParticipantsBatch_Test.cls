@@ -133,7 +133,7 @@ private class DMT_BulkImportOuParticipantsBatch_Test {
                         'No participant added');
     }
 
-    // CIBGLOBALD-4851 - OU search of the Add OU input: OUs containing the typed text that have Read/Write users, with how
+    // OU search of the Add OU input: OUs containing the typed text that have Read/Write users, with how
     // many; nothing under 2 characters; LIKE wildcards typed are literal; the scan stops at the requested number of OUs
     @isTest
     static void testSearchOus() {

@@ -1,12 +1,16 @@
-// CIBGLOBALD-4851 - without sharing, like DMT_BulkImportBatch: the preview must find every line and product the load will
+/**
+ * @description Apex of the Bulk Import screen (LWC dmt_bulk_import). CIBGLOBALD-4851: preview data (existing lines and
+ * products, status context, value rules of the save), Process, job state, Update Line Status and Add OU (OU search).
+ */
+// without sharing, like DMT_BulkImportBatch: the preview must find every line and product the load will
 // save or delete (DMT_Line__c and Account are Private); the screen (LWC dmt_bulk_import) requires DMT_Line_God.
-public without sharing class DMT_BulkImportController { // CIBGLOBALD-4851
-    // CIBGLOBALD-4851 - OU search of the Add OU input (searchOus)
+public without sharing class DMT_BulkImportController {
+    // OU search of the Add OU input (searchOus)
     private static final Integer OU_SEARCH_MIN_CHARS = 2; // guard for direct calls; the screen (dmt_bulk_import) does not call under it
     private static final Integer OU_SEARCH_MAX = 10;
 
     /**
-     * CIBGLOBALD-4851 - Process button (LWC dmt_bulk_import): saves the lines of the load and replaces their products.
+     * Process button (LWC dmt_bulk_import): saves the lines of the load and replaces their products.
      * unitsJson = one unit per line (keys in DMT_BulkImportBatch.UNIT_*); progress and errors come back through the
      * DMT_BulkImportProgress__e event with this jobId. Returns the AsyncApexJob Id: the screen follows the job with
      * getJobState, so it ends even when an event is lost.
@@ -19,7 +23,7 @@ public without sharing class DMT_BulkImportController { // CIBGLOBALD-4851
     }
 
     /**
-     * CIBGLOBALD-4851 - State of a background job of the screen (Process, status move, Add OU), polled by the LWC
+     * State of a background job of the screen (Process, status move, Add OU), polled by the LWC
      * dmt_bulk_import until it is Completed, Failed or Aborted: status, errors (chunks that failed), extendedStatus (first
      * error), processed / total (chunks).
      */
@@ -37,7 +41,7 @@ public without sharing class DMT_BulkImportController { // CIBGLOBALD-4851
     }
 
     /**
-     * CIBGLOBALD-4851 - The status move a load started (DMT_BulkImportBatch.finish launches DMT_BatchSanctionAMIWEB): the
+     * The status move a load started (DMT_BulkImportBatch.finish launches DMT_BatchSanctionAMIWEB): the
      * first DMT_BatchSanctionAMIWEB job the same user created after the load job, or null while there is none yet.
      */
     @AuraEnabled
@@ -53,20 +57,20 @@ public without sharing class DMT_BulkImportController { // CIBGLOBALD-4851
     /**
      * Update Line Status action: moves the Draft lines of the current import to the status
      * informed in the file (g_line_status_type__c), reusing DMT_BatchSanctionAMIWEB in Bulk Import mode.
-     * Returns the AsyncApexJob Id. CIBGLOBALD-4851 - jobId: the job publishes its progress and result for the screen
+     * Returns the AsyncApexJob Id. jobId: the job publishes its progress and result for the screen
      * (DMT_BulkImportProgress__e, Phase STATUS).
      */
     @AuraEnabled
-    public static String updateLineStatus(List<String> lineIds, String jobId) { // CIBGLOBALD-4851
+public static String updateLineStatus(List<String> lineIds, String jobId) {
         if (lineIds == null || lineIds.isEmpty()) {
             throw new AuraHandledException('There are no imported lines to update.');
         }
-        Id asyncJobId = Database.executeBatch(new DMT_BatchSanctionAMIWEB(new Set<String>(lineIds), jobId), 50); // CIBGLOBALD-4851
+Id asyncJobId = Database.executeBatch(new DMT_BatchSanctionAMIWEB(new Set<String>(lineIds), jobId), 50);
         return String.valueOf(asyncJobId);
     }
 
     /**
-     * CIBGLOBALD-4851 - Add OU button (LWC dmt_bulk_import): adds the active users of the OU with a DMT Read/Write role,
+     * Add OU button (LWC dmt_bulk_import): adds the active users of the OU with a DMT Read/Write role,
      * and each line's owner, as Read/Write participants with Approval Edit to the lines of the load
      * (DMT_BulkImportOuParticipantsBatch). Returns users = the number of distinct users added (OU users plus line
      * owners) and asyncJobId = the batch job, which the screen follows (getJobState) before checking the result
@@ -99,7 +103,7 @@ public without sharing class DMT_BulkImportController { // CIBGLOBALD-4851
     }
 
     /**
-     * CIBGLOBALD-4851 - OU search of the Add OU input (LWC dmt_bulk_import): the first OU_SEARCH_MAX OU codes
+     * OU search of the Add OU input (LWC dmt_bulk_import): the first OU_SEARCH_MAX OU codes
      * (User.DES_LevelUO_10__c), in alphabetical order, that contain the typed text and have active users with a DMT
      * Read/Write role, with how many (DMT_BulkImportOuParticipantsBatch.writeUserCountByOu, the users Add OU adds).
      * Nothing under OU_SEARCH_MIN_CHARS characters.
@@ -125,7 +129,7 @@ public without sharing class DMT_BulkImportController { // CIBGLOBALD-4851
     }
 
     /**
-     * CIBGLOBALD-4851 - Result check of Add OU, read from Salesforce: how many (line, user) pairs of the load are still not a
+     * Result check of Add OU, read from Salesforce: how many (line, user) pairs of the load are still not a
      * participant with AccessLevel__c Edit or All and DMT_ApprovalEdit__c. Users = the OU's Read/Write users
      * (DMT_BulkImportOuParticipantsBatch.writeUsersOfOu) plus each line's owner. 0 = everything was added.
      */
@@ -160,7 +164,7 @@ public without sharing class DMT_BulkImportController { // CIBGLOBALD-4851
 
     @AuraEnabled
     public static List<DMT_Line__c> getExistingLines(List<String> lineIds) {
-        // CIBGLOBALD-4851 - query adds the Treasury Lines file columns (DMT_Client_Entific__c to DMT_Client_Use__c),
+        // query adds the Treasury Lines file columns (DMT_Client_Entific__c to DMT_Client_Use__c),
         // compared by the LWC (New / Will Update / No Changes)
         return [
             SELECT Id, Name, Line_Id__c, Status__c, CurrencyIsoCode, Booking_Geography__c,
@@ -170,8 +174,8 @@ public without sharing class DMT_BulkImportController { // CIBGLOBALD-4851
                    g_line_status_type__c, Amount__c,
                    DMT_Client_Entific__c, Golden_Code__c, FD_Amount__c, DvP_Amount__c, First_Breakclause__c, Waiver__c,
                    DMT_Mitigant_Agreement_comments__c, DMT_Additional_Restrictions__c, DMT_Client_Use__c,
-                   Client_Type__c, Custom_Association__c, Client__r.RecordType.DeveloperName, Closed__c, // CIBGLOBALD-4851
-                   DMT_Allow_Approval_Edit__c // CIBGLOBALD-4851
+Client_Type__c, Custom_Association__c, Client__r.RecordType.DeveloperName, Closed__c,
+DMT_Allow_Approval_Edit__c
             FROM DMT_Line__c
             WHERE Line_Id__c IN :lineIds
             LIMIT :lineIds.size()
@@ -179,7 +183,7 @@ public without sharing class DMT_BulkImportController { // CIBGLOBALD-4851
     }
 
     /**
-     * CIBGLOBALD-4851 - What the LWC (dmt_bulk_import, _stayDraftReasons) needs to tell which lines will stay in Draft
+     * What the LWC (dmt_bulk_import, _stayDraftReasons) needs to tell which lines will stay in Draft
      * after the load: profileName = the running user's profile (validation rule DMT_Line__c.Go_through_each_step) and
      * clientTypeByCode = the line client type (DMT_Line__c.Client_Type__c formula) of each Client_Code__c in upper case
      * (DMT_BulkImportBatch.clientTypeOf, flow DMT_OTHER_Line_Validations); clientRecordTypeByCode = the client's record type
@@ -206,12 +210,12 @@ public without sharing class DMT_BulkImportController { // CIBGLOBALD-4851
             'profileName'      => [SELECT Name FROM Profile WHERE Id = :UserInfo.getProfileId()].Name,
             'clientTypeByCode' => clientTypeByCode,
             'clientRecordTypeByCode' => clientRecordTypeByCode,
-            'fileValueRules'   => DMT_BulkImportBatch.fileValueRules() // CIBGLOBALD-4851 - value checks of the save, before Process
+'fileValueRules'   => DMT_BulkImportBatch.fileValueRules() // value checks of the save, before Process
         };
     }
 
     /**
-     * CIBGLOBALD-4851 - Custom association clients of the loaded lines (Custom_Association__c.DMT_Line__c), for the LWC
+     * Custom association clients of the loaded lines (Custom_Association__c.DMT_Line__c), for the LWC
      * dmt_bulk_import to mirror the Custom-line checks of the flow DMT_TRSR_Line_Validations (getCustomAssociation,
      * getCustomAssociationClientsLoop): client count, amounts and term.
      */
@@ -228,7 +232,7 @@ public without sharing class DMT_BulkImportController { // CIBGLOBALD-4851
 
     @AuraEnabled
     public static List<DMT_Risk_Line_Term__c> getExistingTermsForLines(List<String> lineIds) {
-        // CIBGLOBALD-4851 - query adds Id and DMT_Risk_Type__c: the LWC lists every Risk Line Term of the loaded lines
+        // query adds Id and DMT_Risk_Type__c: the LWC lists every Risk Line Term of the loaded lines
         // (Treasury Lines files identify a term by its risk type, not by DMT_RiskLineTermId__c)
         return [
             SELECT Id, DMT_Risk_Type__c, DMT_RiskLineTermId__c, DMT_Line__r.Line_Id__c,
@@ -246,7 +250,7 @@ public without sharing class DMT_BulkImportController { // CIBGLOBALD-4851
     }
 
     /**
-     * CIBGLOBALD-4851 - Line Product Items of the loaded lines (Treasury Lines), listed by the LWC (dmt_bulk_import)
+     * Line Product Items of the loaded lines (Treasury Lines), listed by the LWC (dmt_bulk_import)
      * next to the rows of the Line Product Items file: they are replaced when the file has rows for their line.
      */
     @AuraEnabled
