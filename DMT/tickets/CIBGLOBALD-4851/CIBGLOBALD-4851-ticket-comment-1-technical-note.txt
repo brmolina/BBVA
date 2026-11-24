@@ -1,0 +1,61 @@
+CIBGLOBALD-4851 - Nota técnica
+
+QUÉ SE HA HECHO
+Pantalla Configuration > Bulk Import (LWC dmt_bulk_import, visible solo con el custom permission DMT_Line_God). Nuevo tipo de carga Line Treasury (record type TreasurySettlement); Line (Other Products) sigue funcionando con los ficheros antiguos.
+
+Componentes
+- LWC dmt_bulk_import (+ bulkImportRules.js, copia de las reglas de la org que la pantalla usa para avisar antes de Process).
+- Apex DMT_BulkImportController (preview, Process, Update Line Status, Add OU, estado de los jobs).
+- Apex DMT_BulkImportBatch (Process: guarda líneas y productos, una unidad por línea, todo o nada por línea).
+- Apex DMT_BatchSanctionAMIWEB (mueve el Status de las líneas según su código; modos de Bulk Import añadidos).
+- Apex DMT_BulkImportOuParticipantsBatch (Add OU).
+- Test classes: DMT_BulkImportBatch_Test, DMT_BulkImportController_Test, DMT_BulkImportOuParticipantsBatch_Test, DMT_BatchSanctionAMIWEB_Test (datos con DMT_UtilTestClass).
+- Platform event DMT_BulkImportProgress__e (ya existente): progreso y errores por fila hacia la pantalla.
+
+FICHEROS Y TABLAS
+- Lines: columna obligatoria Line_Id__c. Client_Code__c (label Client Code) puede ser un código de cliente (Account.g_customer_id__c, label Customer ID) o un código de grupo (Account.DES_Group_Code__c, label Group Code), sin distinguir mayúsculas. Línea nueva sin Client_Code__c o con un código que no existe: la fila no se guarda.
+- Risk Line Terms (DMT_Risk_Line_Term__c) y Line Product Items (DMT_Line_Product_Item__c, solo Line Treasury). DMT_Init_Term__c / DMT_End_Term__c (labels Init Term / End Term) deben ser un valor de su picklist de días (0, 30, 365...); 365.0 se guarda como 365. Una fecha u otro texto rechaza la fila.
+- Formatos: CSV con coma o punto y coma (BOM, saltos de línea entre comillas), XLSX (fechas de Excel), o pegar con Ctrl+V. Fechas yyyy-mm-dd o dd/mm/yyyy; decimales con coma o punto.
+- Solo se escriben las columnas presentes en el fichero; una celda vacía borra el campo, excepto First_Breakclause__c y Breakclause_Frequency__c, que conservan el valor.
+- Regla de reemplazo: una tabla de productos cargada es la lista completa para las líneas de la carga. Al hacer Process se borran los registros de ese objeto de esas líneas y se insertan las filas del fichero. Una tabla no cargada no toca ese objeto. Se pueden quitar registros sueltos desde la tabla (acción Remove, con Undo).
+- Ficheros antiguos de Other Products: las columnas 'DMT_Risk_Line_Term__c <campo>' del fichero de Lines se cargan como tabla de Risk Line Terms. La columna Name de un fichero de productos da nombre al Risk Line Term.
+- Line Type se bloquea al cargar un fichero; Start Over lo desbloquea y limpia todo.
+
+STATUS (campo g_line_status_type__c del fichero, códigos DR, PR, AP, RC, CL, CW)
+- Línea nueva: se crea en Draft. Si su código no es DR, al terminar el Process DMT_BatchSanctionAMIWEB la mueve al Status del código (CW = Closed con Won/Lost Won, CL = Closed con Won/Lost Lost).
+- Línea existente en Draft con código: no la mueve Process, la mueve el botón Update Line Status.
+- Línea existente fuera de Draft: si el fichero cambia un campo bloqueado fuera de Draft (validation rule AvoidEditNotDraft: Name, Booking_Geography__c, CurrencyIsoCode, Start_Date__c, DvP_Amount__c, FD_Amount__c, First_Breakclause__c, Breakclause_Frequency__c, Waiver__c, Client__c, Amount__c, DMT_LastLevelId__c) o un campo de la validation rule ApprovalProcessDataEdit (DMT_Comments__c, DMT_Additional_Restrictions__c, DMT_Client_Use__c en Approval, Ready to close o Closed, salvo DMT_Allow_Approval_Edit__c = true, label Allow Approval Edit), la línea pasa a Draft, se guarda y vuelve a su Status anterior o al Status de su código. Una línea Closed sin código se queda en Draft.
+- Línea en Ready to close con cambios solo de productos: se queda en Ready to close y se fuerza un update sin cambios para que el trigger de la línea re-evalúe las tareas de aprobación.
+- Si la org va a rechazar el movimiento, la línea no se intenta mover y se queda en Draft con el motivo en la celda.
+
+COLUMNA VALIDATION / STATUS CHANGE (antes de Process)
+- Will not be saved: la fila no se guardará (mismos errores que DMT_BulkImportBatch.buildUnit: fecha, número o checkbox inválido, Client_Code__c vacío o no encontrado, término fuera del picklist). Tipos de campo y valores del picklist vienen de DMT_BulkImportBatch.fileValueRules vía getStatusContext.
+- Stays in Draft, not moved to X: el movimiento sería rechazado. Reglas copiadas en bulkImportRules.js (cada una nombra su origen): validation rule Go_through_each_step (desde Draft solo se puede ir a Proposal salvo los perfiles System Administrator y Desktop Integration; DMT_Line_God no lo salta), DMT_Line_Helper.validateRiskLineTermContinuity (huecos o solapes de términos), DMT_Line_Helper.blockReadyToCloseWithProspectInMultiholder (cliente Prospect no puede ir a Closed Won), flows DMT_TRSR_Line_Validations, DMT_OTHER_Line_Validations y CheckAmountsInLine, validation rule ApprovalProcessDataEdit.
+- El mensaje completo y su origen se escriben en la consola del navegador (console.info, prefijo [Bulk Import]).
+- Después de Process: Moving to X, Moved to X o Not moved to X con el error de la org. El Status final se lee de la org cuando termina el job.
+
+ADD OU
+- Aparece tras Process, o antes si todas las líneas pegadas ya existen. Búsqueda del código de OU desde 2 caracteres, por contiene, máximo 10 OUs con su número de usuarios.
+- Usuarios de la OU: User.IsActive = true, User.DES_LevelUO_10__c (label UO - Nivel10) = código de OU y al menos un rol de User.DMT_User_Role__c (label DMT User Role, lista separada por ;) cuyo registro DES_User_Roles__mdt tenga DES_Access_Level__c (label Access Level) = Read/Write. Se añade también el owner de cada línea.
+- Crea DMT_TeamMember__c (Deal Team Member) en cada línea de la carga con AccessLevel__c (Access) = Edit, DMT_ApprovalEdit__c (Approval Edit) = true, Team_Role__c (Team Role) = User-Defined. Si el usuario ya es participante: Read pasa a Edit, All se mantiene, Approval Edit a true. No se duplican participantes. Una OU por carga.
+
+EJECUCIÓN EN SEGUNDO PLANO
+- Process, el movimiento de Status, Update Line Status y Add OU son jobs batch. La pantalla sigue cada job por el evento DMT_BulkImportProgress__e y consultando su AsyncApexJob cada 4 segundos; si pasan 10 minutos lee el resultado de la org y deja de esperar. Mientras un job corre, el resto de botones y zonas de carga están deshabilitados.
+- Enhancement to existing process: los emails de DMT_BatchSanctionAMIWEB salen de la org-wide address Global Desktop Notification (antes, del usuario que ejecutaba).
+
+CÓMO PROBAR
+1. Con un usuario con DMT_Line_God: Configuration > Bulk Import > Line Type Line Treasury.
+2. Cargar un Lines con líneas nuevas (Line_Id__c que no existan), un cliente válido y códigos PR, AP y DR; cargar Risk Line Terms (Derivatives 0-365) y Line Product Items (un producto con una restricción marcada) de esas líneas.
+3. Antes de Process: la columna Validation / Status Change muestra Draft -> Proposal, Draft -> Approval o el motivo por el que no se moverá. Una fila con fecha inválida o cliente inexistente muestra Will not be saved.
+4. Process: las filas con error salen en la tabla de errores (descargable); el resto se crean en Draft y luego se mueven. Comprobar el Status final en la línea.
+5. Volver a cargar las mismas líneas con otro fichero de Risk Line Terms: la tabla muestra New y Will Be Deleted; tras Process la línea solo tiene los términos del fichero.
+6. Add OU con un código de OU que tenga usuarios Read/Write: el mensaje junto al botón indica cuántos usuarios se añadieron.
+7. Con un usuario de perfil estándar con DMT_Line_God: un código AP o CW en una línea nueva se queda en Draft (your profile must move one step at a time); PR sí se mueve.
+
+CONSULTAS (Salesforce Inspector)
+- Líneas de una carga: SELECT Line_Id__c, Status__c, Closed__c, g_line_status_type__c, DMT_Origin__c, Client__r.Name FROM DMT_Line__c WHERE Line_Id__c IN ('<ids>')
+- Productos de una línea: SELECT DMT_Risk_Type__c, DMT_Amount__c, DMT_Init_Term__c, DMT_End_Term__c FROM DMT_Risk_Line_Term__c WHERE DMT_Line__r.Line_Id__c = '<id>' y SELECT Product_Code_Value__c, DMT_DerivativeRestriction__c, DMT_FDRestriction__c, DMT_DVPRestriction__c FROM DMT_Line_Product_Item__c WHERE Line__r.Line_Id__c = '<id>'
+- Participantes: SELECT User__r.Name, AccessLevel__c, DMT_ApprovalEdit__c, Team_Role__c FROM DMT_TeamMember__c WHERE Line__r.Line_Id__c = '<id>'
+- OUs con usuarios activos: SELECT DES_LevelUO_10__c, COUNT(Id) FROM User WHERE IsActive = true AND DES_LevelUO_10__c != null GROUP BY DES_LevelUO_10__c
+- Roles Read/Write: SELECT DES_Role_Developer_Name__c FROM DES_User_Roles__mdt WHERE DES_Access_Level__c = 'Read/Write'
+- Códigos de cliente válidos: SELECT Name, g_customer_id__c, DES_Group_Code__c, RecordType.Name FROM Account WHERE g_customer_id__c != null LIMIT 20
