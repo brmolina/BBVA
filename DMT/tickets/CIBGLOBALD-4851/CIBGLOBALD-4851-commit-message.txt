@@ -1,0 +1,10 @@
+CIBGLOBALD-4851 - Bulk Import of Treasury Lines with products, status moves, save checks before Process and Add OU
+
+- Line Treasury load: Lines, Risk Line Terms and Line Product Items files (CSV, XLSX or paste); client from Client_Code__c (customer or group code); old Other Products files still load
+- A loaded products table is the complete list for the lines of the load: their records of that object are replaced by the file rows
+- Status from g_line_status_type__c (DR, PR, AP, RC, CL, CW): new lines are created in Draft and moved by DMT_BatchSanctionAMIWEB; existing lines outside Draft whose blocked fields change are saved through Draft and returned to their status or to the code status; existing Draft lines move with Update Line Status
+- Validation / Status Change column: before Process each row shows why it will not be saved or why it stays in Draft (org rules copied in bulkImportRules.js, field types and term picklist days from DMT_BulkImportBatch.fileValueRules)
+- Add OU: OU search (contains, from 2 characters, up to 10), adds the active Read/Write users of the OU and each line owner as Deal Team Members with Edit and Approval Edit (DMT_BulkImportOuParticipantsBatch)
+- Background jobs followed by DMT_BulkImportProgress__e and AsyncApexJob polling; one job at a time; Line Type locked until Start Over; drop on the tables; SLDS 2 styling hooks
+- Enhancement to existing process: DMT_BatchSanctionAMIWEB emails sent from the org-wide address Global Desktop Notification
+- Tests on the refactored test factory (DMT_UtilTestClass)
