@@ -1,0 +1,3 @@
+DMT_Line__r.Line_Id__c,DMT_Risk_Type__c,DMT_Amount__c,DMT_Init_Term__c,DMT_End_Term__c
+QA4851LIN00003ES,Derivatives,60000,0,30
+QA4851LIN00003ES,Derivatives,40000,30,365

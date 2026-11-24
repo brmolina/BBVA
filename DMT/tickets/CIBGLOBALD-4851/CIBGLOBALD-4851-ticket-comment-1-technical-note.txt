@@ -43,19 +43,26 @@ EJECUCIÓN EN SEGUNDO PLANO
 - Process, el movimiento de Status, Update Line Status y Add OU son jobs batch. La pantalla sigue cada job por el evento DMT_BulkImportProgress__e y consultando su AsyncApexJob cada 4 segundos; si pasan 10 minutos lee el resultado de la org y deja de esperar. Mientras un job corre, el resto de botones y zonas de carga están deshabilitados.
 - Enhancement to existing process: los emails de DMT_BatchSanctionAMIWEB salen de la org-wide address Global Desktop Notification (antes, del usuario que ejecutaba).
 
-CÓMO PROBAR
-1. Con un usuario con DMT_Line_God: Configuration > Bulk Import > Line Type Line Treasury.
-2. Cargar un Lines con líneas nuevas (Line_Id__c que no existan), un cliente válido y códigos PR, AP y DR; cargar Risk Line Terms (Derivatives 0-365) y Line Product Items (un producto con una restricción marcada) de esas líneas.
-3. Antes de Process: la columna Validation / Status Change muestra Draft -> Proposal, Draft -> Approval o el motivo por el que no se moverá. Una fila con fecha inválida o cliente inexistente muestra Will not be saved.
-4. Process: las filas con error salen en la tabla de errores (descargable); el resto se crean en Draft y luego se mueven. Comprobar el Status final en la línea.
-5. Volver a cargar las mismas líneas con otro fichero de Risk Line Terms: la tabla muestra New y Will Be Deleted; tras Process la línea solo tiene los términos del fichero.
-6. Add OU con un código de OU que tenga usuarios Read/Write: el mensaje junto al botón indica cuántos usuarios se añadieron.
-7. Con un usuario de perfil estándar con DMT_Line_God: un código AP o CW en una línea nueva se queda en Draft (your profile must move one step at a time); PR sí se mueve.
+CÓMO PROBAR (ficheros adjuntos al ticket)
+Cliente de los ficheros: ES0182011178580 (GRIFOLS VIAJES S.A., Subsidiary), mismo código en todas las orgs. Line_Id__c QA4851LIN00001ES a QA4851LIN00005ES: si ya existen en la org (prueba repetida), cambiar el sufijo en los cuatro ficheros.
+1. Usuario con DMT_Line_God y perfil System Administrator: Configuration > Bulk Import > Line Type Line Treasury.
+2. Arrastrar CIBGLOBALD-4851-QA-1-lines.csv a Lines, CIBGLOBALD-4851-QA-2-risk-line-terms.csv a Risk Line Terms y CIBGLOBALD-4851-QA-3-line-product-items.csv a Line Product Items (también se pueden soltar encima de la tabla).
+3. Antes de Process, columna Validation / Status Change:
+   - 00001: Draft -> Proposal (código PR)
+   - 00002: Draft -> Approval (código AP)
+   - 00003: vacía (código DR)
+   - 00004: Will not be saved: Start_Date__c next year is not a date (yyyy-mm-dd or dd/mm/yyyy)
+   - 00005: Will not be saved: client code XXNOPE999 was not found
+4. Process. Resultado en pantalla: 00001 Moved to Proposal, 00002 Moved to Approval, 00003 Created; tabla de errores con las filas 5 y 6 del fichero (00004 y 00005) y el mismo motivo. En la org: 00001 Proposal, 00002 Approval, 00003 Draft, 00004 y 00005 no existen; cada línea con un Risk Line Term Derivatives 0-365 y un Line Product Item DEPO con FD marcado.
+5. Start Over, Line Type Line Treasury, pegar (Ctrl+V) una tabla con la cabecera Line_Id__c y la línea QA4851LIN00003ES, y arrastrar CIBGLOBALD-4851-QA-4-risk-line-terms-replace.csv a Risk Line Terms: la tabla muestra 2 New y 1 Will Be Deleted. Process: la línea 00003 queda solo con los términos 0-30 (60000) y 30-365 (40000).
+6. Add OU (aparece tras Process): escribir 2 caracteres de un código de OU, elegir una de la lista y pulsar Add OU. El mensaje junto al botón indica la OU y cuántos usuarios se añadieron; en cada línea de la carga aparecen como Deal Team Members con Access Edit y Approval Edit.
+7. Con un usuario de perfil estándar con DMT_Line_God, repetir el paso 2 con otros Line_Id__c: 00002 muestra Stays in Draft, not moved to Approval: your profile must move one step at a time y queda en Draft; 00001 sí pasa a Proposal.
+8. Line (Other Products): los ficheros antiguos de Lines y Products de Other Products se cargan igual que antes.
 
 CONSULTAS (Salesforce Inspector)
-- Líneas de una carga: SELECT Line_Id__c, Status__c, Closed__c, g_line_status_type__c, DMT_Origin__c, Client__r.Name FROM DMT_Line__c WHERE Line_Id__c IN ('<ids>')
-- Productos de una línea: SELECT DMT_Risk_Type__c, DMT_Amount__c, DMT_Init_Term__c, DMT_End_Term__c FROM DMT_Risk_Line_Term__c WHERE DMT_Line__r.Line_Id__c = '<id>' y SELECT Product_Code_Value__c, DMT_DerivativeRestriction__c, DMT_FDRestriction__c, DMT_DVPRestriction__c FROM DMT_Line_Product_Item__c WHERE Line__r.Line_Id__c = '<id>'
-- Participantes: SELECT User__r.Name, AccessLevel__c, DMT_ApprovalEdit__c, Team_Role__c FROM DMT_TeamMember__c WHERE Line__r.Line_Id__c = '<id>'
+- Líneas de la prueba: SELECT Line_Id__c, Status__c, Closed__c, g_line_status_type__c, DMT_Origin__c, Client__r.Name FROM DMT_Line__c WHERE Line_Id__c LIKE 'QA4851LIN%' ORDER BY Line_Id__c
+- Risk Line Terms de la prueba: SELECT DMT_Line__r.Line_Id__c, DMT_Risk_Type__c, DMT_Amount__c, DMT_Init_Term__c, DMT_End_Term__c FROM DMT_Risk_Line_Term__c WHERE DMT_Line__r.Line_Id__c LIKE 'QA4851LIN%' ORDER BY DMT_Line__r.Line_Id__c
+- Line Product Items de la prueba: SELECT Line__r.Line_Id__c, Product_Code_Value__c, DMT_DerivativeRestriction__c, DMT_FDRestriction__c, DMT_DVPRestriction__c FROM DMT_Line_Product_Item__c WHERE Line__r.Line_Id__c LIKE 'QA4851LIN%' ORDER BY Line__r.Line_Id__c
+- Participantes (paso 6): SELECT Line__r.Line_Id__c, User__r.Name, AccessLevel__c, DMT_ApprovalEdit__c, Team_Role__c FROM DMT_TeamMember__c WHERE Line__r.Line_Id__c LIKE 'QA4851LIN%' ORDER BY Line__r.Line_Id__c
 - OUs con usuarios activos: SELECT DES_LevelUO_10__c, COUNT(Id) FROM User WHERE IsActive = true AND DES_LevelUO_10__c != null GROUP BY DES_LevelUO_10__c
 - Roles Read/Write: SELECT DES_Role_Developer_Name__c FROM DES_User_Roles__mdt WHERE DES_Access_Level__c = 'Read/Write'
-- Códigos de cliente válidos: SELECT Name, g_customer_id__c, DES_Group_Code__c, RecordType.Name FROM Account WHERE g_customer_id__c != null LIMIT 20
