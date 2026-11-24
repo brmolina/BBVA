@@ -44,12 +44,12 @@ EJECUCIÓN EN SEGUNDO PLANO
 - Enhancement to existing process: los emails de DMT_BatchSanctionAMIWEB salen de la org-wide address Global Desktop Notification (antes, del usuario que ejecutaba).
 
 CÓMO PROBAR (ficheros adjuntos al ticket)
-Cliente de los ficheros: ES0182011178580 (GRIFOLS VIAJES S.A., Subsidiary), mismo código en todas las orgs. Line_Id__c QA4851LIN00001ES a QA4851LIN00005ES: si ya existen en la org (prueba repetida), cambiar el sufijo en los cuatro ficheros.
+Cliente de los ficheros: ES0182011178580 (GRIFOLS VIAJES S.A., Subsidiary), mismo código en todas las orgs. Line_Id__c QA4851LIN00001ES a QA4851LIN00005ES (Line Treasury) y QA4851OL01 (Other Products): si ya existen en la org (prueba repetida), cambiar el sufijo en los ficheros.
 1. Usuario con DMT_Line_God y perfil System Administrator: Configuration > Bulk Import > Line Type Line Treasury.
 2. Arrastrar CIBGLOBALD-4851-QA-1-lines.csv a Lines, CIBGLOBALD-4851-QA-2-risk-line-terms.csv a Risk Line Terms y CIBGLOBALD-4851-QA-3-line-product-items.csv a Line Product Items (también se pueden soltar encima de la tabla).
 3. Antes de Process, columna Validation / Status Change:
-   - 00001: Draft -> Proposal (código PR)
-   - 00002: Draft -> Approval (código AP)
+   - 00001: Draft → Proposal (código PR)
+   - 00002: Draft → Approval (código AP)
    - 00003: vacía (código DR)
    - 00004: Will not be saved: Start_Date__c next year is not a date (yyyy-mm-dd or dd/mm/yyyy)
    - 00005: Will not be saved: client code XXNOPE999 was not found
@@ -57,11 +57,15 @@ Cliente de los ficheros: ES0182011178580 (GRIFOLS VIAJES S.A., Subsidiary), mism
 5. Start Over, Line Type Line Treasury, pegar (Ctrl+V) una tabla con la cabecera Line_Id__c y la línea QA4851LIN00003ES, y arrastrar CIBGLOBALD-4851-QA-4-risk-line-terms-replace.csv a Risk Line Terms: la tabla muestra 2 New y 1 Will Be Deleted. Process: la línea 00003 queda solo con los términos 0-30 (60000) y 30-365 (40000).
 6. Add OU (aparece tras Process): escribir 2 caracteres de un código de OU (consulta OUs con usuarios activos), elegir una de la lista (muestra el código y su número de usuarios Read/Write) y pulsar Add OU. Al terminar, el mensaje junto al botón dice N participant(s) added to all 3 line(s). (N = usuarios Read/Write de la OU más los owners de las líneas, cada persona una vez) y sale el toast Add OU finished. En las líneas 00001 a 00003 aparecen como Deal Team Members con Access Edit, Approval Edit marcado y Team Role User-Defined (consulta Participantes). Repetir Add OU con la misma OU no duplica participantes.
 7. Con un usuario de perfil estándar con DMT_Line_God, repetir el paso 2 con otros Line_Id__c: 00002 muestra Stays in Draft, not moved to Approval: your profile must move one step at a time y queda en Draft; 00001 sí pasa a Proposal.
-8. Line (Other Products): los ficheros antiguos de Lines y Products de Other Products se siguen cargando; las columnas DMT_Risk_Line_Term__c DMT_Init_Term__c / DMT_End_Term__c deben llevar días del picklist (0, 365...). Una fecha en esas columnas muestra Will not be saved y la fila no se guarda.
+8. Line (Other Products), ficheros con el formato antiguo: Start Over, Line Type Line (Other Products).
+   - Arrastrar CIBGLOBALD-4851-QA-5-other-products-lines.csv a Lines: la línea QA4851OL01 sale como New y la tabla Risk Line Terms se carga sola desde las columnas DMT_Risk_Line_Term__c del fichero (1 New, QA4851OL01-01, 1000000, 0-365).
+   - Arrastrar CIBGLOBALD-4851-QA-6-other-products-products.csv a Risk Line Terms: reemplaza la tabla anterior, 2 New (QA4851OL01-01 600000 0-365 y QA4851OL01-02 400000 365-1095).
+   - Process: 1 Created, 2 Created, sin errores. En la org: QA4851OL01 en Draft, record type OtherProducts, Amount__c 1000000, cliente GRIFOLS VIAJES S.A., con los dos Risk Line Terms y Name QA4851 Other Products line en cada término.
+   - En este formato los términos deben ser días del picklist (0, 365...): una fecha en esas columnas muestra Will not be saved y la fila no se guarda.
 
 CONSULTAS (Salesforce Inspector)
-- Líneas de la prueba: SELECT Line_Id__c, Status__c, Closed__c, g_line_status_type__c, DMT_Origin__c, Client__r.Name FROM DMT_Line__c WHERE Line_Id__c LIKE 'QA4851LIN%' ORDER BY Line_Id__c
-- Risk Line Terms de la prueba: SELECT DMT_Line__r.Line_Id__c, DMT_Risk_Type__c, DMT_Amount__c, DMT_Init_Term__c, DMT_End_Term__c FROM DMT_Risk_Line_Term__c WHERE DMT_Line__r.Line_Id__c LIKE 'QA4851LIN%' ORDER BY DMT_Line__r.Line_Id__c
+- Líneas de la prueba: SELECT Line_Id__c, RecordType.DeveloperName, Status__c, Closed__c, g_line_status_type__c, Amount__c, DMT_Origin__c, Client__r.Name FROM DMT_Line__c WHERE Line_Id__c LIKE 'QA4851%' ORDER BY Line_Id__c
+- Risk Line Terms de la prueba: SELECT DMT_Line__r.Line_Id__c, Name, DMT_RiskLineTermId__c, DMT_Risk_Type__c, DMT_Amount__c, DMT_Init_Term__c, DMT_End_Term__c FROM DMT_Risk_Line_Term__c WHERE DMT_Line__r.Line_Id__c LIKE 'QA4851%' ORDER BY DMT_Line__r.Line_Id__c
 - Line Product Items de la prueba: SELECT Line__r.Line_Id__c, Product_Code_Value__c, DMT_DerivativeRestriction__c, DMT_FDRestriction__c, DMT_DVPRestriction__c FROM DMT_Line_Product_Item__c WHERE Line__r.Line_Id__c LIKE 'QA4851LIN%' ORDER BY Line__r.Line_Id__c
 - Participantes (paso 6): SELECT Line__r.Line_Id__c, User__r.Name, AccessLevel__c, DMT_ApprovalEdit__c, Team_Role__c FROM DMT_TeamMember__c WHERE Line__r.Line_Id__c LIKE 'QA4851LIN%' ORDER BY Line__r.Line_Id__c
 - OUs con usuarios activos: SELECT DES_LevelUO_10__c, COUNT(Id) FROM User WHERE IsActive = true AND DES_LevelUO_10__c != null GROUP BY DES_LevelUO_10__c
