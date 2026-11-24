@@ -1,4 +1,4 @@
-/**
+    /**
  * @description Bulk Import load (LWC dmt_bulk_import, Process). Reworked in CIBGLOBALD-4851: one unit per line with its
  * products; the Lines file creates / updates the line, a loaded products table replaces all Risk Line Terms / Line Product
  * Items of that line; client from Client_Code__c (customer or group code); a line outside Draft whose blocked fields change
@@ -56,8 +56,9 @@ public without sharing class DMT_BulkImportBatch implements Database.Batchable<O
     private static final Set<String> APPROVAL_DATA_STATUSES = new Set<String>{ 'Approval', 'Ready to close', 'Closed' };
     // child fields a file column can write (columns with other names are ignored, e.g. the line
     // columns of an old Other Products file); the LWC sends 'DMT_Risk_Line_Term__c <field>' columns as <field>.
+    // Name: the Name column of a Products file names the term (kept from the previous products import).
     private static final List<String> RLT_FILE_FIELDS = new List<String>{
-        'DMT_Risk_Type__c', 'DMT_Amount__c', 'DMT_Init_Term__c', 'DMT_End_Term__c', 'DMT_RiskLineTermId__c', 'DMT_LastLevelId__c',
+        'Name', 'DMT_Risk_Type__c', 'DMT_Amount__c', 'DMT_Init_Term__c', 'DMT_End_Term__c', 'DMT_RiskLineTermId__c', 'DMT_LastLevelId__c',
         'g_global_product_family_id__c', 'g_global_product_subfamily_id__c', 'g_global_product_category_id__c',
         'g_gbl_product_subcategory_id__c', 'g_global_product_id__c', 'g_multioperation_ind_type__c',
         'g_expert_criteria_risk_type__c', 'g_amortization_type__c', 'gf_payment_frequency__c', 'gf_group_priority_line_id__c',
@@ -139,7 +140,7 @@ public without sharing class DMT_BulkImportBatch implements Database.Batchable<O
         for (Object o : scope) {
             chunk.add((Map<String, Object>) o);
         }
-processUnits(chunk);
+        processUnits(chunk);
         processedCount += chunk.size();
         publishProgress('IN_PROGRESS');
     }
@@ -265,7 +266,7 @@ processUnits(chunk);
             }
             line.Id = work.existingLineId;
             work.line = line;
-planStatus(work, existing, recordTypeName);
+            planStatus(work, existing, recordTypeName);
         } else if (work.existingLineId == null) {
             return 'The line does not exist in Salesforce and has no line data to create it.';
         }
@@ -278,7 +279,7 @@ planStatus(work, existing, recordTypeName);
             DMT_Risk_Line_Term__c term = new DMT_Risk_Line_Term__c(DMT_Line__r = new DMT_Line__c(Line_Id__c = work.lineId));
             String error = putFileFields(term, row, RLT_FILE_FIELDS, rltFields);
             if (error == null) {
-error = checkTermDays(term);
+                error = checkTermDays(term);
             }
             if (error != null) {
                 return 'Risk Line Term: ' + error;
@@ -301,7 +302,7 @@ error = checkTermDays(term);
         // update that runs the Ready to close checkpoint (as DMT_ApprovalChangeStep_Helper.recheckReadyToCloseLine)
         work.recheckReadyToClose = work.line == null && existing != null && existing.Status__c == STATUS_READY_TO_CLOSE
                                    && (work.replaceRlt || work.replaceLpi || !work.deleteRltIds.isEmpty()
-|| !work.deleteLpiIds.isEmpty());
+                                       || !work.deleteLpiIds.isEmpty());
         return null;
     }
 
@@ -504,7 +505,7 @@ error = checkTermDays(term);
                 lpiWorks.get(item.Line__r.Line_Id__c).oldChildIds.add(item.Id);
             }
         }
-loadSingleDeletes(works);
+        loadSingleDeletes(works);
     }
 
     /**
@@ -544,7 +545,7 @@ loadSingleDeletes(works);
             runDml(works);
             successCount += works.size();
             for (UnitWork work : works) {
-addStatusFollowUp(work);
+                addStatusFollowUp(work);
             }
             return;
         } catch (Exception e) {
@@ -559,7 +560,7 @@ addStatusFollowUp(work);
             try {
                 runDml(new List<UnitWork>{ work });
                 successCount++;
-addStatusFollowUp(work);
+                addStatusFollowUp(work);
             } catch (Exception e) {
                 Database.rollback(lineSavepoint);
                 addRowError(work.rowNumber, work.lineRow, 'Line_Id__c', 'Name', dmlMessage(e));
@@ -582,7 +583,7 @@ addStatusFollowUp(work);
             } else if (work.line != null) {
                 toUpdate.add(work.line.clone(true, true));
             } else if (work.recheckReadyToClose) {
-toUpdate.add(new DMT_Line__c(Id = work.existingLineId)); // Ready to close checkpoint
+                toUpdate.add(new DMT_Line__c(Id = work.existingLineId)); // Ready to close checkpoint
             }
             for (DMT_Risk_Line_Term__c term : work.terms) {
                 newTerms.add(term.clone(false, true));
@@ -608,7 +609,7 @@ toUpdate.add(new DMT_Line__c(Id = work.existingLineId)); // Ready to close check
 
     // a saved line that moves to a status after the load (planStatus)
     private void addStatusFollowUp(UnitWork work) {
-if (work.walkToStatus != null && !work.stayDraft) {
+        if (work.walkToStatus != null && !work.stayDraft) {
             statusTargets.put(work.lineId, work.walkToStatus);
         }
     }
@@ -661,16 +662,16 @@ if (work.walkToStatus != null && !work.stayDraft) {
         List<DMT_Risk_Line_Term__c> terms = new List<DMT_Risk_Line_Term__c>();
         List<DMT_Line_Product_Item__c> items = new List<DMT_Line_Product_Item__c>();
         List<Id> oldChildIds = new List<Id>();
-String walkToStatus; // status the line moves to after the load (planStatus)
-Boolean recheckReadyToClose = false; // products only on a Ready to close line
-Boolean stayDraft = false; // UNIT_STAY_DRAFT: no move after the load
-List<Id> deleteRltIds = new List<Id>(); // UNIT_RLT_DELETE
-List<Id> deleteLpiIds = new List<Id>(); // UNIT_LPI_DELETE
+        String walkToStatus; // status the line moves to after the load (planStatus)
+        Boolean recheckReadyToClose = false; // products only on a Ready to close line
+        Boolean stayDraft = false; // UNIT_STAY_DRAFT: no move after the load
+        List<Id> deleteRltIds = new List<Id>(); // UNIT_RLT_DELETE
+        List<Id> deleteLpiIds = new List<Id>(); // UNIT_LPI_DELETE
 
         UnitWork(Map<String, Object> unit) {
-stayDraft = unit.get(UNIT_STAY_DRAFT) == true;
-deleteRltIds = DMT_BulkImportBatch.idList(unit.get(UNIT_RLT_DELETE));
-deleteLpiIds = DMT_BulkImportBatch.idList(unit.get(UNIT_LPI_DELETE));
+            stayDraft = unit.get(UNIT_STAY_DRAFT) == true;
+            deleteRltIds = DMT_BulkImportBatch.idList(unit.get(UNIT_RLT_DELETE));
+            deleteLpiIds = DMT_BulkImportBatch.idList(unit.get(UNIT_LPI_DELETE));
             lineRow   = DMT_BulkImportBatch.lineRow(unit);
             lineId    = DMT_BulkImportBatch.str(lineRow, 'Line_Id__c');
             Object rowNumberValue = unit.get(UNIT_ROW_NUMBER);
@@ -699,7 +700,7 @@ deleteLpiIds = DMT_BulkImportBatch.idList(unit.get(UNIT_LPI_DELETE));
             if (!row.containsKey(fieldName)) {
                 continue;
             }
-if (KEEP_WHEN_BLANK_FIELDS.contains(fieldName) && String.isBlank(str(row, fieldName))) {
+            if (KEEP_WHEN_BLANK_FIELDS.contains(fieldName) && String.isBlank(str(row, fieldName))) {
                 continue;
             }
             String error = putValue(line, lineFields.get(fieldName), str(row, fieldName));
@@ -738,7 +739,7 @@ if (KEEP_WHEN_BLANK_FIELDS.contains(fieldName) && String.isBlank(str(row, fieldN
         }
 
         // Owner resolved via pre-fetched user map
-String userExtId = ownerExtId(row);
+        String userExtId = ownerExtId(row);
         if (String.isNotBlank(userExtId) && userIdMap.containsKey(userExtId)) {
             line.OwnerId       = userIdMap.get(userExtId);
             line.DMT_ID_User__c = userExtId;
@@ -869,7 +870,7 @@ String userExtId = ownerExtId(row);
     }
 
     private void publishProgress(String status) {
-publishEvent(jobId, importType, status, totalRows, processedCount, successCount, errorCount, collectedErrors);
+        publishEvent(jobId, importType, status, totalRows, processedCount, successCount, errorCount, collectedErrors);
     }
 
     /**
@@ -883,19 +884,19 @@ publishEvent(jobId, importType, status, totalRows, processedCount, successCount,
                                     Integer success, Integer errors, List<Map<String, Object>> errorList) {
         DMT_BulkImportProgress__e evt = new DMT_BulkImportProgress__e();
         evt.Job_Id__c       = jobId;
-evt.Phase__c        = phase;
+        evt.Phase__c        = phase;
         evt.Status__c       = status;
-evt.Total__c        = total;
-evt.Processed__c    = processed;
-evt.Success_Count__c = success;
-evt.Error_Count__c  = errors;
+        evt.Total__c        = total;
+        evt.Processed__c    = processed;
+        evt.Success_Count__c = success;
+        evt.Error_Count__c  = errors;
 
-String errJson = JSON.serialize(errorList == null ? new List<Map<String, Object>>() : errorList);
+        String errJson = JSON.serialize(errorList == null ? new List<Map<String, Object>>() : errorList);
         evt.Errors_JSON__c = errJson.length() > 131000
             ? errJson.substring(0, 131000) + '...truncated]'
             : errJson;
 
-publishedEvents.add(evt);
+        publishedEvents.add(evt);
         EventBus.publish(evt);
     }
 

@@ -1,4 +1,4 @@
-/**
+    /**
  * @description Apex of the Bulk Import screen (LWC dmt_bulk_import). CIBGLOBALD-4851: preview data (existing lines and
  * products, status context, value rules of the save), Process, job state, Update Line Status and Add OU (OU search).
  */
@@ -61,11 +61,11 @@ public without sharing class DMT_BulkImportController {
      * (DMT_BulkImportProgress__e, Phase STATUS).
      */
     @AuraEnabled
-public static String updateLineStatus(List<String> lineIds, String jobId) {
+    public static String updateLineStatus(List<String> lineIds, String jobId) {
         if (lineIds == null || lineIds.isEmpty()) {
             throw new AuraHandledException('There are no imported lines to update.');
         }
-Id asyncJobId = Database.executeBatch(new DMT_BatchSanctionAMIWEB(new Set<String>(lineIds), jobId), 50);
+        Id asyncJobId = Database.executeBatch(new DMT_BatchSanctionAMIWEB(new Set<String>(lineIds), jobId), 50);
         return String.valueOf(asyncJobId);
     }
 
@@ -174,8 +174,8 @@ Id asyncJobId = Database.executeBatch(new DMT_BatchSanctionAMIWEB(new Set<String
                    g_line_status_type__c, Amount__c,
                    DMT_Client_Entific__c, Golden_Code__c, FD_Amount__c, DvP_Amount__c, First_Breakclause__c, Waiver__c,
                    DMT_Mitigant_Agreement_comments__c, DMT_Additional_Restrictions__c, DMT_Client_Use__c,
-Client_Type__c, Custom_Association__c, Client__r.RecordType.DeveloperName, Closed__c,
-DMT_Allow_Approval_Edit__c
+                   Client_Type__c, Custom_Association__c, Client__r.RecordType.DeveloperName, Closed__c,
+                   DMT_Allow_Approval_Edit__c
             FROM DMT_Line__c
             WHERE Line_Id__c IN :lineIds
             LIMIT :lineIds.size()
@@ -210,7 +210,7 @@ DMT_Allow_Approval_Edit__c
             'profileName'      => [SELECT Name FROM Profile WHERE Id = :UserInfo.getProfileId()].Name,
             'clientTypeByCode' => clientTypeByCode,
             'clientRecordTypeByCode' => clientRecordTypeByCode,
-'fileValueRules'   => DMT_BulkImportBatch.fileValueRules() // value checks of the save, before Process
+            'fileValueRules'   => DMT_BulkImportBatch.fileValueRules() // value checks of the save, before Process
         };
     }
 

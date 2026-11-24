@@ -29,7 +29,7 @@ import hasDMTLineGod    from '@salesforce/customPermission/DMT_Line_God';
 import {
     valueText, normaliseValue, TERM_COLUMN_PREFIX, termValue, stepRuleReasons, termContinuityReasons, prospectReasons,
     otherProductsFlowReasons, productsTotalReasons, treasuryFlowReasons, approvalDataEditReasons, reasonText, reasonShortText,
-logRuleReasons, rowSaveError
+    logRuleReasons, rowSaveError
 } from './bulkImportRules';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
@@ -103,7 +103,7 @@ const CHILD_STATUS_KEPT   = 'Kept';
 const CHILD_STATUS_CREATED = 'Created'; // after Process: the records the load inserted
 const CHILD_STATUS_CLASS  = {
     [CHILD_STATUS_NEW]: 'slds-text-color_success', [CHILD_STATUS_DELETE]: 'slds-text-color_error', [CHILD_STATUS_KEPT]: 'slds-text-color_weak',
-[CHILD_STATUS_CREATED]: 'slds-text-color_success'
+    [CHILD_STATUS_CREATED]: 'slds-text-color_success'
 };
 // Old Other Products files name the term columns 'DMT_Risk_Line_Term__c <field>'; the tables show them as <field>
 const CHILD_ERROR_LIMIT   = 20;
@@ -204,7 +204,7 @@ export default class DmtBulkImport extends LightningElement {
     }
 
     handleLineTypeChange(event) {
-if (this._waitForJob() || this.lineTypeLocked) return;
+        if (this._waitForJob() || this.lineTypeLocked) return;
         this.selectedRecordType = event.detail.value;
     }
 
@@ -256,7 +256,7 @@ if (this._waitForJob() || this.lineTypeLocked) return;
 
     disconnectedCallback() {
         this._unsubscribe(this.linesSubscription);
-this._endAllWatches();
+        this._endAllWatches();
         document.removeEventListener('paste', this._pasteHandler);
     }
 
@@ -277,14 +277,14 @@ this._endAllWatches();
         return 'drop-zone' +
             (this.linesDragging  ? ' drop-zone_active'  : '') +
             (this.linesRows.length > 0 ? ' drop-zone_compact' : '') +
-(this.isBusy ? ' drop-zone_disabled' : '');
+            (this.isBusy ? ' drop-zone_disabled' : '');
     }
     get linesDropZoneText()   {
         return this.linesRows.length > 0
             ? `${this.linesRowCount} rows loaded. Drop a file on this section or paste (Ctrl+V) to add / update lines`
             : 'Drop Lines XLSX or CSV here, or paste with Ctrl+V';
     }
-get linesRetryDropZoneClass()   { return 'drop-zone drop-zone_compact' + (this.linesRetryDragging ? ' drop-zone_active' : '') + (this.isBusy ? ' drop-zone_disabled' : ''); }
+    get linesRetryDropZoneClass()   { return 'drop-zone drop-zone_compact' + (this.linesRetryDragging ? ' drop-zone_active' : '') + (this.isBusy ? ' drop-zone_disabled' : ''); }
     get hasLinesCreatedRecords()    { return this.linesCreatedRecords && this.linesCreatedRecords.length > 0; }
     get hasLinesEnrichedStats()     { return this.linesEnrichedStats !== null; }
 
@@ -292,7 +292,7 @@ get linesRetryDropZoneClass()   { return 'drop-zone drop-zone_compact' + (this.l
     get step2Enabled() {
         // with a loaded table the button shows; updateLineStatusDisabled decides when it can be clicked
         const loaded = this.linesRows.length > 0 && this.linesState === 'ready';
-return (this.linesState === 'done' && (this.linesSuccessCount > 0 || this._loadJobCompleted)) || loaded;
+        return (this.linesState === 'done' && (this.linesSuccessCount > 0 || this._loadJobCompleted)) || loaded;
     }
 
     // ── Child tables (Risk Line Terms, Line Product Items) ──
@@ -315,7 +315,7 @@ return (this.linesState === 'done' && (this.linesSuccessCount > 0 || this._loadJ
                 return {
                     key: zone,
                     label,
-dropZoneClass: 'drop-zone drop-zone_compact' + (this.childDragZone === zone ? ' drop-zone_active' : '') + (this.isBusy ? ' drop-zone_disabled' : ''),
+                    dropZoneClass: 'drop-zone drop-zone_compact' + (this.childDragZone === zone ? ' drop-zone_active' : '') + (this.isBusy ? ' drop-zone_disabled' : ''),
                     dropZoneText: state.fileRows.length > 0
                         ? `${state.fileName}: ${state.fileRows.length} rows. Drop another ${label} file on this section or paste (Ctrl+V) to replace them`
                         : `Drop ${label} XLSX or CSV here, or paste with Ctrl+V`,
@@ -345,7 +345,7 @@ dropZoneClass: 'drop-zone drop-zone_compact' + (this.childDragZone === zone ? ' 
         // requirement point 2 (Diego, 2026-11-13): a loaded table replaces the records of every line of
         // the load, also the lines without rows in it
         const covered = this._zoneLoaded(zone) && !this.linesIsDone
-? new Set(this.linesRows.map(r => r['Line_Id__c']).filter(lineId => this._zoneCovers(zone, lineId)))
+            ? new Set(this.linesRows.map(r => r['Line_Id__c']).filter(lineId => this._zoneCovers(zone, lineId)))
             : new Set(state.fileRows.map(r => r.__lineId));
         // after Process, the records of the lines whose products the load replaced were created by it
         const created = this._showChildResult ? this._savedReplacedLines(zone) : new Set();
@@ -379,7 +379,7 @@ dropZoneClass: 'drop-zone drop-zone_compact' + (this.childDragZone === zone ? ' 
     _childDisplayRows(rows) {
         return rows.map(r => {
             const flat = { __key: r.__key, __lineId: r.__lineId, __status: r.__status, __statusClass: CHILD_STATUS_CLASS[r.__status],
-__marked: !!r.__marked };
+                           __marked: !!r.__marked };
             Object.keys(r).forEach(k => {
                 if (k.startsWith('__')) return;
                 const v = r[k];
@@ -399,7 +399,7 @@ __marked: !!r.__marked };
     // Ids removed one by one, by line (none when the table is loaded: it replaces everything)
     _markedByLine(zone) {
         const byLine = new Map();
-if (zone === 'lpi' && !this.isTreasury) return byLine;
+        if (zone === 'lpi' && !this.isTreasury) return byLine;
         const marked = new Set(this.childState[zone].marked || []);
         // a line the loaded table applies to has all its records replaced
         this.childState[zone].sfRows.filter(r => marked.has(r.__sfId) && !this._zoneCovers(zone, r.__lineId)).forEach(r => {
@@ -456,7 +456,7 @@ if (zone === 'lpi' && !this.isTreasury) return byLine;
     };
 
     handleChildRowAction(event) {
-if (this._waitForJob()) return;
+        if (this._waitForJob()) return;
         const zone  = event.target.dataset.zone;
         const key   = event.detail.row.__key;
         // a Salesforce record removed one by one (Kept -> Will Be Deleted) and Restore
@@ -491,7 +491,7 @@ if (this._waitForJob()) return;
     };
 
     handleLineRowAction(event) {
-if (this._waitForJob()) return;
+        if (this._waitForJob()) return;
         if (event.detail.action.name !== 'remove' || this.linesState !== 'ready') return;
         const lineId = event.detail.row['Line_Id__c'];
         const index  = this.linesRows.findIndex(r => r['Line_Id__c'] === lineId);
@@ -542,7 +542,7 @@ if (this._waitForJob()) return;
     }
 
     handleUndo() {
-if (this.isBusy) return;
+        if (this.isBusy) return;
         clearTimeout(this._undoTimer);
         const undo = this._undoAction;
         this.undoNotice = null;
@@ -561,7 +561,7 @@ if (this.isBusy) return;
     }
 
     openChildFilePicker(event) {
-if (this._waitForJob()) return;
+        if (this._waitForJob()) return;
         const zone = event.target.dataset.zone;
         this.template.querySelector(`input[data-zone="${zone}"]`).click();
     }
@@ -584,7 +584,7 @@ if (this._waitForJob()) return;
 
     handleChildFileDrop(event) {
         event.preventDefault();
-if (this._waitForJob()) return;
+        if (this._waitForJob()) return;
         this.childDragZone = '';
         const file = event.dataTransfer.files[0];
         if (file) this._processFile(file, event.currentTarget.dataset.zone);
@@ -641,8 +641,8 @@ if (this._waitForJob()) return;
      * table, are rejected and listed.
      */
     _loadChildFile(zone, rows, fileName) {
-this._processedChildren = null; // a new load: no Created / Deleted result
-this._processedPlans = null;
+        this._processedChildren = null; // a new load: no Created / Deleted result
+        this._processedPlans = null;
         const conf = CHILD_ZONES[zone];
         if (zone === 'lpi' && !this.isTreasury) {
             this._toast('Line Product Items not loaded', 'Line Product Items are only loaded for Treasury lines. Select Line Treasury as Line Type.');
@@ -671,7 +671,7 @@ this._processedPlans = null;
         if (rejected.length > CHILD_ERROR_LIMIT) {
             errors.push({ key: 'rejected-more', message: `${rejected.length - CHILD_ERROR_LIMIT} more rows not loaded.` });
         }
-this._setChildState(zone, { fileName, fileRows: accepted, errors, lineIds: null });
+        this._setChildState(zone, { fileName, fileRows: accepted, errors, lineIds: null });
     }
 
     // A file row keyed by field name: line id columns become __lineId, 'DMT_Risk_Line_Term__c <field>' becomes <field>
@@ -701,7 +701,7 @@ this._setChildState(zone, { fileName, fileRows: accepted, errors, lineIds: null 
     // Old Other Products Lines file: its term columns are the Risk Line Terms file rows
     _loadTermsFromLinesFile() {
         if (this.pendingTermsFromLines.length === 0) return;
-const rows = this.pendingTermsFromLines; // each term keeps the row of its line in the Lines file
+        const rows = this.pendingTermsFromLines; // each term keeps the row of its line in the Lines file
         this._loadChildFile('rlt', rows, `${this.linesFileName} (term columns)`);
     }
 
@@ -716,7 +716,7 @@ const rows = this.pendingTermsFromLines; // each term keeps the row of its line 
             .map(r => r['Line_Id__c'])
             .filter(Boolean);
     }
-get showUpdateLineStatus()      { return this.step2Enabled; }
+    get showUpdateLineStatus()      { return this.step2Enabled; }
 
     /**
      * The lines the button moves: existing Draft lines whose code points to another status (plan
@@ -757,7 +757,7 @@ get showUpdateLineStatus()      { return this.step2Enabled; }
     // Treasury flow DMT_TRSR_Line_Validations is skipped for DMT_Line_God, which this screen requires.
     get linesBlockingUpdateLineStatus() {
         return this._buttonPlans.filter(p => p.plan.stayDraft)
-.map(p => ({ lineId: p.row['Line_Id__c'], reasons: p.plan.stayDraft }));
+            .map(p => ({ lineId: p.row['Line_Id__c'], reasons: p.plan.stayDraft }));
     }
 
     get updateLineStatusBlockedMessage() {
@@ -778,13 +778,13 @@ get showUpdateLineStatus()      { return this.step2Enabled; }
     // enabled only with nothing left to save and at least one line it can move
     get updateLineStatusDisabled() {
         const movable = this.linesWithStatusCode.length - this.linesBlockingUpdateLineStatus.length;
-return this._backgroundJobRunning || this._hasUnsavedChanges || movable <= 0;
+        return this._backgroundJobRunning || this._hasUnsavedChanges || movable <= 0;
     }
 
     async updateLineStatus() {
-const blocking = this.linesBlockingUpdateLineStatus;
-const blocked = new Set(blocking.map(b => b.lineId));
-const lineIds = this.importedLineIds.filter(lineId => !blocked.has(lineId));
+        const blocking = this.linesBlockingUpdateLineStatus;
+        const blocked = new Set(blocking.map(b => b.lineId));
+        const lineIds = this.importedLineIds.filter(lineId => !blocked.has(lineId));
         if (lineIds.length === 0) return;
 
         this.lineStatusUpdateState = 'launching';
@@ -794,18 +794,18 @@ const lineIds = this.importedLineIds.filter(lineId => !blocked.has(lineId));
             .filter(line => !blocked.has(line['Line_Id__c']))
             .map(line => ({ lineId: line['Line_Id__c'], target: this._savedCodeStatus(line) }));
         await this._watchStatusMoves(jobId, moves);
-updateLineStatusApex({ lineIds, jobId })
+        updateLineStatusApex({ lineIds, jobId })
             .then(asyncJobId => {
                 this.lineStatusUpdateState = 'launched';
-this._startStatusWait(moves, () => Promise.resolve(asyncJobId));
-this._toast('Update Line Status running in the background',
+                this._startStatusWait(moves, () => Promise.resolve(asyncJobId));
+                this._toast('Update Line Status running in the background',
                     `${moves.length} line(s) move to the status of their code. The result will show in the Validation / Status Change column.`,
                     'info');
             })
             .catch(e => {
                 console.error('updateLineStatus error', e);
                 this.lineStatusUpdateState = 'idle';
-this._endWatch(PHASE_STATUS);
+                this._endWatch(PHASE_STATUS);
                 this._toast('Update Line Status failed', (e && e.body && e.body.message) || 'Unexpected error');
             });
     }
@@ -816,16 +816,16 @@ this._endWatch(PHASE_STATUS);
 
     ouCode  = '';
     ouState = 'idle'; // idle | running | done
-ouResultText = '';
-ouOptions = null; // OU search result (null = no search)
-ouOptionsOpen = false;
-ouResultIsError = false;
+    ouResultText = '';
+    ouOptions = null; // OU search result (null = no search)
+    ouOptionsOpen = false;
+    ouResultIsError = false;
     // background status move: progress text and the result per Line_Id__c (_finishStatusMoves)
     statusProgressText = '';
-_statusMoves = []; // lines of the status move being followed
-_statusDone = false;
+    _statusMoves = []; // lines of the status move being followed
+    _statusDone = false;
     _statusResults = new Map();
-_loadJobCompleted = false; // the load job Completed while its final event was lost (_onLoadJobDone)
+    _loadJobCompleted = false; // the load job Completed while its final event was lost (_onLoadJobDone)
 
     // after Process, or before it when every line of the table already exists in Salesforce (a line to
     // create gets its participants only once Process has created it)
@@ -835,11 +835,11 @@ _loadJobCompleted = false; // the load job Completed while its final event was l
                && this.linesRows.every(r => this._sfLinesById.has(r['Line_Id__c']));
     }
     get ouLocked()      { return this.ouState !== 'idle'; }
-get ouResultClass() {
+    get ouResultClass() {
         const colour = this.ouState === 'running' ? 'slds-text-color_weak' : (this.ouResultIsError ? 'slds-text-color_error' : 'slds-text-color_success');
         return 'slds-m-left_small slds-text-body_small ' + colour;
     }
-get addOuDisabled() { return this.ouLocked || !this.ouCode.trim() || this._backgroundJobRunning; }
+    get addOuDisabled() { return this.ouLocked || !this.ouCode.trim() || this._backgroundJobRunning; }
 
     handleOuChange(event) {
         this.ouCode = event.detail.value || '';
@@ -896,9 +896,9 @@ get addOuDisabled() { return this.ouLocked || !this.ouCode.trim() || this._backg
         if (this.addOuDisabled || lineIds.length === 0) return;
         const ouCode = this.ouCode.trim();
         this.ouState = 'running';
-this._ouLineIds = new Set(lineIds); // the lines this OU is added to
-this.ouResultText = 'Adding participants…';
-this.ouResultIsError = false;
+        this._ouLineIds = new Set(lineIds); // the lines this OU is added to
+        this.ouResultText = 'Adding participants…';
+        this.ouResultIsError = false;
         addOuParticipantsApex({ ouCode, lineIds })
             .then(result => {
                 this._toast('Add OU running in the background', `Adding ${result.users} users to the ${lineIds.length} lines of the load.`, 'info');
@@ -906,7 +906,7 @@ this.ouResultIsError = false;
             })
             .catch(e => {
                 this.ouState = 'idle';
-this.ouResultText = '';
+                this.ouResultText = '';
                 this._toast('Add OU failed', (e && e.body && e.body.message) || 'Unexpected error');
             });
     }
@@ -938,7 +938,7 @@ this.ouResultText = '';
     // ── File picker triggers ──────────────────────────────────────────────────
 
     openLinesFilePicker() {
-if (this._waitForJob()) return;
+        if (this._waitForJob()) return;
         this.template.querySelector('input[data-section="lines"]').click();
     }
 
@@ -963,7 +963,7 @@ if (this._waitForJob()) return;
 
     handleLinesFileDrop(event) {
         event.preventDefault();
-if (this._waitForJob()) return;
+        if (this._waitForJob()) return;
         this.linesDragging = false;
         const file = event.dataTransfer.files[0];
         if (file) this._processFile(file, 'lines');
@@ -991,7 +991,7 @@ if (this._waitForJob()) return;
     }
 
     openRetryFilePicker() {
-if (this._waitForJob()) return;
+        if (this._waitForJob()) return;
         this.template.querySelector('input[data-section="lines-retry"]').click();
     }
 
@@ -1029,11 +1029,11 @@ if (this._waitForJob()) return;
 
     // ── Start Over ────────────────────────────────────────────────────────────
 
-get hasAnyData() { return this.linesRows.length > 0; } // child rows exist only with lines
+    get hasAnyData() { return this.linesRows.length > 0; } // child rows exist only with lines
 
     resetAll() {
-if (this._waitForJob()) return;
-this._resetLoadState();
+        if (this._waitForJob()) return;
+        this._resetLoadState();
         this._unsubscribe(this.linesSubscription);
         this.linesSubscription    = null;
 
@@ -1050,11 +1050,11 @@ this._resetLoadState();
         this.linesErrorCount       = 0;
         this.linesFailedIds        = new Set();
         this.pendingTermsFromLines = [];
-this._resetChildren();
-this.ouCode  = '';
-this.ouOptions = null;
-this.ouOptionsOpen = false;
-this.ouState = 'idle';
+        this._resetChildren();
+        this.ouCode  = '';
+        this.ouOptions = null;
+        this.ouOptionsOpen = false;
+        this.ouState = 'idle';
         this.lineStatusUpdateState    = 'idle';
     }
 
@@ -1089,7 +1089,7 @@ this.ouState = 'idle';
     // ── Clear file ────────────────────────────────────────────────────────────
 
     clearLinesFile() {
-this._resetLoadState();
+        this._resetLoadState();
         this.linesState            = 'idle';
         this.linesFileName         = '';
         this.linesRowCount         = 0;
@@ -1099,15 +1099,15 @@ this._resetLoadState();
         this.linesPreviewRows      = [];
         this.linesEnrichedStats    = null;
         this.pendingTermsFromLines = [];
-this._resetChildren(); // child rows belong to the lines
+        this._resetChildren(); // child rows belong to the lines
     }
 
     // ── Clipboard paste (Ctrl+V) ──────────────────────────────────────────────
 
     _processPastedText(text) {
-const rows = this._parseCSV(text); // same quote-aware parser as a dropped CSV
+        const rows = this._parseCSV(text); // same quote-aware parser as a dropped CSV
         if (rows.length === 0) return;
-const headers = Object.keys(rows[0]).filter(k => k !== '__rowIndex');
+        const headers = Object.keys(rows[0]).filter(k => k !== '__rowIndex');
 
         // Bail silently if content doesn't look like a Salesforce data file at all
         if (!headers.some(h => h.includes('__c') || h === 'gf_cutoff_date')) return;
@@ -1124,7 +1124,7 @@ const headers = Object.keys(rows[0]).filter(k => k !== '__rowIndex');
     _processFile(file, section) {
         const ext = file.name.split('.').pop().toLowerCase();
         if (!['csv', 'xlsx', 'xls'].includes(ext)) {
-this._zoneErrors(section, [{ key: 'ext', message: `File type .${ext} is not supported. Use CSV, XLSX or XLS.` }]);
+            this._zoneErrors(section, [{ key: 'ext', message: `File type .${ext} is not supported. Use CSV, XLSX or XLS.` }]);
             return;
         }
 
@@ -1133,17 +1133,17 @@ this._zoneErrors(section, [{ key: 'ext', message: `File type .${ext} is not supp
         if (ext === 'csv') {
             reader.onload = e => {
                 const rows = this._parseCSV(e.target.result);
-this._routeParsedRows(rows, file.name, section);
+                this._routeParsedRows(rows, file.name, section);
             };
             reader.readAsText(file);
         } else {
             if (!this.sheetJsLoaded) {
-this._zoneErrors(section, [{ key: 'sheetjs', message: 'SheetJS library is still loading. Try again in a moment.' }]);
+                this._zoneErrors(section, [{ key: 'sheetjs', message: 'SheetJS library is still loading. Try again in a moment.' }]);
                 return;
             }
             reader.onload = e => {
                 const rows = this._parseXLSX(e.target.result);
-this._routeParsedRows(rows, file.name, section);
+                this._routeParsedRows(rows, file.name, section);
             };
             reader.readAsArrayBuffer(file);
         }
@@ -1194,7 +1194,7 @@ this._routeParsedRows(rows, file.name, section);
         if (nonBlank.length < 2) return [];
         const headers = nonBlank[0].values.map(h => h.trim());
         return nonBlank.slice(1).map(({ values, rowNumber }) => {
-const row = { __rowIndex: rowNumber };
+            const row = { __rowIndex: rowNumber };
             headers.forEach((h, i) => { if (h) row[h] = (values[i] || '').trim(); });
             return row;
         });
@@ -1215,7 +1215,7 @@ const row = { __rowIndex: rowNumber };
         if (nonBlank.length < 2) return [];
         const headers = nonBlank[0].values.map(h => String(h).trim());
         return nonBlank.slice(1).map(({ values, rowNumber }) => {
-const row = { __rowIndex: rowNumber };
+            const row = { __rowIndex: rowNumber };
             headers.forEach((h, i) => {
                 const v = values[i];
                 // Enhancement fix to existing process: a date cell is the local midnight of that day;
@@ -1231,8 +1231,8 @@ const row = { __rowIndex: rowNumber };
     // Lines rows only: child files load through _loadChildFile (section kept for the callers)
     _onRowsParsed(rows, fileName, section) {
         if (section !== 'lines') return;
-this._processedChildren = null; // a new load: no Created / Deleted result
-this._processedPlans = null;
+        this._processedChildren = null; // a new load: no Created / Deleted result
+        this._processedPlans = null;
 
         // Reject any rows missing Line_Id__c — it is the external key from the source system
         const missingIdRows = rows.filter(r => !r['Line_Id__c'] || !String(r['Line_Id__c']).trim());
@@ -1336,7 +1336,7 @@ this._processedPlans = null;
             return flat;
         });
 
-if (section === 'lines') { // the child tables build their rows in childSections
+        if (section === 'lines') { // the child tables build their rows in childSections
             this.linesPreviewColumns = columns;
             this.linesPreviewRows    = tableRows;
         }
@@ -1370,7 +1370,7 @@ if (section === 'lines') { // the child tables build their rows in childSections
         const dupeIds = [];
         const extracted = [];
         rows.forEach(row => {
-const term = { 'Line_Id__c': row['Line_Id__c'] || '', __rowIndex: row.__rowIndex };
+            const term = { 'Line_Id__c': row['Line_Id__c'] || '', __rowIndex: row.__rowIndex };
             termHeaders.forEach(h => { term[h] = row[h] || ''; });
             const id = term['DMT_RiskLineTermId__c'];
             if (!id) return;
@@ -1409,7 +1409,7 @@ const term = { 'Line_Id__c': row['Line_Id__c'] || '', __rowIndex: row.__rowIndex
     _updateSubmissionStatuses(section, failedIds) {
         if (section === 'lines') {
             this.linesRows = this.linesRows.map(r => {
-if (failedIds.has(r['Line_Id__c'])) return { ...r, __status: 'Failed' }; // products-only lines can fail too
+                if (failedIds.has(r['Line_Id__c'])) return { ...r, __status: 'Failed' }; // products-only lines can fail too
                 if (r.__status === 'No Changes') return r;
                 return { ...r, __status: r.__status === 'New' ? 'Created' : 'Updated' };
             });
@@ -1457,18 +1457,18 @@ if (failedIds.has(r['Line_Id__c'])) return { ...r, __status: 'Failed' }; // prod
         const lineIds = [...new Set(rows.map(r => r['Line_Id__c']).filter(Boolean))];
         if (lineIds.length === 0) return;
         try {
-const clientCodes = [...new Set(rows.map(r => valueText(r['Client_Code__c']).toUpperCase()).filter(Boolean))];
-const [existingLines, existingTerms, existingItems, statusContext, associationClients] = await Promise.all([
+            const clientCodes = [...new Set(rows.map(r => valueText(r['Client_Code__c']).toUpperCase()).filter(Boolean))];
+            const [existingLines, existingTerms, existingItems, statusContext, associationClients] = await Promise.all([
                 getExistingLinesApex({ lineIds }),
                 getExistingTermsForLinesApex({ lineIds }),
-getExistingProductItemsForLinesApex({ lineIds }),
-getStatusContextApex({ clientCodes }),
-getCustomAssociationClientsApex({ lineIds }) // Custom lines (bulkImportRules.treasuryFlowReasons)
+                getExistingProductItemsForLinesApex({ lineIds }),
+                getStatusContextApex({ clientCodes }),
+                getCustomAssociationClientsApex({ lineIds }) // Custom lines (bulkImportRules.treasuryFlowReasons)
             ]);
             // Guard: user may have cleared or resubmitted the file while we were loading
             if (this.linesState !== 'ready') return;
-this._statusContext = statusContext; // _stayDraftReasons
-this._associationClientsByLine = new Map(); // bulkImportRules.treasuryFlowReasons
+            this._statusContext = statusContext; // _stayDraftReasons
+            this._associationClientsByLine = new Map(); // bulkImportRules.treasuryFlowReasons
             (associationClients || []).forEach(client => {
                 const lineId = client.Custom_Association__r && client.Custom_Association__r.DMT_Line__r
                     ? client.Custom_Association__r.DMT_Line__r.Line_Id__c : '';
@@ -1489,7 +1489,7 @@ this._associationClientsByLine = new Map(); // bulkImportRules.treasuryFlowReaso
             // that the New/Update/No Changes comparison against Salesforce could not be made.
             console.error('enrichment query failed', e);
             this.linesRows = this.linesRows.map(r => ({ ...r, __status: r.__status || 'Unknown' }));
-this._buildPreview(this.linesRows, this._linePreviewHeaders(this._linesFileHeaders()), 'lines');
+            this._buildPreview(this.linesRows, this._linePreviewHeaders(this._linesFileHeaders()), 'lines');
             this._toast(
                 'Could not check existing Salesforce data',
                 'The New / Will Update / No Changes status could not be determined for these lines. You can still proceed, but double-check for duplicates yourself.',
@@ -1501,7 +1501,7 @@ this._buildPreview(this.linesRows, this._linePreviewHeaders(this._linesFileHeade
     _applyLineEnrichment(csvRows, existingLines) {
         const sfMap = new Map();
         existingLines.forEach(rec => sfMap.set(rec.Line_Id__c, rec));
-this._sfLinesById = sfMap; // status plan (_statusPlan) and reopen check
+        this._sfLinesById = sfMap; // status plan (_statusPlan) and reopen check
 
         let newCount = 0, updateCount = 0, noChangeCount = 0;
 
@@ -1537,7 +1537,7 @@ this._sfLinesById = sfMap; // status plan (_statusPlan) and reopen check
         // Rebuild preview: Line_Id__c is a URL column (clickable) when SF records exist, plain text otherwise.
         // lightning-datatable URL type renders nothing when the URL field is null, so we only use it
         // when at least one row already exists in SF (ensuring the label is always visible).
-const previewHeaders  = this._linePreviewHeaders(this._linesFileHeaders());
+        const previewHeaders  = this._linePreviewHeaders(this._linesFileHeaders());
         // the line columns in one order (LINE_COLUMN_ORDER): a file column shows the file value, the others
         // the Salesforce value of existing lines (shown only, never saved); file columns this screen does not use, at the end
         const standardHeaders = LINE_COLUMN_ORDER.filter(h => previewHeaders.includes(h) || sfMap.size > 0);
@@ -1548,21 +1548,21 @@ const previewHeaders  = this._linePreviewHeaders(this._linesFileHeaders());
                 typeAttributes: { label: { fieldName: 'Line_Id__c' }, target: '_blank' }, initialWidth: 200, wrapText: false }
             : { label: 'Line_Id__c', fieldName: 'Line_Id__c', type: 'text', initialWidth: 180, wrapText: false };
         this.linesPreviewColumns = [
-{ type: 'action', typeAttributes: { rowActions: this._lineRowActions } }, // Remove row
+            { type: 'action', typeAttributes: { rowActions: this._lineRowActions } }, // Remove row
             { label: 'Status', fieldName: '__status', type: 'text', initialWidth: 100, wrapText: false },
             // what the load does to the line's status (_statusPlan)
-{ label: 'Validation / Status Change', fieldName: '__statusPlan', type: 'text', initialWidth: 320, wrapText: true,
+            { label: 'Validation / Status Change', fieldName: '__statusPlan', type: 'text', initialWidth: 320, wrapText: true,
               cellAttributes: { iconName: { fieldName: '__statusPlanIcon' }, iconPosition: 'left',
-class: { fieldName: '__statusPlanClass' } } },
+                                class: { fieldName: '__statusPlanClass' } } },
             lineIdCol,
             ...nonIdHeaders.map(h => ({ label: h, fieldName: this._safeKey(h), type: 'text', initialWidth: 160, wrapText: false }))
         ];
         this.linesPreviewRows = enrichedRows.slice(0, PREVIEW_ROW_LIMIT).map((row, idx) => {
             const flat = { __previewKey: String(idx), __status: row.__status, 'Line_Id__c': row['Line_Id__c'] || '',
-...this._statusCellFields(row) };
+                           ...this._statusCellFields(row) };
             flat.__lineUrl = row.__sfId ? (window.location.origin + '/' + row.__sfId) : null;
-const sf = sfMap.get(row['Line_Id__c']);
-nonIdHeaders.forEach(h => { flat[this._safeKey(h)] = h in row ? (row[h] || '') : (sf ? valueText(sf[h]) : ''); });
+            const sf = sfMap.get(row['Line_Id__c']);
+            nonIdHeaders.forEach(h => { flat[this._safeKey(h)] = h in row ? (row[h] || '') : (sf ? valueText(sf[h]) : ''); });
             return flat;
         });
 
@@ -1575,7 +1575,7 @@ nonIdHeaders.forEach(h => { flat[this._safeKey(h)] = h in row ? (row[h] || '') :
      * Status__c is never compared: DMT_BulkImportBatch ignores it (new lines start in Draft, existing ones keep theirs).
      */
     _hasLineChanges(csvRow, sf) {
-return this._changedLineFields(csvRow, sf).length > 0;
+        return this._changedLineFields(csvRow, sf).length > 0;
     }
 
     // the file columns (LINE_COMPARE_FIELDS) whose value differs from the line in Salesforce; the
@@ -1607,7 +1607,7 @@ return this._changedLineFields(csvRow, sf).length > 0;
      * (_stayDraftReasons): the line is saved but not moved (DMT_BulkImportBatch.UNIT_STAY_DRAFT) and nothing reopens.
      */
     _statusPlan(row) {
-const plan = this._statusMove(row);
+        const plan = this._statusMove(row);
         if (!plan || !plan.target) return plan;
         const reasons = this._stayDraftReasons(row, plan.target);
         return reasons.length > 0 ? { ...plan, stayDraft: reasons, checks: [] } : plan;
@@ -1637,7 +1637,7 @@ const plan = this._statusMove(row);
                                                     changed, this.isTreasury).length > 0;
         const codeMoves = codeStatus !== null && codeStatus !== current;
         if (!blocked && !codeMoves) {
-const productsChange = this._zoneCovers('rlt', row['Line_Id__c']) || this._zoneCovers('lpi', row['Line_Id__c'])
+            const productsChange = this._zoneCovers('rlt', row['Line_Id__c']) || this._zoneCovers('lpi', row['Line_Id__c'])
                                    || this._markedByLine('rlt').has(row['Line_Id__c']) || this._markedByLine('lpi').has(row['Line_Id__c']);
             return current === 'Ready to close' && (changed.length > 0 || productsChange)
                 ? { toDraft: false, from: current, target: null, checks: ['readytoclose'] } : null;
@@ -1801,24 +1801,24 @@ const productsChange = this._zoneCovers('rlt', row['Line_Id__c']) || this._zoneC
      * Line Product Items rows (the line's records of that object are replaced). Lines with nothing to save are left out.
      */
     _buildUnits() {
-const rltMarks = this._markedByLine('rlt');
-const lpiMarks = this._markedByLine('lpi');
+        const rltMarks = this._markedByLine('rlt');
+        const lpiMarks = this._markedByLine('lpi');
         const units = [];
         this.linesRows.forEach(row => {
             const lineId     = row['Line_Id__c'];
             const updateLine = row.__status !== 'No Changes';
-const rltDelete = rltMarks.get(lineId); // records removed one by one
-const lpiDelete = lpiMarks.get(lineId);
-const rltLoaded = this._zoneCovers('rlt', lineId);
-const lpiLoaded = this._zoneCovers('lpi', lineId);
-if (!updateLine && !rltLoaded && !lpiLoaded && !rltDelete && !lpiDelete) return;
+            const rltDelete = rltMarks.get(lineId); // records removed one by one
+            const lpiDelete = lpiMarks.get(lineId);
+            const rltLoaded = this._zoneCovers('rlt', lineId);
+            const lpiLoaded = this._zoneCovers('lpi', lineId);
+            if (!updateLine && !rltLoaded && !lpiLoaded && !rltDelete && !lpiDelete) return;
             const unit = { line: this._cleanRow(row), rowNumber: row.__rowIndex, updateLine };
-const plan = this._statusPlan(row); // a move the org rules would reject is not tried
-if (plan && plan.stayDraft && !plan.byButton) unit.stayDraft = true;
-if (rltLoaded) unit.rlt = this._replacementRows('rlt', lineId); // maybe empty: all deleted
-if (lpiLoaded) unit.lpi = this._replacementRows('lpi', lineId);
-if (rltDelete) unit.rltDelete = rltDelete; // DMT_BulkImportBatch.UNIT_RLT_DELETE
-if (lpiDelete) unit.lpiDelete = lpiDelete; // DMT_BulkImportBatch.UNIT_LPI_DELETE
+            const plan = this._statusPlan(row); // a move the org rules would reject is not tried
+            if (plan && plan.stayDraft && !plan.byButton) unit.stayDraft = true;
+            if (rltLoaded) unit.rlt = this._replacementRows('rlt', lineId); // maybe empty: all deleted
+            if (lpiLoaded) unit.lpi = this._replacementRows('lpi', lineId);
+            if (rltDelete) unit.rltDelete = rltDelete; // DMT_BulkImportBatch.UNIT_RLT_DELETE
+            if (lpiDelete) unit.lpiDelete = lpiDelete; // DMT_BulkImportBatch.UNIT_LPI_DELETE
             units.push(unit);
         });
         return units;
@@ -1885,7 +1885,7 @@ if (lpiDelete) unit.lpiDelete = lpiDelete; // DMT_BulkImportBatch.UNIT_LPI_DELET
     }
 
     get processDisabled() {
-return this.linesState !== 'ready' || this._buildUnits().length === 0 || this._backgroundJobRunning;
+        return this.linesState !== 'ready' || this._buildUnits().length === 0 || this._backgroundJobRunning;
     }
 
     async processImport() {
@@ -1909,8 +1909,8 @@ return this.linesState !== 'ready' || this._buildUnits().length === 0 || this._b
 
         // features that will reopen (4811 check) and lines whose status continues in the background
         const plans = this.linesRows.map(row => ({ row, plan: this._statusPlan(row) })).filter(p => p.plan);
-this._processedPlans = new Map(plans.map(p => [p.row['Line_Id__c'], p.plan])); // frozen plans
-this._snapshotChildChanges(units); // Created / Deleted badges after Process
+        this._processedPlans = new Map(plans.map(p => [p.row['Line_Id__c'], p.plan])); // frozen plans
+        this._snapshotChildChanges(units); // Created / Deleted badges after Process
         // lines the status move after the load handles (only lines sent in a unit): its result comes with
         // this jobId (Phase STATUS)
         const sentLineIds = new Set(units.map(u => u.line['Line_Id__c']));
@@ -1930,7 +1930,7 @@ this._snapshotChildChanges(units); // Created / Deleted badges after Process
         processImportApex({ unitsJson: JSON.stringify(units), jobId: this.linesJobId, recordTypeName: this.selectedRecordType })
             .then(asyncJobId => {
                 this.linesState = 'processing';
-this._loadJobCompleted = false;
+                this._loadJobCompleted = false;
                 // the end of the load is also read from its job (_onLoadJobDone)
                 this._loadAsyncJobId = asyncJobId;
                 this._pollJob(PHASE_PROCESS, () => Promise.resolve(asyncJobId), state => this._onLoadJobDone(state));
@@ -1939,7 +1939,7 @@ this._loadJobCompleted = false;
                 console.error('processImport error', e);
                 this.linesState = 'idle';
                 this._unsubscribe(this.linesSubscription);
-this._endWatch(PHASE_STATUS);
+                this._endWatch(PHASE_STATUS);
                 this._toast('Process failed', (e && e.body && e.body.message) || 'Unexpected error');
             });
     }
@@ -1997,7 +1997,7 @@ this._endWatch(PHASE_STATUS);
                 marked.forEach(rowId => rows.push({ objectApiName, rowId, deleted: true }));
                 return;
             }
-const fileRows = this._replacementRows(zone, lineId); // every record replaced when loaded
+            const fileRows = this._replacementRows(zone, lineId); // every record replaced when loaded
             if (!fileRows) return;
             this.childState[zone].sfRows
                 .filter(r => r.__lineId === lineId)
@@ -2073,7 +2073,7 @@ const fileRows = this._replacementRows(zone, lineId); // every record replaced w
             this._toast(failed ? 'The load ended with errors' : 'The load ended',
                 `${detail}. The row by row result did not reach the screen: check the lines in Salesforce.`,
                 failed ? 'error' : 'warning');
-this._reloadChildrenAfterProcess(this.linesFailedIds); // the product tables as they are in Salesforce
+            this._reloadChildrenAfterProcess(this.linesFailedIds); // the product tables as they are in Salesforce
             const moves = this._pendingMoves || [];
             if (moves.length > 0) this._startStatusWait(moves, this._statusJobOfLoad(this._loadAsyncJobId));
         }, EVENT_GRACE_MS);
@@ -2112,7 +2112,7 @@ this._reloadChildrenAfterProcess(this.linesFailedIds); // the product tables as 
                 .map(r => r['Line_Id__c'])
                 .filter(Boolean);
             if (createdIds.length > 0) this._backfillCreatedLineUrls(createdIds);
-this._reloadChildrenAfterProcess(this.linesFailedIds);
+            this._reloadChildrenAfterProcess(this.linesFailedIds);
             // automatic status change after the load (DMT_BatchSanctionAMIWEB), one line at a time: the
             // lines saved now wait for its result (Phase STATUS); the failed ones were not saved, so they do not move
             const moves = (this._pendingMoves || []).filter(m => !this.linesFailedIds.has(m.lineId));
@@ -2136,7 +2136,7 @@ this._reloadChildrenAfterProcess(this.linesFailedIds);
      */
     _pollJob(key, getAsyncId, onDone) {
         this._stopPoll(key);
-const poll = { timer: null, failures: 0, started: Date.now() };
+        const poll = { timer: null, failures: 0, started: Date.now() };
         this._polls = this._polls || {};
         this._polls[key] = poll;
         const finish = state => {

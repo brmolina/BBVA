@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
-    <!-- CIBGLOBALD-4851 - order: the test utility classes first (DMT_UtilTestClassBuild before DMT_UtilTestClass, both before the
-         tests that call buildTeamMember); the rest is arbitrary -->
-    <types>
-        <members>DMT_UtilTestClassBuild</members>
-        <name>ApexClass</name>
-    </types>
-    <types>
-        <members>DMT_UtilTestClass</members>
-        <name>ApexClass</name>
-    </types>
+    <!-- CIBGLOBALD-4851 - order arbitrary; the test factory (DMT_UtilTestClass / Build / Constants) is not part of this ticket -->
     <types>
         <members>DMT_BatchSanctionAMIWEB</members>
         <members>DMT_BatchSanctionAMIWEB_Test</members>

@@ -10,7 +10,7 @@ public class DMT_BulkImportController_Test {
 
     @TestSetup
     static void makeData() {
-DMT_UTIL.createAccount(new Map<Schema.SObjectField, Object>{
+        DMT_UTIL.createAccount(new Map<Schema.SObjectField, Object>{
             Account.Name             => 'Test Bulk Import Client',
             Account.g_customer_id__c => 'ES0182000125513'
         });
@@ -33,18 +33,18 @@ DMT_UTIL.createAccount(new Map<Schema.SObjectField, Object>{
                 'DMT_Risk_Line_Term__c DMT_Amount__c' => '500000.0'
             }
         };
-String unitsJson = JSON.serialize(new List<Map<String, Object>>{
+        String unitsJson = JSON.serialize(new List<Map<String, Object>>{
             new Map<String, Object>{ DMT_BulkImportBatch.UNIT_LINE => rows[0], DMT_BulkImportBatch.UNIT_ROW_NUMBER => 2 }
         });
         String jobId = 'job-ctrl-test-001';
 
         Test.startTest();
-String returned = DMT_BulkImportController.processImport(unitsJson, jobId, 'TreasurySettlement');
+            String returned = DMT_BulkImportController.processImport(unitsJson, jobId, 'TreasurySettlement');
         Test.stopTest();
 
-Assert.isNotNull(returned, 'processImport returns the batch job Id');
-Map<String, Object> state = DMT_BulkImportController.getJobState(returned);
-Assert.areEqual('Completed', state.get('status'), 'The screen reads the job state');
+        Assert.isNotNull(returned, 'processImport returns the batch job Id');
+        Map<String, Object> state = DMT_BulkImportController.getJobState(returned);
+        Assert.areEqual('Completed', state.get('status'), 'The screen reads the job state');
         List<DMT_Line__c> created = [SELECT Id FROM DMT_Line__c WHERE Line_Id__c = 'CTRLTEST001'];
         Assert.areEqual(1, created.size(), 'One line should have been created by the batch');
     }
@@ -79,7 +79,7 @@ Assert.areEqual('Completed', state.get('status'), 'The screen reads the job stat
     // no custom association: empty list (the query runs and returns nothing)
     @isTest
     static void testGetCustomAssociationClientsWithoutAssociation() {
-        DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name => 'No Association Line', DMT_Line__c.Line_Id__c => 'CTRLTEST030', DMT_Line__c.DMT_Origin__c => 'BulkImport'
         });
         Assert.isTrue(DMT_BulkImportController.getCustomAssociationClients(new List<String>{ 'CTRLTEST030' }).isEmpty(),
@@ -88,7 +88,7 @@ Assert.areEqual('Completed', state.get('status'), 'The screen reads the job stat
 
     @isTest
     static void testGetExistingLinesReturnsMatches() {
-DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name          => 'Existing Line Test',
             DMT_Line__c.Line_Id__c    => 'CTRLTEST010',
             DMT_Line__c.DMT_Origin__c => 'BulkImport'
@@ -104,12 +104,12 @@ DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
 
     @isTest
     static void testGetExistingTermsForLinesReturnsMatches() {
-DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_Line__c line = DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name          => 'Parent Line for Terms',
             DMT_Line__c.Line_Id__c    => 'CTRLTEST011',
             DMT_Line__c.DMT_Origin__c => 'BulkImport'
         });
-insert new List<DMT_Risk_Line_Term__c>{
+        insert new List<DMT_Risk_Line_Term__c>{
             DMT_UTIL.buildRiskLineTerm(new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.DMT_Line__c => line.Id, DMT_Risk_Line_Term__c.DMT_RiskLineTermId__c => 'CTRLTEST011-T01'
             }),
@@ -128,7 +128,7 @@ insert new List<DMT_Risk_Line_Term__c>{
     // Line Product Items of the loaded lines are listed by Line_Id__c
     @isTest
     static void testGetExistingProductItemsForLinesReturnsMatches() {
-        DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_Line__c line = DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name          => 'Parent Line for Product Items',
             DMT_Line__c.Line_Id__c    => 'CTRLTEST014',
             DMT_Line__c.DMT_Origin__c => 'BulkImport'
@@ -148,7 +148,7 @@ insert new List<DMT_Risk_Line_Term__c>{
 
     @isTest
     static void testQueryCreatedLinesReturnsMatches() {
-DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name          => 'Created Line Query Test',
             DMT_Line__c.Line_Id__c    => 'CTRLTEST012',
             DMT_Line__c.DMT_Origin__c => 'BulkImport'
@@ -164,12 +164,12 @@ DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
 
     @isTest
     static void testQueryCreatedTermsReturnsMatches() {
-DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        DMT_Line__c line = DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name          => 'Parent Line for Term Query',
             DMT_Line__c.Line_Id__c    => 'CTRLTEST013',
             DMT_Line__c.DMT_Origin__c => 'BulkImport'
         });
-DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{
+        DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{
             DMT_Risk_Line_Term__c.DMT_Line__c           => line.Id,
             DMT_Risk_Line_Term__c.DMT_RiskLineTermId__c => 'CTRLTEST013-T01'
         });
@@ -183,13 +183,13 @@ DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{
     }
 
     @isTest
-static void testProcessImportReplacesTerms() { // products only: the line is not updated
-DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+    static void testProcessImportReplacesTerms() { // products only: the line is not updated
+        DMT_Line__c line = DMT_UTIL.createLineRecord(null, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name          => 'Parent Line for Controller Test',
             DMT_Line__c.Line_Id__c    => 'CTRLTEST002',
             DMT_Line__c.DMT_Origin__c => 'BulkImport'
         });
-DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{ // replaced by the file row
+        DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{ // replaced by the file row
             DMT_Risk_Line_Term__c.DMT_Line__c           => line.Id,
             DMT_Risk_Line_Term__c.DMT_RiskLineTermId__c => 'CTRLTEST002-OLD'
         });
@@ -215,7 +215,7 @@ DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{ // repla
             String returned = DMT_BulkImportController.processImport(unitsJson, jobId, 'TreasurySettlement');
         Test.stopTest();
 
-Assert.isNotNull(returned, 'processImport returns the batch job Id');
+        Assert.isNotNull(returned, 'processImport returns the batch job Id');
         List<DMT_Risk_Line_Term__c> terms = [SELECT DMT_RiskLineTermId__c FROM DMT_Risk_Line_Term__c WHERE DMT_Line__c = :line.Id];
         Assert.areEqual(1, terms.size(), 'The old term is deleted and the file row inserted');
         Assert.areEqual('CTRLTEST002-T01', terms[0].DMT_RiskLineTermId__c, 'The remaining term is the file row');
@@ -223,7 +223,10 @@ Assert.isNotNull(returned, 'processImport returns the batch job Id');
 
     @isTest
     static void testUpdateLineStatusLaunchesBatch() {
-DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object>{
+        // Enhancement fix to existing process: a line needs a client to leave Draft
+        // ('you must select at least a customer'); the test failed in the org without it.
+        Id clientId = [SELECT Id FROM Account WHERE g_customer_id__c = 'ES0182000125513' LIMIT 1].Id;
+        DMT_Line__c line = DMT_UTIL.createLineRecord(clientId, new Map<Schema.SObjectField, Object>{
             DMT_Line__c.Name                  => 'Update Line Status Test',
             DMT_Line__c.Line_Id__c            => 'CTRLTEST020',
             DMT_Line__c.DMT_Origin__c         => 'BulkImport',
@@ -232,19 +235,16 @@ DMT_Line__c line = DMT_UTIL.createLineRecord(new Map<Schema.SObjectField, Object
             DMT_Line__c.RecordTypeId          => Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('OtherProducts').getRecordTypeId(),
             // CompulsoryAmountLastLevel requires both set before an OtherProducts line can reach Proposal
             DMT_Line__c.Amount__c             => 100000,
-            DMT_Line__c.DMT_LastLevelId__c    => '20200',
-            // Enhancement fix to existing process: a line needs a client to leave Draft
-            // ('you must select at least a customer'); the test failed in the org without it.
-            DMT_Line__c.Client__c             => [SELECT Id FROM Account WHERE g_customer_id__c = 'ES0182000125513' LIMIT 1].Id
+            DMT_Line__c.DMT_LastLevelId__c    => '20200'
         });
         // CheckAmountsInLine (before-save flow) requires the products' total to cover the line's Amount__c
-DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{
+        DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{
             DMT_Risk_Line_Term__c.DMT_Line__c   => line.Id,
             DMT_Risk_Line_Term__c.DMT_Amount__c => 100000
         });
 
         Test.startTest();
-String asyncJobId = DMT_BulkImportController.updateLineStatus(new List<String>{ 'CTRLTEST020' }, 'job-ctrl-020');
+            String asyncJobId = DMT_BulkImportController.updateLineStatus(new List<String>{ 'CTRLTEST020' }, 'job-ctrl-020');
         Test.stopTest();
 
         Assert.isNotNull(asyncJobId, 'updateLineStatus should return the batch job Id');
@@ -264,7 +264,7 @@ String asyncJobId = DMT_BulkImportController.updateLineStatus(new List<String>{ 
     static void testUpdateLineStatusRejectsEmptyList() {
         Boolean thrown = false;
         try {
-DMT_BulkImportController.updateLineStatus(new List<String>(), 'job-ctrl-021');
+            DMT_BulkImportController.updateLineStatus(new List<String>(), 'job-ctrl-021');
         } catch (AuraHandledException e) {
             thrown = true;
         }

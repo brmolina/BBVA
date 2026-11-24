@@ -36,10 +36,10 @@ public without sharing class DMT_BulkImportOuParticipantsBatch implements Databa
      * DES_User_Roles__mdt access level is Read/Write.
      */
     public static Set<Id> writeUsersOfOu(String ouCode) {
-Set<String> writeRoles = writeRoleNames();
+        Set<String> writeRoles = writeRoleNames();
         Set<Id> userIds = new Set<Id>();
         for (User ouUser : [SELECT Id, DMT_User_Role__c FROM User WHERE IsActive = true AND DES_LevelUO_10__c = :ouCode]) {
-if (hasWriteRole(ouUser, writeRoles)) {
+            if (hasWriteRole(ouUser, writeRoles)) {
                 userIds.add(ouUser.Id);
             }
         }
