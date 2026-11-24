@@ -1,4 +1,5 @@
 <template>
+    <!-- Bulk Import screen. CIBGLOBALD-4851: Treasury Lines, products tables, Validation / Status Change column, Add OU. -->
     <div class="bulk-import-container slds-p-around_medium">
 
         <!-- Access check -->
@@ -31,7 +32,11 @@
                     </div>
                 </template>
             </div>
-            <div class="slds-card__body slds-card__body_inner">
+            <!-- the whole Lines section takes a dropped file (drop zone and table) -->
+            <div class="slds-card__body slds-card__body_inner"
+                 ondragover={handleDragOver}
+                 ondragleave={handleDragLeave}
+                 ondrop={handleLinesFileDrop}>
 
                 <!-- Line type selector -->
                 <div class="slds-m-bottom_small">
@@ -46,10 +51,7 @@
                 </div>
 
                 <!-- Lines drop zone — always visible; compact once rows are loaded -->
-                <div class={linesDropZoneClass}
-                     ondragover={handleDragOver}
-                     ondragleave={handleDragLeave}
-                     ondrop={handleLinesFileDrop}>
+                <div class={linesDropZoneClass}>
                     <lightning-icon icon-name="utility:upload" size="small" class="slds-m-bottom_xx-small"></lightning-icon>
                     <p class="slds-text-body_small">{linesDropZoneText}</p>
                     <lightning-button label="Browse" variant="neutral" size="small" disabled={isBusy}
@@ -81,7 +83,7 @@
                     <template lwc:if={linesShowPreview}>
                         <template lwc:if={hasLinesEnrichedStats}>
                             <div class="enriched-stats slds-m-bottom_x-small">
-                                <!-- CIBGLOBALD-4851 - after Process: what the load did -->
+                                <!-- after Process: what the load did -->
                                 <template lwc:if={linesIsDone}>
                                     <span class="status-badge-new slds-m-right_xx-small">{linesResultStats.createdCount} Created</span>
                                     <span class="status-badge-update slds-m-right_xx-small">{linesResultStats.updatedCount} Updated</span>
@@ -111,7 +113,7 @@
                     <!-- Submit + Start Over row -->
                     <template lwc:if={linesShowSubmit}>
                         <div class="submit-row slds-m-top_medium">
-                            <!-- CIBGLOBALD-4851 - Process: saves the lines and replaces their products (one batch) -->
+                            <!-- Process: saves the lines and replaces their products (one batch) -->
                             <lightning-button label="Process"
                                              variant="brand"
                                              disabled={processDisabled}
@@ -136,7 +138,7 @@
                             <span class="slds-badge slds-badge_lightest error-badge">
                                 {linesErrorCount} Failed
                             </span>
-                            <!-- CIBGLOBALD-4851 - progress of the status move in the background -->
+                            <!-- progress of the status move in the background -->
                             <template lwc:if={statusProgressText}>
                                 <span class="slds-m-left_small slds-text-body_small slds-text-color_weak">{statusProgressText}</span>
                             </template>
@@ -197,10 +199,10 @@
                     </template>
                 </template>
 
-                <!-- CIBGLOBALD-4851 - Add OU: Read/Write participants of one OU (and each line's owner) on the lines of this load -->
+                <!-- Add OU: Read/Write participants of one OU (and each line's owner) on the lines of this load -->
                 <template lwc:if={showAddOu}>
                     <div class="slds-grid slds-grid_vertical-align-end slds-m-top_small">
-                        <!-- CIBGLOBALD-4851 - OU search: from 2 characters, up to 10 OUs with their Read/Write users -->
+                        <!-- OU search: from 2 characters, up to 10 OUs with their Read/Write users -->
                         <div class="ou-search slds-m-right_x-small">
                             <lightning-input label="OU code"
                                              value={ouCode}
@@ -212,18 +214,28 @@
                                              onkeydown={handleOuKeyDown}>
                             </lightning-input>
                             <template lwc:if={showOuOptions}>
-                                <ul class="ou-options" role="listbox" aria-label="OU codes">
-                                    <template for:each={ouOptions} for:item="option">
-                                        <li key={option.code} role="option" class="ou-option" data-code={option.code}
-                                            onmousedown={handleOuPick}>
-                                            <span>{option.code}</span>
-                                            <span class="slds-text-color_weak slds-m-left_small">{option.users}</span>
-                                        </li>
-                                    </template>
-                                    <template lwc:if={ouOptionsEmpty}>
-                                        <li class="ou-option ou-option_empty slds-text-color_weak">No OU with active Read/Write users contains this code</li>
-                                    </template>
-                                </ul>
+                                <div class="slds-dropdown slds-dropdown_left slds-dropdown_length-10">
+                                    <ul class="slds-listbox slds-listbox_vertical" role="listbox" aria-label="OU codes">
+                                        <template for:each={ouOptions} for:item="option">
+                                            <li key={option.code} role="presentation" class="slds-listbox__item">
+                                                <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                                                     role="option" data-code={option.code} onmousedown={handleOuPick}>
+                                                    <span class="slds-media__body slds-grid slds-grid_align-spread">
+                                                        <span>{option.code}</span>
+                                                        <span class="slds-text-color_weak slds-m-left_small">{option.users}</span>
+                                                    </span>
+                                                </div>
+                                            </li>
+                                        </template>
+                                        <template lwc:if={ouOptionsEmpty}>
+                                            <li role="presentation" class="slds-listbox__item">
+                                                <div class="slds-listbox__option slds-listbox__option_plain slds-text-color_weak" role="option">
+                                                    No OU with active Read/Write users contains this code
+                                                </div>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </div>
                             </template>
                         </div>
                         <lightning-helptext content="Adds the active users of this OU with a DMT Read/Write role, and each line's owner, as participants with Edit and Approval Edit on every line of this load. One OU per load."
@@ -235,7 +247,7 @@
                                           disabled={addOuDisabled}
                                           onclick={addOu}>
                         </lightning-button>
-                        <!-- CIBGLOBALD-4851 - result of Add OU -->
+                        <!-- result of Add OU -->
                         <template lwc:if={ouResultText}>
                             <span class={ouResultClass}>{ouResultText}</span>
                         </template>
@@ -256,7 +268,7 @@
         </div>
 
         <!-- STEP 2: PRODUCTS -->
-        <!-- CIBGLOBALD-4851 - child tables of the loaded lines: Risk Line Terms, and Line Product Items for Treasury lines.
+        <!-- child tables of the loaded lines: Risk Line Terms, and Line Product Items for Treasury lines.
              File rows are New; the Salesforce records of a line with rows in the file are Will Be Deleted, the others Kept. -->
         <div class={childCardClass}>
             <div class="slds-card__header slds-grid">
@@ -275,14 +287,15 @@
 
                 <template lwc:if={childrenEnabled}>
                     <template for:each={childSections} for:item="section">
-                        <div key={section.key} class="slds-m-bottom_large">
+                        <!-- the whole section takes a dropped file (drop zone and table) -->
+                        <div key={section.key} class="slds-m-bottom_large"
+                             data-zone={section.key}
+                             ondragover={handleChildDragOver}
+                             ondragleave={handleChildDragLeave}
+                             ondrop={handleChildFileDrop}>
                             <h3 class="slds-text-heading_small slds-m-bottom_x-small">{section.label}</h3>
 
-                            <div class={section.dropZoneClass}
-                                 data-zone={section.key}
-                                 ondragover={handleChildDragOver}
-                                 ondragleave={handleChildDragLeave}
-                                 ondrop={handleChildFileDrop}>
+                            <div class={section.dropZoneClass}>
                                 <lightning-icon icon-name="utility:upload" size="small" class="slds-m-bottom_xx-small"></lightning-icon>
                                 <p class="slds-text-body_small">{section.dropZoneText}</p>
                                 <lightning-button label="Browse" variant="neutral" size="small" disabled={isBusy}
@@ -306,7 +319,7 @@
 
                             <template lwc:if={section.hasRows}>
                                 <div class="enriched-stats slds-m-top_x-small slds-m-bottom_x-small">
-                                    <!-- CIBGLOBALD-4851 - after Process: what the load did -->
+                                    <!-- after Process: what the load did -->
                                     <template lwc:if={section.showResult}>
                                         <span class="status-badge-new slds-m-right_xx-small">{section.createdCount} Created</span>
                                         <span class="status-badge-delete slds-m-right_xx-small">{section.deletedCount} Deleted</span>
@@ -349,9 +362,9 @@
             </div>
         </template>
 
-        <!-- CIBGLOBALD-4851 - removed row: message with Undo, closes after 5 seconds -->
+        <!-- removed row: message with Undo, closes after 5 seconds -->
         <template lwc:if={undoNotice}>
-            <div class="undo-bar" role="status">
+            <div class="undo-bar slds-theme_inverse" role="status">
                 <span class="slds-m-right_medium">{undoNotice.message}</span>
                 <lightning-button label="Undo" variant="inverse" onclick={handleUndo}></lightning-button>
             </div>

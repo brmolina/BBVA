@@ -15,7 +15,7 @@ public with sharing class DMT_BatchSanctionAMIWEB_Test {
     }
 
     private static Id bulkImportClientId() {
-        return [SELECT Id FROM Account WHERE Name = :BULK_IMPORT_CLIENT_NAME LIMIT 1].Id; // CIBGLOBALD-4851
+return [SELECT Id FROM Account WHERE Name = :BULK_IMPORT_CLIENT_NAME LIMIT 1].Id;
     }
 
     @isTest
@@ -225,7 +225,7 @@ public with sharing class DMT_BatchSanctionAMIWEB_Test {
     private static void insertMatchingRiskLineTerm(List<DMT_Line__c> lines) {
         List<DMT_Risk_Line_Term__c> terms = new List<DMT_Risk_Line_Term__c>();
         for (DMT_Line__c line : lines) {
-            terms.add(DMT_UTIL.buildRiskLineTerm(new Map<Schema.SObjectField, Object>{ // CIBGLOBALD-4851
+terms.add(DMT_UTIL.buildRiskLineTerm(new Map<Schema.SObjectField, Object>{
                 DMT_Risk_Line_Term__c.DMT_Line__c   => line.Id,
                 DMT_Risk_Line_Term__c.DMT_Amount__c => 100000
             }));
