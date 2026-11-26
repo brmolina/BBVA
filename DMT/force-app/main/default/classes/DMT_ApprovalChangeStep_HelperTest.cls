@@ -23,9 +23,9 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
 
       @TestSetup
     static void setupTestData() {
-        DMT_Test_DataFactory.generateCase(
-            UserInfo.getUserId(),
+        DMT_UTIL.createCaseRecord(
             new Map<Schema.SObjectField, Object>{
+                Case.OwnerId => UserInfo.getUserId(),
                 Case.DMT_Passport_Sanction__c => 'approval'
             }
         );
@@ -223,23 +223,24 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
         Id caseRTId = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
         Id taskRTId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
 
-        Case approvalCase = DMT_UTIL.createCaseRecord(getQueueId(),
+        Case approvalCase = DMT_UTIL.createCaseRecord(
             new Map<Schema.SObjectField, Object>{
+                Case.OwnerId => getQueueId(),
                 Case.RecordTypeId => caseRTId,
                 Case.Status => 'Pending',
                 Case.Subject => 'Test'
             }
         );
 
-        List<Task> tasksToInsert = new List<Task>{
-            DMT_UTIL.buildTask(getQueueId(), approvalCase.Id,
+        List<Task> createdTasks = new List<Task>{
+            DMT_UTIL.createTaskRecord(getQueueId(), approvalCase.Id,
                 new Map<Schema.SObjectField, Object>{
                     Task.RecordTypeId => taskRTId,
                     Task.Status => 'Completed',
                     Task.Subject => 'Older'
                 }
             ),
-            DMT_UTIL.buildTask(getQueueId(), approvalCase.Id,
+            DMT_UTIL.createTaskRecord(getQueueId(), approvalCase.Id,
                 new Map<Schema.SObjectField, Object>{
                     Task.RecordTypeId => taskRTId,
                     Task.Status => 'Completed',
@@ -247,9 +248,8 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
                 }
             )
         };
-        insert tasksToInsert;
-        Task olderTask = tasksToInsert[0];
-        Task newerTask = tasksToInsert[1];
+        Task olderTask = createdTasks[0];
+        Task newerTask = createdTasks[1];
         Test.setCreatedDate(olderTask.Id, DateTime.now().addDays(-2));
         Test.setCreatedDate(newerTask.Id, DateTime.now().addDays(-1));
 
@@ -277,6 +277,64 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
         Assert.areEqual('Task', replacementTasks[0].Subject, 'The single replacement must come from createResetTask, cloned from the oldest stale task.');
     }
 
+    /**
+     * CIBGLOBALD-4924 - a multi-step workflow restarted with two stale tasks of different approver queues: the
+     * replacement is cloned from the oldest (step 1) task and the Case must be handed to that same queue, not
+     * to the queue of the later step it was parked on.
+     */
+    @IsTest
+    static void testRestartTasksForRecordSetsCaseOwnerToReplacementOwner() {
+        Id caseRTId = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
+        Id taskRTId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
+        Id stepOneQueueId = getQueueId();
+        Id stepTwoQueueId = [SELECT Id FROM Group WHERE DeveloperName = 'DMT_Approvers2' LIMIT 1].Id;
+
+        Case approvalCase = DMT_UTIL.createCaseRecord(
+            new Map<Schema.SObjectField, Object>{
+                Case.OwnerId => stepTwoQueueId,
+                Case.RecordTypeId => caseRTId,
+                Case.Status => 'Pending',
+                Case.Subject => 'Test'
+            }
+        );
+
+        List<Task> tasksToInsert = new List<Task>{
+            DMT_UTIL.buildTask(stepOneQueueId, approvalCase.Id,
+                new Map<Schema.SObjectField, Object>{
+                    Task.RecordTypeId => taskRTId,
+                    Task.Status => 'Completed',
+                    Task.Subject => 'Step 1'
+                }
+            ),
+            DMT_UTIL.buildTask(stepTwoQueueId, approvalCase.Id,
+                new Map<Schema.SObjectField, Object>{
+                    Task.RecordTypeId => taskRTId,
+                    Task.Status => 'Completed',
+                    Task.Subject => 'Step 2'
+                }
+            )
+        };
+        insert tasksToInsert;
+        Test.setCreatedDate(tasksToInsert[0].Id, DateTime.now().addDays(-2));
+        Test.setCreatedDate(tasksToInsert[1].Id, DateTime.now().addDays(-1));
+
+        List<Task> tasksToRestart = [
+            SELECT Id, WhatId, OwnerId, RecordTypeId, DMT_Task_Type__c, CreatedDate
+            FROM Task WHERE Id IN (:tasksToInsert[0].Id, :tasksToInsert[1].Id)
+        ];
+
+        Test.startTest();
+        DMT_ApprovalChangeStep_Helper.restartTasksForRecord(approvalCase.Id, tasksToRestart);
+        Test.stopTest();
+
+        List<Task> replacementTasks = [SELECT OwnerId FROM Task WHERE WhatId = :approvalCase.Id AND Status = :DMT_Constants.NOTSTARTED];
+        Case reopenedCase = [SELECT OwnerId, Status FROM Case WHERE Id = :approvalCase.Id];
+        Assert.areEqual(1, replacementTasks.size(), 'Exactly one replacement task must be created for the Case.');
+        Assert.areEqual(stepOneQueueId, replacementTasks[0].OwnerId, 'The replacement must be cloned from the step 1 task.');
+        Assert.areEqual(replacementTasks[0].OwnerId, reopenedCase.OwnerId, 'The reopened Case must have the same approver as its open replacement task.');
+        Assert.areEqual(DMT_Constants.PENDING, reopenedCase.Status, 'The reopened Case must be Pending.');
+    }
+
     // CIBGLOBALD-4800 - the same task list restarted twice (an async restart queued twice before the first
     // run) must leave exactly one replacement: the second run finds the tasks already cancelled.
     @IsTest
@@ -284,8 +342,9 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
         Id caseRTId = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
         Id taskRTId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
 
-        Case approvalCase = DMT_UTIL.createCaseRecord(getQueueId(),
+        Case approvalCase = DMT_UTIL.createCaseRecord(
             new Map<Schema.SObjectField, Object>{
+                Case.OwnerId => getQueueId(),
                 Case.RecordTypeId => caseRTId,
                 Case.Status => 'Pending',
                 Case.Subject => 'Test'
@@ -326,11 +385,15 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
             Case.Subject => 'Test'
         };
 
+        Map<Schema.SObjectField, Object> firstCaseOverrides = new Map<Schema.SObjectField, Object>(caseOverrides);
+        firstCaseOverrides.put(Case.OwnerId, getQueueId());
+        Map<Schema.SObjectField, Object> secondCaseOverrides = new Map<Schema.SObjectField, Object>(caseOverrides);
+        secondCaseOverrides.put(Case.OwnerId, getQueueId());
+
         List<Case> approvalCases = new List<Case>{
-            DMT_UTIL.buildCase(getQueueId(), caseOverrides),
-            DMT_UTIL.buildCase(getQueueId(), caseOverrides)
+            DMT_UTIL.createCaseRecord(firstCaseOverrides),
+            DMT_UTIL.createCaseRecord(secondCaseOverrides)
         };
-        insert approvalCases;
 
         Map<Schema.SObjectField, Object> taskOverrides = new Map<Schema.SObjectField, Object>{
             Task.RecordTypeId => taskRTId,
@@ -338,10 +401,9 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
             Task.Subject => 'Stale'
         };
         List<Task> staleTasks = new List<Task>{
-            DMT_UTIL.buildTask(getQueueId(), approvalCases[0].Id, taskOverrides),
-            DMT_UTIL.buildTask(getQueueId(), approvalCases[1].Id, taskOverrides)
+            DMT_UTIL.createTaskRecord(getQueueId(), approvalCases[0].Id, taskOverrides),
+            DMT_UTIL.createTaskRecord(getQueueId(), approvalCases[1].Id, taskOverrides)
         };
-        insert staleTasks;
 
         // recordId only keys the payload; restartTasksForRecord works from the tasks themselves.
         Map<Id, List<Task>> tasksByRecordId = new Map<Id, List<Task>>();
@@ -372,10 +434,14 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
     @IsTest
     static void testTrackedComponentsForSnapshotBlankFallsBackToFullList() {
         DMT_TaskStatusWhenCompleted__c snapshot = DMT_UTIL.buildTaskStatusWhenCompleted();
+        List<String> legacyComponents = new List<String>();
+        for (String componentName : DMT_RendererFactory.getTrackedComponentNames()) {
+            if (componentName != 'Underwriting') legacyComponents.add(componentName);
+        }
         Assert.areEqual(
-            DMT_RendererFactory.getTrackedComponentNames(),
+            legacyComponents,
             DMT_ApprovalChangeStep_Helper.trackedComponentsForSnapshot(snapshot),
-            'A snapshot frozen before this field existed must fall back to the unscoped full list, so already-open tasks keep today\'s behavior until they get a fresh freeze.'
+            'Legacy snapshots retain all previous components; Underwriting requires an explicit entry.'
         );
     }
 

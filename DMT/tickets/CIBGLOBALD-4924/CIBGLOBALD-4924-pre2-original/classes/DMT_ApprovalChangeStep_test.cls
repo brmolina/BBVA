@@ -1,0 +1,316 @@
+@isTest
+public with sharing class DMT_ApprovalChangeStep_test {
+    private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass();
+
+    @TestSetup
+    static void loadTestData()
+    {
+        TriggerBypass.setBypass();
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestTreasuryLines();
+        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
+        DMT_Test_DataFactory.generateTaskTypes();
+
+        Id idView = DMT_Test_DataFactory.generateView();
+        DMT_Test_DataFactory.generateApproverWithView(idView);
+
+        Group queueId = [SELECT Id FROM Group WHERE Type = 'Queue' and Name LIKE '%TestApproverDataFactory%' LIMIT 1];
+        System.runAs(new User(Id=UserInfo.getUserId()))
+            {
+                DMT_Test_DataFactory.generateQueueSObjectsForCaseAndTask(queueId.Id);
+            }
+
+        Case createdCase = DMT_UTIL.createCaseRecord(new Map<Schema.SObjectField, Object>{
+            Case.DMT_Line__c => line.Id,
+            Case.OwnerId => UserInfo.getUserId()
+        });
+        String taskSetpCaseRecordTypeID = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
+
+        DMT_Test_DataFactory.generateTasksWithOwner(queueId.Id, taskSetpCaseRecordTypeID, createdCase.Id, 1);
+
+        //Create case for Opportuntity
+        DMT_ApproversView__c approverView = DMT_UTIL.createApproversViewRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_ApproversView__c.Name => 'PruebaLiOpp01',
+                DMT_ApproversView__c.DMT_DeveloperName__c => 'DMT_PruebaOpp01',
+                DMT_ApproversView__c.DMT_Type__c => 'Opportunity'
+            }
+        );
+
+        DMT_UTIL.createItemRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Items__c.DMT_View__c => approverView.Id,
+                DMT_Items__c.Name => 'Basic client',
+                DMT_Items__c.DMT_Component_Item__c => 'Opportunity Info',
+                DMT_Items__c.DMT_order_display__c => 1,
+                DMT_Items__c.DMT_Text__c => 'This is normal text',
+                DMT_Items__c.Type_Item__c => 'Component',
+                DMT_Items__c.CurrencyIsoCode => 'EUR'
+            }
+        );
+
+        DMT_UTIL.createItemRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Items__c.DMT_View__c => approverView.Id,
+                DMT_Items__c.Name => 'Products Test',
+                DMT_Items__c.DMT_Component_Item__c => 'Products',
+                DMT_Items__c.DMT_order_display__c => 3,
+                DMT_Items__c.DMT_Text__c => 'This is normal text',
+                DMT_Items__c.Type_Item__c => 'Component',
+                DMT_Items__c.CurrencyIsoCode => 'EUR'
+            }
+        );
+
+        DMT_UTIL.createApproverRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Approver__c.Name => 'TestApproverOPp01',
+                DMT_Approver__c.DMT_External_Id__c => 'TestExternalIdDATAFACTORY' + Integer.valueof((Math.random() * 100000000)),
+                DMT_Approver__c.Approvers_View_Opportunity__c => approverView.Id
+            }
+        );
+
+        Group queueOppId = [SELECT Id FROM Group WHERE Type = 'Queue' and Name LIKE '%TestApproverOPp01%' LIMIT 1];
+        System.runAs(new User(Id=UserInfo.getUserId()))
+        {
+            DMT_Test_DataFactory.generateQueueSObjectsForCaseAndTask(queueOppId.Id);
+        }
+        Case createdCaseOppty = DMT_UTIL.createCaseRecord(new Map<Schema.SObjectField, Object>{
+            Case.opportunity_id__c => opp.Id,
+            Case.OwnerId => UserInfo.getUserId()
+        });
+            
+        DMT_Test_DataFactory.generateTasksWithOwner(queueOppId.Id, taskSetpCaseRecordTypeID, createdCaseOppty.Id, 1);
+        DMT_Test_DataFactory.generateOpportunityClient(opp.Id);
+        OpportunityLineItem oppLI = DMT_Test_DataFactory.generateOpportunityLineItem(opp);
+        DMT_Test_DataFactory.generateOpportunityTenor(oppLI);
+        DMT_Test_DataFactory.generateOpportunityMitigant(oppLI);
+
+    }
+
+    @isTest
+    private static void testUpdateTaskWithStatusWithPdf()
+    {
+        TriggerBypass.setBypass();
+        Group queueId = [SELECT Id FROM Group WHERE Type = 'Queue' and Name LIKE '%TestApproverDataFactory%' LIMIT 1];
+        List<Task> tasks = [SELECT Id FROM Task WHERE OwnerId =: queueId.Id LIMIT 1];
+        String action = 'saveValuesUpdate';
+        Map<String, Object> input = new Map<String, Object>{'recordId' => tasks[0].Id};
+        Map<String, Object> args = new Map<String, Object>{'output' => new Map<String, Object>(), 'options' => new Map<String, Object>(), 'input' => input};
+
+        Test.startTest();
+        DMT_ApprovalChangeStep_Handler approvalStepHandlerClass = new DMT_ApprovalChangeStep_Handler();
+        approvalStepHandlerClass.call(action, args);
+        Test.stopTest();
+
+        Task tasksModified = [SELECT Id, DMT_ViewStatusAtClose__c FROM Task WHERE Id=:tasks[0].Id];
+
+        Assert.isTrue(tasksModified.DMT_ViewStatusAtClose__c != null, 'Error creating taskStatus');
+    }
+
+    @isTest
+    private static void testUpdateTaskWithStatusWithoutPdf()
+    {
+        TriggerBypass.setBypass();
+        Group queueId = [SELECT Id FROM Group WHERE Type = 'Queue' and Name LIKE '%TestApproverDataFactory%' LIMIT 1];
+        List<Task> tasks = [SELECT Id FROM Task WHERE OwnerId =: queueId.Id LIMIT 1];
+        String action = 'saveValuesInsert';
+        Map<String, Object> input = new Map<String, Object>{'recordId' => tasks[0].Id};
+        Map<String, Object> args = new Map<String, Object>{'output' => new Map<String, Object>(), 'options' => new Map<String, Object>(), 'input' => input};
+
+        Test.startTest();
+        DMT_ApprovalChangeStep_Handler approvalStepHandlerClass = new DMT_ApprovalChangeStep_Handler();
+        approvalStepHandlerClass.call(action, args);
+        Test.stopTest();
+        Task tasksModified = [SELECT Id, DMT_ViewStatusAtClose__c FROM Task WHERE Id=:tasks[0].Id];
+
+        Assert.isTrue(tasksModified.DMT_ViewStatusAtClose__c != null, 'Error creating taskStatus');
+    }
+
+    @isTest
+    private static void testDispatcherTaskStatusSnapshotPayload() {
+        TriggerBypass.setBypass();
+        Group queueId = [SELECT Id FROM Group WHERE Type = 'Queue' and Name LIKE '%TestApproverDataFactory%' LIMIT 1];
+        Task task = [SELECT Id FROM Task WHERE OwnerId = :queueId.Id LIMIT 1];
+
+        Test.startTest();
+        DMT_AsyncDispatcher.dispatch(new DMT_TaskStatusSnapshotPayload(task.Id));
+        Test.stopTest();
+
+        Task refreshedTask = [SELECT DMT_ViewStatusAtClose__c FROM Task WHERE Id = :task.Id];
+        Assert.isNotNull(refreshedTask.DMT_ViewStatusAtClose__c, 'Dispatching the deferred snapshot associates it with the Task');
+    }
+
+    // CIBGLOBALD-4811 - previewCompareTasksFromCase is tested in DMT_OpportunityTriggerHandler_Test and DMT_Line_TriggerHandler_Test.
+
+    @isTest
+    public static void testUpdateCase() {
+        TriggerBypass.setBypass();
+
+        List<Case> listCases = [SELECT Id,DMT_Line__c,DMT_Related_feature_name__c,opportunity_id__c, DMT_Line__r.Custom_Association__c, DMT_LineOpportunity__c,opportunity_id__r.RecordType.DeveloperName, DMT_Line__r.RecordType.DeveloperName FROM Case];
+        List<DMT_ApprovalChangeStep_Helper.RequestFinishedCase> requestList = new List<DMT_ApprovalChangeStep_Helper.RequestFinishedCase>();
+        DMT_ApprovalChangeStep_Helper.RequestFinishedCase request = new DMT_ApprovalChangeStep_Helper.RequestFinishedCase();
+        request.caseId = listCases.get(0).Id;
+        request.owners = UserInfo.getUserId();
+        requestList.add(request);
+        Test.startTest();
+        DMT_ApprovalChangeStep_Helper.updateOwnerFromCase(requestList);
+        Test.stopTest();
+        List<Case> listCasesUpdated = [SELECT Id, OwnerId FROM Case ORDER BY LastModifiedDate DESC];
+        Assert.areEqual(listCasesUpdated.get(0).OwnerId, UserInfo.getUserId(), 'It is not the same owner');
+    }
+    @isTest
+    private static void testUpdateTaskWithStatusWithPdfOpp()
+    {
+        TriggerBypass.setBypass();
+        Opportunity opp = [SELECT Id FROM Opportunity WHERE Name = 'Test Opp' LIMIT 1];
+        Case caseOpp = [SELECT Id,DMT_Line__c, opportunity_id__c, DMT_Line__r.Custom_Association__c, DMT_LineOpportunity__c,
+                                opportunity_id__r.RecordType.DeveloperName, DMT_Line__r.RecordType.DeveloperName,DMT_Related_feature_name__c
+                        FROM Case
+                        WHERE DMT_Related_feature_name__c = 'Test1' AND opportunity_id__c =: opp.Id LIMIT 1];
+
+        List<Task> tasks = [SELECT Id FROM Task WHERE WhatId =: caseOpp.Id];
+        String action = 'saveValuesUpdate';
+        Map<String, Object> input = new Map<String, Object>{'recordId' => tasks[0].Id};
+        Map<String, Object> args = new Map<String, Object>{'output' => new Map<String, Object>(), 'options' => new Map<String, Object>(), 'input' => input};
+
+        DMT_ApprovalChangeStep_Handler approvalStepHandlerClass = new DMT_ApprovalChangeStep_Handler();
+        approvalStepHandlerClass.call(action, args);
+
+        Task tasksModified = [SELECT Id, DMT_ViewStatusAtClose__c FROM Task WHERE Id=:tasks[0].Id];
+
+        Assert.isTrue(tasksModified.DMT_ViewStatusAtClose__c != null, 'Error creating taskStatus');
+    }
+    /**
+     * @description CIBGLOBALD-4117: "Client" is the first renderer-tracked component whose
+     * fields span more than one object (DMT_Line__c and Custom_Association_Client__c). Proves
+     * updateTaskWithStatus's field-collection loop correctly prefixes each field with the object
+     * it actually belongs to (sourced from DMT_RendererFactory.getTrackedFieldsByObject) instead
+     * of blindly prefixing every renderer-returned field with the Line's own object name, which
+     * would have produced an incorrect key like DMT_Line__c.Alpha_Code_Client__c. TestSetup's
+     * DMT_PruebaLinea approver view already has a 'Client' DMT_Items__c row (Treasury RT), with
+     * no DMT_Campos_componente_Refact__c value at all - before this fix, Client tracking for
+     * this view was silently a no-op.
+     **/
+    @isTest
+    private static void testUpdateTaskWithStatusPrefixesClientFieldsByTheirOwnObject() {
+        TriggerBypass.setBypass();
+        Group queueId = [SELECT Id FROM Group WHERE Type = 'Queue' and Name LIKE '%TestApproverDataFactory%' LIMIT 1];
+        List<Task> tasks = [SELECT Id FROM Task WHERE OwnerId =: queueId.Id LIMIT 1];
+
+        Test.startTest();
+        DMT_ApprovalChangeStep_Handler.updateTaskWithStatus(tasks[0].Id, false);
+        Test.stopTest();
+
+        Task taskModified = [SELECT Id, DMT_ViewStatusAtClose__c FROM Task WHERE Id = :tasks[0].Id];
+        DMT_TaskStatusWhenCompleted__c statusRecord = [SELECT Id, DMT_AllFieldsInStatus__c FROM DMT_TaskStatusWhenCompleted__c WHERE Id = :taskModified.DMT_ViewStatusAtClose__c];
+
+        Assert.isNotNull(statusRecord.DMT_AllFieldsInStatus__c, 'Status field string should not be null');
+        Assert.isTrue(statusRecord.DMT_AllFieldsInStatus__c.contains('DMT_Line__c.Client_Type__c'), 'DMT_Line__c-native Client field must be prefixed with DMT_Line__c.');
+        Assert.isTrue(statusRecord.DMT_AllFieldsInStatus__c.contains('Custom_Association_Client__c.Alpha_Code_Client__c'), 'Custom_Association_Client__c field must be prefixed with its own object, not DMT_Line__c.');
+        Assert.isFalse(statusRecord.DMT_AllFieldsInStatus__c.contains('DMT_Line__c.Alpha_Code_Client__c'), 'A Custom_Association_Client__c field must never be mis-prefixed with DMT_Line__c.');
+    }
+
+    // resolveApproverViewId reads Case.DMT_LineOpportunity__c, a formula field - it can't be set on
+    // an in-memory Case (compile error), so the positive-match tests need a real inserted/queried
+    // Line or Opportunity + Case. The no-match tests don't need that: leaving DMT_LineOpportunity__c
+    // unset on an in-memory Case naturally exercises the "neither branch matches" path.
+    @isTest
+    private static void testResolveApproverViewIdTreasuryLine() {
+        // TestSetup already created a TreasurySettlement Line - reuse it rather than generating a
+        // second one, which collides on a duplicate rule against fixed Account/Line field values.
+        DMT_Line__c line = [SELECT Id FROM DMT_Line__c WHERE RecordType.DeveloperName = 'TreasurySettlement' LIMIT 1];
+        Case insertedCase = DMT_UTIL.createCaseRecord(new Map<Schema.SObjectField, Object>{
+            Case.DMT_Line__c => line.Id,
+            Case.OwnerId => UserInfo.getUserId()
+        });
+            
+        DMT_Approver__c approver = new DMT_Approver__c(Approvers_View_Treasury__c = '000000000000001AAA');
+        insertedCase = [
+            SELECT Id, Opportunity_Id__c, DMT_Line__c, DMT_LineOpportunity__c,
+                DMT_Line__r.RecordType.DeveloperName
+            FROM Case
+            WHERE Id = :insertedCase.Id
+        ];
+        Assert.areEqual(approver.Approvers_View_Treasury__c, DMT_ApprovalChangeStep_Handler.resolveApproverViewId(approver, insertedCase));
+    }
+
+    @isTest
+    private static void testResolveApproverViewIdOtherProductsLine() {
+        DMT_Line__c line = DMT_Test_DataFactory.generateTestOtherLines();
+        Case insertedCase = DMT_UTIL.createCaseRecord(new Map<Schema.SObjectField, Object>{
+            Case.DMT_Line__c => line.Id,
+            Case.OwnerId => UserInfo.getUserId()
+        });
+        insertedCase = [
+            SELECT Id, Opportunity_Id__c, DMT_Line__c, DMT_LineOpportunity__c,
+                DMT_Line__r.RecordType.DeveloperName
+            FROM Case
+            WHERE Id = :insertedCase.Id
+        ];
+        DMT_Approver__c approver = new DMT_Approver__c(Approvers_View__c = '000000000000002AAA');
+
+        Assert.areEqual(approver.Approvers_View__c, DMT_ApprovalChangeStep_Handler.resolveApproverViewId(approver, insertedCase));
+    }
+
+    @isTest
+    private static void testResolveApproverViewIdOpportunity() {
+        // TestSetup already created this Opportunity - reuse it rather than generating a second one.
+        Opportunity opp = [SELECT Id FROM Opportunity WHERE Name = 'Test Opp' LIMIT 1];
+        Case insertedCase = DMT_UTIL.createCaseRecord(new Map<Schema.SObjectField, Object>{
+            Case.Opportunity_Id__c => opp.Id,
+            Case.OwnerId => UserInfo.getUserId()
+        });
+        insertedCase = [
+            SELECT Id, Opportunity_Id__c, DMT_Line__c, DMT_LineOpportunity__c,
+                Opportunity_Id__r.RecordType.DeveloperName
+            FROM Case
+            WHERE Id = :insertedCase.Id
+        ];
+        DMT_Approver__c approver = new DMT_Approver__c(Approvers_View_Opportunity__c = '000000000000003AAA');
+
+        Assert.areEqual(approver.Approvers_View_Opportunity__c, DMT_ApprovalChangeStep_Handler.resolveApproverViewId(approver, insertedCase));
+    }
+
+    @isTest
+    private static void testResolveApproverViewIdNoLineOrOpportunityReturnsNull() {
+        // DMT_LineOpportunity__c is IF(!ISBLANK(opportunity_id__c),"O",IF(!ISBLANK(DMT_Line__c),"L"," "))
+        // - with neither populated it resolves to a blank space, matching neither branch.
+        Assert.isNull(DMT_ApprovalChangeStep_Handler.resolveApproverViewId(new DMT_Approver__c(), new Case()));
+    }
+
+    @isTest
+    private static void testResolveApproverViewIdNullInputsReturnNull() {
+        Assert.isNull(DMT_ApprovalChangeStep_Handler.resolveApproverViewId(null, new Case()));
+        Assert.isNull(DMT_ApprovalChangeStep_Handler.resolveApproverViewId(new DMT_Approver__c(), null));
+    }
+
+    /**
+     * CIBGLOBALD-4117 - Opportunity 'Approval Process Data' returns its parent fields (SPPI Test,
+     * Financial Sponsors) from getTrackedFields() AND its child-object fields from
+     * getTrackedFieldsByObject(). resolveTrackedFieldsForItems used to take only the latter when
+     * it was non-empty, so the parent fields were never frozen while the restart gate still
+     * compared them - every resubmission looked like a change. Both sources must be frozen.
+     */
+    @isTest
+    private static void testResolveTrackedFieldsForItemsKeepsParentFieldsOfMultiObjectComponent() {
+        Opportunity oppRecord = new Opportunity(
+            RecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId()
+        );
+        List<DMT_Items__c> items = new List<DMT_Items__c>{
+            new DMT_Items__c(DMT_Component_Item__c = 'Approval Process Data')
+        };
+
+        DMT_ApprovalChangeStep_Handler.ItemFieldResolution resolution =
+            DMT_ApprovalChangeStep_Handler.resolveTrackedFieldsForItems(items, oppRecord, 'Opportunity');
+
+        Assert.isTrue(resolution.trackedComponentNames.contains('Approval Process Data'), 'The component must be listed as tracked for this snapshot.');
+        List<String> parentFields = resolution.fieldMapFromObject.get('Opportunity');
+        Assert.isNotNull(parentFields, 'Opportunity-level fields of a multi-object component must be frozen.');
+        for (String expectedField : new List<String>{
+            'DMT_SPPI_Status__c', 'DMT_SPPI_User__c', 'DMT_SPPI_File_Uploaded__c', 'DMT_Financial_Sponsors__c'
+        }) {
+            Assert.isTrue(parentFields.contains(expectedField), expectedField + ' must be frozen on the Opportunity section.');
+        }
+        Assert.isTrue(resolution.fieldMapFromObject.containsKey('DMT_Opportunity_Client__c'), 'Child-object fields must still be frozen.');
+        Assert.isTrue(resolution.allFields.contains('Opportunity.DMT_SPPI_Status__c'), 'allFields must carry the parent fields so the preview compares them too.');
+    }
+}

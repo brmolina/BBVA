@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- CIBGLOBALD-4924 - order is arbitrary: the test classes depend only on already deployed signatures -->
+    <types>
+        <members>DMT_ApprovalChangeStep_Helper</members>
+        <members>DMT_ApprovalChangeStep_HelperTest</members>
+        <members>DMT_ApprovalChangeStep_test</members>
+        <members>DMT_Line_TriggerHandler_Test</members>
+        <members>DMT_OpportunityTriggerHandler_Test</members>
+        <name>ApexClass</name>
+    </types>
+    <version>65.0</version>
+</Package>

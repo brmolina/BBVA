@@ -71,13 +71,13 @@ public with sharing class DMT_Line_TriggerHandler_Test {
         Group groupApprover = [SELECT Id FROM Group WHERE DeveloperName = 'DMT_Approvers1' LIMIT 1];
         TriggerBypass.setBypass();
         Case approvalCase = DMT_UTIL.createCaseRecord(
-            groupApprover.Id,
             new Map<Schema.SObjectField, Object>{
                 Case.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_APPROVAL_CASE_RECORD_TYPE_ID,
                 Case.DMT_Line__c => frozenLine.Id,
                 Case.DMT_Passport_Sanction__c => passportSanction,
                 Case.Status => 'Pending',
-                Case.Subject => 'Test'
+                Case.Subject => 'Test',
+                Case.OwnerId => groupApprover.Id
             }
         );
 
@@ -253,6 +253,77 @@ public with sharing class DMT_Line_TriggerHandler_Test {
         Assert.areEqual(DMT_Constants.CANCELLED, staleTask.Status, 'Stale task should be cancelled when a tracked field changes while parked in Ready to close');
     }
 
+    // Changes been made for CIBGLOBALD-4794 v2: Verify configured Line saves skip no-op DML and persist changed values without restarting the approval Task.
+    @isTest
+    public static void testApprovalConfiguredLineSavePersistsChangedFieldWithoutRestartingTask() {
+        DMT_Line__c line = queryLineWithTrackedFields();
+        line.Status__c = DMT_Constants.READYTOCLOSE;
+        update line;
+        DMT_Line__c frozenLine = queryLineWithTrackedFields();
+        Task openTask = setupApprovalTaskWithSnapshot(frozenLine, 'readytoclose');
+
+        // Changes been made for CIBGLOBALD-4794 v2: Configure a renderer-tracked Line field for the active approval Task.
+        DMT_Test_DataFactory.generateTaskTypes();
+        DMT_Task_Type__c taskType = [
+            SELECT Id
+            FROM DMT_Task_Type__c
+            WHERE DMT_External_Id__c = '1'
+            LIMIT 1
+        ];
+        openTask.DMT_Task_Type__c = taskType.Id;
+        update openTask;
+        String templateCode = [
+            SELECT DMT_line_template_type__c
+            FROM DMT_Line__c
+            WHERE Id = :line.Id
+        ].DMT_line_template_type__c;
+        Schema.SObjectType configType = Schema.getGlobalDescribe().get('DMT_Task_Field_Config__c');
+        SObject fieldConfig = configType.newSObject();
+        Map<String, Schema.SObjectField> configFields = configType.getDescribe().fields.getMap();
+        if (configFields.get('Name') != null && !configFields.get('Name').getDescribe().isAutoNumber()) {
+            fieldConfig.put('Name', 'UT Tracked Line Name');
+        }
+        fieldConfig.put('DMT_Task_Type__c', taskType.Id);
+        fieldConfig.put('DMT_Template__c', templateCode);
+        fieldConfig.put('DMT_Field_Api_Name__c', 'DMT_Line__c.Name');
+        fieldConfig.put('DMT_Field_Label__c', 'Line Name');
+        fieldConfig.put('DMT_Field_Type__c', 'Text');
+        fieldConfig.put('DMT_Required__c', 'N');
+        fieldConfig.put('DMT_Display_Order__c', 1);
+        insert fieldConfig;
+
+        Map<String, Object> records = new Map<String, Object>{
+            'taskId' => openTask.Id,
+            'caseId' => openTask.WhatId,
+            'caseStatus' => 'In Progress',
+            'stepResult' => 'Yes',
+            'doNotAskCheck' => false,
+            'customFieldValues' => new Map<String, Object>{ 'DMT_Line__c.Name' => frozenLine.Name }
+        };
+
+        // Changes been made for CIBGLOBALD-4794 v2: Confirm an unchanged configured value leaves the approval Task intact.
+        Test.startTest();
+        DMT_ApprovalTemplate_Controller.saveStep(JSON.serialize(records));
+        Assert.areEqual('Not Started', [SELECT Status FROM Task WHERE Id = :openTask.Id].Status,
+            'Saving an unchanged tracked value must not restart the approval Task.');
+        Assert.areEqual(1, [SELECT COUNT() FROM Task WHERE WhatId = :openTask.WhatId],
+            'Saving an unchanged tracked value must not create a replacement Task.');
+
+        // Changes been made for CIBGLOBALD-4794 v2: Confirm a configured change is saved without restarting the approval Task.
+        records.put('customFieldValues', new Map<String, Object>{ 'DMT_Line__c.Name' => 'Changed Name by Approval Save' });
+        DMT_ApprovalTemplate_Controller.saveStep(JSON.serialize(records));
+        Test.stopTest();
+
+        Assert.areEqual('Changed Name by Approval Save', [SELECT Name FROM DMT_Line__c WHERE Id = :line.Id].Name,
+            'The changed configured Line field must be persisted.');
+        Assert.areEqual('Not Started', [SELECT Status FROM Task WHERE Id = :openTask.Id].Status,
+            'A configured field save must leave the approval Task active.');
+        Assert.areEqual('In Progress', [SELECT Status FROM Case WHERE Id = :openTask.WhatId].Status,
+            'The Case status must be updated by the controller when no Task restart occurs.');
+        Assert.areEqual(1, [SELECT COUNT() FROM Task WHERE WhatId = :openTask.WhatId],
+            'A configured field save without a Task restart must not create a replacement Task.');
+    }
+
     // CIBGLOBALD-4117: there is deliberately NO test here for a Client change on a DMT_Line__c-level
     // field, because neither of the two the Client renderer tracks can actually drive this trigger
     // gate - a limitation found while validating, not an untested gap:
@@ -270,7 +341,11 @@ public with sharing class DMT_Line_TriggerHandler_Test {
     public static void testRestartApprovalTasksOnLineResubmission_CustomAssociationClientFieldChange_Restarts() {
         DMT_Line__c line = queryLineWithTrackedFields();
         Custom_Association__c ca = DMT_Test_DataFactory.generateCustomAssociation(line.Id, line.Client__c);
-        Custom_Association_Client__c cac = DMT_Test_DataFactory.generateCustomAssociationClient(ca.Id);
+        Custom_Association_Client__c cac = DMT_UTIL.createCustomAssociationClientRecord(
+            new Map<Schema.SObjectField, Object>{
+                Custom_Association_Client__c.custom_association__c => ca.Id
+            }
+        );
 
         line = queryLineWithTrackedFields();
         line.Status__c = DMT_Constants.DRAFT;
@@ -308,7 +383,11 @@ public with sharing class DMT_Line_TriggerHandler_Test {
         Task openTask = setupApprovalTaskWithSnapshot(frozenLine);
 
         // A client row is added before resubmission - the Line itself is untouched.
-        DMT_Test_DataFactory.generateCustomAssociationClient(ca.Id);
+        DMT_UTIL.createCustomAssociationClientRecord(
+            new Map<Schema.SObjectField, Object>{
+                Custom_Association_Client__c.custom_association__c => ca.Id
+            }
+        );
 
         Test.startTest();
         line.Status__c = DMT_Constants.PROPOSAL;
@@ -323,7 +402,11 @@ public with sharing class DMT_Line_TriggerHandler_Test {
     public static void testRestartApprovalTasksOnLineResubmission_CustomAssociationClientRowRemoved_Restarts() {
         DMT_Line__c line = queryLineWithTrackedFields();
         Custom_Association__c ca = DMT_Test_DataFactory.generateCustomAssociation(line.Id, line.Client__c);
-        Custom_Association_Client__c cac = DMT_Test_DataFactory.generateCustomAssociationClient(ca.Id);
+        Custom_Association_Client__c cac = DMT_UTIL.createCustomAssociationClientRecord(
+            new Map<Schema.SObjectField, Object>{
+                Custom_Association_Client__c.custom_association__c => ca.Id
+            }
+        );
 
         line = queryLineWithTrackedFields();
         line.Status__c = DMT_Constants.DRAFT;
@@ -371,7 +454,11 @@ public with sharing class DMT_Line_TriggerHandler_Test {
     public static void testPreviewCompareTasksFromCase_ChildRowChange_ListsFeature() {
         DMT_Line__c line = queryLineWithTrackedFields();
         Custom_Association__c ca = DMT_Test_DataFactory.generateCustomAssociation(line.Id, line.Client__c);
-        Custom_Association_Client__c cac = DMT_Test_DataFactory.generateCustomAssociationClient(ca.Id);
+        Custom_Association_Client__c cac = DMT_UTIL.createCustomAssociationClientRecord(
+            new Map<Schema.SObjectField, Object>{
+                Custom_Association_Client__c.custom_association__c => ca.Id
+            }
+        );
 
         line = queryLineWithTrackedFields();
         line.Status__c = DMT_Constants.DRAFT;
@@ -422,7 +509,11 @@ public with sharing class DMT_Line_TriggerHandler_Test {
         line.Status__c = DMT_Constants.READYTOCLOSE;
         update line;
         Task openTask = setupApprovalTaskWithSnapshot(queryLineWithTrackedFields(), 'readytoclose');
-        DMT_Test_DataFactory.generateCustomAssociationClient(ca.Id);
+        DMT_UTIL.createCustomAssociationClientRecord(
+            new Map<Schema.SObjectField, Object>{
+                Custom_Association_Client__c.custom_association__c => ca.Id
+            }
+        );
 
         Test.startTest();
         DMT_ApprovalChangeStep_Helper.recheckReadyToCloseLine(line.Id);

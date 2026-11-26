@@ -1,0 +1,9 @@
+CIBGLOBALD-4924 - reopened approval Case gets the owner of its replacement task
+
+- DMT_ApprovalChangeStep_Helper.restartTasksForRecord: the reset Case is now built from the same task the
+  replacement task is cloned from (the oldest stale task of the Case). Before, the Case owner was set from
+  every cancelled task, so the last one in the loop won: the Case stayed with a later step's approver while
+  the reopened task went to the first approver. One fix for Opportunity and Line, both triggers
+  (DMT_OpportunityTriggerHandler, DMT_Line_Helper) restart through this method. No extra SOQL or DML.
+- DMT_ApprovalChangeStep_HelperTest: new testRestartTasksForRecordSetsCaseOwnerToReplacementOwner
+  (two stale tasks of different approver queues, the Case owner must equal the replacement task owner).

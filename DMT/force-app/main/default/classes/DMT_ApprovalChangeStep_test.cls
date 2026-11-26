@@ -1,5 +1,6 @@
 @isTest
 public with sharing class DMT_ApprovalChangeStep_test {
+    private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass();
 
     @TestSetup
     static void loadTestData()
@@ -15,65 +16,68 @@ public with sharing class DMT_ApprovalChangeStep_test {
         Group queueId = [SELECT Id FROM Group WHERE Type = 'Queue' and Name LIKE '%TestApproverDataFactory%' LIMIT 1];
         System.runAs(new User(Id=UserInfo.getUserId()))
             {
-                List<QueuesObject> queueSObjectList = new List<QueuesObject>();
-                QueuesObject sobjectCaseQueue = new QueueSObject(QueueID = queueId.id, SObjectType = 'Case');
-                queueSObjectList.add(sobjectCaseQueue);
-                QueuesObject sobjectTaskQueue = new QueueSObject(QueueID = queueId.id, SObjectType = 'Task');
-                queueSObjectList.add(sobjectTaskQueue);
-                insert queueSObjectList;
+                DMT_Test_DataFactory.generateQueueSObjectsForCaseAndTask(queueId.Id);
             }
 
-        Case createdCase = DMT_Test_DataFactory.generateCase(line.Id, null, UserInfo.getUserId());
+        Case createdCase = DMT_UTIL.createCaseRecord(new Map<Schema.SObjectField, Object>{
+            Case.DMT_Line__c => line.Id,
+            Case.OwnerId => UserInfo.getUserId()
+        });
         String taskSetpCaseRecordTypeID = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
 
         DMT_Test_DataFactory.generateTasksWithOwner(queueId.Id, taskSetpCaseRecordTypeID, createdCase.Id, 1);
 
         //Create case for Opportuntity
-        DMT_ApproversView__c approverView = new DMT_ApproversView__c(
-            Name='PruebaLiOpp01',
-            DMT_DeveloperName__c='DMT_PruebaOpp01',
-            DMT_Type__c = 'Opportunity'
-            );
-        insert approverView;
+        DMT_ApproversView__c approverView = DMT_UTIL.createApproversViewRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_ApproversView__c.Name => 'PruebaLiOpp01',
+                DMT_ApproversView__c.DMT_DeveloperName__c => 'DMT_PruebaOpp01',
+                DMT_ApproversView__c.DMT_Type__c => 'Opportunity'
+            }
+        );
 
-        DMT_Items__c item = new DMT_Items__c();
-        item.Name = 'Basic client';
-        item.DMT_Component_Item__c = 'Opportunity Info';
-        item.DMT_order_display__c = 1;
-        item.DMT_Text__c = 'This is normal text';
-        item.Type_Item__c = 'Component';
-        item.CurrencyIsoCode = 'EUR';
-        item.DMT_View__c = approverView.Id;
+        DMT_UTIL.createItemRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Items__c.DMT_View__c => approverView.Id,
+                DMT_Items__c.Name => 'Basic client',
+                DMT_Items__c.DMT_Component_Item__c => 'Opportunity Info',
+                DMT_Items__c.DMT_order_display__c => 1,
+                DMT_Items__c.DMT_Text__c => 'This is normal text',
+                DMT_Items__c.Type_Item__c => 'Component',
+                DMT_Items__c.CurrencyIsoCode => 'EUR'
+            }
+        );
 
-        DMT_Items__c item2 = new DMT_Items__c();
-        item2.Name = 'Products Test';
-        item2.DMT_Component_Item__c = 'Products';
-        item2.DMT_order_display__c = 3;
-        item2.DMT_Text__c = 'This is normal text';
-        item2.Type_Item__c = 'Component';
-        item2.CurrencyIsoCode = 'EUR';
-        item2.DMT_View__c = approverView.Id;
+        DMT_UTIL.createItemRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Items__c.DMT_View__c => approverView.Id,
+                DMT_Items__c.Name => 'Products Test',
+                DMT_Items__c.DMT_Component_Item__c => 'Products',
+                DMT_Items__c.DMT_order_display__c => 3,
+                DMT_Items__c.DMT_Text__c => 'This is normal text',
+                DMT_Items__c.Type_Item__c => 'Component',
+                DMT_Items__c.CurrencyIsoCode => 'EUR'
+            }
+        );
 
-        insert new List<DMT_Items__c>{item, item2};
-
-        DMT_Approver__c approver = new DMT_Approver__c();
-        approver.Name = 'TestApproverOPp01';
-        approver.DMT_External_Id__c = 'TestExternalIdDATAFACTORY' + Integer.valueof((Math.random() * 100000000));
-        approver.DMT_Approver_Code__c = '1222223316786';
-        approver.Approvers_View_Opportunity__c= approverView.Id;
-        insert approver;
+        DMT_UTIL.createApproverRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_Approver__c.Name => 'TestApproverOPp01',
+                DMT_Approver__c.DMT_External_Id__c => 'TestExternalIdDATAFACTORY' + Integer.valueof((Math.random() * 100000000)),
+                DMT_Approver__c.Approvers_View_Opportunity__c => approverView.Id
+            }
+        );
 
         Group queueOppId = [SELECT Id FROM Group WHERE Type = 'Queue' and Name LIKE '%TestApproverOPp01%' LIMIT 1];
         System.runAs(new User(Id=UserInfo.getUserId()))
         {
-            List<QueuesObject> queueOppSObjectList = new List<QueuesObject>();
-            QueuesObject sobjectCaseOppQueue = new QueueSObject(QueueID = queueOppId.id, SObjectType = 'Case');
-            queueOppSObjectList.add(sobjectCaseOppQueue);
-            QueuesObject sobjectTaskOppQueue = new QueueSObject(QueueID = queueOppId.id, SObjectType = 'Task');
-            queueOppSObjectList.add(sobjectTaskOppQueue);
-            insert queueOppSObjectList;
+            DMT_Test_DataFactory.generateQueueSObjectsForCaseAndTask(queueOppId.Id);
         }
-        Case createdCaseOppty = DMT_Test_DataFactory.generateCase(null, opp.Id, UserInfo.getUserId());
+        Case createdCaseOppty = DMT_UTIL.createCaseRecord(new Map<Schema.SObjectField, Object>{
+            Case.opportunity_id__c => opp.Id,
+            Case.OwnerId => UserInfo.getUserId()
+        });
+            
         DMT_Test_DataFactory.generateTasksWithOwner(queueOppId.Id, taskSetpCaseRecordTypeID, createdCaseOppty.Id, 1);
         DMT_Test_DataFactory.generateOpportunityClient(opp.Id);
         OpportunityLineItem oppLI = DMT_Test_DataFactory.generateOpportunityLineItem(opp);
@@ -214,32 +218,56 @@ public with sharing class DMT_ApprovalChangeStep_test {
         // TestSetup already created a TreasurySettlement Line - reuse it rather than generating a
         // second one, which collides on a duplicate rule against fixed Account/Line field values.
         DMT_Line__c line = [SELECT Id FROM DMT_Line__c WHERE RecordType.DeveloperName = 'TreasurySettlement' LIMIT 1];
-        Case insertedCase = DMT_Test_DataFactory.generateCase(line.Id, null, UserInfo.getUserId());
-        Case c = [SELECT DMT_LineOpportunity__c, DMT_Line__c, DMT_Line__r.RecordType.DeveloperName FROM Case WHERE Id = :insertedCase.Id];
+        Case insertedCase = DMT_UTIL.createCaseRecord(new Map<Schema.SObjectField, Object>{
+            Case.DMT_Line__c => line.Id,
+            Case.OwnerId => UserInfo.getUserId()
+        });
+            
         DMT_Approver__c approver = new DMT_Approver__c(Approvers_View_Treasury__c = '000000000000001AAA');
-
-        Assert.areEqual(approver.Approvers_View_Treasury__c, DMT_ApprovalChangeStep_Handler.resolveApproverViewId(approver, c));
+        insertedCase = [
+            SELECT Id, Opportunity_Id__c, DMT_Line__c, DMT_LineOpportunity__c,
+                DMT_Line__r.RecordType.DeveloperName
+            FROM Case
+            WHERE Id = :insertedCase.Id
+        ];
+        Assert.areEqual(approver.Approvers_View_Treasury__c, DMT_ApprovalChangeStep_Handler.resolveApproverViewId(approver, insertedCase));
     }
 
     @isTest
     private static void testResolveApproverViewIdOtherProductsLine() {
         DMT_Line__c line = DMT_Test_DataFactory.generateTestOtherLines();
-        Case insertedCase = DMT_Test_DataFactory.generateCase(line.Id, null, UserInfo.getUserId());
-        Case c = [SELECT DMT_LineOpportunity__c, DMT_Line__c, DMT_Line__r.RecordType.DeveloperName FROM Case WHERE Id = :insertedCase.Id];
+        Case insertedCase = DMT_UTIL.createCaseRecord(new Map<Schema.SObjectField, Object>{
+            Case.DMT_Line__c => line.Id,
+            Case.OwnerId => UserInfo.getUserId()
+        });
+        insertedCase = [
+            SELECT Id, Opportunity_Id__c, DMT_Line__c, DMT_LineOpportunity__c,
+                DMT_Line__r.RecordType.DeveloperName
+            FROM Case
+            WHERE Id = :insertedCase.Id
+        ];
         DMT_Approver__c approver = new DMT_Approver__c(Approvers_View__c = '000000000000002AAA');
 
-        Assert.areEqual(approver.Approvers_View__c, DMT_ApprovalChangeStep_Handler.resolveApproverViewId(approver, c));
+        Assert.areEqual(approver.Approvers_View__c, DMT_ApprovalChangeStep_Handler.resolveApproverViewId(approver, insertedCase));
     }
 
     @isTest
     private static void testResolveApproverViewIdOpportunity() {
         // TestSetup already created this Opportunity - reuse it rather than generating a second one.
         Opportunity opp = [SELECT Id FROM Opportunity WHERE Name = 'Test Opp' LIMIT 1];
-        Case insertedCase = DMT_Test_DataFactory.generateCase(null, opp.Id, UserInfo.getUserId());
-        Case c = [SELECT DMT_LineOpportunity__c, opportunity_id__c, opportunity_id__r.RecordType.DeveloperName FROM Case WHERE Id = :insertedCase.Id];
+        Case insertedCase = DMT_UTIL.createCaseRecord(new Map<Schema.SObjectField, Object>{
+            Case.Opportunity_Id__c => opp.Id,
+            Case.OwnerId => UserInfo.getUserId()
+        });
+        insertedCase = [
+            SELECT Id, Opportunity_Id__c, DMT_Line__c, DMT_LineOpportunity__c,
+                Opportunity_Id__r.RecordType.DeveloperName
+            FROM Case
+            WHERE Id = :insertedCase.Id
+        ];
         DMT_Approver__c approver = new DMT_Approver__c(Approvers_View_Opportunity__c = '000000000000003AAA');
 
-        Assert.areEqual(approver.Approvers_View_Opportunity__c, DMT_ApprovalChangeStep_Handler.resolveApproverViewId(approver, c));
+        Assert.areEqual(approver.Approvers_View_Opportunity__c, DMT_ApprovalChangeStep_Handler.resolveApproverViewId(approver, insertedCase));
     }
 
     @isTest
