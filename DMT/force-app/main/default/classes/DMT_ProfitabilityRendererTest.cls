@@ -20,8 +20,8 @@ public with sharing class DMT_ProfitabilityRendererTest {
         String result = renderer.renderHtml(null);
         Test.stopTest();
 
-        Assert.isTrue(result.contains('Error'), 'Debe retornar error para data null');
-        Assert.isTrue(result.contains('Data not provided'), 'Debe incluir mensaje específico');
+        Assert.isTrue(result.contains('Error'), 'Must return an error for null data'); // CIBGLOBALD-5023
+        Assert.isTrue(result.contains('Data not provided'), 'Must include the specific message'); // CIBGLOBALD-5023
     }
 
     @isTest
@@ -43,8 +43,8 @@ public with sharing class DMT_ProfitabilityRendererTest {
         String result = renderer.renderHtml(data);
         Test.stopTest();
 
-        // El renderer intenta delegarlo a DMT_OppProfitabilityLimitVisualRenderer
-        Assert.areNotEqual(null, result, 'Debe retornar un string');
+        // The renderer delegates to the record type renderer (DMT_OppProfitabilityRenderer) // CIBGLOBALD-5023
+        Assert.areNotEqual(null, result, 'Must return a string'); // CIBGLOBALD-5023
     }
 
     @isTest
@@ -306,5 +306,18 @@ public with sharing class DMT_ProfitabilityRendererTest {
         Assert.isFalse(result.contains('data-dmt-action'), 'No marker outside the modal');
         Assert.isFalse(result.contains('External RWA 1Y'), 'No External RWA column outside the modal');
         Assert.isTrue(result.contains('data-dmt-table-block="regulatory"'), 'Table hooks expected: ' + result.left(300));
+    }
+
+    // CIBGLOBALD-5023 - both profitability delegators are tracked, so their names are frozen in the task snapshot,
+    // and compare no field (the reopen comes from DMT_Always_Reopen__c).
+    @isTest
+    static void testProfitabilityDelegatorsAreTrackedWithoutFields() {
+        List<String> trackedNames = DMT_RendererFactory.getTrackedComponentNames();
+        Assert.isTrue(trackedNames.contains('Profitability'), 'Profitability must be a tracked component.');
+        Assert.isTrue(trackedNames.contains('Profitability Summaries'), 'Profitability Summaries must be a tracked component.');
+        Assert.isTrue(new DMT_ProfitabilityRenderer().isComponentTracked(), 'Profitability delegator must be switched on.');
+        Assert.isTrue(new DMT_ProfitabilitySummariesRenderer().isComponentTracked(), 'Profitability Summaries delegator must be switched on.');
+        Assert.areEqual(0, new DMT_ProfitabilityRenderer().getTrackedFields(new Opportunity()).size(), 'Profitability must compare no field.');
+        Assert.areEqual(0, new DMT_ProfitabilitySummariesRenderer().getTrackedFields(new Opportunity()).size(), 'Profitability Summaries must compare no field.');
     }
 }

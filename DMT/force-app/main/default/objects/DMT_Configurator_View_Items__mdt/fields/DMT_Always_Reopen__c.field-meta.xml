@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>DMT_Always_Reopen__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>CIBGLOBALD-5023 - When checked, an approval task whose snapshot froze this component is always reopened at the restart checkpoints, without comparing tracked fields (DMT_ApprovalChangeStep_Helper.isTaskStale).</description>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Approval tasks that froze this component are reopened at every restart checkpoint, even when no tracked field changed.</inlineHelpText>
+    <label>Always reopen approval</label>
+    <type>Checkbox</type>
+</CustomField>

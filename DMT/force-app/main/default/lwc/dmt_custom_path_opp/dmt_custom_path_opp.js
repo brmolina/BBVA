@@ -10,6 +10,7 @@ import STAGENAME_FIELD from '@salesforce/schema/Opportunity.StageName'
 import ID_FIELD from '@salesforce/schema/Opportunity.Id'
 import RECORDTYPEID_FIELD from '@salesforce/schema/Opportunity.RecordTypeId'
 import REASONLOST_FIELD from '@salesforce/schema/Opportunity.DES_Reasons_Lost__c'
+import DEALTYPE_FIELD from '@salesforce/schema/Opportunity.DMT_DealType__c'
 import DATETOPROPOSAL_FIELD from '@salesforce/schema/Opportunity.DMT_DateToProposal__c' // CIBGLOBALD-4811
 import RECORD_TYPE_DEVELOPER_NAME_FIELD from '@salesforce/schema/Opportunity.RecordType.DeveloperName' // CIBGLOBALD-4811
 const ERROR_TITLE = 'You encountered some errors when trying to save this record'
@@ -44,6 +45,12 @@ export default class Dmt_custom_path_opp extends LightningElement {
 
     /* ── Internal state ─────────────────────────────────────────────────────── */ 
 
+    _currentStage       // Stage real guardada en SF (ej: "Closed Won")
+    _selectedStage      // Stage seleccionada visualmente (puede ser "Closed")
+    _recordTypeId       // RecordTypeId para cargar picklist
+    _dealType           // DMT_DealType__c para determinar stages deshabilitados
+    _rawStages = []     // Valores originales del picklist [{value, label}]
+    reasonsLostOptions = []    // Valores del picklist de razones perdidas [{value, label}]
     _currentStage       // Real stage saved in Salesforce (e.g. "Closed Won") 
     _selectedStage      // Visually selected stage (can be "Closed") 
     _recordTypeId       // RecordTypeId to load the picklists 
@@ -85,13 +92,14 @@ export default class Dmt_custom_path_opp extends LightningElement {
 
     @wire(getRecord, {
         recordId: '$recordId',
-        fields: [STAGENAME_FIELD, RECORDTYPEID_FIELD, DATETOPROPOSAL_FIELD, RECORD_TYPE_DEVELOPER_NAME_FIELD] // CIBGLOBALD-4811
+        fields: [STAGENAME_FIELD, RECORDTYPEID_FIELD, DEALTYPE_FIELD, DATETOPROPOSAL_FIELD, RECORD_TYPE_DEVELOPER_NAME_FIELD] // CIBGLOBALD-4811
     })
     record({ data }) {
         if (data) {
             this._currentStage = data.fields.StageName.value
             this._selectedStage = normalize(this._currentStage)
             this._recordTypeId = data.fields.RecordTypeId.value
+            this._dealType = data.fields.DMT_DealType__c?.value
             this._dateToProposal = data.fields.DMT_DateToProposal__c.value // CIBGLOBALD-4811
             this._recordTypeDeveloperName = data.fields.RecordType?.value?.fields?.DeveloperName?.value // CIBGLOBALD-4811
         }
@@ -138,7 +146,20 @@ export default class Dmt_custom_path_opp extends LightningElement {
         }, [])
     }
 
-    /* ── Items for the template (SLDS classes by state) ──────────────────── */ 
+    /* ── Stages deshabilitados: si DMT_DealType__c='2', deshabilitar todo excepto Draft y Proposal ── */
+
+    get disabledStages() {
+        // Si Deal Type = '2' (Project Finance), deshabilitar todos excepto Draft y Proposal
+        if (this._dealType === '2') {
+            const allowedStages = new Set(['Draft', 'Proposal'])
+            return this._displayStages
+                .map(s => s.value)
+                .filter(stage => !allowedStages.has(stage))
+        }
+        return []
+    }
+
+    /* ── Lista de items para el template (clases SLDS según estado) ────────── */
 
     get stageItems() {
         const stages = this._displayStages
@@ -150,9 +171,11 @@ export default class Dmt_custom_path_opp extends LightningElement {
         const isLost = this._currentStage === 'Closed Lost'
         const isClosed = isWon || isLost
         const currentIdx = stages.findIndex(s => s.value === current)
+        const disabledSet = new Set(this.disabledStages)
 
         return stages.map((stage, idx) => {
             let cssClass = 'slds-path__item'
+            const isStageDisabled = disabledSet.has(stage.value)
 
             // Base state per SLDS
             if (stage.value === 'Closed' && isClosed) {
@@ -169,16 +192,22 @@ export default class Dmt_custom_path_opp extends LightningElement {
                 cssClass += ' slds-is-incomplete'
             }
 
-            // Visually selected stage
-            if (stage.value === selected) {
+            // Stage visualmente seleccionado (solo si no está deshabilitado)
+            if (stage.value === selected && !isStageDisabled) {
                 cssClass += ' slds-is-active'
+            }
+
+            // Stage deshabilitado (gris)
+            if (isStageDisabled) {
+                cssClass += ' dmt-stage-disabled'
             }
 
             return {
                 ...stage,
                 cssClass,
-                isSelected: stage.value === selected ? 'true' : 'false',
-                tabindex: stage.value === selected ? '0' : '-1',
+                isSelected: stage.value === selected && !isStageDisabled ? 'true' : 'false',
+                tabindex: stage.value === selected && !isStageDisabled ? '0' : '-1',
+                ariaDisabled: isStageDisabled ? 'true' : 'false'
             }
         })
     }
@@ -223,7 +252,15 @@ export default class Dmt_custom_path_opp extends LightningElement {
 
     handleStageClick(event) {
         event.preventDefault()
-        this._selectedStage = event.currentTarget.dataset.value
+        
+        const stageName = event.currentTarget.dataset.value
+        
+        // Bloquear stages deshabilitados
+        if (this.disabledStages.includes(stageName)) {
+            return
+        }
+        
+        this._selectedStage = stageName
     }
 
 async handleMarkAsCurrent() {
@@ -331,11 +368,13 @@ async isEditingRecord() {
             })
 
             if (!result.isValid && result.incompleteFeatures?.length > 0) {
-                const featureNames = result.incompleteFeatures.join(', ')
                 const featureCount = result.incompleteFeatures.length
-                const messageText = featureCount === 1 
-                    ? `Opportunity cannot advance to ${targetStage} because the feature ${featureNames} has been rejected.`
-                    : `Opportunity cannot advance to ${targetStage} because the features ${featureNames} have been rejected.`
+                const featureNames = featureCount === 1
+                    ? result.incompleteFeatures[0]
+                    : `${result.incompleteFeatures.slice(0, -1).join(', ')} and ${result.incompleteFeatures[featureCount - 1]}`
+                const messageText = featureCount === 1
+                    ? `Feature ${featureNames} required to complete this status`
+                    : `Features ${featureNames} required to complete this status`
                 this.dispatchEvent(new ShowToastEvent({
                     title: 'Error',
                     message: messageText,
@@ -348,7 +387,8 @@ async isEditingRecord() {
             const stageRequirements = await validateStageAdvanceRequirements({
                 opportunityId: this.recordId,
                 currentStatus: this._currentStage,
-                targetStatus: targetStage
+                targetStatus: targetStage,
+                opportunityType: this._dealType
             })
 
             if (!stageRequirements.isValid) {
@@ -452,8 +492,10 @@ async isEditingRecord() {
                 // CIBGLOBALD-4811 - Cases with the same feature, owner and fields give the same line: shown once.
                 const message = [...new Set(features
                     .map(feature => 'The feature  ' + feature.featureName + ' should be reopened with Owner: <b>' + (feature.taskToRecreate?.Owner?.Name || 'N/A') +
-                        '</b> due to changes in the following fields: <ul class="slds-list_dotted">' +
-                        Object.keys(feature.changedFields || {}).sort().map(field => '<li>' + field + '</li>').join('') + '</ul><br/>'))]
+                        (feature.alwaysReopen // CIBGLOBALD-5023 - reopened by DMT_Always_Reopen__c: no field list
+                            ? '</b>. This feature is always reopened at this step.<br/><br/>' // CIBGLOBALD-5023
+                            : '</b> due to changes in the following fields: <ul class="slds-list_dotted">' + // CIBGLOBALD-5023
+                        Object.keys(feature.changedFields || {}).sort().map(field => '<li>' + field + '</li>').join('') + '</ul><br/>')))] // CIBGLOBALD-5023
                     .join('')
                 this.template.querySelector('c-dmt_customtoast')?.showToast('Features to Be Reopened', message, 'info', false)
             }

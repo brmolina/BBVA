@@ -252,21 +252,6 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                 update task;
             }
 
-            // CIBGLOBALD-4117 - enqueue after the DML above (taskStatus.Id only exists once
-            // inserted/confirmed) and flushed immediately, since nothing here guarantees a caller
-            // downstream ever calls DMT_AsyncOrchestrator.flush() for this call path.
-            for (String componentName : resolution.trackedComponentNames) {
-                if (DMT_RendererFactory.isCalloutTrackable(componentName)) {
-                    DMT_AsyncOrchestrator.enqueue(new DMT_CalloutTrackableFreezePayload(taskStatus.Id, lineOrOpportunityRecord.Id, componentName));
-                }
-            }
-            if(relatedCase.opportunity_id__c != null && relatedCase.DMT_Related_feature_name__c.contains('Business') && relatedCase.DMT_Passport_Sanction__c == 'approval'){
-                DMT_AsyncOrchestrator.enqueue(
-                    new DMT_DynamicMapperPayload(relatedCase.opportunity_id__c, 'DMT_Finish_PAWIF', relatedCase.opportunity_id__r.StageName)
-            );
-            }
-            
-            DMT_AsyncOrchestrator.flush();
     }
     public static Id getApproverViewId(String ownerId, Case relatedCase) {
         // We make all these queries to obtain the items which contains the fields we want to store within the task
@@ -379,6 +364,11 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
                 featuresByCaseId.put(task.WhatId, feature);
             }
             for (String change : changesByTaskId.get(task.Id)) {
+                // CIBGLOBALD-5023 - a task reopened by DMT_Always_Reopen__c carries no changed field, only this marker.
+                if (change == DMT_ApprovalChangeStep_Helper.ALWAYS_REOPEN_REASON) {
+                    featuresByCaseId.get(task.WhatId).alwaysReopen = true;
+                    continue;
+                }
                 featuresByCaseId.get(task.WhatId).changedFields.put(displayLabel(change, parentType), new WRAPPER_Response_NewField());
             }
         }
@@ -419,6 +409,9 @@ global without sharing class DMT_ApprovalChangeStep_Handler implements Callable{
         public Map<String, WRAPPER_Response_NewField> changedFields;
         @AuraEnabled
         public Task taskToRecreate;
+        // CIBGLOBALD-5023 - true when a frozen component has DMT_Always_Reopen__c: the feature reopens with no field changed.
+        @AuraEnabled
+        public Boolean alwaysReopen = false;
 
     }
 

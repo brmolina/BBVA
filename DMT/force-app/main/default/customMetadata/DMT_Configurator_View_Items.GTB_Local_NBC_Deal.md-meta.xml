@@ -6,6 +6,11 @@
         <field>Active__c</field>
         <value xsi:type="xsd:boolean">false</value>
     </values>
+    <!-- CIBGLOBALD-5023 -->
+    <values>
+        <field>DMT_Always_Reopen__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
     <values>
         <field>DMT_Component_Item__c</field>
         <value xsi:type="xsd:string">GTB Local NBC Deal</value>
