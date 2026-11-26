@@ -434,14 +434,10 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
     @IsTest
     static void testTrackedComponentsForSnapshotBlankFallsBackToFullList() {
         DMT_TaskStatusWhenCompleted__c snapshot = DMT_UTIL.buildTaskStatusWhenCompleted();
-        List<String> legacyComponents = new List<String>();
-        for (String componentName : DMT_RendererFactory.getTrackedComponentNames()) {
-            if (componentName != 'Underwriting') legacyComponents.add(componentName);
-        }
         Assert.areEqual(
-            legacyComponents,
+            DMT_RendererFactory.getTrackedComponentNames(),
             DMT_ApprovalChangeStep_Helper.trackedComponentsForSnapshot(snapshot),
-            'Legacy snapshots retain all previous components; Underwriting requires an explicit entry.'
+            'A snapshot frozen before this field existed must fall back to the unscoped full list, so already-open tasks keep today\'s behavior until they get a fresh freeze.'
         );
     }
 
@@ -488,5 +484,281 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
         );
         List<String> scoped = DMT_ApprovalChangeStep_Helper.trackedComponentsForSnapshot(snapshot);
         Assert.isFalse(scoped.contains('Approval Process Data'), 'A renderer-tracked component absent from this view\'s own tracked-components list must not be checked for this snapshot.');
+    }
+
+    // CIBGLOBALD-5023 - Opportunity, approval Case and a completed task whose snapshot froze the given components
+    // with an empty opportunity section. Returns the task; its Case maps to the Opportunity.
+    private static Task createFrozenOpportunityTask(String trackedComponents, String snapshotJson) {
+        return createFrozenOpportunityTask(trackedComponents, snapshotJson, 'approval'); // CIBGLOBALD-5023 - always reopen applies to approval Cases
+    }
+
+    // CIBGLOBALD-5023 - same fixture for a given Case type (Case.DMT_Passport_Sanction__c).
+    private static Task createFrozenOpportunityTask(String trackedComponents, String snapshotJson, String caseType) {
+        Opportunity opp = DMT_UTIL.createOpportunityForAccount(null);
+        TriggerBypass.setBypass();
+        Case approvalCase = DMT_UTIL.createCaseRecord(
+            new Map<Schema.SObjectField, Object>{
+                Case.OwnerId => getQueueId(),
+                Case.opportunity_id__c => opp.Id,
+                Case.DMT_Passport_Sanction__c => caseType,
+                Case.RecordTypeId => Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId(),
+                Case.Status => 'Pending',
+                Case.Subject => 'Test'
+            }
+        );
+        DMT_TaskStatusWhenCompleted__c snapshot = DMT_UTIL.createTaskStatusWhenCompletedRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_TaskStatusWhenCompleted__c.Case__c => approvalCase.Id,
+                DMT_TaskStatusWhenCompleted__c.DMT_ViewFieldStatusAtClose__c => snapshotJson,
+                DMT_TaskStatusWhenCompleted__c.DMT_TrackedComponents__c => trackedComponents
+            }
+        );
+        Task frozenTask = DMT_UTIL.createTaskRecord(getQueueId(), approvalCase.Id,
+            new Map<Schema.SObjectField, Object>{
+                Task.RecordTypeId => Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId(),
+                Task.Status => 'Completed',
+                Task.Subject => 'Frozen',
+                Task.DMT_ViewStatusAtClose__c => snapshot.Id
+            }
+        );
+        TriggerBypass.removeBypass();
+        return frozenTask;
+    }
+
+    // CIBGLOBALD-5023 - Case Id -> Opportunity Id of the task's Case, as the trigger passes it.
+    private static Map<Id, Id> caseToOpportunity(Task frozenTask) {
+        Case approvalCase = [SELECT Id, opportunity_id__c FROM Case WHERE Id = :frozenTask.WhatId];
+        return new Map<Id, Id>{ approvalCase.Id => approvalCase.opportunity_id__c };
+    }
+
+    // CIBGLOBALD-5023 - a frozen component with DMT_Always_Reopen__c makes the task stale with no field compared;
+    // the preview (4811) gets the always-reopen marker as the reason, not the component names.
+    @IsTest
+    static void testAlwaysReopenComponentFrozen_PreviewGetsAlwaysReopenReason() {
+        DMT_ApprovalChangeStep_Helper.alwaysReopenComponentsBySection = new Map<String, Set<String>>{
+            'opportunity' => new Set<String>{ 'NBC Client' }
+        };
+        Task frozenTask = createFrozenOpportunityTask('Limit;NBC Client', '{"opportunity":{}}');
+        Map<Id, Id> caseIdToOppId = caseToOpportunity(frozenTask);
+
+        Test.startTest();
+        Map<Id, List<String>> changesByTaskId = DMT_ApprovalChangeStep_Helper.findTasksToRestart(
+            caseIdToOppId.values()[0], caseIdToOppId, 'opportunity', null, null
+        );
+        Test.stopTest();
+
+        Assert.isTrue(changesByTaskId.containsKey(frozenTask.Id), 'A task that froze an always-reopen component must be reopened.');
+        Assert.areEqual(new List<String>{ DMT_ApprovalChangeStep_Helper.ALWAYS_REOPEN_REASON }, changesByTaskId.get(frozenTask.Id), 'The reason must be the always-reopen marker, not the component names.');
+    }
+
+    // CIBGLOBALD-5023 - the path toast data (DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase): the feature is
+    // flagged alwaysReopen and lists no field, so the toast does not show the components as changed fields.
+    @IsTest
+    static void testAlwaysReopenComponentFrozen_ToastFeatureFlaggedWithoutFields() {
+        DMT_ApprovalChangeStep_Helper.alwaysReopenComponentsBySection = new Map<String, Set<String>>{
+            'opportunity' => new Set<String>{ 'NBC Client' }
+        };
+        Task frozenTask = createFrozenOpportunityTask('Limit;NBC Client', '{"opportunity":{}}');
+        Id oppId = caseToOpportunity(frozenTask).values()[0];
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(oppId, 'approval'); // CIBGLOBALD-5023 - approval Case
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'The always-reopen feature must be listed.');
+        Assert.isTrue(features[0].alwaysReopen, 'The feature must be flagged as always reopened.');
+        Assert.isTrue(features[0].changedFields.isEmpty(), 'No component may be shown as a changed field.');
+    }
+
+    // CIBGLOBALD-5023 - without an always-reopen component the task is compared as before (Limit tracks no field).
+    @IsTest
+    static void testNoAlwaysReopenComponentFrozen_ComparesAsBefore() {
+        DMT_ApprovalChangeStep_Helper.alwaysReopenComponentsBySection = new Map<String, Set<String>>{
+            'opportunity' => new Set<String>{ 'NBC Client' }
+        };
+        Task frozenTask = createFrozenOpportunityTask('Limit', '{"opportunity":{}}');
+        Map<Id, Id> caseIdToOppId = caseToOpportunity(frozenTask);
+
+        Test.startTest();
+        Map<Id, List<String>> changesByTaskId = DMT_ApprovalChangeStep_Helper.findTasksToRestart(
+            caseIdToOppId.values()[0], caseIdToOppId, 'opportunity', null, null
+        );
+        Test.stopTest();
+
+        Assert.isFalse(changesByTaskId.containsKey(frozenTask.Id), 'With no always-reopen component and nothing changed, the task must stay as it is.');
+    }
+
+    // CIBGLOBALD-5023 - a snapshot without DMT_TrackedComponents__c never reopens through the flag.
+    @IsTest
+    static void testBlankTrackedComponents_NotForcedByFlag() {
+        DMT_ApprovalChangeStep_Helper.alwaysReopenComponentsBySection = new Map<String, Set<String>>{
+            'opportunity' => new Set<String>{ 'NBC Client' }
+        };
+        Task frozenTask = createFrozenOpportunityTask(null, '{}');
+        Map<Id, Id> caseIdToOppId = caseToOpportunity(frozenTask);
+
+        Test.startTest();
+        Map<Id, List<String>> changesByTaskId = DMT_ApprovalChangeStep_Helper.findTasksToRestart(
+            caseIdToOppId.values()[0], caseIdToOppId, 'opportunity', null, null
+        );
+        Test.stopTest();
+
+        Assert.isFalse(changesByTaskId.containsKey(frozenTask.Id), 'The flag only applies to components listed in DMT_TrackedComponents__c.');
+    }
+
+    // CIBGLOBALD-5023 - the gate the triggers call restarts the task: cancelled, one replacement, Case Pending.
+    @IsTest
+    static void testAlwaysReopenComponentFrozen_GateRestartsTask() {
+        DMT_ApprovalChangeStep_Helper.alwaysReopenComponentsBySection = new Map<String, Set<String>>{
+            'opportunity' => new Set<String>{ 'Profitability' }
+        };
+        Task frozenTask = createFrozenOpportunityTask('Profitability', '{"opportunity":{}}');
+        Map<Id, Id> caseIdToOppId = caseToOpportunity(frozenTask);
+        // Every field, as Trigger.new carries it: the renderers read any field to decide what is tracked.
+        Set<Id> oppIds = new Set<Id>(caseIdToOppId.values());
+        List<Opportunity> opps = Database.query(
+            'SELECT ' + String.join(new List<String>(Schema.SObjectType.Opportunity.fields.getMap().keySet()), ', ')
+            + ' FROM Opportunity WHERE Id IN :oppIds'
+        );
+
+        Test.startTest();
+        DMT_ApprovalChangeStep_Helper.restartStaleApprovalTasks(caseIdToOppId, opps, 'opportunity', null, 'DMT_ApprovalChangeStep_HelperTest');
+        Test.stopTest();
+
+        Assert.areEqual(DMT_Constants.CANCELLED, [SELECT Status FROM Task WHERE Id = :frozenTask.Id].Status, 'The frozen task must be cancelled.');
+        Assert.areEqual(1, [SELECT COUNT() FROM Task WHERE WhatId = :frozenTask.WhatId AND Status = :DMT_Constants.NOTSTARTED], 'Exactly one replacement task must be created.');
+    }
+
+    // CIBGLOBALD-5023 - the flagged records are read per object: Opportunity view types for the opportunity section only.
+    @IsTest
+    static void testAlwaysReopenComponents_ReadFromViewItemsPerObject() {
+        Set<String> expectedOpportunity = new Set<String>();
+        Set<String> expectedLine = new Set<String>();
+        for (DMT_Configurator_View_Items__mdt item : DMT_Configurator_View_Items__mdt.getAll().values()) {
+            if (!item.DMT_Always_Reopen__c) {
+                continue;
+            }
+            if (item.DMT_Type__c == 'Opportunity') {
+                expectedOpportunity.add(item.DMT_Component_Item__c);
+            } else if (item.DMT_Type__c != null && item.DMT_Type__c.startsWith('Line')) {
+                expectedLine.add(item.DMT_Component_Item__c);
+            }
+        }
+        Assert.areEqual(expectedOpportunity, DMT_ApprovalChangeStep_Helper.alwaysReopenComponents('opportunity'), 'Opportunity section must hold the flagged Opportunity view items.');
+        Assert.areEqual(expectedLine, DMT_ApprovalChangeStep_Helper.alwaysReopenComponents('line'), 'Line section must hold only the flagged Line view items.');
+    }
+
+    // CIBGLOBALD-5023 - snapshot JSON with one Opportunity whose Description (long text area) is the given text.
+    private static String opportunitySnapshotJson(Id oppId, String description) {
+        return JSON.serialize(new Map<String, Object>{
+            'opportunity' => new Map<String, Object>{ 'Id' => oppId, 'Name' => 'Snapshot test', 'Description' => description }
+        });
+    }
+
+    // CIBGLOBALD-5023 - long text values over 255 characters are stored as a fixed-length fingerprint; short values stay.
+    @IsTest
+    static void testLimitSnapshotSize_FingerprintsLongTextOnly() {
+        Id oppId = DMT_UTIL.createOpportunityForAccount(null).Id;
+        String longText = 'x'.repeat(5000);
+
+        Map<String, Object> stored = (Map<String, Object>) JSON.deserializeUntyped(
+            DMT_TaskSnapshotService.limitSnapshotSize(opportunitySnapshotJson(oppId, longText)));
+        String storedDescription = (String) ((Map<String, Object>) stored.get('opportunity')).get('Description');
+
+        Assert.isTrue(DMT_TaskSnapshotService.isFingerprint(storedDescription), 'A long text over 255 characters must be stored as a fingerprint.');
+        Assert.isTrue(storedDescription.length() < 100, 'The fingerprint must be short whatever the text length.');
+        Assert.areEqual('Snapshot test', ((Map<String, Object>) stored.get('opportunity')).get('Name'), 'Other fields are stored as they are.');
+
+        String shortJson = opportunitySnapshotJson(oppId, 'short text');
+        Assert.areEqual(shortJson, DMT_TaskSnapshotService.limitSnapshotSize(shortJson), 'A snapshot with nothing to fingerprint must be stored exactly as built.');
+    }
+
+    // CIBGLOBALD-5023 - a fingerprinted value compares with the live text: same text no change, an edit at the end is a change.
+    @IsTest
+    static void testFingerprintComparison_DetectsEditAtTheEnd() {
+        String longText = 'x'.repeat(5000);
+        Map<String, Object> frozenRows = new Map<String, Object>{
+            'row1' => new Map<String, Object>{ 'Description' => DMT_TaskSnapshotService.fingerprint(longText) }
+        };
+        List<String> tracked = new List<String>{ 'Description' };
+
+        Assert.isFalse(DMT_ApprovalChangeStep_Helper.rowsDiffer(frozenRows,
+            new Map<String, Object>{ 'row1' => new Map<String, Object>{ 'Description' => longText } }, tracked, Opportunity.SObjectType),
+            'The same long text must not reopen.');
+        Assert.isTrue(DMT_ApprovalChangeStep_Helper.rowsDiffer(frozenRows,
+            new Map<String, Object>{ 'row1' => new Map<String, Object>{ 'Description' => longText + 'y' } }, tracked, Opportunity.SObjectType),
+            'An edit at the end of a long text must reopen.');
+        Assert.isTrue(DMT_ApprovalChangeStep_Helper.rowsDiffer(frozenRows,
+            new Map<String, Object>{ 'row1' => new Map<String, Object>{ 'Description' => null } }, tracked, Opportunity.SObjectType),
+            'Clearing a long text must reopen.');
+        Assert.isFalse(DMT_ApprovalChangeStep_Helper.rowsDiffer(
+            new Map<String, Object>{ 'row1' => new Map<String, Object>{ 'Description' => longText } },
+            new Map<String, Object>{ 'row1' => new Map<String, Object>{ 'Description' => longText } }, tracked, Opportunity.SObjectType),
+            'A snapshot frozen before the fingerprint (full text) still compares as before.');
+    }
+
+    // CIBGLOBALD-5023 - a snapshot that still does not fit leaves the largest sections out and lists them.
+    @IsTest
+    static void testLimitSnapshotSize_OverflowLeavesLargestSectionOut() {
+        Id oppId = DMT_UTIL.createOpportunityForAccount(null).Id;
+        Map<String, Object> snapshot = new Map<String, Object>{
+            'opportunity' => new Map<String, Object>{ 'Id' => oppId, 'Name' => 'Snapshot test' },
+            'opportunityBusinessPlan' => new Map<String, Object>{ 'row1' => new Map<String, Object>{ 'Name' => 'y'.repeat(2000) } }
+        };
+        DMT_TaskSnapshotService.maxSnapshotLength = 500;
+
+        Map<String, Object> stored = (Map<String, Object>) JSON.deserializeUntyped(
+            DMT_TaskSnapshotService.limitSnapshotSize(JSON.serialize(snapshot)));
+
+        Assert.isFalse(stored.containsKey('opportunityBusinessPlan'), 'The largest section must be left out.');
+        Assert.isTrue(stored.containsKey('opportunity'), 'The sections that fit are kept.');
+        Assert.areEqual(new List<Object>{ 'opportunityBusinessPlan' }, stored.get(DMT_TaskSnapshotService.OVERFLOW_SECTIONS_KEY), 'The left-out section must be listed.');
+    }
+
+    // CIBGLOBALD-5023 - a task whose snapshot overflowed reopens at the next checkpoint, with the always-reopen reason.
+    @IsTest
+    static void testOverflowSnapshot_TaskReopens() {
+        DMT_ApprovalChangeStep_Helper.alwaysReopenComponentsBySection = new Map<String, Set<String>>{ 'opportunity' => new Set<String>() };
+        Task frozenTask = createFrozenOpportunityTask('Limit',
+            '{"opportunity":{},"' + DMT_TaskSnapshotService.OVERFLOW_SECTIONS_KEY + '":["opportunityBusinessPlan"]}');
+        Map<Id, Id> caseIdToOppId = caseToOpportunity(frozenTask);
+
+        Test.startTest();
+        Map<Id, List<String>> changesByTaskId = DMT_ApprovalChangeStep_Helper.findTasksToRestart(
+            caseIdToOppId.values()[0], caseIdToOppId, 'opportunity', null, null
+        );
+        Test.stopTest();
+
+        Assert.areEqual(new List<String>{ DMT_ApprovalChangeStep_Helper.ALWAYS_REOPEN_REASON }, changesByTaskId.get(frozenTask.Id),
+            'A snapshot with sections left out cannot be compared, so the task must reopen.');
+    }
+
+    // CIBGLOBALD-5023 - DMT_Always_Reopen__c applies to approval Cases only: a readytoclose or passport Case with a flagged
+    // component is compared as before, never reopened for the flag.
+    @IsTest
+    static void testAlwaysReopenComponentFrozen_OnlyApprovalCases() {
+        DMT_ApprovalChangeStep_Helper.alwaysReopenComponentsBySection = new Map<String, Set<String>>{
+            'opportunity' => new Set<String>{ 'NBC Client' }
+        };
+        Task readyToCloseTask = createFrozenOpportunityTask('Limit;NBC Client', '{"opportunity":{}}', 'readytoclose');
+        Task passportTask = createFrozenOpportunityTask('Limit;NBC Client', '{"opportunity":{}}', 'passport');
+        Map<Id, Id> readyToCloseCase = caseToOpportunity(readyToCloseTask);
+        Map<Id, Id> passportCase = caseToOpportunity(passportTask);
+
+        Test.startTest();
+        Map<Id, List<String>> readyToCloseChanges = DMT_ApprovalChangeStep_Helper.findTasksToRestart(
+            readyToCloseCase.values()[0], readyToCloseCase, 'opportunity', null, null);
+        Map<Id, List<String>> passportChanges = DMT_ApprovalChangeStep_Helper.findTasksToRestart(
+            passportCase.values()[0], passportCase, 'opportunity', null, null);
+        Test.stopTest();
+
+        // The fixture snapshot is empty, so the normal comparison may list changed fields; never the always-reopen reason.
+        Assert.isFalse(readyToCloseChanges.containsKey(readyToCloseTask.Id)
+            && readyToCloseChanges.get(readyToCloseTask.Id).contains(DMT_ApprovalChangeStep_Helper.ALWAYS_REOPEN_REASON),
+            'A readytoclose Case must not be reopened by the always-reopen flag.');
+        Assert.isFalse(passportChanges.containsKey(passportTask.Id)
+            && passportChanges.get(passportTask.Id).contains(DMT_ApprovalChangeStep_Helper.ALWAYS_REOPEN_REASON),
+            'A passport Case must not be reopened by the always-reopen flag.');
     }
 }

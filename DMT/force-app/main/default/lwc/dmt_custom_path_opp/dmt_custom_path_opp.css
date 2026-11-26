@@ -23,3 +23,11 @@
     min-width: 0;
     width: 90%;
 }
+
+/* ── Stages deshabilitados: gris y sin interacción ────────────────────────── */
+:host .dmt-stage-disabled {
+    color: #cccccc;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.5;
+}

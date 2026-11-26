@@ -393,8 +393,10 @@ export default class Dmt_custom_path_line extends LightningElement {
         // CIBGLOBALD-4811 - Cases with the same feature, owner and fields give the same line: shown once.
         const message = [...new Set(features
           .map(feature => 'The feature  ' + feature.featureName + ' should be reopened with Owner: <b>' + (feature.taskToRecreate?.Owner?.Name || 'N/A') +
-            '</b> due to changes in the following fields: <ul class="slds-list_dotted">' +
-            Object.keys(feature.changedFields || {}).sort().map(field => '<li>' + field + '</li>').join('') + '</ul><br/>'))]
+            (feature.alwaysReopen // CIBGLOBALD-5023 - reopened by DMT_Always_Reopen__c: no field list
+              ? '</b>. This feature is always reopened at this step.<br/><br/>' // CIBGLOBALD-5023
+              : '</b> due to changes in the following fields: <ul class="slds-list_dotted">' + // CIBGLOBALD-5023
+            Object.keys(feature.changedFields || {}).sort().map(field => '<li>' + field + '</li>').join('') + '</ul><br/>')))] // CIBGLOBALD-5023
           .join('')
         this.template.querySelector('c-dmt_customtoast')?.showToast('Features to Be Reopened', message, 'info', false)
       }

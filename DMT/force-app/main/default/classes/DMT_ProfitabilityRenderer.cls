@@ -1,4 +1,4 @@
-public without sharing class DMT_ProfitabilityRenderer implements DMT_ViewRenderer {
+public without sharing class DMT_ProfitabilityRenderer implements DMT_ViewRenderer, DMT_FieldTrackableRenderer, DMT_TrackedComponent { // CIBGLOBALD-5023
     private static Map<Id, DMT_ViewRenderer> recordTypeRenderers = new Map<Id, DMT_ViewRenderer>();
 
     static {
@@ -27,5 +27,19 @@ public without sharing class DMT_ProfitabilityRenderer implements DMT_ViewRender
             System.debug(e.getMessage());
             return '<div>Error: ' + e.getMessage() + '</div>';
         }
+    }
+
+    /**
+     * CIBGLOBALD-5023 - Tracked so the component name is frozen in the task snapshot (DMT_TrackedComponents__c,
+     * through DMT_RendererFactory.getTrackedComponentNames). Its DMT_Configurator_View_Items__mdt record has
+     * DMT_Always_Reopen__c checked, so DMT_ApprovalChangeStep_Helper.isTaskStale reopens the task without comparing fields.
+     */
+    public Boolean isComponentTracked() {
+        return true;
+    }
+
+    // CIBGLOBALD-5023 - no field is compared: the reopen comes from DMT_Always_Reopen__c.
+    public List<String> getTrackedFields(SObject record) {
+        return new List<String>();
     }
 }

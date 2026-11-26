@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- CIBGLOBALD-5023 - always reopen only for approval Cases (Proposal to Approval). Order is arbitrary. -->
+    <types>
+        <members>DMT_ApprovalChangeStep_Helper</members>
+        <members>DMT_ApprovalChangeStep_HelperTest</members>
+        <name>ApexClass</name>
+    </types>
+    <version>65.0</version>
+</Package>

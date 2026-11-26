@@ -566,7 +566,8 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
 
     private static Map<Id, DMT_TaskStatusWhenCompleted__c> getSnapshots(Set<Id> viewStatusIds) {
         return new Map<Id, DMT_TaskStatusWhenCompleted__c>([
-            SELECT Id, DMT_ViewFieldStatusAtClose__c, DMT_TrackedComponents__c
+            // CIBGLOBALD-5023 - Case__r.DMT_Passport_Sanction__c added: DMT_Always_Reopen__c applies to approval Cases only.
+            SELECT Id, DMT_ViewFieldStatusAtClose__c, DMT_TrackedComponents__c, Case__r.DMT_Passport_Sanction__c
             FROM DMT_TaskStatusWhenCompleted__c
             WHERE Id IN :viewStatusIds
         ]);
@@ -585,13 +586,7 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
     @TestVisible
     private static List<String> trackedComponentsForSnapshot(DMT_TaskStatusWhenCompleted__c snapshot) {
         if (String.isBlank(snapshot.DMT_TrackedComponents__c)) {
-            // P27: Underwriting requires explicit opt-in in the frozen snapshot.
-            // Preserve every legacy component without mutating the factory cache.
-            List<String> legacyComponents = new List<String>();
-            for (String componentName : DMT_RendererFactory.getTrackedComponentNames()) {
-                if (componentName != 'Underwriting') legacyComponents.add(componentName);
-            }
-            return legacyComponents;
+            return DMT_RendererFactory.getTrackedComponentNames();
         }
         List<String> scopedComponents = new List<String>();
         for (String componentName : snapshot.DMT_TrackedComponents__c.split(';', 0)) {
@@ -600,6 +595,63 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
             }
         }
         return scopedComponents;
+    }
+
+    // CIBGLOBALD-5023 - the reason the preview gets for a task reopened by DMT_Always_Reopen__c instead of changed fields
+    // (DMT_ApprovalChangeStep_Handler.buildFeatures sets FeatureChangeWrapper.alwaysReopen from it).
+    public static final String ALWAYS_REOPEN_REASON = 'ALWAYS_REOPEN';
+
+    // CIBGLOBALD-5023 - DMT_Type__c values of DMT_Configurator_View_Items__mdt per snapshot section.
+    private static final Map<String, Set<String>> VIEW_TYPES_BY_SECTION = new Map<String, Set<String>>{
+        'opportunity' => new Set<String>{ 'Opportunity' },
+        'line' => new Set<String>{ 'Line', 'Line_Treasury', 'Line_Sanction' }
+    };
+
+    // CIBGLOBALD-5023 - component names with DMT_Always_Reopen__c checked, per snapshot section. Tests set it directly.
+    @TestVisible
+    private static Map<String, Set<String>> alwaysReopenComponentsBySection;
+
+    /**
+     * CIBGLOBALD-5023 - DMT_Component_Item__c of the DMT_Configurator_View_Items__mdt records with DMT_Always_Reopen__c
+     * checked, for the view types of this snapshot section. Read with getAll() (no SOQL), once per transaction.
+     */
+    @TestVisible
+    private static Set<String> alwaysReopenComponents(String snapshotSectionKey) {
+        if (alwaysReopenComponentsBySection == null) {
+            alwaysReopenComponentsBySection = new Map<String, Set<String>>();
+            for (String sectionKey : VIEW_TYPES_BY_SECTION.keySet()) {
+                alwaysReopenComponentsBySection.put(sectionKey, new Set<String>());
+            }
+            for (DMT_Configurator_View_Items__mdt item : DMT_Configurator_View_Items__mdt.getAll().values()) {
+                if (!item.DMT_Always_Reopen__c) {
+                    continue;
+                }
+                for (String sectionKey : VIEW_TYPES_BY_SECTION.keySet()) {
+                    if (VIEW_TYPES_BY_SECTION.get(sectionKey).contains(item.DMT_Type__c)) {
+                        alwaysReopenComponentsBySection.get(sectionKey).add(item.DMT_Component_Item__c);
+                    }
+                }
+            }
+        }
+        Set<String> componentNames = alwaysReopenComponentsBySection.get(snapshotSectionKey);
+        return componentNames == null ? new Set<String>() : componentNames;
+    }
+
+    // CIBGLOBALD-5023 - true when a component frozen in this snapshot (DMT_TrackedComponents__c) always reopens. Only for
+    // approval Cases (Case.DMT_Passport_Sanction__c), checked at Proposal -> Approval; passport and readytoclose Cases
+    // compare their fields as before.
+    private static Boolean hasAlwaysReopenComponentFrozen(DMT_TaskStatusWhenCompleted__c snapshot, String snapshotSectionKey) {
+        String caseType = snapshot.Case__r?.DMT_Passport_Sanction__c;
+        if (String.isBlank(snapshot.DMT_TrackedComponents__c) || caseType == null || !caseType.equalsIgnoreCase(DMT_Constants.APPROVAL)) {
+            return false;
+        }
+        Set<String> alwaysReopen = alwaysReopenComponents(snapshotSectionKey);
+        for (String componentName : snapshot.DMT_TrackedComponents__c.split(';', 0)) {
+            if (alwaysReopen.contains(componentName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // CIBGLOBALD-4117 - local-first, callout-as-fallback: only reached when the cheap,
@@ -805,6 +857,16 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
             return false;
         }
 
+        // CIBGLOBALD-5023 - a frozen component with DMT_Always_Reopen__c reopens the task without comparing fields, and so does
+        // a snapshot that did not fit DMT_ViewFieldStatusAtClose__c (sections left out: DMT_TaskSnapshotService.limitSnapshotSize).
+        if (hasAlwaysReopenComponentFrozen(snapshot, snapshotSectionKey)
+                || snapshot.DMT_ViewFieldStatusAtClose__c.contains('"' + DMT_TaskSnapshotService.OVERFLOW_SECTIONS_KEY + '"')) {
+            if (changes != null) {
+                changes.add(ALWAYS_REOPEN_REASON);
+            }
+            return true;
+        }
+
         Map<String, Object> snapshotJson = (Map<String, Object>) JSON.deserializeUntyped(snapshot.DMT_ViewFieldStatusAtClose__c);
         Map<String, Object> frozenFields = (Map<String, Object>) snapshotJson.get(snapshotSectionKey);
         if (frozenFields == null) {
@@ -858,6 +920,12 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
     private static Boolean valueChanged(Schema.SObjectType objectType, String fieldName, Object frozenValue, Object liveValue) {
         Object frozenNormalized = normalizeBlank(frozenValue);
         Object liveNormalized = normalizeBlank(liveValue);
+        // CIBGLOBALD-5023 - a long text frozen as a fingerprint (DMT_TaskSnapshotService.fingerprint) is compared with the
+        // fingerprint of the live text: same text, same fingerprint; any edit, another one.
+        if (DMT_TaskSnapshotService.isFingerprint(frozenNormalized)) {
+            return !(liveNormalized instanceof String)
+                || DMT_TaskSnapshotService.fingerprint((String) liveNormalized) != (String) frozenNormalized;
+        }
         if (frozenNormalized == liveNormalized) {
             return false;
         }
