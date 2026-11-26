@@ -1,0 +1,8 @@
+CIBGLOBALD-4690 - Document Type combobox in the upload modal shows the selected type
+
+- dmt_document_manager_for_core_document (LWC): the Document Type combobox is now bound to the value of
+  the picked option (new property selectedDocTypeOption) instead of selectedDocType. Every taxonomy option
+  (DMT_Taxonomy_Values__c, catalog I222) carries the docTypeCode CO-OF-00240, the same value as the base
+  option '<Object> Description', so after picking a taxonomy type the combobox rendered 'Opportunity
+  Description'. selectedDocTypeOption is set in handleDocTypeChange and cleared in openModal,
+  handleModalCancel and after the upload. The upload logic (docType, objectCode) is unchanged.

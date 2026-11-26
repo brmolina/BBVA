@@ -130,10 +130,11 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- CIBGLOBALD-4690 - value bound to the picked option, not to the docTypeCode -->
                             <lightning-combobox
                                 name="docType"
                                 label="Document Type"
-                                value={selectedDocType}
+                                value={selectedDocTypeOption}
                                 placeholder="Select Document Type"
                                 options={docTypeOptions}
                                 onchange={handleDocTypeChange}

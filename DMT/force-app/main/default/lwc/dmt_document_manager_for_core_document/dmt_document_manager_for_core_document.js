@@ -27,6 +27,7 @@ import getAttachmentBase64 from '@salesforce/apex/DMT_AttachmentController.getAt
 import hasEditAccess from '@salesforce/apex/DMT_AttachmentController.hasEditAccess';
 
 import getDocuments from '@salesforce/apex/DMT_CoreDocuments_Controller.getDocuments';
+import getTreasuryDocuments from '@salesforce/apex/DMT_CoreDocuments_Controller.getTreasuryDocuments';
 import getDownloadHeaders from '@salesforce/apex/DMT_CoreDocuments_Controller.getDownloadHeaders';
 import getUploadConfig from '@salesforce/apex/DMT_CoreDocuments_Controller.getUploadConfig';
 import getDownloadEndpoint from '@salesforce/apex/DMT_CoreDocuments_Controller.getDownloadEndpoint';
@@ -35,7 +36,9 @@ import updateFileMetadataWithObjectCode from '@salesforce/apex/DMT_CoreDocuments
 import getCatalogsDescriptions from '@salesforce/apex/DMT_CoreDocuments_Controller.getCatalogsDescriptions';
 import appendTaxonomyValue from '@salesforce/apex/DMT_CoreDocuments_Controller.appendTaxonomyValue';
 import triggerPassportUpdate from '@salesforce/apex/DMT_CoreDocuments_Controller.triggerPassportUpdate';
+import deleteDocument from '@salesforce/apex/DMT_CoreDocuments_Controller.deleteDocument';
 import isDocumentDeletionAllowed from '@salesforce/apex/DMT_CoreDocuments_Controller.isDocumentDeletionAllowed';
+import markPassportAsObsolete from '@salesforce/apex/DMT_CoreDocuments_Controller.markPassportAsObsolete';
 import LightningConfirm from 'lightning/confirm';
 
 const VALID_MIME_TYPES = {
@@ -122,6 +125,8 @@ export default class dmt_document_manager_for_core_document extends LightningEle
     @track isPreviewLoading = false;
     @track selectedFile = null;
     @track selectedDocType = '';
+    // CIBGLOBALD-4690 - Value of the option picked in the Document Type combobox (taxonomy options share the docTypeCode CO-OF-00240, so selectedDocType cannot drive the display)
+    selectedDocTypeOption = '';
     @track isModaViewOpen = false;
     @track pdfData;
     @track wiredFields = []; // reactive field list for getRecord
@@ -134,7 +139,7 @@ export default class dmt_document_manager_for_core_document extends LightningEle
     @track recordTypeDevName; // Global variable to pass to Apex
     @track clientId; // Global variable to pass to Passport Payload
     @track canDeleteDocuments = false; // False while the related record is in a final state (Closed Won / closed Case)
-
+    @track folderId;
     _lastLoadedLineId = null; // Guard: tracks the lineId already loaded to prevent redundant service calls
     _hasEditAccess = false;
 
@@ -226,6 +231,10 @@ export default class dmt_document_manager_for_core_document extends LightningEle
                 
                 if (rtDevName === 'Sanction') {
                     this.catalogValue3 = 'TO';
+                } else if (rtDevName === 'Treasury' || rtDevName === 'TreasurySettlement') {
+                    this.catalogValue3 = 'TL';
+                } else {
+                    this.catalogValue3 = undefined;
                 }
                 this.entific = getFieldValue(data, LINE_BOOKING_GEO);
 
@@ -373,6 +382,10 @@ export default class dmt_document_manager_for_core_document extends LightningEle
         }
     }
 
+    get isTreasuryLine() {
+        return this.objectApiName === 'DMT_Line__c' && ['Treasury', 'TreasurySettlement'].includes(this.recordTypeDevName);
+    }
+
     async loadDocuments() {
         if (!this.lineId) {
             this.isLoading = false;
@@ -383,7 +396,9 @@ export default class dmt_document_manager_for_core_document extends LightningEle
         this.isLoading = true;
         this.files = [];
         try {
-            const data = await getDocuments({ folderCode: this.lineId });
+            const data = this.isTreasuryLine
+                ? await getTreasuryDocuments({ recordId: this.recordId })
+                : await getDocuments({ folderCode: this.lineId });
             if (data && data.success) {
                 console.log('core documenr child getDocuments-->', JSON.stringify(data));
                 let allFiles = [];
@@ -435,6 +450,9 @@ export default class dmt_document_manager_for_core_document extends LightningEle
                                     const ext = originalName.substring(originalName.lastIndexOf('.'));
                                     cleanName += ext;
                                 }
+            
+                                this.folderId = folder.id;
+
                                 return {
                                     ...child,
                                     cleanName: cleanName,
@@ -446,6 +464,7 @@ export default class dmt_document_manager_for_core_document extends LightningEle
                                     documentTypeLabel: docTypeEntry ? docTypeEntry.label : targetCode,
                                     type: child.documentType,
                                     folderCode: folder.businessCode ? folder.businessCode.folderCode : '',
+
                                     iconName: this.getIconName(child.objectName),
                                     ...this.getActionIconAndTitle(child.objectName)
                                 };
@@ -518,6 +537,7 @@ export default class dmt_document_manager_for_core_document extends LightningEle
         this.selectedFile = file;
         if (!this.isModalOpen) {
              this.selectedDocType = '';
+             this.selectedDocTypeOption = ''; // CIBGLOBALD-4690
         }
         this.isModalOpen = true;
     }
@@ -526,6 +546,7 @@ export default class dmt_document_manager_for_core_document extends LightningEle
         this.isModalOpen = false;
         this.selectedFile = null;
         this.selectedDocType = '';
+        this.selectedDocTypeOption = ''; // CIBGLOBALD-4690
     }
 
     // Tracks the extra properties for later use (e.g., 'OTHR', '7901')
@@ -533,7 +554,8 @@ export default class dmt_document_manager_for_core_document extends LightningEle
 
     handleDocTypeChange(event) {
         const selectedVal = event.detail.value;
-        
+        this.selectedDocTypeOption = selectedVal; // CIBGLOBALD-4690
+
         // Find the full object from our sorted list
         const selectedOption = this.docTypeOptions.find(opt => opt.value === selectedVal);
         
@@ -590,15 +612,21 @@ export default class dmt_document_manager_for_core_document extends LightningEle
             });
 
             this.showToast('Success', 'File uploaded successfully', 'success');
-
             // Reset guard so loadDocuments fetches fresh data after upload
             this._lastLoadedLineId = null;
             await this.loadDocuments();
 
             console.log('--- POST UPLOAD FOLLOW UP ---');
-            
+
+
+            //Passport warning obsolete passport 
+            console.log('---------lineID =>'+this.lineId);
+             console.log('---------RecordID =>'+this.recordId);
+            await markPassportAsObsolete({recordId : this.recordId});
+
+
             // Safely check if the object is populated with keys
-            if (Object.keys(this.selectedTaxonomyMetadata).length > 0 && this.selectedTaxonomyMetadata.taxonomyValue) {
+            if (!this.isTreasuryLine && Object.keys(this.selectedTaxonomyMetadata).length > 0 && this.selectedTaxonomyMetadata.taxonomyValue) {
                 console.log('✅ Taxonomy metadata is fully populated and ready:', JSON.stringify(this.selectedTaxonomyMetadata));
                 
                 // Call Apex to concatenate the value in SYSTEM_MODE
@@ -646,6 +674,7 @@ export default class dmt_document_manager_for_core_document extends LightningEle
             this.isLoading = false;
             this.selectedFile = null;
             this.selectedDocType = '';
+            this.selectedDocTypeOption = ''; // CIBGLOBALD-4690
         }
     }
 
@@ -685,7 +714,8 @@ export default class dmt_document_manager_for_core_document extends LightningEle
         console.log('newName  ---> ', newName);
         // Generamos el nombre limpio con la fecha de "ahora"
         const formData = new FormData();
-        const renamedFile = new File([file], newName, { type: file.type });
+        const safeNewName = this.sanitizeDocumentName(newName) || 'documento';
+        const renamedFile = new File([file], safeNewName, { type: file.type });
         console.log('File Name 2 ---> ', renamedFile);
         formData.append('file', renamedFile);
         //Send the mapped "active" folder details to the backend
@@ -719,7 +749,7 @@ export default class dmt_document_manager_for_core_document extends LightningEle
         const row = event.detail.row;
 
         if (actionName === 'delete') {
-            //await this.handleDeleteDocument(row);
+            await this.handleDeleteDocument(row);
             return;
         }
 
@@ -979,10 +1009,11 @@ export default class dmt_document_manager_for_core_document extends LightningEle
             return;
         }
         //JIRA 4332
-        /*try {
+        try {
             await deleteDocument({
                 recordId: this.recordId,
                 fileId: row.id,
+                folderId: this.folderId,
                 contentLocator: row.contentLocator
             });
             this.showToast('Success', `Document "${fileLabel}" deleted successfully`, 'success');
@@ -991,25 +1022,43 @@ export default class dmt_document_manager_for_core_document extends LightningEle
         } catch (error) {
             const msg = error.body ? error.body.message : error.message;
             this.showToast('Error', `Could not delete the document: ${msg}`, 'error');
-        }*/
+        }
+    }
+
+    sanitizeDocumentName(value) {
+        if (!value) return '';
+
+        return String(value)
+            .replace(/%0d%0a/gi, ' ')
+            .replace(/%0a/gi, ' ')
+            .replace(/%20/gi, ' ')
+            .replace(/%00/gi, '')
+            .replace(/,/g, '')
+            .replace(/--+/g, '-')
+            .replace(/\.\.+/g, '-')
+            .replace(/\s*-\s*/g, '-')
+            .replace(/[*\/:;<>\?\[\]\\]/g, '-')
+            .replace(/\s+/g, ' ')
+            .trim();
     }
 
     formatFileNameWithDate(originalName) {
         const now = new Date();
         const dateStamp = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`;
         
-        // Cambiamos espacios por guiones para el nombre físico del archivo
-        const safeUserName = this.currentUserName ? this.currentUserName.replace(/\s+/g, '-') : 'Anonimo';
+        const safeUserName = this.sanitizeDocumentName(
+            this.currentUserName ? this.currentUserName.replace(/\s+/g, '-') : 'Anonimo'
+        ).replace(/\s+/g, '-');
     
         const lastDotIndex = originalName.lastIndexOf('.');
         let baseName = lastDotIndex !== -1 ? originalName.substring(0, lastDotIndex) : originalName;
         const extension = lastDotIndex !== -1 ? originalName.substring(lastDotIndex) : '';
     
         // Limpiamos subidas previas para no repetir
-        baseName = baseName.split('__')[0].trim();
+        baseName = this.sanitizeDocumentName(baseName.split('__')[0].trim());
     
         // Estructura: NombreArchivo__DD-MM-YYYY__Usuario.ext
-        return `${baseName}__${dateStamp}__${safeUserName}${extension}`;
+        return this.sanitizeDocumentName(`${baseName}__${dateStamp}__${safeUserName}${extension}`);
     }
     combineAllFiles() {
         // Combinamos ambos arrays. Delete only applies to CoreDocuments files, not Salesforce Attachments.
