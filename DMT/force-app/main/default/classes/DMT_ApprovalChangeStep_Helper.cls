@@ -102,8 +102,6 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
             Map<Id, Task> oldestTaskByCaseId = new Map<Id, Task>();
             for (Task task : stillOpenTasks) { // CIBGLOBALD-4800
                 task.Status = DMT_Constants.CANCELLED;
-                Case resetCase = createResetCase(task.WhatId, task.OwnerId);
-                casesToResetByCaseId.put(resetCase.Id, resetCase);
 
                 Task oldestSoFar = oldestTaskByCaseId.get(task.WhatId);
                 if (oldestSoFar == null || task.CreatedDate < oldestSoFar.CreatedDate) {
@@ -113,6 +111,10 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
             List<Task> tasksToCreate = new List<Task>();
             for (Task oldestTask : oldestTaskByCaseId.values()) {
                 tasksToCreate.add(createResetTask(oldestTask));
+                // CIBGLOBALD-4924 - the Case owner is taken from the same task the replacement is cloned from, so the reopened
+                // Case and its open task have the same approver, as when a step creates the next task (DMT_ApprovalValidation_Service,
+                // DMT_TaskApprovalFlowService). It was set from every cancelled task, so the last one in the loop won.
+                casesToResetByCaseId.put(oldestTask.WhatId, createResetCase(oldestTask.WhatId, oldestTask.OwnerId));
             }
             Database.update(stillOpenTasks, AccessLevel.SYSTEM_MODE); // CIBGLOBALD-4800
             Database.insert(tasksToCreate, AccessLevel.SYSTEM_MODE);
@@ -583,7 +585,13 @@ global without sharing class DMT_ApprovalChangeStep_Helper {
     @TestVisible
     private static List<String> trackedComponentsForSnapshot(DMT_TaskStatusWhenCompleted__c snapshot) {
         if (String.isBlank(snapshot.DMT_TrackedComponents__c)) {
-            return DMT_RendererFactory.getTrackedComponentNames();
+            // P27: Underwriting requires explicit opt-in in the frozen snapshot.
+            // Preserve every legacy component without mutating the factory cache.
+            List<String> legacyComponents = new List<String>();
+            for (String componentName : DMT_RendererFactory.getTrackedComponentNames()) {
+                if (componentName != 'Underwriting') legacyComponents.add(componentName);
+            }
+            return legacyComponents;
         }
         List<String> scopedComponents = new List<String>();
         for (String componentName : snapshot.DMT_TrackedComponents__c.split(';', 0)) {

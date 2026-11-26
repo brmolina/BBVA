@@ -1,0 +1,1034 @@
+@IsTest
+public with sharing class DMT_OpportunityTriggerHandler_Test {
+    private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass();
+    private static final DES_UtilTestClass DES_UTIL = new DES_UtilTestClass();
+    private static final Id CASE_RT_APPROVAL_ID = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
+    private static final Id TASK_RT_APPROVAL_STEP_ID = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
+
+     @TestSetup
+    static void makeData(){
+        // DMT shared test data
+        DMT_Test_DataFactory.loadCurrencies();
+        Opportunity opp = DMT_UTIL.createOpportunityForAccount(null);
+        Product2 product = DES_UTIL.createProductRecord();
+        PricebookEntry pricebookEntry = DMT_UTIL.createPricebookEntryRecord(product.Id);
+        OpportunityLineItem firstOli = DES_UTIL.buildOppLineItem(opp.Id, product.Id, pricebookEntry.Id);
+        insert firstOli;
+
+        // Required by the DMT_OppValidationFieldsRequired flow's Opp_Client_Template decision,
+        // which blocks any transition into 'Proposal' unless a DMT_Opportunity_Client__c exists
+        // for the Opportunity with these 3 fields populated (the flow's getOppClient lookup
+        // returns nothing at all otherwise, so every field on it reads null).
+        DMT_UTIL.createOpportunityClientRecord(
+            String.valueOf(opp.Id),
+            new Map<Schema.SObjectField, Object>{
+                DMT_Opportunity_Client__c.g_upd_lmscl_internal_ratg_type__c => 'BBB',
+                DMT_Opportunity_Client__c.DMT_Sector__c => 'Financial',
+                DMT_Opportunity_Client__c.Counterpart__c => 'Corporates'
+            }
+        );
+    }
+
+    @isTest
+    public static void testCalculateAndUpdateNotionalAmounts() {
+        Opportunity opp = [SELECT Id, RecordTypeId, DMT_CurrencyText__c FROM Opportunity LIMIT 1];
+
+        // Set OLI amounts used by the handler and align OLI currency with target opp currency
+        // to avoid dependency on cross-currency exchange rates in test context.
+        OpportunityLineItem oli = [
+            SELECT Id, g_currency_id__c, DMT_Deal_amount__c, bbva_prtcp_tranche_amount__c
+            FROM OpportunityLineItem
+            WHERE OpportunityId = :opp.Id
+            LIMIT 1
+        ];
+        oli.DMT_Deal_amount__c = 100;
+        oli.bbva_prtcp_tranche_amount__c = 100;
+        oli.g_currency_id__c = 'USD';
+        update oli;
+
+        Opportunity oldOpp = opp.clone(false, true, false, false);
+        oldOpp.Id = opp.Id;
+        oldOpp.DMT_CurrencyText__c = 'EUR';
+
+        Test.startTest();
+        // Simulate before update context and invoke handler explicitly.
+        opp.DMT_CurrencyText__c = 'USD';
+        DMT_OpportunityTriggerHandler.getInstance().calculateAndUpdateNotionalAmounts(
+            new Map<Id, Opportunity>{ opp.Id => opp },
+            new Map<Id, Opportunity>{ opp.Id => oldOpp }
+        );
+        update opp;
+        Test.stopTest();
+
+        // Verify amounts calculated by this handler were populated.
+        Opportunity updatedOpp = [
+            SELECT DMT_CUR_Notional_Amount__c, DMT_Opportunity_amount__c
+            FROM Opportunity
+            WHERE Id = :opp.Id
+        ];
+        Assert.isNotNull(updatedOpp.DMT_CUR_Notional_Amount__c, 'DMT_CUR_Notional_Amount__c should be calculated');
+        Assert.isNotNull(updatedOpp.DMT_Opportunity_amount__c, 'DMT_Opportunity_amount__c should be calculated');
+        Assert.areEqual(updatedOpp.DMT_Opportunity_amount__c, updatedOpp.DMT_CUR_Notional_Amount__c,
+            'Opportunity amount and notional amount should match for this test setup');
+    }
+
+    @isTest
+    public static void testCalculateAndUpdateNotionalAmounts_SumsBbvaAcrossOlis() {
+        Opportunity opp = [SELECT Id, DMT_CurrencyText__c, RecordTypeId FROM Opportunity LIMIT 1];
+        Product2 product = [SELECT Id FROM Product2 LIMIT 1];
+        PricebookEntry pbe = [SELECT Id FROM PricebookEntry WHERE Product2Id = :product.Id LIMIT 1];
+
+        OpportunityLineItem firstOli = [
+            SELECT Id, OpportunityId, bbva_prtcp_tranche_amount__c, DMT_Deal_amount__c, g_currency_id__c
+            FROM OpportunityLineItem
+            WHERE OpportunityId = :opp.Id
+            LIMIT 1
+        ];
+        firstOli.bbva_prtcp_tranche_amount__c = 1200;
+        firstOli.DMT_Deal_amount__c = 10;
+        firstOli.g_currency_id__c = 'USD';
+        update firstOli;
+
+        OpportunityLineItem secondOli = DES_UTIL.buildOppLineItem(
+            opp.Id,
+            product.Id,
+            pbe.Id,
+            new Map<Schema.SObjectField, Object>{
+                OpportunityLineItem.Quantity => 1,
+                OpportunityLineItem.TotalPrice => 1,
+                OpportunityLineItem.bbva_prtcp_tranche_amount__c => 1300,
+                OpportunityLineItem.DMT_Deal_amount__c => 99,
+                OpportunityLineItem.g_currency_id__c => 'USD'
+            }
+        );
+        insert secondOli;
+
+        Opportunity oldOpp = opp.clone(false, true, false, false);
+        oldOpp.Id = opp.Id;
+
+        Test.startTest();
+        opp.DMT_CurrencyText__c = 'USD';
+        DMT_OpportunityTriggerHandler.getInstance().calculateAndUpdateNotionalAmounts(
+            new Map<Id, Opportunity>{ opp.Id => opp },
+            new Map<Id, Opportunity>{ opp.Id => oldOpp }
+        );
+        update opp;
+
+        Opportunity updatedOpp = [
+            SELECT DMT_CUR_Notional_Amount__c
+            FROM Opportunity
+            WHERE Id = :opp.Id
+        ];
+        Test.stopTest();
+
+        Assert.areEqual(2500, updatedOpp.DMT_CUR_Notional_Amount__c,
+            'DMT_CUR_Notional_Amount__c must be the sum of bbva_prtcp_tranche_amount__c values');
+    }
+
+    
+    @isTest
+    public static void testBlockClosedWonWithProspectInMultiholder() {
+        Id dmtOppRtId = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
+        Id prospectGroupRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Group').getRecordTypeId();
+        Id prospectSubsidiaryRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Prospect_Subsidiary').getRecordTypeId();
+        Id customerRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Customer').getRecordTypeId();
+        
+        // Escenario 1: Account principal (Customer) - Debería pasar validación inicial
+        Account mainAccount = DMT_UTIL.createAccount(new Map<Schema.SObjectField, Object>{
+
+            Account.Name => 'Main Client Account',
+            Account.g_customer_id__c => 'ES0000000000001',
+            Account.RecordTypeId => customerRtId
+        
+        });
+        
+        // Escenario 2: Prospect_Subsidiary en multiholder - Este causará el bloqueo
+        Account prospectSubsidiary = DMT_UTIL.createAccount(new Map<Schema.SObjectField, Object>{
+
+            Account.Name => 'Prospect Subsidiary in Multiholder',
+            Account.g_customer_id__c => 'ES0000000000002',
+            Account.DES_ID_Fiscal__c => 'x123',
+            Account.RecordTypeId => prospectSubsidiaryRtId
+        
+        });
+        
+        // Escenario 3: Account regular en multiholder - NO causará bloqueo
+        Account regularAccount = DMT_UTIL.createAccount(new Map<Schema.SObjectField, Object>{
+
+            Account.Name => 'Regular Account in Multiholder',
+            Account.g_customer_id__c => 'ES0000000000003',
+            Account.RecordTypeId => customerRtId
+        
+        });
+        
+        // Escenario 4: Prospect_Subsidiary como Account principal - NO debería pasar validación inicial
+        Account prospectMain = DMT_UTIL.createAccount(new Map<Schema.SObjectField, Object>{
+
+            Account.Name => 'Prospect Subsidiary Main',
+            Account.g_customer_id__c => 'ES0000000000004',
+            Account.DES_ID_Fiscal__c => 'x234',
+            Account.RecordTypeId => prospectSubsidiaryRtId
+        
+        });
+        
+        // Escenario 5: Prospect_Group como Account principal - NO debería pasar validación inicial
+        Account prospectGroupMain = DMT_UTIL.createAccount(new Map<Schema.SObjectField, Object>{
+
+            Account.Name => 'Prospect Group Main',
+            Account.g_customer_id__c => 'ES0000000000005',
+            Account.RecordTypeId => prospectGroupRtId
+        
+        });
+        
+        // Opportunity 1: Con main account Customer y Prospect_Subsidiary en multiholder - SE BLOQUEA
+        Opportunity opp1 = DMT_UTIL.createOpportunityForAccount(
+            mainAccount.Id,
+            new Map<Schema.SObjectField, Object>{
+                Opportunity.Name => 'Test DMT Opportunity 1 - Should Block',
+                Opportunity.RecordTypeId => dmtOppRtId,
+                Opportunity.StageName => 'Prospecting',
+                Opportunity.CloseDate => Date.today().addDays(30)
+            }
+        );        
+        // Opportunity 2: Con main account Customer y regular account en multiholder - NO SE BLOQUEA
+        Opportunity opp2 = DMT_UTIL.createOpportunityForAccount(
+            mainAccount.Id,
+            new Map<Schema.SObjectField, Object>{
+                Opportunity.Name => 'Test DMT Opportunity 2 - Should Pass',
+                Opportunity.RecordTypeId => dmtOppRtId,
+                Opportunity.StageName => 'Prospecting',
+                Opportunity.CloseDate => Date.today().addDays(30)
+            }
+        );        
+        // Opportunity 5: Sin multiholder - NO SE BLOQUEA (cubre early return cuando oppClients está vacío)
+        Opportunity opp5 = DMT_UTIL.createOpportunityForAccount(
+            mainAccount.Id,
+            new Map<Schema.SObjectField, Object>{
+                Opportunity.Name => 'Test DMT Opportunity 5 - No Multiholder',
+                Opportunity.RecordTypeId => dmtOppRtId,
+                Opportunity.StageName => 'Prospecting',
+                Opportunity.CloseDate => Date.today().addDays(30)
+            }
+        );        
+        // Crear DMT_Custom_Association_Opportunity__c (main holder) para opp1 y opp2
+        Custom_Association_Opportunity__c assocOpp1 = DMT_UTIL.createCustomAssociationOpportunityRecord(
+            opp1.Id,
+            new Map<Schema.SObjectField, Object>{
+                Custom_Association_Opportunity__c.g_customer_id__c => mainAccount.g_customer_id__c,
+                Custom_Association_Opportunity__c.gf_customer_group_id__c => opp1.Id
+            }
+        );
+        Custom_Association_Opportunity__c assocOpp2 = DMT_UTIL.createCustomAssociationOpportunityRecord(
+            opp2.Id,
+            new Map<Schema.SObjectField, Object>{
+                Custom_Association_Opportunity__c.g_customer_id__c => mainAccount.g_customer_id__c,
+                Custom_Association_Opportunity__c.gf_customer_group_id__c => opp2.Id
+            }
+        );
+        // Crear DMT_Custom_Association_ClientOpportunity__c apuntando a Prospect_Subsidiary para opp1 (multiholder)
+        DMT_Custom_Association_ClientOpportunity__c oppClient1 = DMT_UTIL.createCustomAssociationClientOpportunityRecord(
+            assocOpp1.Id,
+            null,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Custom_Association_ClientOpportunity__c.DMT_g_customer_id__c => prospectSubsidiary.g_customer_id__c
+            }
+        );        
+        // Crear DMT_Custom_Association_ClientOpportunity__c apuntando a regular account para opp2
+        DMT_Custom_Association_ClientOpportunity__c oppClient2 = DMT_UTIL.createCustomAssociationClientOpportunityRecord(
+            assocOpp2.Id,
+            null,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Custom_Association_ClientOpportunity__c.DMT_g_customer_id__c => regularAccount.g_customer_id__c
+            }
+        );        
+        Test.startTest();        
+        // Intentar cerrar opp1 - DEBE BLOQUEARSE
+        opp1.StageName = 'Closed Won';
+        Boolean opp1Blocked = false;
+        String opp1ErrorMessage = '';
+        try {
+            update opp1;
+        } catch (DmlException e) {
+            opp1Blocked = true;
+            opp1ErrorMessage = e.getMessage();
+        }        
+        // Intentar cerrar opp2 - NO DEBE BLOQUEARSE
+        opp2.StageName = 'Closed Won';
+        Boolean opp2Blocked = false;
+        try {
+            update opp2;
+        } catch (DmlException e) {
+            opp2Blocked = true;
+        }        
+        // Intentar cerrar opp5 - NO DEBE BLOQUEARSE (no tiene multiholder)
+        opp5.StageName = 'Closed Won';
+        Boolean opp5Blocked = false;
+        try {
+            update opp5;
+        } catch (DmlException e) {
+            opp5Blocked = true;
+        }        
+        Test.stopTest();
+        Assert.isTrue(opp1Blocked, 'Opp1 should be blocked - has Prospect_Subsidiary in multiholder');       
+        Assert.isFalse(opp2Blocked, 'Opp2 should NOT be blocked - has regular account in multiholder');
+        Assert.isFalse(opp5Blocked, 'Opp5 should NOT be blocked - has no multiholder');
+            
+    }
+    
+
+    @isTest
+    public static void testCalculateAndUpdateNotionalAmounts_KeepCurrencyConversionForOpportunityAmount() {
+        Opportunity opp = [SELECT Id, DMT_CurrencyText__c, RecordTypeId FROM Opportunity LIMIT 1];
+
+        OpportunityLineItem oli = [
+            SELECT Id, OpportunityId, bbva_prtcp_tranche_amount__c, DMT_Deal_amount__c, g_currency_id__c
+            FROM OpportunityLineItem
+            WHERE OpportunityId = :opp.Id
+            LIMIT 1
+        ];
+        oli.bbva_prtcp_tranche_amount__c = 120;
+        oli.DMT_Deal_amount__c = 120;
+        oli.g_currency_id__c = 'USD';
+        update oli;
+
+        Opportunity oldOpp = opp.clone(false, true, false, false);
+        oldOpp.Id = opp.Id;
+        oldOpp.DMT_CurrencyText__c = 'USD';
+
+        Test.startTest();
+        opp.DMT_CurrencyText__c = 'EUR';
+        DMT_OpportunityTriggerHandler.getInstance().calculateAndUpdateNotionalAmounts(
+            new Map<Id, Opportunity>{ opp.Id => opp },
+            new Map<Id, Opportunity>{ opp.Id => oldOpp }
+        );
+        update opp;
+        Test.stopTest();
+
+        Opportunity updatedOpp = [
+            SELECT DMT_CUR_Notional_Amount__c, DMT_Opportunity_amount__c
+            FROM Opportunity
+            WHERE Id = :opp.Id
+        ];
+
+        Decimal expectedConvertedAmount = DMT_Currency.convert(120, 'USD', 'EUR').setScale(2, RoundingMode.HALF_UP);
+        Assert.areEqual(expectedConvertedAmount, updatedOpp.DMT_Opportunity_amount__c,
+            'DMT_Opportunity_amount__c must keep currency conversion when opportunity currency changes');
+        Assert.areEqual(100, updatedOpp.DMT_CUR_Notional_Amount__c,
+            'DMT_CUR_Notional_Amount__c must remain raw bbva_prtcp_tranche_amount__c sum');
+    }
+
+    @isTest
+    public static void testValidateDynamicStageChange_PassUnrelatedStage() {
+        Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
+        opp.StageName = 'Draft';
+        update opp;
+
+        // Mock JSON: Mandatory ('Y'), Not Green ('WHITE'), Targets 'Ready to close'
+        String mockedJson = '{"data":{"features":[{"name":"RTC Blocker","requiredType":"Y","requiredAtStatus":"Ready to close","stateName":"WHITE"}]}}';
+        Passport__c passport = DMT_UTIL.createPassportRecord(
+            new Map<Schema.SObjectField, Object>{
+                Passport__c.Opportunity__c => opp.Id,
+                Passport__c.DMT_Passport_Save__c => mockedJson
+            }
+        );
+
+        Test.startTest();
+        // Advancing to Approval (to avoid DES_HandlerTerritory errors), but the feature only blocks 'Ready to close'. This should succeed.
+        opp.StageName = 'Approval';
+        Boolean exceptionThrown = false;
+        String actualErrorMessage = '';
+        try {
+            update opp;
+        } catch (Exception e) {
+            exceptionThrown = true;
+            actualErrorMessage = e.getMessage();
+        }
+        Test.stopTest();
+
+        // If it fails now, it will print the EXACT error message from the other class so we can fix the test data if needed.
+        Assert.isFalse(exceptionThrown, 'No exception should be thrown, but an unrelated error occurred: ' + actualErrorMessage);
+        
+        if (!exceptionThrown) {
+            Opportunity updatedOpp = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id];
+            Assert.areEqual('Approval', updatedOpp.StageName, 'Opportunity stage should have updated successfully.');
+        }
+    }
+
+    @isTest
+    public static void testValidateDynamicStageChange_PassGreenFeature() {
+        Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
+        opp.StageName = 'Draft';
+        update opp;
+
+        // Mock JSON: Mandatory ('Y'), Is Green ('GREEN'), Targets 'Approval'
+        String mockedJson = '{"data":{"features":[{"name":"Green Feature","requiredType":"Y","requiredAtStatus":"Approval","stateName":"GREEN"}]}}';
+        Passport__c passport = DMT_UTIL.createPassportRecord(
+            new Map<Schema.SObjectField, Object>{
+                Passport__c.Opportunity__c => opp.Id,
+                Passport__c.DMT_Passport_Save__c => mockedJson
+            }
+        );
+
+        Test.startTest();
+        opp.StageName = 'Approval';
+        Boolean exceptionThrown = false;
+        try {
+            update opp;
+        } catch (Exception e) {
+            exceptionThrown = true;
+        }
+        Test.stopTest();
+
+        Assert.isFalse(exceptionThrown, 'No exception should be thrown because the required feature is GREEN.');
+        
+        Opportunity updatedOpp = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id];
+        Assert.areEqual('Approval', updatedOpp.StageName, 'Opportunity stage should have updated successfully.');
+    }
+
+    @isTest
+    public static void testValidateDynamicStageChange_PassApprovedByWorkflow() {
+        Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
+        opp.StageName = 'Draft';
+        update opp;
+
+        // Mock JSON: Mandatory ('Y'), Not Green ('WHITE'), Targets 'Ready to close' -- the external
+        // Passport engine has not reconciled stateName yet, but our internal Case/Task workflow has.
+        String mockedJson = '{"data":{"features":[{"id":"700","name":"Workflow Approved Feature","requiredType":"Y","requiredAtStatus":"Ready to close","stateName":"WHITE"}]}}';
+        Passport__c passport = DMT_UTIL.createPassportRecord(
+            new Map<Schema.SObjectField, Object>{
+                Passport__c.Opportunity__c => opp.Id,
+                Passport__c.DMT_Passport_Save__c => mockedJson
+            }
+        );
+
+        Group groupApprover = [SELECT Id FROM Group WHERE DeveloperName = 'DMT_Approvers1' LIMIT 1];
+        TriggerBypass.setBypass();
+        Case workflowCase = DMT_UTIL.createCaseRecord(
+            new Map<Schema.SObjectField, Object>{
+                Case.OwnerId => groupApprover.Id,
+                Case.opportunity_id__c => opp.Id,
+                Case.DMT_Feature_Id__c => '700',
+                Case.DMT_Passport_Sanction__c => 'passport',
+                Case.Status => 'Finished',
+                Case.RecordTypeId => CASE_RT_APPROVAL_ID,
+                Case.Subject => 'Test'
+            }
+        );
+
+        Task approvalTask = DMT_UTIL.createTaskRecord(
+            groupApprover.Id,
+            workflowCase.Id,
+            new Map<Schema.SObjectField, Object>{
+                Task.RecordTypeId => TASK_RT_APPROVAL_STEP_ID,
+                Task.Status => 'Completed',
+                Task.Subject => 'Test Task',
+                Task.DMT_Step_Result__c => 'Yes'
+            }
+        );
+        TriggerBypass.removeBypass();
+
+        Test.startTest();
+        opp.StageName = 'Ready to close';
+        Boolean exceptionThrown = false;
+        try {
+            update opp;
+        } catch (Exception e) {
+            exceptionThrown = true;
+        }
+        Test.stopTest();
+
+        Assert.isFalse(exceptionThrown, 'No exception should be thrown: the internal Case/Task workflow already approved this feature.');
+
+        Opportunity updatedOpp = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id];
+        Assert.areEqual('Ready to close', updatedOpp.StageName, 'Opportunity stage should have updated successfully.');
+    }
+
+    // CIBGLOBALD-4117: coverage for restartApprovalTasksOnOpportunityResubmission's 3 checkpoints.
+    // Sets up one open approval Task, snapshotted via DMT_TaskStatusWhenCompleted__c the same way
+    // updateTaskWithStatus does, then drives the real Opportunity trigger via `update opp` so the
+    // whole chain (condition -> DMT_RendererFactory comparison -> DMT_ApprovalChangeStep_Helper.
+    // restartTasksForRecord) is exercised end to end, not just the handler method in isolation.
+
+    // Every field DMT_OpportunityInfoRenderer.getTrackedFields() can return. Queried explicitly
+    // (rather than SELECT Id, RecordTypeId) so the frozen snapshot built from this same record in
+    // setupApprovalTaskWithSnapshot covers every tracked field - snapshotting only a subset would
+    // leave the others absent from the frozen JSON, which the live comparison reads identically to
+    // "null", making even a genuinely untouched field look changed against a populated live value.
+    private static final String TRACKED_FIELDS_QUERY = 'SELECT Id, RecordTypeId, Name, DMT_Opp_Id__c, ' +
+        'Entific__c, DMT_Entity__c, DMT_branch_id_c__c, DMT_Booking_EFAN__c, DMT_Tenor__c, ' +
+        'DMT_CUR_Notional_Amount__c, DMT_CurrencyText__c, DMT_Capital_Action__c, DMT_Product_Area__c, ' +
+        'DMT_Opportunity_amount__c, DMT_ContingentCommitments__c, DMT_Structured_GTB__c, ' +
+        // CIBGLOBALD-4117: added when these two were added to DMT_OpportunityInfoRenderer. Omitting
+        // a tracked field here makes the NoRestartWhenFieldUnchanged test fail for the reason the
+        // comment above describes - the frozen snapshot lacks the key while the live record has a
+        // value, which reads as a change. Keep this query in step with getTrackedFields().
+        'CloseDate, DMT_Confidential__c, ' +
+        // DMT_Threshold_Type__c is Opportunity-native but is tracked via the "Client" component
+        // (DMT_OpportunityClientRenderer), not "Opportunity Info" - the tracked set is the union
+        // across every migrated component, so this query has to follow suit.
+        'DMT_Threshold_Type__c, ' +
+        // CIBGLOBALD-4117 - the SPPI TEST section fields plus DMT_Financial_Sponsors__c, tracked via
+        // "Approval Process Data" (DMT_OppApprovalProcessDataRenderer). Missing here the same way
+        // DMT_Threshold_Type__c was: this test's blank DMT_TrackedComponents__c falls back to the
+        // full cross-component tracked-field union, not just Opportunity Info's own fields.
+        'DMT_SPPI_Status__c, DMT_SPPI_User__c, DMT_SPPI_File_Uploaded__c, DMT_Financial_Sponsors__c, ' +
+        // CIBGLOBALD-4117 - tracked via "NBC Client" (DMT_NBC_ClientRenderer), added 2026-09-25.
+        // Missing here the same way DMT_Threshold_Type__c/the SPPI fields were - this test's blank
+        // DMT_TrackedComponents__c falls back to the full cross-component union, so any component's
+        // new tracked field has to be added here too or NoRestartWhenFieldUnchanged false-restarts.
+        'DMT_NewClient__c, DMT_GlobalBanker__c, DMT_Under_X_Selling_Monitoring__c ' +
+        'FROM Opportunity LIMIT 1';
+
+    private static Opportunity queryOppWithTrackedFields() {
+        return Database.query(TRACKED_FIELDS_QUERY);
+    }
+
+    // frozenOpp should be queried via queryOppWithTrackedFields() and passed in at the point its
+    // field values should be frozen - i.e. right after the setup update that puts the Opportunity
+    // into its pre-resubmission state, before the test's own change under Test.startTest().
+    private static Task setupApprovalTaskWithSnapshot(Opportunity frozenOpp, String passportSanctionFilter) {
+        Group groupApprover = [SELECT Id FROM Group WHERE DeveloperName = 'DMT_Approvers1' LIMIT 1];
+        TriggerBypass.setBypass();
+        Case approvalCase = DMT_UTIL.createCaseRecord(
+            new Map<Schema.SObjectField, Object>{
+                Case.OwnerId => groupApprover.Id,
+                Case.opportunity_id__c => frozenOpp.Id,
+                Case.DMT_Passport_Sanction__c => passportSanctionFilter,
+                Case.Status => 'Pending',
+                Case.RecordTypeId => CASE_RT_APPROVAL_ID,
+                Case.Subject => 'Test'
+            }
+        );
+
+        Task openTask = DMT_UTIL.createTaskRecord(
+            groupApprover.Id,
+            approvalCase.Id,
+            new Map<Schema.SObjectField, Object>{
+                Task.RecordTypeId => TASK_RT_APPROVAL_STEP_ID,
+                Task.Status => 'Not Started',
+                Task.Subject => 'Test Task'
+            }
+        );
+        TriggerBypass.removeBypass();
+
+        DMT_TaskStatusWhenCompleted__c snapshot = DMT_UTIL.createTaskStatusWhenCompletedRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_TaskStatusWhenCompleted__c.Case__c => approvalCase.Id,
+                DMT_TaskStatusWhenCompleted__c.DMT_ViewFieldStatusAtClose__c => '{"opportunity":' + JSON.serialize(frozenOpp) + '}'
+            }
+        );
+
+        openTask.DMT_ViewStatusAtClose__c = snapshot.Id;
+        update openTask;
+        return openTask;
+    }
+
+    @isTest
+    public static void testRestartApprovalTasksOnOpportunityResubmission_DraftExit_RestartsWhenTrackedFieldChanged() {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = 'Draft';
+        opp.DMT_DateToProposal__c = Datetime.now().addDays(-1);
+        update opp;
+
+        Task openTask = setupApprovalTaskWithSnapshot(opp, 'passport');
+
+        Test.startTest();
+        opp.StageName = 'Proposal';
+        opp.Name = 'Changed Name';
+        update opp;
+        Test.stopTest();
+
+        Task staleTask = [SELECT Status FROM Task WHERE Id = :openTask.Id];
+        Assert.areEqual(DMT_Constants.CANCELLED, staleTask.Status, 'Stale task should be cancelled after a tracked field change on Draft-exit resubmission');
+
+        List<Task> replacementTasks = [SELECT Id, RecordTypeId FROM Task WHERE WhatId = :openTask.WhatId AND Id != :openTask.Id];
+        Assert.areEqual(1, replacementTasks.size(), 'A replacement task should be created for the same Case');
+        // CIBGLOBALD-4117: regression check for a real bug found in live testing - the replacement
+        // task's RecordTypeId silently defaulted to the wrong record type when the source query
+        // didn't select it, which made the task invisible to DMT_Case_Steps_Controller's
+        // RecordType-filtered queries (breaking the passport traffic-light UI) despite the restart
+        // itself appearing to succeed.
+        Assert.areEqual(TASK_RT_APPROVAL_STEP_ID, replacementTasks[0].RecordTypeId, 'Replacement task must keep the original DMT_Step_Approval record type');
+
+        Case resetCase = [SELECT Status FROM Case WHERE Id = :openTask.WhatId];
+        Assert.areEqual(DMT_Constants.PENDING, resetCase.Status, 'Case should be reset to Pending');
+    }
+
+    @isTest
+    public static void testRestartApprovalTasksOnOpportunityResubmission_DraftExit_NoRestartWhenFieldUnchanged() {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = 'Draft';
+        opp.DMT_DateToProposal__c = Datetime.now().addDays(-1);
+        update opp;
+        // Re-queried after the update so the frozen snapshot reflects the record's actual
+        // post-transition state, not whatever opp's in-memory fields held before the update.
+        // Mirrors DMT_Line_TriggerHandler_Test's frozenLine re-query for the same reason.
+        Opportunity frozenOpp = queryOppWithTrackedFields();
+
+        Task openTask = setupApprovalTaskWithSnapshot(frozenOpp, 'passport');
+
+        Test.startTest();
+        opp.StageName = 'Proposal';
+        update opp;
+        Test.stopTest();
+
+        Task unchangedTask = [SELECT Status FROM Task WHERE Id = :openTask.Id];
+        Assert.areEqual('Not Started', unchangedTask.Status, 'Task should not be restarted when no tracked field changed');
+    }
+
+    @isTest
+    public static void testRestartApprovalTasksOnOpportunityResubmission_DraftExit_SkipsFirstSubmission() {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = 'Draft';
+        opp.DMT_DateToProposal__c = null;
+        update opp;
+
+        Task openTask = setupApprovalTaskWithSnapshot(opp, 'passport');
+
+        Test.startTest();
+        // First-ever Draft->Proposal transition: DMT_DateToProposal__c is null going in, so this is
+        // not a resubmission - matches AfterCreateOpportunity's From_Draft_to_Proposal decision,
+        // which only routed to the compare/restart action when DMT_DateToProposal__c was already set.
+        opp.StageName = 'Proposal';
+        opp.Name = 'Changed Name';
+        update opp;
+        Test.stopTest();
+
+        Task unchangedTask = [SELECT Status FROM Task WHERE Id = :openTask.Id];
+        Assert.areEqual('Not Started', unchangedTask.Status, 'A first-ever submission (no prior DMT_DateToProposal__c) should not restart tasks');
+    }
+
+    @isTest
+    public static void testRestartApprovalTasksOnOpportunityResubmission_ApprovalEntry_RestartsWhenTrackedFieldChanged() {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = 'Proposal';
+        update opp;
+
+        Task openTask = setupApprovalTaskWithSnapshot(opp, 'approval');
+
+        Test.startTest();
+        opp.StageName = 'Approval';
+        opp.Name = 'Changed Name';
+        update opp;
+        Test.stopTest();
+
+        Task staleTask = [SELECT Status FROM Task WHERE Id = :openTask.Id];
+        Assert.areEqual(DMT_Constants.CANCELLED, staleTask.Status, 'Stale task should be cancelled when a tracked field changed on Proposal->Approval entry');
+
+        Task replacementTask = [SELECT RecordTypeId FROM Task WHERE WhatId = :openTask.WhatId AND Id != :openTask.Id LIMIT 1];
+        Assert.areEqual(TASK_RT_APPROVAL_STEP_ID, replacementTask.RecordTypeId, 'Replacement task must keep the original DMT_Step_Approval record type');
+    }
+
+    @isTest
+    public static void testRestartApprovalTasksOnOpportunityResubmission_ReadyToCloseEdit_RestartsWhenTrackedFieldChanged() {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = 'Ready to close';
+        update opp;
+
+        Task openTask = setupApprovalTaskWithSnapshot(opp, 'readytoclose');
+
+        Test.startTest();
+        // Deliberately NOT setting DMT_Is_Change_in_Ready_to_close__c: detection here must come from
+        // our own tracked-field comparison, not the flag some edit FlexCards set unconditionally on
+        // every save regardless of whether a tracked field actually changed.
+        opp.Name = 'Changed Name';
+        update opp;
+        Test.stopTest();
+
+        Task staleTask = [SELECT Status FROM Task WHERE Id = :openTask.Id];
+        Assert.areEqual(DMT_Constants.CANCELLED, staleTask.Status, 'Stale task should be cancelled when a tracked field changes while parked in Ready to close, independent of DMT_Is_Change_in_Ready_to_close__c');
+
+        Task replacementTask = [SELECT RecordTypeId FROM Task WHERE WhatId = :openTask.WhatId AND Id != :openTask.Id LIMIT 1];
+        Assert.areEqual(TASK_RT_APPROVAL_STEP_ID, replacementTask.RecordTypeId, 'Replacement task must keep the original DMT_Step_Approval record type');
+    }
+
+    // CIBGLOBALD-4117: coverage for stampDateToProposal, migrated from AfterCreateOpportunity's
+    // Save_Date_Proposal record-update (removed along with the flow's 3 restart checkpoints).
+    @isTest
+    public static void testStampDateToProposal_SetsOnDraftToProposalTransition() {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = 'Draft';
+        opp.DMT_DateToProposal__c = null;
+        update opp;
+
+        Test.startTest();
+        opp.StageName = 'Proposal';
+        update opp;
+        Test.stopTest();
+
+        Opportunity updatedOpp = [SELECT DMT_DateToProposal__c FROM Opportunity WHERE Id = :opp.Id];
+        Assert.isNotNull(updatedOpp.DMT_DateToProposal__c, 'DMT_DateToProposal__c should be stamped on a Draft->Proposal transition');
+    }
+
+    @isTest
+    public static void testStampDateToProposal_DoesNotStampOnOtherTransitions() {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = 'Proposal';
+        opp.DMT_DateToProposal__c = null;
+        update opp;
+
+        Test.startTest();
+        opp.StageName = 'Approval';
+        update opp;
+        Test.stopTest();
+
+        Opportunity updatedOpp = [SELECT DMT_DateToProposal__c FROM Opportunity WHERE Id = :opp.Id];
+        Assert.isNull(updatedOpp.DMT_DateToProposal__c, 'DMT_DateToProposal__c should only be stamped specifically on a Draft->Proposal transition');
+    }
+
+
+    // CIBGLOBALD-4811 - a change saved after the snapshot was frozen, reaching no checkpoint.
+    private static Task setupStaleOpportunity(String stage, String caseType) {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = stage;
+        opp.DMT_DateToProposal__c = Datetime.now().addDays(-1);
+        update opp;
+        Task openTask = setupApprovalTaskWithSnapshot(queryOppWithTrackedFields(), caseType);
+
+        opp.Name = 'Changed Name';
+        update opp;
+        return openTask;
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareTasksFromCase_ChangedField_ListsFeatureAndRestartsNothing() {
+        Task openTask = setupStaleOpportunity('Draft', 'passport');
+        Id oppId = queryOppWithTrackedFields().Id;
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(oppId, 'passport');
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'The Case has a stale task, so one feature is listed');
+        Assert.areEqual(openTask.OwnerId, features[0].taskToRecreate.OwnerId, 'The warning uses the task the restart clones');
+        Assert.isTrue(features[0].changedFields.containsKey('Name'), 'The changed field is listed by its display label');
+        Assert.areEqual('Not Started', [SELECT Status FROM Task WHERE Id = :openTask.Id].Status, 'The preview restarts nothing');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareTasksFromCase_OtherCaseType_ReturnsNothing() {
+        setupStaleOpportunity('Draft', 'passport');
+        Id oppId = queryOppWithTrackedFields().Id;
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(oppId, 'approval');
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'Only Cases of the type asked for are compared, as the trigger does');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareTasksFromCase_NoChange_ReturnsNothing() {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = 'Draft';
+        opp.DMT_DateToProposal__c = Datetime.now().addDays(-1);
+        update opp;
+        setupApprovalTaskWithSnapshot(queryOppWithTrackedFields(), 'passport');
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(opp.Id, 'passport');
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'Nothing changed against the snapshot, so nothing is listed');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareTasksFromCase_AlreadyReopened_ReturnsNothing() {
+        setupStaleOpportunity('Draft', 'passport');
+        Opportunity opp = queryOppWithTrackedFields();
+
+        Test.startTest();
+        opp.StageName = 'Proposal';
+        update opp;
+        Test.stopTest();
+
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(opp.Id, 'passport');
+
+        Assert.isTrue(features.isEmpty(), 'The replacement task has no snapshot, so there is no second warning');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareTasksFromCase_Failure_ReturnsNothing() {
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase('not-an-id', 'passport');
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'A failing check returns nothing, so the user is never stopped');
+    }
+
+    // CIBGLOBALD-4811 - one result per Case, even with the same feature name. The LWC hides identical lines.
+    @isTest
+    public static void testPreviewCompareTasksFromCase_SameFeatureOnTwoCases_ReturnsBoth() {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = 'Draft';
+        opp.DMT_DateToProposal__c = Datetime.now().addDays(-1);
+        update opp;
+        Opportunity frozenOpp = queryOppWithTrackedFields();
+        setupApprovalTaskWithSnapshot(frozenOpp, 'passport');
+        setupApprovalTaskWithSnapshot(frozenOpp, 'passport');
+
+        opp.Name = 'Changed Name';
+        update opp;
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareTasksFromCase(opp.Id, 'passport');
+        Test.stopTest();
+
+        Assert.areEqual(2, features.size(), 'Each Case is returned, with its own owner and changed fields');
+    }
+
+    // CIBGLOBALD-4811 - an Opportunity in Ready to close whose readytoclose task was closed on the current data.
+    private static Opportunity setupReadyToCloseOpportunity() {
+        Opportunity opp = queryOppWithTrackedFields();
+        opp.StageName = 'Ready to close';
+        update opp;
+        Opportunity frozenOpp = queryOppWithTrackedFields();
+        setupApprovalTaskWithSnapshot(frozenOpp, 'readytoclose');
+        return frozenOpp;
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareUnsavedChanges_ChangedField_ListsFeatureAndSavesNothing() {
+        Opportunity opp = setupReadyToCloseOpportunity();
+        Map<String, Object> unsavedValues = new Map<String, Object>{
+            'Name' => 'Unsaved Name',
+            'CloseDate' => '2030-01-15',
+            'Amount' => '1000',
+            'DMT_Confidential__c' => true,
+            'Not_A_Field__c' => 'ignored'
+        };
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges(opp.Id, 'readytoclose', unsavedValues, null);
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'The unsaved Name differs from the snapshot, so the feature is listed');
+        Assert.isTrue(features[0].changedFields.containsKey('Name'), 'The unsaved field is listed by its display label');
+        Assert.areEqual(opp.Name, [SELECT Name FROM Opportunity WHERE Id = :opp.Id].Name, 'The preview saves nothing');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareUnsavedChanges_SameValue_ReturnsNothing() {
+        Opportunity opp = setupReadyToCloseOpportunity();
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features =
+            DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges(opp.Id, 'readytoclose', new Map<String, Object>{ 'Name' => opp.Name }, null);
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'The value typed is the one frozen in the snapshot, so nothing reopens');
+    }
+
+    // CIBGLOBALD-4811 - Ready to close Opportunity whose snapshot also froze its client row
+    // (section opportunityClient), as the Client component of the approver view does.
+    private static DMT_Opportunity_Client__c setupReadyToCloseOpportunityWithClientRow() {
+        Opportunity opp = setupReadyToCloseOpportunity();
+        List<String> clientFieldNames = new List<String>(DMT_Opportunity_Client__c.SObjectType.getDescribe().fields.getMap().keySet());
+        Id oppId = opp.Id;
+        DMT_Opportunity_Client__c clientRow = Database.query(
+            'SELECT ' + String.join(clientFieldNames, ',') + ' FROM DMT_Opportunity_Client__c WHERE DMT_MDE_Opportunity__c = :oppId LIMIT 1'
+        );
+        DMT_TaskStatusWhenCompleted__c snapshot = [SELECT Id FROM DMT_TaskStatusWhenCompleted__c WHERE Case__r.opportunity_id__c = :opp.Id LIMIT 1];
+        snapshot.DMT_ViewFieldStatusAtClose__c = '{"opportunity":' + JSON.serialize(queryOppWithTrackedFields())
+            + ',"opportunityClient":{"' + clientRow.Id + '":' + JSON.serialize(clientRow) + '}}';
+        update snapshot;
+        return clientRow;
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareUnsavedChanges_ClientRowChange_ListsFeatureAndSavesNothing() {
+        DMT_Opportunity_Client__c clientRow = setupReadyToCloseOpportunityWithClientRow();
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features = DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges(
+            clientRow.DMT_MDE_Opportunity__c, 'readytoclose', null,
+            new List<Map<String, Object>>{ new Map<String, Object>{
+                'objectApiName' => 'DMT_Opportunity_Client__c', 'rowId' => (String) clientRow.Id,
+                'values' => new Map<String, Object>{ 'Counterpart__c' => 'Banks' }
+            } }
+        );
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'The unsaved client row value differs from the snapshot, so the feature is listed');
+        Assert.areEqual('Corporates', [SELECT Counterpart__c FROM DMT_Opportunity_Client__c WHERE Id = :clientRow.Id].Counterpart__c, 'The preview saves nothing');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewCompareUnsavedChanges_ClientRowSameValues_ReturnsNothing() {
+        DMT_Opportunity_Client__c clientRow = setupReadyToCloseOpportunityWithClientRow();
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features = DMT_ApprovalChangeStep_Handler.previewCompareUnsavedChanges(
+            clientRow.DMT_MDE_Opportunity__c, 'readytoclose', null,
+            new List<Map<String, Object>>{ new Map<String, Object>{
+                'objectApiName' => 'DMT_Opportunity_Client__c', 'rowId' => (String) clientRow.Id,
+                'values' => new Map<String, Object>{ 'Counterpart__c' => 'Corporates' }
+            } }
+        );
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'The client row values are the frozen ones, so nothing reopens');
+    }
+
+    // CIBGLOBALD-4811 - the Client tab form values as the stored main borrower row holds them (the fields
+    // DMT_OpportunityClientController.applyFormFields writes) plus the Opportunity threshold.
+    private static Map<String, Object> clientFormValues(DMT_Opportunity_Client__c clientRow) {
+        Map<String, Object> values = new Map<String, Object>();
+        for (String fieldName : new List<String>{
+            'g_upd_lmscl_internal_ratg_type__c', 'DMT_Scoring__c', 'External_Rating__c', 'DMT_External_Rating_SP__c',
+            'DMT_External_Rating_Moodys__c', 'DMT_External_Rating_Fitch__c', 'DMT_Industry__c', 'DMT_Leveraged_Lending__c',
+            'DMT_CAMN__c', 'Counterpart__c', 'SCRA__c', 'AVC_Check__c', 'European_Bank_Check__c', 'DMT_Sector__c',
+            'DMT_Subsector__c', 'DMT_Activity__c', 'DMT_Sector_Head__c', 'DMT_Guarantor_Name_Fiscal_ID__c'
+        }) {
+            values.put(fieldName, clientRow.get(fieldName));
+        }
+        Id oppId = clientRow.DMT_MDE_Opportunity__c;
+        values.put('DMT_Threshold_Type__c', [SELECT DMT_Threshold_Type__c FROM Opportunity WHERE Id = :oppId].DMT_Threshold_Type__c);
+        return values;
+    }
+
+    // CIBGLOBALD-4811 - the Client tab check builds what the save writes (DMT_OpportunityClientController
+    // .previewMainBorrowerSave): a changed client value lists the feature and saves nothing.
+    @isTest
+    public static void testPreviewMainBorrowerSave_ClientRowChange_ListsFeatureAndSavesNothing() {
+        DMT_Opportunity_Client__c clientRow = setupReadyToCloseOpportunityWithClientRow();
+        Map<String, Object> fieldValues = clientFormValues(clientRow);
+        fieldValues.put('Counterpart__c', 'Banks');
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features = DMT_OpportunityClientController.previewMainBorrowerSave(
+            'readytoclose', clientRow.DMT_MDE_Opportunity__c, clientRow.Id, 'Ready to close', fieldValues, false, null, null
+        );
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'The changed client value differs from the snapshot, so the feature is listed');
+        Assert.areEqual('Corporates', [SELECT Counterpart__c FROM DMT_Opportunity_Client__c WHERE Id = :clientRow.Id].Counterpart__c, 'The preview saves nothing');
+    }
+
+    // CIBGLOBALD-4811 - the stored values sent back through the save build are not a change.
+    @isTest
+    public static void testPreviewMainBorrowerSave_SameValues_ReturnsNothing() {
+        DMT_Opportunity_Client__c clientRow = setupReadyToCloseOpportunityWithClientRow();
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features = DMT_OpportunityClientController.previewMainBorrowerSave(
+            'readytoclose', clientRow.DMT_MDE_Opportunity__c, clientRow.Id, 'Ready to close', clientFormValues(clientRow), false, null, null
+        );
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'The values the save would write are the frozen ones, so nothing reopens');
+    }
+
+    // CIBGLOBALD-4811 - Ready to close Opportunity whose snapshot also froze its product row
+    // (section opportunityLineItem), as the Products component of the approver view does.
+    private static OpportunityLineItem setupReadyToCloseOpportunityWithProductRow() {
+        Opportunity opp = setupReadyToCloseOpportunity();
+        List<String> productFieldNames = new List<String>(OpportunityLineItem.SObjectType.getDescribe().fields.getMap().keySet());
+        Id oppId = opp.Id;
+        OpportunityLineItem productRow = Database.query(
+            'SELECT ' + String.join(productFieldNames, ',') + ' FROM OpportunityLineItem WHERE OpportunityId = :oppId LIMIT 1'
+        );
+        DMT_TaskStatusWhenCompleted__c snapshot = [SELECT Id FROM DMT_TaskStatusWhenCompleted__c WHERE Case__r.opportunity_id__c = :opp.Id LIMIT 1];
+        snapshot.DMT_ViewFieldStatusAtClose__c = '{"opportunity":' + JSON.serialize(queryOppWithTrackedFields())
+            + ',"opportunityLineItem":{"' + productRow.Id + '":' + JSON.serialize(productRow) + '}}';
+        update snapshot;
+        return productRow;
+    }
+
+    // CIBGLOBALD-4811 - the Products tab save (DMT_OpportunityProductsController.previewOpportunityProductSave)
+    // lists the feature when the product row would change, and writes nothing.
+    @isTest
+    public static void testPreviewOpportunityProductSave_ProductChange_ListsFeatureAndSavesNothing() {
+        OpportunityLineItem productRow = setupReadyToCloseOpportunityWithProductRow();
+        Map<String, Object> recordFields = new Map<String, Object>{
+            'Id' => productRow.Id,
+            'loan_purpose_desc__c' => 'Unsaved purpose'
+        };
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features = DMT_OpportunityProductsController.previewOpportunityProductSave(
+            'readytoclose', recordFields, null, null, null, null, null, null,
+            System.today(), System.today().addDays(365), productRow.OpportunityId
+        );
+        Test.stopTest();
+
+        Assert.areEqual(1, features.size(), 'The unsaved product value differs from the snapshot, so the feature is listed');
+        Assert.areEqual(productRow.loan_purpose_desc__c, [SELECT loan_purpose_desc__c FROM OpportunityLineItem WHERE Id = :productRow.Id].loan_purpose_desc__c, 'The preview saves nothing');
+    }
+
+    // CIBGLOBALD-4811
+    @isTest
+    public static void testPreviewOpportunityProductSave_SameValues_ReturnsNothing() {
+        OpportunityLineItem productRow = setupReadyToCloseOpportunityWithProductRow();
+
+        Test.startTest();
+        List<DMT_ApprovalChangeStep_Handler.FeatureChangeWrapper> features = DMT_OpportunityProductsController.previewOpportunityProductSave(
+            'readytoclose', new Map<String, Object>{ 'Id' => productRow.Id }, null, null, null, null, null, null,
+            System.today(), System.today().addDays(365), productRow.OpportunityId
+        );
+        Test.stopTest();
+
+        Assert.isTrue(features.isEmpty(), 'Nothing changes on the product, so nothing reopens');
+    }
+
+    // CIBGLOBALD-4811 - a multi-select value sent as a list (dmt_opp_commercial_process_data) is typed as the
+    // value the save stores: joined with ';' in the order sent.
+    @isTest
+    public static void testApplyUnsavedValues_MultiPicklistList_MatchesStoredValue() {
+        List<Schema.PicklistEntry> entries = Opportunity.DES_Countries__c.getDescribe().getPicklistValues();
+        Assert.isTrue(entries.size() >= 2, 'DES_Countries__c needs two picklist values for this test');
+        String first = entries[0].getValue();
+        String second = entries[1].getValue();
+        Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
+        TriggerBypass.setBypass();
+        update new Opportunity(Id = opp.Id, DES_Countries__c = second + ';' + first);
+        TriggerBypass.removeBypass();
+        Opportunity stored = [SELECT DES_Countries__c FROM Opportunity WHERE Id = :opp.Id];
+
+        Test.startTest();
+        Opportunity typed = new Opportunity(Id = opp.Id);
+        DMT_ApprovalChangeStep_Helper.applyUnsavedValues(typed, new Map<String, Object>{ 'DES_Countries__c' => new List<Object>{ second, first } });
+        Opportunity cleared = new Opportunity(Id = opp.Id);
+        DMT_ApprovalChangeStep_Helper.applyUnsavedValues(cleared, new Map<String, Object>{ 'DES_Countries__c' => new List<Object>() });
+        Test.stopTest();
+
+        Assert.areEqual(stored.DES_Countries__c, typed.DES_Countries__c, 'The list is typed as the stored multi-select value');
+        Assert.isNull(cleared.DES_Countries__c, 'An empty selection is stored as blank');
+    }
+
+    // CIBGLOBALD-4811 - Enhancement to existing process: taking the edit lock in Ready to close is not compared;
+    // releasing it is, so a change saved without updating the Opportunity still reopens at release.
+    @isTest
+    public static void testReadyToCloseEditLock_AcquireSkipsReleaseRestarts() {
+        Opportunity opp = setupReadyToCloseOpportunity();
+        Task openTask = [SELECT Id FROM Task WHERE What.Type = 'Case' AND Status != :DMT_Constants.CANCELLED LIMIT 1];
+        TriggerBypass.setBypass();
+        update new Opportunity(Id = opp.Id, Name = 'Changed without the trigger');
+        TriggerBypass.removeBypass();
+
+        Test.startTest();
+        update new Opportunity(Id = opp.Id, DMT_Opp_User_Lock__c = UserInfo.getUserId());
+        String statusAfterAcquire = [SELECT Status FROM Task WHERE Id = :openTask.Id].Status;
+        update new Opportunity(Id = opp.Id, DMT_Opp_User_Lock__c = null);
+        Test.stopTest();
+
+        Assert.areNotEqual(DMT_Constants.CANCELLED, statusAfterAcquire, 'Taking the lock alone does not run the restart check');
+        Assert.areEqual(DMT_Constants.CANCELLED, [SELECT Status FROM Task WHERE Id = :openTask.Id].Status, 'Releasing the lock runs the check and reopens the stale task');
+    }
+}

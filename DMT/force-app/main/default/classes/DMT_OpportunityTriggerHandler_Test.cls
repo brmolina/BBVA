@@ -1,5 +1,7 @@
 @IsTest
 public with sharing class DMT_OpportunityTriggerHandler_Test {
+    private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass();
+    private static final DES_UtilTestClass DES_UTIL = new DES_UtilTestClass();
     private static final Id CASE_RT_APPROVAL_ID = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Approval').getRecordTypeId();
     private static final Id TASK_RT_APPROVAL_STEP_ID = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
 
@@ -7,20 +9,23 @@ public with sharing class DMT_OpportunityTriggerHandler_Test {
     static void makeData(){
         // DMT shared test data
         DMT_Test_DataFactory.loadCurrencies();
-        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
-        Product2 product = DMT_Test_DataFactory.generateProduct2();
-        PricebookEntry pricebookEntry = DMT_Test_DataFactory.generatePricebookEntry(product);
-        DMT_Test_DataFactory.generateOpportunityLineItem(product, pricebookEntry, opp);
+        Opportunity opp = DMT_UTIL.createOpportunityForAccount(null);
+        Product2 product = DES_UTIL.createProductRecord();
+        PricebookEntry pricebookEntry = DMT_UTIL.createPricebookEntryRecord(product.Id);
+        OpportunityLineItem firstOli = DES_UTIL.buildOppLineItem(opp.Id, product.Id, pricebookEntry.Id);
+        insert firstOli;
 
         // Required by the DMT_OppValidationFieldsRequired flow's Opp_Client_Template decision,
         // which blocks any transition into 'Proposal' unless a DMT_Opportunity_Client__c exists
         // for the Opportunity with these 3 fields populated (the flow's getOppClient lookup
         // returns nothing at all otherwise, so every field on it reads null).
-        insert new DMT_Opportunity_Client__c(
-            DMT_MDE_Opportunity__c = opp.Id,
-            g_upd_lmscl_internal_ratg_type__c = 'BBB',
-            DMT_Sector__c = 'Financial',
-            Counterpart__c = 'Corporates'
+        DMT_UTIL.createOpportunityClientRecord(
+            String.valueOf(opp.Id),
+            new Map<Schema.SObjectField, Object>{
+                DMT_Opportunity_Client__c.g_upd_lmscl_internal_ratg_type__c => 'BBB',
+                DMT_Opportunity_Client__c.DMT_Sector__c => 'Financial',
+                DMT_Opportunity_Client__c.Counterpart__c => 'Corporates'
+            }
         );
     }
 
@@ -84,15 +89,17 @@ public with sharing class DMT_OpportunityTriggerHandler_Test {
         firstOli.g_currency_id__c = 'USD';
         update firstOli;
 
-        OpportunityLineItem secondOli = new OpportunityLineItem(
-            OpportunityId = opp.Id,
-            Product2Id = product.Id,
-            PricebookEntryId = pbe.Id,
-            Quantity = 1,
-            TotalPrice = 1,
-            bbva_prtcp_tranche_amount__c = 1300,
-            DMT_Deal_amount__c = 99,
-            g_currency_id__c = 'USD'
+        OpportunityLineItem secondOli = DES_UTIL.buildOppLineItem(
+            opp.Id,
+            product.Id,
+            pbe.Id,
+            new Map<Schema.SObjectField, Object>{
+                OpportunityLineItem.Quantity => 1,
+                OpportunityLineItem.TotalPrice => 1,
+                OpportunityLineItem.bbva_prtcp_tranche_amount__c => 1300,
+                OpportunityLineItem.DMT_Deal_amount__c => 99,
+                OpportunityLineItem.g_currency_id__c => 'USD'
+            }
         );
         insert secondOli;
 
@@ -127,90 +134,113 @@ public with sharing class DMT_OpportunityTriggerHandler_Test {
         Id customerRtId = Schema.SObjectType.Account.getRecordTypeInfosByDeveloperName().get('Customer').getRecordTypeId();
         
         // Escenario 1: Account principal (Customer) - Debería pasar validación inicial
-        Account mainAccount = new Account(
-            Name = 'Main Client Account',
-            g_customer_id__c = 'ES0000000000001',
-            RecordTypeId = customerRtId
-        );
-        insert mainAccount;        
+        Account mainAccount = DMT_UTIL.createAccount(new Map<Schema.SObjectField, Object>{
+
+            Account.Name => 'Main Client Account',
+            Account.g_customer_id__c => 'ES0000000000001',
+            Account.RecordTypeId => customerRtId
+        
+        });
+        
         // Escenario 2: Prospect_Subsidiary en multiholder - Este causará el bloqueo
-        Account prospectSubsidiary = new Account(
-            Name = 'Prospect Subsidiary in Multiholder',
-            g_customer_id__c = 'ES0000000000002',
-            DES_ID_Fiscal__c = 'x123',
-            RecordTypeId = prospectSubsidiaryRtId
-        );
-        insert prospectSubsidiary;        
+        Account prospectSubsidiary = DMT_UTIL.createAccount(new Map<Schema.SObjectField, Object>{
+
+            Account.Name => 'Prospect Subsidiary in Multiholder',
+            Account.g_customer_id__c => 'ES0000000000002',
+            Account.DES_ID_Fiscal__c => 'x123',
+            Account.RecordTypeId => prospectSubsidiaryRtId
+        
+        });
+        
         // Escenario 3: Account regular en multiholder - NO causará bloqueo
-        Account regularAccount = new Account(
-            Name = 'Regular Account in Multiholder',
-            g_customer_id__c = 'ES0000000000003',
-            RecordTypeId = customerRtId
-        );
-        insert regularAccount;        
+        Account regularAccount = DMT_UTIL.createAccount(new Map<Schema.SObjectField, Object>{
+
+            Account.Name => 'Regular Account in Multiholder',
+            Account.g_customer_id__c => 'ES0000000000003',
+            Account.RecordTypeId => customerRtId
+        
+        });
+        
         // Escenario 4: Prospect_Subsidiary como Account principal - NO debería pasar validación inicial
-        Account prospectMain = new Account(
-            Name = 'Prospect Subsidiary Main',
-            g_customer_id__c = 'ES0000000000004',
-            DES_ID_Fiscal__c = 'x234',
-            RecordTypeId = prospectSubsidiaryRtId
-        );
-        insert prospectMain;        
+        Account prospectMain = DMT_UTIL.createAccount(new Map<Schema.SObjectField, Object>{
+
+            Account.Name => 'Prospect Subsidiary Main',
+            Account.g_customer_id__c => 'ES0000000000004',
+            Account.DES_ID_Fiscal__c => 'x234',
+            Account.RecordTypeId => prospectSubsidiaryRtId
+        
+        });
+        
         // Escenario 5: Prospect_Group como Account principal - NO debería pasar validación inicial
-        Account prospectGroupMain = new Account(
-            Name = 'Prospect Group Main',
-            g_customer_id__c = 'ES0000000000005',
-            RecordTypeId = prospectGroupRtId
-        );
-        insert prospectGroupMain;        
+        Account prospectGroupMain = DMT_UTIL.createAccount(new Map<Schema.SObjectField, Object>{
+
+            Account.Name => 'Prospect Group Main',
+            Account.g_customer_id__c => 'ES0000000000005',
+            Account.RecordTypeId => prospectGroupRtId
+        
+        });
+        
         // Opportunity 1: Con main account Customer y Prospect_Subsidiary en multiholder - SE BLOQUEA
-        Opportunity opp1 = new Opportunity(
-            Name = 'Test DMT Opportunity 1 - Should Block',
-            AccountId = mainAccount.Id,
-            RecordTypeId = dmtOppRtId,
-            StageName = 'Prospecting',
-            CloseDate = Date.today().addDays(30)
+        Opportunity opp1 = DMT_UTIL.createOpportunityForAccount(
+            mainAccount.Id,
+            new Map<Schema.SObjectField, Object>{
+                Opportunity.Name => 'Test DMT Opportunity 1 - Should Block',
+                Opportunity.RecordTypeId => dmtOppRtId,
+                Opportunity.StageName => 'Prospecting',
+                Opportunity.CloseDate => Date.today().addDays(30)
+            }
         );        
         // Opportunity 2: Con main account Customer y regular account en multiholder - NO SE BLOQUEA
-        Opportunity opp2 = new Opportunity(
-            Name = 'Test DMT Opportunity 2 - Should Pass',
-            AccountId = mainAccount.Id,
-            RecordTypeId = dmtOppRtId,
-            StageName = 'Prospecting',
-            CloseDate = Date.today().addDays(30)
+        Opportunity opp2 = DMT_UTIL.createOpportunityForAccount(
+            mainAccount.Id,
+            new Map<Schema.SObjectField, Object>{
+                Opportunity.Name => 'Test DMT Opportunity 2 - Should Pass',
+                Opportunity.RecordTypeId => dmtOppRtId,
+                Opportunity.StageName => 'Prospecting',
+                Opportunity.CloseDate => Date.today().addDays(30)
+            }
         );        
         // Opportunity 5: Sin multiholder - NO SE BLOQUEA (cubre early return cuando oppClients está vacío)
-        Opportunity opp5 = new Opportunity(
-            Name = 'Test DMT Opportunity 5 - No Multiholder',
-            AccountId = mainAccount.Id,
-            RecordTypeId = dmtOppRtId,
-            StageName = 'Prospecting',
-            CloseDate = Date.today().addDays(30)
+        Opportunity opp5 = DMT_UTIL.createOpportunityForAccount(
+            mainAccount.Id,
+            new Map<Schema.SObjectField, Object>{
+                Opportunity.Name => 'Test DMT Opportunity 5 - No Multiholder',
+                Opportunity.RecordTypeId => dmtOppRtId,
+                Opportunity.StageName => 'Prospecting',
+                Opportunity.CloseDate => Date.today().addDays(30)
+            }
         );        
-        insert new List<Opportunity>{opp1, opp2, opp5};        
         // Crear DMT_Custom_Association_Opportunity__c (main holder) para opp1 y opp2
-        Custom_Association_Opportunity__c assocOpp1 = new Custom_Association_Opportunity__c(
-            Opportunity__c = opp1.Id,
-            g_customer_id__c = mainAccount.g_customer_id__c,
-            gf_customer_group_id__c = opp1.Id
+        Custom_Association_Opportunity__c assocOpp1 = DMT_UTIL.createCustomAssociationOpportunityRecord(
+            opp1.Id,
+            new Map<Schema.SObjectField, Object>{
+                Custom_Association_Opportunity__c.g_customer_id__c => mainAccount.g_customer_id__c,
+                Custom_Association_Opportunity__c.gf_customer_group_id__c => opp1.Id
+            }
         );
-        Custom_Association_Opportunity__c assocOpp2 = new Custom_Association_Opportunity__c(
-            Opportunity__c = opp2.Id,
-            g_customer_id__c = mainAccount.g_customer_id__c,
-            gf_customer_group_id__c = opp2.Id
+        Custom_Association_Opportunity__c assocOpp2 = DMT_UTIL.createCustomAssociationOpportunityRecord(
+            opp2.Id,
+            new Map<Schema.SObjectField, Object>{
+                Custom_Association_Opportunity__c.g_customer_id__c => mainAccount.g_customer_id__c,
+                Custom_Association_Opportunity__c.gf_customer_group_id__c => opp2.Id
+            }
         );
-        insert new List<Custom_Association_Opportunity__c>{assocOpp1, assocOpp2};
         // Crear DMT_Custom_Association_ClientOpportunity__c apuntando a Prospect_Subsidiary para opp1 (multiholder)
-        DMT_Custom_Association_ClientOpportunity__c oppClient1 = new DMT_Custom_Association_ClientOpportunity__c(
-            DMT_Custom_Association_Opportunity__c = assocOpp1.Id,
-            DMT_g_customer_id__c = prospectSubsidiary.g_customer_id__c
+        DMT_Custom_Association_ClientOpportunity__c oppClient1 = DMT_UTIL.createCustomAssociationClientOpportunityRecord(
+            assocOpp1.Id,
+            null,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Custom_Association_ClientOpportunity__c.DMT_g_customer_id__c => prospectSubsidiary.g_customer_id__c
+            }
         );        
         // Crear DMT_Custom_Association_ClientOpportunity__c apuntando a regular account para opp2
-        DMT_Custom_Association_ClientOpportunity__c oppClient2 = new DMT_Custom_Association_ClientOpportunity__c(
-            DMT_Custom_Association_Opportunity__c = assocOpp2.Id,
-            DMT_g_customer_id__c = regularAccount.g_customer_id__c
+        DMT_Custom_Association_ClientOpportunity__c oppClient2 = DMT_UTIL.createCustomAssociationClientOpportunityRecord(
+            assocOpp2.Id,
+            null,
+            new Map<Schema.SObjectField, Object>{
+                DMT_Custom_Association_ClientOpportunity__c.DMT_g_customer_id__c => regularAccount.g_customer_id__c
+            }
         );        
-        insert new List<DMT_Custom_Association_ClientOpportunity__c>{oppClient1, oppClient2};        
         Test.startTest();        
         // Intentar cerrar opp1 - DEBE BLOQUEARSE
         opp1.StageName = 'Closed Won';
@@ -295,8 +325,12 @@ public with sharing class DMT_OpportunityTriggerHandler_Test {
 
         // Mock JSON: Mandatory ('Y'), Not Green ('WHITE'), Targets 'Ready to close'
         String mockedJson = '{"data":{"features":[{"name":"RTC Blocker","requiredType":"Y","requiredAtStatus":"Ready to close","stateName":"WHITE"}]}}';
-        Passport__c passport = new Passport__c(Opportunity__c = opp.Id, DMT_Passport_Save__c = mockedJson);
-        insert passport;
+        Passport__c passport = DMT_UTIL.createPassportRecord(
+            new Map<Schema.SObjectField, Object>{
+                Passport__c.Opportunity__c => opp.Id,
+                Passport__c.DMT_Passport_Save__c => mockedJson
+            }
+        );
 
         Test.startTest();
         // Advancing to Approval (to avoid DES_HandlerTerritory errors), but the feature only blocks 'Ready to close'. This should succeed.
@@ -328,8 +362,12 @@ public with sharing class DMT_OpportunityTriggerHandler_Test {
 
         // Mock JSON: Mandatory ('Y'), Is Green ('GREEN'), Targets 'Approval'
         String mockedJson = '{"data":{"features":[{"name":"Green Feature","requiredType":"Y","requiredAtStatus":"Approval","stateName":"GREEN"}]}}';
-        Passport__c passport = new Passport__c(Opportunity__c = opp.Id, DMT_Passport_Save__c = mockedJson);
-        insert passport;
+        Passport__c passport = DMT_UTIL.createPassportRecord(
+            new Map<Schema.SObjectField, Object>{
+                Passport__c.Opportunity__c => opp.Id,
+                Passport__c.DMT_Passport_Save__c => mockedJson
+            }
+        );
 
         Test.startTest();
         opp.StageName = 'Approval';
@@ -356,31 +394,37 @@ public with sharing class DMT_OpportunityTriggerHandler_Test {
         // Mock JSON: Mandatory ('Y'), Not Green ('WHITE'), Targets 'Ready to close' -- the external
         // Passport engine has not reconciled stateName yet, but our internal Case/Task workflow has.
         String mockedJson = '{"data":{"features":[{"id":"700","name":"Workflow Approved Feature","requiredType":"Y","requiredAtStatus":"Ready to close","stateName":"WHITE"}]}}';
-        Passport__c passport = new Passport__c(Opportunity__c = opp.Id, DMT_Passport_Save__c = mockedJson);
-        insert passport;
+        Passport__c passport = DMT_UTIL.createPassportRecord(
+            new Map<Schema.SObjectField, Object>{
+                Passport__c.Opportunity__c => opp.Id,
+                Passport__c.DMT_Passport_Save__c => mockedJson
+            }
+        );
 
         Group groupApprover = [SELECT Id FROM Group WHERE DeveloperName = 'DMT_Approvers1' LIMIT 1];
         TriggerBypass.setBypass();
-        Case workflowCase = new Case(
-            opportunity_id__c = opp.Id,
-            DMT_Feature_Id__c = '700',
-            DMT_Passport_Sanction__c = 'passport',
-            Status = 'Finished',
-            RecordTypeId = CASE_RT_APPROVAL_ID,
-            OwnerId = groupApprover.Id,
-            Subject = 'Test'
+        Case workflowCase = DMT_UTIL.createCaseRecord(
+            new Map<Schema.SObjectField, Object>{
+                Case.OwnerId => groupApprover.Id,
+                Case.opportunity_id__c => opp.Id,
+                Case.DMT_Feature_Id__c => '700',
+                Case.DMT_Passport_Sanction__c => 'passport',
+                Case.Status => 'Finished',
+                Case.RecordTypeId => CASE_RT_APPROVAL_ID,
+                Case.Subject => 'Test'
+            }
         );
-        insert workflowCase;
 
-        Task approvalTask = new Task(
-            WhatId = workflowCase.Id,
-            RecordTypeId = TASK_RT_APPROVAL_STEP_ID,
-            Status = 'Completed',
-            Subject = 'Test Task',
-            OwnerId = groupApprover.Id,
-            DMT_Step_Result__c = 'Yes'
+        Task approvalTask = DMT_UTIL.createTaskRecord(
+            groupApprover.Id,
+            workflowCase.Id,
+            new Map<Schema.SObjectField, Object>{
+                Task.RecordTypeId => TASK_RT_APPROVAL_STEP_ID,
+                Task.Status => 'Completed',
+                Task.Subject => 'Test Task',
+                Task.DMT_Step_Result__c => 'Yes'
+            }
         );
-        insert approvalTask;
         TriggerBypass.removeBypass();
 
         Test.startTest();
@@ -445,31 +489,34 @@ public with sharing class DMT_OpportunityTriggerHandler_Test {
     private static Task setupApprovalTaskWithSnapshot(Opportunity frozenOpp, String passportSanctionFilter) {
         Group groupApprover = [SELECT Id FROM Group WHERE DeveloperName = 'DMT_Approvers1' LIMIT 1];
         TriggerBypass.setBypass();
-        Case approvalCase = new Case(
-            opportunity_id__c = frozenOpp.Id,
-            DMT_Passport_Sanction__c = passportSanctionFilter,
-            Status = 'Pending',
-            RecordTypeId = CASE_RT_APPROVAL_ID,
-            OwnerId = groupApprover.Id,
-            Subject = 'Test'
+        Case approvalCase = DMT_UTIL.createCaseRecord(
+            new Map<Schema.SObjectField, Object>{
+                Case.OwnerId => groupApprover.Id,
+                Case.opportunity_id__c => frozenOpp.Id,
+                Case.DMT_Passport_Sanction__c => passportSanctionFilter,
+                Case.Status => 'Pending',
+                Case.RecordTypeId => CASE_RT_APPROVAL_ID,
+                Case.Subject => 'Test'
+            }
         );
-        insert approvalCase;
 
-        Task openTask = new Task(
-            WhatId = approvalCase.Id,
-            RecordTypeId = TASK_RT_APPROVAL_STEP_ID,
-            Status = 'Not Started',
-            Subject = 'Test Task',
-            OwnerId = groupApprover.Id
+        Task openTask = DMT_UTIL.createTaskRecord(
+            groupApprover.Id,
+            approvalCase.Id,
+            new Map<Schema.SObjectField, Object>{
+                Task.RecordTypeId => TASK_RT_APPROVAL_STEP_ID,
+                Task.Status => 'Not Started',
+                Task.Subject => 'Test Task'
+            }
         );
-        insert openTask;
         TriggerBypass.removeBypass();
 
-        DMT_TaskStatusWhenCompleted__c snapshot = new DMT_TaskStatusWhenCompleted__c(
-            Case__c = approvalCase.Id,
-            DMT_ViewFieldStatusAtClose__c = '{"opportunity":' + JSON.serialize(frozenOpp) + '}'
+        DMT_TaskStatusWhenCompleted__c snapshot = DMT_UTIL.createTaskStatusWhenCompletedRecord(
+            new Map<Schema.SObjectField, Object>{
+                DMT_TaskStatusWhenCompleted__c.Case__c => approvalCase.Id,
+                DMT_TaskStatusWhenCompleted__c.DMT_ViewFieldStatusAtClose__c => '{"opportunity":' + JSON.serialize(frozenOpp) + '}'
+            }
         );
-        insert snapshot;
 
         openTask.DMT_ViewStatusAtClose__c = snapshot.Id;
         update openTask;

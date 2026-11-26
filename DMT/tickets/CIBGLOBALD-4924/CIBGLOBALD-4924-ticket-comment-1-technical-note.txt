@@ -1,0 +1,33 @@
+CIBGLOBALD-4924 - Nota técnica
+
+QUÉ SE HA CORREGIDO
+Al reabrirse las Tasks de aprobación de un workflow con varios pasos, el Case queda asignado a la misma queue que la Task reabierta. Antes, la Task reabierta iba a la queue del primer paso y el Case se quedaba con la queue de un paso posterior.
+
+CAUSA
+Apex DMT_ApprovalChangeStep_Helper.restartTasksForRecord cancela las Tasks del Case que tienen cambios respecto a su snapshot y crea una sola Task nueva, copia de la más antigua (CreatedDate). El Owner del Case (Case.OwnerId) se asignaba dentro del bucle con cada Task cancelada, así que se quedaba el de la última Task del bucle, no el de la Task copiada.
+
+CAMBIO
+- Apex DMT_ApprovalChangeStep_Helper.restartTasksForRecord: el Owner del Case se toma de la misma Task de la que se copia la Task nueva. Case.OwnerId = OwnerId (Assigned To) de la Task reabierta, igual que cuando un paso crea la Task del siguiente approver. El resto no cambia: Case Status Pending, DMT_IsInRevision__c (Is In Revision) = false.
+- Sin SOQL ni DML adicionales.
+- Opportunity y Line usan el mismo método, así que el cambio cubre los dos: DMT_OpportunityTriggerHandler.restartApprovalTasksOnOpportunityResubmission y DMT_Line_Helper.restartApprovalTasksOnLineResubmission.
+- Test class DMT_ApprovalChangeStep_HelperTest: nuevo test testRestartTasksForRecordSetsCaseOwnerToReplacementOwner (dos Tasks de queues distintas; el Case queda con el Owner de la Task nueva).
+
+CUÁNDO SE REABREN LAS TASKS (sin cambios en este ticket)
+- Al cerrar una Task se guarda un snapshot de la vista de su approver en DMT_TaskStatusWhenCompleted__c, enlazado desde Task.DMT_ViewStatusAtClose__c (View Status At Close). Campos vigilados: DMT_AllFieldsInStatus__c (All Fields In Status).
+- Opportunity (StageName, record type DMT_Opportunity) y Line (Status__c, record types TreasurySettlement y OtherProducts):
+  - de Draft a Proposal: Cases con DMT_Passport_Sanction__c (Passport Sanction) = passport.
+  - de Proposal a Approval: Cases con Passport Sanction = approval.
+  - edición en Ready to close: Cases con Passport Sanction = readytoclose.
+- Se reabren las Tasks del Case con Status distinto de Cancelled, DMT_Not_Restart__c (Not Restart) = false, View Status At Close informado y algún campo de su snapshot cambiado. Esas Tasks pasan a Cancelled y se crea una Task nueva Not Started, sin View Status At Close, para la queue de la más antigua.
+
+QUÉ COMPROBAR
+Tras la reapertura, el Owner del Case es la misma queue que la Task nueva Not Started.
+
+CONSULTAS (Salesforce Inspector)
+1. Cases de approval con dos o más Tasks cerradas de queues distintas (Lines; para Opportunity cambiar el filtro por opportunity_id__r.RecordType.DeveloperName = 'DMT_Opportunity'):
+SELECT Id, CaseNumber, Owner.Name, Status, DMT_Line__c, DMT_Line__r.Name, DMT_Line__r.Status__c FROM Case WHERE DMT_Passport_Sanction__c = 'approval' AND DMT_Line__r.RecordType.DeveloperName IN ('TreasurySettlement','OtherProducts') AND Status IN ('Pending','In Progress') ORDER BY CreatedDate DESC
+2. Tasks del Case con su snapshot:
+SELECT Id, Owner.Name, Status, CreatedDate, DMT_Not_Restart__c, DMT_ViewStatusAtClose__r.DMT_AllFieldsInStatus__c FROM Task WHERE WhatId = '<CaseId>' ORDER BY CreatedDate
+3. Case y Tasks después de la reapertura:
+SELECT CaseNumber, Owner.Name, Status FROM Case WHERE Id = '<CaseId>'
+SELECT Id, Owner.Name, Status, Subject, DMT_ViewStatusAtClose__c, CreatedDate FROM Task WHERE WhatId = '<CaseId>' ORDER BY CreatedDate
