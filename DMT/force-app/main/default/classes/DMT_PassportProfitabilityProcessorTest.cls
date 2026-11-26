@@ -1,11 +1,15 @@
 @IsTest
 private class DMT_PassportProfitabilityProcessorTest {
+    private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass();
+    private static final DES_UtilTestClass DES_UTIL = new DES_UtilTestClass();
 
     @testSetup
     static void setupData() {
         // Opportunity mínima válida
-        Opportunity opp = DMT_Test_DataFactory.generateOpportunity();
-        OpportunityLineItem opl = DMT_Test_DataFactory.generateOpportunityLineItem(opp);
+        Opportunity opp = DMT_UTIL.createOpportunityForAccount(null);
+        Product2 product = DES_UTIL.createProductRecord();
+        PricebookEntry pricebookEntry = DMT_UTIL.createPricebookEntryRecord(product.Id);
+        OpportunityLineItem opl = DES_UTIL.buildOppLineItem(opp.Id, product.Id, pricebookEntry.Id);
 
         // JSON de prueba con nivel Opportunity y nivel Producto
         String jsonPassport = '{' +
@@ -35,12 +39,17 @@ private class DMT_PassportProfitabilityProcessorTest {
                 ']' +
             '}' +
         '}';
+        insert opl;
 
-        Passport__c passport = new Passport__c(
-            Opportunity__c = opp.Id,
-            DMT_Passport_Save__c = jsonPassport
+        Passport__c passport = DMT_UTIL.createPassportRecord(
+            new Map<Schema.SObjectField, Object>{
+                Passport__c.Opportunity__c => opp.Id,
+                Passport__c.DMT_Passport_Save__c => jsonPassport
+            }
         );
-        insert passport;
+        // CIBGLOBALD-4851 - Enhancement fix to existing process: DMT_PassportProfitabilityProcessor reads the newest passport
+        // of the opportunity; other automation can create one in the same second, so this one is made the newest.
+        Test.setCreatedDate(passport.Id, System.now().addMinutes(1));
     }
 
     @IsTest
@@ -59,15 +68,15 @@ private class DMT_PassportProfitabilityProcessorTest {
             );
         Test.stopTest();
 
-        System.assertEquals(1, results.size(), 'Debe devolver un resultado');
+        Assert.areEqual(1, results.size(), 'Debe devolver un resultado');
 
         DMT_PassportProfitabilityProcessor.ProfitabilityResult res = results[0];
-        System.assertEquals(true, res.success, 'Debe ser success=true');
-        System.assertEquals(opp.Id, res.opportunityId, 'Debe devolver el Id de la oportunidad');
-        System.assertNotEquals(null, res.passportId, 'Debe devolver el Id del passport');
-        System.assertEquals(true, res.isOpportunityLevel, 'Debe indicar nivel oportunidad');
-        System.assertEquals(12.345678, res.raroec, 'Debe mapear raroec correctamente');
-        System.assertEquals(8.765432, res.rorc, 'Debe mapear rorc correctamente');
+        Assert.areEqual(true, res.success, 'Debe ser success=true');
+        Assert.areEqual(opp.Id, res.opportunityId, 'Debe devolver el Id de la oportunidad');
+        Assert.areNotEqual(null, res.passportId, 'Debe devolver el Id del passport');
+        Assert.areEqual(true, res.isOpportunityLevel, 'Debe indicar nivel oportunidad');
+        Assert.areEqual(12.345678, res.raroec, 'Debe mapear raroec correctamente');
+        Assert.areEqual(8.765432, res.rorc, 'Debe mapear rorc correctamente');
     }
 
     @IsTest
@@ -86,12 +95,12 @@ private class DMT_PassportProfitabilityProcessorTest {
             );
         Test.stopTest();
 
-        System.assertEquals(1, results.size(), 'Debe devolver un resultado');
+        Assert.areEqual(1, results.size(), 'Debe devolver un resultado');
 
         DMT_PassportProfitabilityProcessor.ProfitabilityResult res = results[0];
-        System.assertEquals(true, res.success, 'Debe ser success=true');
-        System.assertEquals(false, res.isOpportunityLevel, 'Debe indicar nivel producto');
-        System.assertEquals(
+        Assert.areEqual(true, res.success, 'Debe ser success=true');
+        Assert.areEqual(false, res.isOpportunityLevel, 'Debe indicar nivel producto');
+        Assert.areEqual(
             'Usar método getProductLevelProfitability para nivel producto',
             res.mensaje,
             'Debe devolver el mensaje esperado'
@@ -177,73 +186,84 @@ private class DMT_PassportProfitabilityProcessorTest {
         // Elimina Passports previos para evitar duplicación
         delete [SELECT Id FROM Passport__c WHERE Opportunity__c = :opp.Id];
 
-        Passport__c passport = new Passport__c(
-            Opportunity__c = opp.Id,
-            DMT_Passport_Save__c = jsonPassport
+        Passport__c passport = DMT_UTIL.createPassportRecord(
+            new Map<Schema.SObjectField, Object>{
+                Passport__c.Opportunity__c => opp.Id,
+                Passport__c.DMT_Passport_Save__c => jsonPassport
+            }
         );
-        insert passport;
 
         // Verifica que el Passport se insertó correctamente
         Passport__c savedPassport = [SELECT Id, DMT_Passport_Save__c FROM Passport__c WHERE Id = :passport.Id];
-        System.assert(savedPassport.DMT_Passport_Save__c != null, 'JSON no se guardó en Passport');
+        Assert.isTrue(savedPassport.DMT_Passport_Save__c != null, 'JSON no se guardó en Passport');
 
         Test.startTest();
         DMT_PassportProfitabilityProcessor.updateProfitabilityFields(opp.Id, savedPassport.DMT_Passport_Save__c);
         Test.stopTest();
 
-        Opportunity refreshedOpp = [
-            SELECT DMT_Allin_Drawn__c, DMT_Allin_Undrawn__c, DMT_EAD_Eco__c,
-                   DMT_EAD_Reg__c, DMT_Regulatory_Capital__c, DMT_Economic_Capital__c,
-                   DMT_Franchise_Deal__c, DMT_Net_Income_Eco__c, DMT_Net_Income_Reg__c,
-                   DMT_RORC__c, DMT_RAROEC__c, DMT_RWA_eco__c, DMT_RWA_reg__c,
-                   DMT_RORC_CDD__c, DMT_Global_Expected_RORC__c
-            FROM Opportunity
-            WHERE Id = :opp.Id
+        List<DMT_Profitability_results__c> results = [
+            SELECT DMT_Opportunity__c, DMT_OpportunityLineItem__c,
+                   DMT_Allin_Drawn__c, DMT_Allin_Undrawn__c, DMT_EAD_Eco__c, DMT_EAD_Reg__c,
+                   DMT_Regulatory_Capital__c, DMT_Economic_Capital__c, DMT_Franchise_Deal__c,
+                   DMT_Net_Income_Eco__c, DMT_Net_Income_Reg__c, DMT_RORC__c, DMT_RAROEC__c,
+                   DMT_RWA_Eco__c, DMT_RWA_Reg__c, DMT_RORC_CDD__c, DMT_Global_Expected_RORC__c
+            FROM DMT_Profitability_results__c
+            WHERE DMT_Opportunity__c = :opp.Id
         ];
 
-        OpportunityLineItem refreshedOli = [
-            SELECT DMT_Allin_Drawn__c, DMT_Allin_Undrawn__c, DMT_EAD_Eco__c,
-                   DMT_EAD_Reg__c, DMT_Regulatory_Capital__c, DMT_Economic_Capital__c,
-                   DMT_Franchise_Deal__c, DMT_Net_Income_Eco__c, DMT_Net_Income_Reg__c,
-                   DMT_RORC__c, DMT_RAROEC__c, DMT_RWA_Eco__c, DMT_RWA_Reg__c,
-                   DMT_RORC_CDD__c
-            FROM OpportunityLineItem
-            WHERE Id = :oli.Id
-        ];
+        Assert.areEqual(2, results.size(), 'Debe crear 2 registros: Opportunity + Product');
 
-        // Verify Opportunity aggregate-level fields (all 15 fields)
-        System.assertEquals(11.111111, refreshedOpp.DMT_Allin_Drawn__c, 'Opp: Allin Drawn from aggregate');
-        System.assertEquals(22.222222, refreshedOpp.DMT_Allin_Undrawn__c, 'Opp: Allin Undrawn from aggregate');
-        System.assertEquals(1000.12, refreshedOpp.DMT_EAD_Eco__c, 'Opp: EAD Eco from aggregate');
-        System.assertEquals(2000.23, refreshedOpp.DMT_EAD_Reg__c, 'Opp: EAD Reg from aggregate');
-        System.assertEquals(3000.34, refreshedOpp.DMT_Regulatory_Capital__c, 'Opp: Regulatory Capital from aggregate');
-        System.assertEquals(4000.45, refreshedOpp.DMT_Economic_Capital__c, 'Opp: Economic Capital from aggregate');
-        System.assertEquals(5000.56, refreshedOpp.DMT_Franchise_Deal__c, 'Opp: Franchise Deal from aggregate');
-        System.assertEquals(6000.67, refreshedOpp.DMT_Net_Income_Eco__c, 'Opp: Net Income Eco from aggregate');
-        System.assertEquals(7000.78, refreshedOpp.DMT_Net_Income_Reg__c, 'Opp: Net Income Reg from aggregate');
-        System.assertEquals(0.1111, refreshedOpp.DMT_RORC__c, 'Opp: RORC from aggregate');
-        System.assertEquals(0.2222, refreshedOpp.DMT_RAROEC__c, 'Opp: RAROEC from aggregate');
-        System.assertEquals(8000.89, refreshedOpp.DMT_RWA_eco__c, 'Opp: RWA eco from aggregate');
-        System.assertEquals(9000.91, refreshedOpp.DMT_RWA_reg__c, 'Opp: RWA reg from aggregate');
-        System.assertEquals(0.3333, refreshedOpp.DMT_RORC_CDD__c, 'Opp: RORC CDD from aggregate');
-        System.assertEquals(0.4444, refreshedOpp.DMT_Global_Expected_RORC__c, 'Opp: Global Expected RORC (Opp-only)');
+        DMT_Profitability_results__c oppLevelResult;
+        DMT_Profitability_results__c productLevelResult;
 
-        // Verify OpportunityLineItem product-level fields (14 shared fields, no clientRorc)
-        // Should use isLine=true result (second productId "01" record) due to deduplication
-        System.assertEquals(2.111111, refreshedOli.DMT_Allin_Drawn__c, 'OLI: Allin Drawn from isLine=true product (prioritized over isLine=false)');
-        System.assertEquals(2.222222, refreshedOli.DMT_Allin_Undrawn__c, 'OLI: Allin Undrawn from isLine=true product');
-        System.assertEquals(2100.12, refreshedOli.DMT_EAD_Eco__c, 'OLI: EAD Eco from isLine=true product');
-        System.assertEquals(2200.23, refreshedOli.DMT_EAD_Reg__c, 'OLI: EAD Reg from isLine=true product');
-        System.assertEquals(2300.34, refreshedOli.DMT_Regulatory_Capital__c, 'OLI: Regulatory Capital from isLine=true product');
-        System.assertEquals(2400.45, refreshedOli.DMT_Economic_Capital__c, 'OLI: Economic Capital from isLine=true product');
-        System.assertEquals(2500.56, refreshedOli.DMT_Franchise_Deal__c, 'OLI: Franchise Deal from isLine=true product');
-        System.assertEquals(2600.67, refreshedOli.DMT_Net_Income_Eco__c, 'OLI: Net Income Eco from isLine=true product');
-        System.assertEquals(2700.78, refreshedOli.DMT_Net_Income_Reg__c, 'OLI: Net Income Reg from isLine=true product');
-        System.assertEquals(0.1212, refreshedOli.DMT_RORC__c, 'OLI: RORC from isLine=true product');
-        System.assertEquals(0.1313, refreshedOli.DMT_RAROEC__c, 'OLI: RAROEC from isLine=true product');
-        System.assertEquals(2800.89, refreshedOli.DMT_RWA_Eco__c, 'OLI: RWA Eco from isLine=true product');
-        System.assertEquals(2900.91, refreshedOli.DMT_RWA_Reg__c, 'OLI: RWA Reg from isLine=true product');
-        System.assertEquals(0.1414, refreshedOli.DMT_RORC_CDD__c, 'OLI: RORC CDD from isLine=true product');
+        for (DMT_Profitability_results__c record : results) {
+            if (record.DMT_OpportunityLineItem__c == null) {
+                oppLevelResult = record;
+            } else {
+                productLevelResult = record;
+            }
+        }
+
+        Assert.areNotEqual(null, oppLevelResult, 'Debe existir registro a nivel Opportunity');
+        Assert.areNotEqual(null, productLevelResult, 'Debe existir registro a nivel Product');
+
+        // Opportunity level
+        Assert.areEqual(opp.Id, oppLevelResult.DMT_Opportunity__c);
+        Assert.areEqual(null, oppLevelResult.DMT_OpportunityLineItem__c);
+        Assert.areEqual(11.111111, oppLevelResult.DMT_Allin_Drawn__c);
+        Assert.areEqual(22.222222, oppLevelResult.DMT_Allin_Undrawn__c);
+        Assert.areEqual(1000.12, oppLevelResult.DMT_EAD_Eco__c);
+        Assert.areEqual(2000.23, oppLevelResult.DMT_EAD_Reg__c);
+        Assert.areEqual(3000.34, oppLevelResult.DMT_Regulatory_Capital__c);
+        Assert.areEqual(4000.45, oppLevelResult.DMT_Economic_Capital__c);
+        Assert.areEqual(5000.56, oppLevelResult.DMT_Franchise_Deal__c);
+        Assert.areEqual(6000.67, oppLevelResult.DMT_Net_Income_Eco__c);
+        Assert.areEqual(7000.78, oppLevelResult.DMT_Net_Income_Reg__c);
+        Assert.areEqual(11.11, oppLevelResult.DMT_RORC__c);
+        Assert.areEqual(22.22, oppLevelResult.DMT_RAROEC__c);
+        Assert.areEqual(8000.89, oppLevelResult.DMT_RWA_Eco__c);
+        Assert.areEqual(9000.91, oppLevelResult.DMT_RWA_Reg__c);
+        Assert.areEqual(33.33, oppLevelResult.DMT_RORC_CDD__c);
+        Assert.areEqual(44.44, oppLevelResult.DMT_Global_Expected_RORC__c);
+
+        // Product level (must use isLine=true record)
+        Assert.areEqual(opp.Id, productLevelResult.DMT_Opportunity__c);
+        Assert.areEqual(oli.Id, productLevelResult.DMT_OpportunityLineItem__c);
+        Assert.areEqual(2.111111, productLevelResult.DMT_Allin_Drawn__c);
+        Assert.areEqual(2.222222, productLevelResult.DMT_Allin_Undrawn__c);
+        Assert.areEqual(2100.12, productLevelResult.DMT_EAD_Eco__c);
+        Assert.areEqual(2200.23, productLevelResult.DMT_EAD_Reg__c);
+        Assert.areEqual(2300.34, productLevelResult.DMT_Regulatory_Capital__c);
+        Assert.areEqual(2400.45, productLevelResult.DMT_Economic_Capital__c);
+        Assert.areEqual(2500.56, productLevelResult.DMT_Franchise_Deal__c);
+        Assert.areEqual(2600.67, productLevelResult.DMT_Net_Income_Eco__c);
+        Assert.areEqual(2700.78, productLevelResult.DMT_Net_Income_Reg__c);
+        Assert.areEqual(12.12, productLevelResult.DMT_RORC__c);
+        Assert.areEqual(13.13, productLevelResult.DMT_RAROEC__c);
+        Assert.areEqual(2800.89, productLevelResult.DMT_RWA_Eco__c);
+        Assert.areEqual(2900.91, productLevelResult.DMT_RWA_Reg__c);
+        Assert.areEqual(14.14, productLevelResult.DMT_RORC_CDD__c);
+        Assert.areEqual(null, productLevelResult.DMT_Global_Expected_RORC__c);
     }
 
     @IsTest
@@ -255,15 +275,15 @@ private class DMT_PassportProfitabilityProcessorTest {
             DMT_PassportProfitabilityProcessor.getProductLevelProfitability(opp.Id);
         Test.stopTest();
 
-        System.assertEquals(2, productos.size(), 'Debe devolver 2 productos');
+        Assert.areEqual(2, productos.size(), 'Debe devolver 2 productos');
 
-        System.assertEquals('PROD_001', productos[0].productId);
-        System.assertEquals(20.123456, productos[0].raroec);
-        System.assertEquals(10.654321, productos[0].rorc);
+        Assert.areEqual('PROD_001', productos[0].productId);
+        Assert.areEqual(20.123456, productos[0].raroec);
+        Assert.areEqual(10.654321, productos[0].rorc);
 
-        System.assertEquals('PROD_002', productos[1].productId);
-        System.assertEquals(15.5, productos[1].raroec);
-        System.assertEquals(7.25, productos[1].rorc);
+        Assert.areEqual('PROD_002', productos[1].productId);
+        Assert.areEqual(15.5, productos[1].raroec);
+        Assert.areEqual(7.25, productos[1].rorc);
     }
 
     @IsTest
@@ -280,10 +300,10 @@ private class DMT_PassportProfitabilityProcessorTest {
             );
         Test.stopTest();
 
-        System.assertEquals(1, results.size(), 'Debe devolver un resultado aunque falle');
+        Assert.areEqual(1, results.size(), 'Debe devolver un resultado aunque falle');
 
         DMT_PassportProfitabilityProcessor.ProfitabilityResult res = results[0];
-        System.assertEquals(false, res.success, 'Debe marcar success=false');
-        System.assert(res.mensaje != null && res.mensaje.startsWith('Error:'), 'Debe informar del error');
+        Assert.areEqual(false, res.success, 'Debe marcar success=false');
+        Assert.isTrue(res.mensaje != null && res.mensaje.startsWith('Error:'), 'Debe informar del error');
     }
 }

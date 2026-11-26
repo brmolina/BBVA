@@ -12,13 +12,17 @@ public class DMT_BulkImportBatch_Test {
 
     @TestSetup
     static void makeData() {
-        // a subsidiary (customer code) and a group (group code), one insert
+        // a subsidiary (customer code) and a group (group code), one insert. Structure Type is set here: the Account
+        // trigger (AccountTriggerHandler) only fills it when one account is inserted alone, and an Other Products line
+        // needs a Customer client (DES_Client_Type__c Subsidiary) to change status (flow DMT_OTHER_Line_Validations).
         insert new List<Account>{
             DMT_UTIL.buildAccount(new Map<Schema.SObjectField, Object>{
-                Account.Name => 'Test Bulk Import Client', Account.g_customer_id__c => CUSTOMER_CODE, Account.DES_Group_Code__c => null
+                Account.Name => 'Test Bulk Import Client', Account.g_customer_id__c => CUSTOMER_CODE, Account.DES_Group_Code__c => null,
+                Account.DES_Structure_Type__c => 'Subsidiary'
             }),
             DMT_UTIL.buildAccount(new Map<Schema.SObjectField, Object>{
-                Account.Name => 'Test Bulk Import Group', Account.DES_Group_Code__c => GROUP_CODE, Account.g_customer_id__c => null
+                Account.Name => 'Test Bulk Import Group', Account.DES_Group_Code__c => GROUP_CODE, Account.g_customer_id__c => null,
+                Account.DES_Structure_Type__c => 'Group'
             })
         };
     }
@@ -536,6 +540,9 @@ public class DMT_BulkImportBatch_Test {
         DMT_UTIL.createRiskLineTermRecord(new Map<Schema.SObjectField, Object>{
             DMT_Risk_Line_Term__c.DMT_Line__c => line.Id, DMT_Risk_Line_Term__c.DMT_Amount__c => 100000
         });
+        // the move through Draft needs a Customer client on an Other Products line (flow DMT_OTHER_Line_Validations)
+        Assert.areEqual('Customer', [SELECT Client_Type__c FROM DMT_Line__c WHERE Id = :line.Id].Client_Type__c,
+                        'Test setup: the line client must be a Customer');
         return line;
     }
 
