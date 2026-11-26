@@ -1,35 +1,15 @@
 CIBGLOBALD-4690 - Nota técnica
 
-QUÉ SE HA CORREGIDO
-En el modal Upload Document del card Documents (gestor documental, Core Documents), el campo Document Type muestra siempre el tipo seleccionado. Antes, al elegir un tipo de la taxonomía (por ejemplo SPPI Test) el combobox mostraba Opportunity Description, aunque el documento se guardaba con el tipo correcto.
+Corrección
+En el modal Upload Document (card Documents), Document Type muestra ahora el tipo seleccionado. Antes, al elegir por ejemplo SPPI Test, mostraba Opportunity Description, aunque el documento se guardaba con el tipo correcto.
 
-CAUSA
-LWC dmt_document_manager_for_core_document. Las opciones de Document Type son:
-- Una opción base, label <Object> Description (Opportunity Description, Line Description o Case Description), value CO-OF-00240.
-- Las opciones de taxonomía que devuelve Apex DMT_CoreDocuments_Controller.getCatalogsDescriptions: registros de DMT_Taxonomy_Values__c del catálogo I222, activos, con gf_catalog_atrb_val1_name_c__c = Entific del registro (Opportunity.Entific__c o DMT_Line__c.Booking_Geography__c) y gf_catalog_atrb_val3_name__c que contiene OP (Opportunity), TO (Line Sanction) o TL (Line Treasury / TreasurySettlement). Value = DMT_Value__c (por ejemplo SPPI), docTypeCode = CO-OF-00240.
-El lightning-combobox estaba enlazado a selectedDocType, que al elegir una opción de taxonomía toma su docTypeCode (CO-OF-00240). Ese valor es el de la opción base, así que el combobox pintaba su label. La subida usa DMT_Value__c como objectCode, por eso el documento se guardaba bien.
+Causa
+LWC dmt_document_manager_for_core_document: el combobox estaba enlazado a un código común a todos los tipos (CO-OF-00240), que es el mismo de la opción Opportunity Description.
 
-CAMBIO
-- LWC dmt_document_manager_for_core_document: nueva propiedad selectedDocTypeOption con el value de la opción elegida; el lightning-combobox (name docType) se enlaza a ella. Se informa en handleDocTypeChange y se limpia en openModal, handleModalCancel y al terminar handleModalUpload.
-- La lógica de subida no cambia: docType y objectCode que se envían a Apex DMT_CoreDocuments_Controller.updateFileMetadataWithObjectCode son los mismos que antes.
-- Solo front end, sin cambios en Apex ni test classes.
+Cambio
+El combobox se enlaza al valor de la opción elegida. La subida no cambia. Solo front end.
 
-SPPI TEST EN APPROVAL PROCESS DATA (sin cambios en este ticket)
-El check File Uploaded de la sección SPPI TEST (Approval Process Data, pestaña Deal) es el campo fórmula Opportunity.DMT_SPPI_File_Uploaded__c = CONTAINS(CoreDocsTaxonomyValues__c, 'SPPI'). Al subir un documento con un tipo de taxonomía, Apex DMT_CoreDocuments_Controller.appendTaxonomyValue añade su DMT_Value__c a Opportunity.CoreDocsTaxonomyValues__c (Core Docs Taxonomy Values, separado por comas). Con un documento de tipo SPPI Test el check se marca en el momento, sin recalcular el Passport. La subida marca el Passport como obsoleto (Passport__c.DMT_Is_Obsoleted_Passport_Save__c = true) hasta pulsar Calculate.
-
-CÓMO PROBAR
-1. Abrir una Opportunity de record type DMT_Opportunity cuya Entific tenga tipos de documento en el catálogo I222 (consulta 1 y 2), pestaña Opportunity Info, card Documents.
-2. Upload Document y elegir cualquier fichero. Se abre el modal con Document Type vacío (Select Document Type).
-3. Elegir SPPI Test: el combobox muestra SPPI Test (antes mostraba Opportunity Description).
-4. Elegir otros tipos seguidos (por ejemplo Termsheet, Opportunity Description, Others): el combobox muestra siempre el último elegido.
-5. Cancel y volver a abrir el modal: Document Type vuelve a estar vacío.
-6. Elegir SPPI Test y pulsar Upload: toast File uploaded successfully, en la tabla Documents aparece el fichero con Document Type SPPI Test, Opportunity.CoreDocsTaxonomyValues__c contiene SPPI (consulta 3) y en Approval Process Data, pestaña Deal, sección SPPI TEST, File Uploaded está marcado.
-7. Mismo comportamiento en una Line (card Documents de la Line, opción base Line Description).
-
-CONSULTAS (Salesforce Inspector)
-1. Tipos de documento disponibles por Entific y tipo de registro:
-SELECT DMT_Value__c, DMT_Name_EN__c, gf_catalog_atrb_val1_name_c__c, gf_catalog_atrb_val3_name__c FROM DMT_Taxonomy_Values__c WHERE DMT_Catalog__c = 'I222' AND DMT_Active__c = true ORDER BY gf_catalog_atrb_val1_name_c__c, DMT_Name_EN__c
-2. Opportunities abiertas con Entific ES (cambiar ES por la Entific elegida en la consulta 1):
-SELECT Id, Name, StageName, Entific__c, CoreDocsTaxonomyValues__c, DMT_SPPI_File_Uploaded__c FROM Opportunity WHERE RecordType.DeveloperName = 'DMT_Opportunity' AND Entific__c = 'ES' AND IsClosed = false ORDER BY LastModifiedDate DESC
-3. Después de la subida:
-SELECT CoreDocsTaxonomyValues__c, DMT_SPPI_File_Uploaded__c FROM Opportunity WHERE Id = '<OpportunityId>'
+Cómo probar
+1. En una Opportunity o Line, card Documents: Upload Document y elegir un fichero.
+2. Elegir varios tipos en Document Type: se muestra siempre el último elegido.
+3. Upload: el documento aparece en la tabla con ese tipo. Con SPPI Test, en Approval Process Data > Deal > SPPI TEST queda marcado File Uploaded.
