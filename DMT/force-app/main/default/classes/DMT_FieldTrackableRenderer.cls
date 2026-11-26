@@ -13,8 +13,10 @@
  * requires declaring a ChildSection per child object; skipping it is a silent no-op, not an error -
  * the field can be listed as tracked and still never actually get compared.
  *
- * Once a component's renderer implements this, DMT_RendererFactory.getTrackedComponentNames()
- * picks it up automatically - nothing else to register. See DMT_InfoRenderer/DMT_ClientRenderer for
+ * Implementing this is not enough on its own: the component's delegator must also implement
+ * DMT_TrackedComponent with isComponentTracked() returning true, or
+ * DMT_RendererFactory.getTrackedComponentNames() leaves the component out and nothing is compared
+ * (see step 4 in the DMT_RendererFactory header). See DMT_InfoRenderer/DMT_ClientRenderer for
  * the maintenance rules each component family follows.
  */
 public interface DMT_FieldTrackableRenderer {

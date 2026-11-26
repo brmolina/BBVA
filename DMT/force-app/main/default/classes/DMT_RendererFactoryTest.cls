@@ -1,39 +1,31 @@
 @IsTest
 public class DMT_RendererFactoryTest {
 
-    private static Id treasuryRTId() {
-        return Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('TreasurySettlement').getRecordTypeId();
-    }
-
-    private static Id otherProductsRTId() {
-        return Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('OtherProducts').getRecordTypeId();
-    }
-
-    private static Id sanctionRTId() {
-        return Schema.SObjectType.DMT_Line__c.getRecordTypeInfosByDeveloperName().get('Sanction').getRecordTypeId();
-    }
-
-    private static Id dmtOpportunityRTId() {
-        return Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('DMT_Opportunity').getRecordTypeId();
-    }
+    private static final DMT_UtilTestClass DMT_UTIL = new DMT_UtilTestClass();
 
     // CIBGLOBALD-4117: getTrackedFields/getTrackedFieldsByObject/getChildSections take the full
     // record (not just its RecordTypeId) so a renderer can branch on any of its own fields - these
     // helpers build the minimal record each test needs.
     private static DMT_Line__c treasuryLine() {
-        return new DMT_Line__c(RecordTypeId = treasuryRTId());
+        return DMT_UTIL.buildLine(new Map<Schema.SObjectField, Object>{
+            DMT_Line__c.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_TREASURY_LINE_RECORD_TYPE_ID
+        });
     }
 
     private static DMT_Line__c otherProductsLine() {
-        return new DMT_Line__c(RecordTypeId = otherProductsRTId());
+        return DMT_UTIL.buildLine(new Map<Schema.SObjectField, Object>{
+            DMT_Line__c.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_OTHER_LINE_RECORD_TYPE_ID
+        });
     }
 
     private static DMT_Line__c sanctionLine() {
-        return new DMT_Line__c(RecordTypeId = sanctionRTId());
+        return DMT_UTIL.buildLine(new Map<Schema.SObjectField, Object>{
+            DMT_Line__c.RecordTypeId => DMT_UtilTestClassConstants.DEFAULT_RISK_APPROVAL_LINE_RECORD_TYPE_ID
+        });
     }
 
     private static Opportunity dmtOpportunity() {
-        return new Opportunity(RecordTypeId = dmtOpportunityRTId());
+        return DMT_UTIL.buildOpportunity(null);
     }
 
     @IsTest
@@ -124,5 +116,27 @@ public class DMT_RendererFactoryTest {
     @IsTest
     static void testGetTrackedFieldsForUnknownComponentIsEmpty() {
         Assert.isTrue(DMT_RendererFactory.getTrackedFields('Not A Real Component', treasuryLine()).isEmpty(), 'Unknown component must return an empty list, not throw.');
+    }
+
+    @IsTest
+    static void testUnderwritingResolvesTrackedDelegator() {
+        DMT_ViewRenderer renderer = DMT_RendererFactory.getRenderer('Underwriting');
+        Assert.isTrue(renderer instanceof DMT_UnderwritingRenderer);
+        Assert.isTrue(renderer instanceof DMT_TrackedComponent);
+        Assert.isTrue(((DMT_TrackedComponent)renderer).isComponentTracked());
+        Assert.isTrue(DMT_RendererFactory.getTrackedComponentNames().contains('Underwriting'));
+        Assert.isTrue(DMT_RendererFactory.hasRenderer('Underwriting'));
+    }
+
+    @IsTest
+    static void testUnderwritingFactoryDelegatesOpportunityTracking() {
+        Opportunity opp = dmtOpportunity();
+        DMT_UnderwritingRenderer renderer = new DMT_UnderwritingRenderer();
+        Assert.areEqual(new Set<String>(renderer.getTrackedFields(opp)),
+            new Set<String>(DMT_RendererFactory.getTrackedFields('Underwriting', opp)));
+        Map<String, List<String>> actual = DMT_RendererFactory.getTrackedFieldsByObject('Underwriting', opp);
+        Assert.areEqual(new Set<String>{'OpportunityLineItem', 'Sold_Order__c'}, actual.keySet());
+        Assert.areEqual(JSON.serialize(renderer.getChildSections(opp)),
+            JSON.serialize(DMT_RendererFactory.getChildSections('Underwriting', opp)));
     }
 }

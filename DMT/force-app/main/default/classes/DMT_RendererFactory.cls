@@ -9,6 +9,25 @@
  * 3. Grant classAccesses to the new class in all relevant DMT permission sets
  *    (ConsultationIT, DMT_Access, DMT_Approver_Configuration, DMT_Approver_Task,
  *    DMT_CommercialActivity, DMT_Integration_Analytics, DMT_Limit_Test, DMT_ReadOnly).
+ * 4. CIBGLOBALD-4117 - Approval restart: if the component shows data an approver signs off on,
+ *    make it tracked, or changes to that data never reopen approval tasks:
+ *    a. On the delegator registered in rendererMap: implement DMT_TrackedComponent with
+ *       isComponentTracked() returning true, plus the same tracking interfaces as its record-type
+ *       renderers, delegating to them (example: DMT_ProductsRenderer). Without this switch the
+ *       component is left out of getTrackedComponentNames(), is never stored in a task snapshot
+ *       (DMT_TaskStatusWhenCompleted__c.DMT_TrackedComponents__c) and is never compared.
+ *    b. On each record-type renderer, by data source:
+ *       - fields of the record only: DMT_FieldTrackableRenderer.getTrackedFields();
+ *       - child objects too: DMT_MultiObjectFieldTrackableRenderer.getTrackedFieldsByObject() AND
+ *         getChildSections(), reusing the existing section key of the same child object
+ *         (opportunityLineItem, opportunityUnderlying...); a child field without its ChildSection
+ *         is never compared;
+ *       - data from a callout: DMT_CalloutTrackableRenderer.
+ *    c. Build the tracked field list from the same method that builds the displayed fields.
+ *    Display-only components (status, process flows) stay untracked. Only snapshots taken after
+ *    the deploy include a newly tracked component.
+ *    References: DMT_ProductsRenderer / DMT_OpportunityProductsRenderer (fields + child sections),
+ *    DMT_InfoRenderer / DMT_OpportunityInfoRenderer (record fields only).
  */
 public without sharing class DMT_RendererFactory {
     /*
@@ -135,6 +154,7 @@ public without sharing class DMT_RendererFactory {
     private static Map<String, Type> rendererMap = new Map<String, Type>{
         'Line Info' => DMT_InfoRenderer.class,
         'Opportunity Info' => DMT_InfoRenderer.class,
+        'Underwriting' => DMT_UnderwritingRenderer.class,
         'Client' => DMT_ClientRenderer.class,
         'Approval Modifications' => DMT_ApprovalModificationsRenderer.class,
         'Approval Process Data' => DMT_ApprovalProcessDataRenderer.class,
