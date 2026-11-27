@@ -895,14 +895,16 @@ export default class DmtBulkImport extends LightningElement {
         const lineIds = this.importedLineIds;
         if (this.addOuDisabled || lineIds.length === 0) return;
         const ouCode = this.ouCode.trim();
+        // the failed rows are lines that do not exist in Salesforce yet: the OU is not added to them
+        const notSavedCount = this.linesRows.filter(r => r.__status === 'Failed').length;
         this.ouState = 'running';
         this._ouLineIds = new Set(lineIds); // the lines this OU is added to
         this.ouResultText = 'Adding participants…';
         this.ouResultIsError = false;
         addOuParticipantsApex({ ouCode, lineIds })
             .then(result => {
-                this._toast('Add OU running in the background', `Adding ${result.users} users to the ${lineIds.length} lines of the load.`, 'info');
-                this._pollJob('OU', () => Promise.resolve(result.asyncJobId), state => this._finishAddOu(ouCode, lineIds, result.users, state));
+                this._toast('Add OU running in the background', `Adding ${result.users} users to the ${lineIds.length} saved line(s) of the load.`, 'info');
+                this._pollJob('OU', () => Promise.resolve(result.asyncJobId), state => this._finishAddOu(ouCode, lineIds, result.users, state, notSavedCount));
             })
             .catch(e => {
                 this.ouState = 'idle';
@@ -911,7 +913,7 @@ export default class DmtBulkImport extends LightningElement {
             });
     }
 
-    async _finishAddOu(ouCode, lineIds, users, state) {
+    async _finishAddOu(ouCode, lineIds, users, state, notSavedCount) {
         let missing = null;
         try {
             missing = await countMissingOuParticipantsApex({ ouCode, lineIds });
@@ -919,13 +921,19 @@ export default class DmtBulkImport extends LightningElement {
             console.error('Add OU result check failed', e);
         }
         this.ouState = 'done';
+        // lines of the load left out because they were not saved (failed rows): named in the result and the toast
+        const notSavedText = notSavedCount > 0
+            ? ` ${notSavedCount} line(s) do not exist in Salesforce yet (failed rows): the OU was not added to them.` : '';
         // the result stays next to the Add OU button
-        this.ouResultText = missing === 0 ? `${users} participant(s) added to all ${lineIds.length} line(s).`
+        this.ouResultText = missing === 0
+            ? `${users} participant(s) added to ${notSavedCount > 0 ? '' : 'all '}${lineIds.length} line(s).${notSavedText}`
             : missing === null ? 'Add OU ended but the result could not be checked. Check the participants of the lines.'
             : `${missing} participant(s) missing or without Edit / Approval Edit. Check the exception log.`;
         this.ouResultIsError = missing !== 0;
         if (missing === 0) {
-            this._toast('Add OU finished', `${users} users added to all the lines of the load.`, 'success');
+            this._toast('Add OU finished', notSavedCount > 0
+                ? `${users} users added to the ${lineIds.length} saved line(s).${notSavedText}`
+                : `${users} users added to all the lines of the load.`, 'success');
         } else if (missing === null) {
             this._toast('Add OU finished', `The job ended (${state.status}) but the result could not be checked. Check the participants of the lines.`, 'warning');
         } else {
@@ -1915,6 +1923,9 @@ export default class DmtBulkImport extends LightningElement {
         // this jobId (Phase STATUS)
         const sentLineIds = new Set(units.map(u => u.line['Line_Id__c']));
         this._statusResults = new Map();
+        // each Process follows only its own moves (a retry or a second Process in the same load starts clean)
+        this._statusMoves = [];
+        this._statusDone = false;
         this._pendingMoves = plans.filter(p => p.plan.target && !p.plan.stayDraft && !p.plan.byButton && sentLineIds.has(p.row['Line_Id__c']))
             .map(p => ({ lineId: p.row['Line_Id__c'], target: p.plan.target }));
         if (this._pendingMoves.length > 0) {
@@ -2117,7 +2128,12 @@ export default class DmtBulkImport extends LightningElement {
             // lines saved now wait for its result (Phase STATUS); the failed ones were not saved, so they do not move
             const moves = (this._pendingMoves || []).filter(m => !this.linesFailedIds.has(m.lineId));
             if (moves.length === 0) {
+                // no line left to move (every line with a status code failed to save): the wait started at
+                // Process ends here, otherwise the screen stays busy (Start Over, Browse and the retry disabled)
                 this._endWatch(PHASE_STATUS);
+                this._statusMoves = [];
+                this._statusDone = true;
+                this.statusProgressText = '';
             } else {
                 this._startStatusWait(moves, this._statusJobOfLoad(this._loadAsyncJobId));
                 this._toast('Status update running in the background',
