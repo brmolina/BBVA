@@ -1,0 +1,8 @@
+CIBGLOBALD-4924 - DMT_ApprovalChangeStep_Helper coverage above 75% from its own test class
+
+- DMT_ApprovalChangeStep_HelperTest: 6 new tests (applyUnsavedValues field typing, isOnlyEditLockAcquired,
+  recheckReadyToCloseLine without a Line, updateOwnerFromCase, freezeCalloutTrackableBaseline and
+  checkCalloutTrackableComponent skip paths) plus firstCalloutTrackableComponent, which reads the component
+  name from DMT_RendererFactory. No HPG callout is reached, so the result does not depend on the org mock data.
+- The release validation failed on coverage only (70.65% for DMT_ApprovalChangeStep_Helper). With only this
+  test class, DMT_TCM_DEV now gives 76.96% (354/460), 37 tests passing.
