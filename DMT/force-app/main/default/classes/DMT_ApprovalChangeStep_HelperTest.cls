@@ -335,6 +335,177 @@ public with sharing class DMT_ApprovalChangeStep_HelperTest {
         Assert.areEqual(DMT_Constants.PENDING, reopenedCase.Status, 'The reopened Case must be Pending.');
     }
 
+    /**
+     * CIBGLOBALD-4924 - coverage of applyUnsavedValues: each unsaved text value is typed as its field expects,
+     * blank text becomes null, a multi-select picklist list is joined with ';', unknown and read-only fields are skipped.
+     * In-memory records only: applyUnsavedValues writes on the record it receives and never saves it.
+     */
+    @IsTest
+    static void testApplyUnsavedValuesTypesEachFieldKind() {
+        Opportunity record = new Opportunity();
+        DMT_ApprovalChangeStep_Helper.applyUnsavedValues(record, new Map<String, Object>{
+            'CloseDate' => '2027-01-15',
+            'DMT_DateToProposal__c' => '2027-01-15T10:30:00.000Z',
+            'Amount' => '1500.5',
+            'Probability' => '20',
+            'IsPrivate' => 'true',
+            'DES_Countries__c' => new List<Object>{ 'ES', '', null, 'PT' },
+            'Description' => '   ',
+            'Name' => 'Changed name',
+            'IsWon' => 'true',
+            'Not_A_Field__c' => 'ignored'
+        });
+
+        Assert.areEqual(Date.newInstance(2027, 1, 15), record.CloseDate, 'A date sent as text must be stored as a Date.');
+        Assert.isNotNull(record.DMT_DateToProposal__c, 'A datetime sent as text must be stored as a Datetime.');
+        Assert.areEqual(1500.5, record.Amount, 'A currency sent as text must be stored as a Decimal.');
+        Assert.areEqual(20, record.Probability, 'A percent sent as text must be stored as a Decimal.');
+        Assert.isTrue(record.IsPrivate, 'A checkbox sent as text must be stored as a Boolean.');
+        Assert.areEqual('ES;PT', record.DES_Countries__c, 'Selected values must be joined with ; skipping blank entries.');
+        Assert.isNull(record.Description, 'Blank text must be stored as null.');
+        Assert.areEqual('Changed name', record.Name, 'Text must be stored as received.');
+        Assert.isFalse(record.getPopulatedFieldsAsMap().containsKey('IsWon'), 'A read-only field must be skipped.');
+
+        Opportunity typedValues = new Opportunity();
+        DMT_ApprovalChangeStep_Helper.applyUnsavedValues(typedValues, new Map<String, Object>{
+            'CloseDate' => Date.newInstance(2027, 2, 1),
+            'IsPrivate' => false,
+            'DES_Countries__c' => new List<Object>(),
+            'Name' => null
+        });
+        Assert.areEqual(Date.newInstance(2027, 2, 1), typedValues.CloseDate, 'A value already typed must be kept.');
+        Assert.isFalse(typedValues.IsPrivate, 'A Boolean already typed must be kept.');
+        Assert.isNull(typedValues.DES_Countries__c, 'An empty selection must be stored as null.');
+
+        Opportunity untouched = new Opportunity();
+        DMT_ApprovalChangeStep_Helper.applyUnsavedValues(untouched, null);
+        Assert.isTrue(untouched.getPopulatedFieldsAsMap().isEmpty(), 'No unsaved values must leave the record unchanged.');
+    }
+
+    /**
+     * CIBGLOBALD-4924 - coverage of isOnlyEditLockAcquired: only taking the edit lock is skipped by the Ready to close
+     * checkpoint; any other change, a lock already taken or a missing old record is compared as usual.
+     * New and old Lines are in-memory copies, as Trigger.new and Trigger.old would hand them over.
+     */
+    @IsTest
+    static void testIsOnlyEditLockAcquired() {
+        Id lineId = Schema.DMT_Line__c.SObjectType.getDescribe().getKeyPrefix() + '000000000001AAA';
+        Id userId = UserInfo.getUserId();
+        DMT_Line__c oldLine = new DMT_Line__c(Id = lineId, Name = 'Line A');
+        DMT_Line__c lockOnly = new DMT_Line__c(Id = lineId, Name = 'Line A', DMT_Line_Lock__c = userId);
+        DMT_Line__c lockAndName = new DMT_Line__c(Id = lineId, Name = 'Line B', DMT_Line_Lock__c = userId);
+        DMT_Line__c alreadyLocked = new DMT_Line__c(Id = lineId, Name = 'Line A', DMT_Line_Lock__c = userId);
+
+        Assert.isTrue(DMT_ApprovalChangeStep_Helper.isOnlyEditLockAcquired(lockOnly, oldLine, 'DMT_Line_Lock__c'),
+            'Taking the lock with no other change must be detected.');
+        Assert.isFalse(DMT_ApprovalChangeStep_Helper.isOnlyEditLockAcquired(lockAndName, oldLine, 'DMT_Line_Lock__c'),
+            'Taking the lock together with another change must be compared.');
+        Assert.isFalse(DMT_ApprovalChangeStep_Helper.isOnlyEditLockAcquired(lockOnly, alreadyLocked, 'DMT_Line_Lock__c'),
+            'A lock that was already taken is not a lock acquisition.');
+        Assert.isFalse(DMT_ApprovalChangeStep_Helper.isOnlyEditLockAcquired(lockOnly, null, 'DMT_Line_Lock__c'),
+            'Without an old record nothing is skipped.');
+    }
+
+    // CIBGLOBALD-4924 - coverage of recheckReadyToCloseLine: no Line Id, or an Id with no Line, updates nothing.
+    @IsTest
+    static void testRecheckReadyToCloseLineWithoutLine() {
+        Id missingLineId = Schema.DMT_Line__c.SObjectType.getDescribe().getKeyPrefix() + '000000000002AAA';
+        Test.startTest();
+        DMT_ApprovalChangeStep_Helper.recheckReadyToCloseLine((Id) null);
+        DMT_ApprovalChangeStep_Helper.recheckReadyToCloseLine(missingLineId);
+        DMT_ApprovalChangeStep_Helper.recheckReadyToCloseLine((DMT_Line__c) null);
+        Test.stopTest();
+        Assert.areEqual(0, [SELECT COUNT() FROM DMT_Line__c WHERE Id = :missingLineId], 'Nothing must be created or updated.');
+    }
+
+    // CIBGLOBALD-4924 - coverage of the invocable updateOwnerFromCase: the Case gets the owner sent by the Flow.
+    @IsTest
+    static void testUpdateOwnerFromCase() {
+        Case approvalCase = [SELECT Id FROM Case LIMIT 1];
+        DMT_ApprovalChangeStep_Helper.RequestFinishedCase request = new DMT_ApprovalChangeStep_Helper.RequestFinishedCase();
+        request.caseId = approvalCase.Id;
+        request.owners = getQueueId();
+
+        Test.startTest();
+        DMT_ApprovalChangeStep_Helper.updateOwnerFromCase(new List<DMT_ApprovalChangeStep_Helper.RequestFinishedCase>{ request });
+        Test.stopTest();
+
+        Assert.areEqual(getQueueId(), [SELECT OwnerId FROM Case WHERE Id = :approvalCase.Id].OwnerId, 'The Case must get the owner sent by the Flow.');
+    }
+
+    // CIBGLOBALD-4924 - coverage of freezeCalloutTrackableBaseline: a component without a callout renderer, and a
+    // snapshot with no frozen JSON, leave the snapshot as it is (no callout is made).
+    @IsTest
+    static void testFreezeCalloutTrackableBaselineSkipsWithoutRendererOrJson() {
+        Case approvalCase = [SELECT Id FROM Case LIMIT 1];
+        DMT_TaskStatusWhenCompleted__c snapshot = DMT_UTIL.createTaskStatusWhenCompletedRecord(new Map<Schema.SObjectField, Object>{
+            DMT_TaskStatusWhenCompleted__c.Case__c => approvalCase.Id
+        });
+
+        Test.startTest();
+        DMT_ApprovalChangeStep_Helper.freezeCalloutTrackableBaseline(
+            new DMT_CalloutTrackableFreezePayload(snapshot.Id, approvalCase.Id, 'Not A Component'));
+        String calloutComponent = firstCalloutTrackableComponent();
+        if (calloutComponent != null) {
+            DMT_ApprovalChangeStep_Helper.freezeCalloutTrackableBaseline(
+                new DMT_CalloutTrackableFreezePayload(snapshot.Id, approvalCase.Id, calloutComponent));
+        }
+        Test.stopTest();
+
+        Assert.isNull([SELECT DMT_ViewFieldStatusAtClose__c FROM DMT_TaskStatusWhenCompleted__c WHERE Id = :snapshot.Id].DMT_ViewFieldStatusAtClose__c,
+            'A snapshot with no frozen JSON must not get a baseline.');
+    }
+
+    /**
+     * CIBGLOBALD-4924 - coverage of the callout-tracked check chain (checkCalloutTrackableComponent): a component that
+     * throws is logged and the chain goes on, a component without a callout renderer is skipped, and a frozen snapshot
+     * with no baseline for the component is skipped. None of them reaches the HPG callout, so the task is never restarted.
+     */
+    @IsTest
+    static void testCheckCalloutTrackableComponentSkipsWithoutBaseline() {
+        Id taskRTId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('DMT_Step_Approval').getRecordTypeId();
+        Case approvalCase = [SELECT Id FROM Case LIMIT 1];
+        DMT_TaskStatusWhenCompleted__c snapshot = DMT_UTIL.createTaskStatusWhenCompletedRecord(new Map<Schema.SObjectField, Object>{
+            DMT_TaskStatusWhenCompleted__c.Case__c => approvalCase.Id,
+            DMT_TaskStatusWhenCompleted__c.DMT_ViewFieldStatusAtClose__c => '{"line":{}}'
+        });
+        Task frozenTask = DMT_UTIL.createTaskRecord(getQueueId(), approvalCase.Id, new Map<Schema.SObjectField, Object>{
+            Task.RecordTypeId => taskRTId,
+            Task.Status => 'Completed',
+            Task.Subject => 'Frozen',
+            Task.DMT_ViewStatusAtClose__c => snapshot.Id
+        });
+        String calloutComponent = firstCalloutTrackableComponent();
+
+        Test.startTest();
+        DMT_ApprovalChangeStep_Helper.forceExceptionForComponentNameForTest = 'Forced Component';
+        DMT_ApprovalChangeStep_Helper.checkCalloutTrackableComponent(
+            new DMT_CalloutTrackableCheckPayload(approvalCase.Id, frozenTask.Id, 'Forced Component', new List<String>()));
+        DMT_ApprovalChangeStep_Helper.checkCalloutTrackableComponent(
+            new DMT_CalloutTrackableCheckPayload(approvalCase.Id, frozenTask.Id, 'Not A Component', new List<String>{ 'Not A Component Either' }));
+        if (calloutComponent != null) {
+            DMT_ApprovalChangeStep_Helper.checkCalloutTrackableComponent(
+                new DMT_CalloutTrackableCheckPayload(approvalCase.Id, frozenTask.Id, calloutComponent, new List<String>()));
+        }
+        Test.stopTest();
+
+        Assert.areEqual('Completed', [SELECT Status FROM Task WHERE Id = :frozenTask.Id].Status,
+            'Without a frozen baseline the task must never be restarted.');
+        Assert.areEqual(0, [SELECT COUNT() FROM Task WHERE WhatId = :approvalCase.Id AND Status = :DMT_Constants.NOTSTARTED AND Subject = 'Task'],
+            'No replacement task must be created.');
+    }
+
+    // CIBGLOBALD-4924 - first renderer-tracked component whose values come from a callout, read from DMT_RendererFactory
+    // so the tests do not depend on a component name.
+    private static String firstCalloutTrackableComponent() {
+        for (String componentName : DMT_RendererFactory.getTrackedComponentNames()) {
+            if (DMT_RendererFactory.isCalloutTrackable(componentName)) {
+                return componentName;
+            }
+        }
+        return null;
+    }
+
     // CIBGLOBALD-4800 - the same task list restarted twice (an async restart queued twice before the first
     // run) must leave exactly one replacement: the second run finds the tasks already cancelled.
     @IsTest
